@@ -1,10 +1,9 @@
-package org.springframework.data.simpledb.sample.domain;
+package org.springframework.data.simpledb.sample.jpa.domain;
 
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
 
 @Entity
 public class User extends AbstractPersistable<Long> {

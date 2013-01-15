@@ -1,11 +1,11 @@
-package org.springframework.data.simpledb.repository;
+package org.springframework.data.simpledb.sample.jpa.repository;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.simpledb.sample.domain.User;
-import org.springframework.data.simpledb.sample.repository.BasicUserRepository;
+import org.springframework.data.simpledb.sample.jpa.domain.User;
+import org.springframework.data.simpledb.sample.jpa.repository.BasicUserRepository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Integration test showing the basic usage of {@link org.springframework.data.simpledb.sample.repository.BasicUserRepository}.
+ * Integration test showing the basic usage of {@link org.springframework.data.simpledb.sample.jpa.repository.BasicUserRepository}.
  * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
