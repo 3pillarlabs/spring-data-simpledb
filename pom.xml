@@ -3,11 +3,17 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.springframework.data.simpledb</groupId>
-  <artifactId>spring-data-simpledb</artifactId>
+  <artifactId>spring-data-simpledb-parent</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
-  <name>Spring Data SimpleDB</name>
+  <packaging>pom</packaging>
+  <name>Parent Spring Data SimpleDB</name>
   <url>http://maven.apache.org</url>
+
+
+    <modules>
+        <module>spring-data-simpledb-impl</module>
+        <module>spring-data-simpledb-integration-tests</module>
+    </modules>
 
    <properties>
         <spring.version>3.2.0.RELEASE</spring.version>
