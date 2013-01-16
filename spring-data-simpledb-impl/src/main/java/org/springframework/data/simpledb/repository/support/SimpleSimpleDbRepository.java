@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.data.jpa.repository.query.QueryUtils.*;
+import org.springframework.data.simpledb.core.SimpleDbOperations;
 
 /**
  * Default implementation of the {@link org.springframework.data.repository.CrudRepository} interface. This will offer
@@ -58,6 +59,8 @@ import static org.springframework.data.jpa.repository.query.QueryUtils.*;
 @Transactional(readOnly = true)
 public class SimpleSimpleDbRepository<T, ID extends Serializable> implements SimpleDbRepository<T, ID> {
 
+    private final SimpleDbOperations simpleDbOperations;
+
 	private final SimpleDbEntityInformation<T, ?> entityInformation;
 
 	private LockMetadataProvider lockMetadataProvider;
@@ -67,11 +70,12 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Sim
 	 *
 	 * @param entityInformation must not be {@literal null}.
 	 */
-	public SimpleSimpleDbRepository(SimpleDbEntityInformation<T, ?> entityInformation) {
+	public SimpleSimpleDbRepository(SimpleDbEntityInformation<T, ?> entityInformation, SimpleDbOperations simpleDbOperations) {
 
 		Assert.notNull(entityInformation);
 
 		this.entityInformation = entityInformation;
+        this.simpleDbOperations = simpleDbOperations;
 	}
 
 //	/**
@@ -474,7 +478,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Sim
 
 	/**
 	 * Applies the given {@link org.springframework.data.jpa.domain.Specification} to the given {@link javax.persistence.criteria.CriteriaQuery}.
-	 * 
+	 *
 	 * @param spec can be {@literal null}.
 	 * @param query must not be {@literal null}.
 	 * @return

@@ -17,6 +17,7 @@ import org.springframework.data.simpledb.repository.SimpleDbRepository;
 import org.springframework.util.Assert;
 
 import static org.springframework.data.querydsl.QueryDslUtils.QUERY_DSL_PRESENT;
+import org.springframework.data.simpledb.core.SimpleDbOperations;
 
 /**
  * SimpleDB specific generic repository factory.
@@ -25,9 +26,12 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 
     private final LockModeRepositoryPostProcessor lockModePostProcessor;
 
-    public SimpleDbRepositoryFactory() {
+    private final SimpleDbOperations simpleDbOperations;
+
+    public SimpleDbRepositoryFactory(SimpleDbOperations simpleDbOperations) {
 
         this.lockModePostProcessor = LockModeRepositoryPostProcessor.INSTANCE;
+        this.simpleDbOperations = simpleDbOperations;
 
         addRepositoryProxyPostProcessor(lockModePostProcessor);
     }
@@ -40,7 +44,7 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
     protected Object getTargetRepository(RepositoryMetadata metadata) {
         SimpleDbEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());
 
-        SimpleSimpleDbRepository<?, ?> repo =  new SimpleSimpleDbRepository(entityInformation);
+        SimpleSimpleDbRepository<?, ?> repo =  new SimpleSimpleDbRepository(entityInformation,simpleDbOperations);
         repo.setLockMetadataProvider(lockModePostProcessor.getLockMetadataProvider());
 
         return repo;
