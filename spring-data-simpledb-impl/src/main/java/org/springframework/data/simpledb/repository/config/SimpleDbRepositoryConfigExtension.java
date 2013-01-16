@@ -21,6 +21,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.data.config.ParsingUtils;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource;
 import org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport;
@@ -68,6 +69,10 @@ public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationEx
 //
 //        postProcess(builder, element.getAttribute("transaction-manager-ref"),
 //                element.getAttribute("entity-manager-factory-ref"), config.getSource());
+
+        Element element = config.getElement();
+        ParsingUtils.setPropertyReference(builder, element, "simpledb-template-ref", "simpleDbOperations");
+
     }
 
     /*
@@ -83,6 +88,11 @@ public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationEx
 //
 //        postProcess(builder, attributes.getString("transactionManagerRef"),
 //                attributes.getString("entityManagerFactoryRef"), config.getSource());
+
+        AnnotationAttributes attributes = config.getAttributes();
+
+		builder.addPropertyReference("simpleDbOperations", attributes.getString("simpledbTemplateRef"));
+
     }
 
 //    private void postProcess(BeanDefinitionBuilder builder, String transactionManagerRef, String entityManagerRef,
