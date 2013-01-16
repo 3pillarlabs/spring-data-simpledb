@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simple-simpledb-repository-context.xml")
 @Transactional
-//@Ignore(value = "work in progress")
+@Ignore(value = "work in progress")
 public class BasicSimpleDbUserRepositoryTest {
 
     @Autowired
