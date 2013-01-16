@@ -59,7 +59,7 @@ import org.springframework.data.simpledb.core.SimpleDbOperations;
 @Transactional(readOnly = true)
 public class SimpleSimpleDbRepository<T, ID extends Serializable> implements SimpleDbRepository<T, ID> {
 
-    private final SimpleDbOperations simpleDbOperations;
+    private final SimpleDbOperations simpleDbOperations; //implement all SimpleDbRepository with operations defined in SimpleDbOperations
 
 	private final SimpleDbEntityInformation<T, ?> entityInformation;
 
