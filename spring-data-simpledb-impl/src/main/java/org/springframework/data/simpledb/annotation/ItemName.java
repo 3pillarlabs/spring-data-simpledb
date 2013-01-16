@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.simpledb.repository;
+package org.springframework.data.simpledb.annotation;
 
 import java.lang.annotation.*;
 
 /**
- * Should mark only Multimaps with Attribute keys, values
+ * SimpleDB Item name.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @Documented
-public @interface Attributes {
+public @interface ItemName {
 
+	String value() default "";
 }
