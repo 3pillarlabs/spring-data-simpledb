@@ -1,0 +1,1 @@
+http\://www.springframework.org/schema/data/simpledb=org.springframework.data.simpledb.repository.config.SimpleDbRepositoryNamespaceHandler

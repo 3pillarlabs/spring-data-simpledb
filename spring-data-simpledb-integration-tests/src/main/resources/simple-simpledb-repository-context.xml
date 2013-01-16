@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:simpledb="http://www.springframework.org/schema/data/simpledb"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+		http://www.springframework.org/schema/data/simpledb https://raw.github.com/ThreePillarGlobal/spring-data-simpledb/master/spring-simpledb.xsd?login=ksza&amp;token=ec707a99ae4e67336a18b309117d4370">
+
+    <import resource="infrastructure.xml" />
+
+    <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
+
+</beans>

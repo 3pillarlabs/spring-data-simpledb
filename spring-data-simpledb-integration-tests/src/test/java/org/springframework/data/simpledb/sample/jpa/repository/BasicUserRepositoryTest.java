@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
  * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:simple-repository-context.xml")
+@ContextConfiguration(locations = "classpath:simple-jpa-repository-context.xml")
 @Transactional
 public class BasicUserRepositoryTest {
 
