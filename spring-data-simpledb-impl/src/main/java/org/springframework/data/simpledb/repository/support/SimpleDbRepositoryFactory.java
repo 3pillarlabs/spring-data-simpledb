@@ -26,12 +26,9 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 
     private final LockModeRepositoryPostProcessor lockModePostProcessor;
 
-    private final SimpleDbOperations simpleDbOperations;
-
-    public SimpleDbRepositoryFactory(SimpleDbOperations simpleDbOperations) {
+    public SimpleDbRepositoryFactory() {
 
         this.lockModePostProcessor = LockModeRepositoryPostProcessor.INSTANCE;
-        this.simpleDbOperations = simpleDbOperations;
 
         addRepositoryProxyPostProcessor(lockModePostProcessor);
     }
@@ -44,7 +41,7 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
     protected Object getTargetRepository(RepositoryMetadata metadata) {
         SimpleDbEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());
 
-        SimpleSimpleDbRepository<?, ?> repo =  new SimpleSimpleDbRepository(entityInformation,simpleDbOperations);
+        SimpleSimpleDbRepository<?, ?> repo =  new SimpleSimpleDbRepository(entityInformation);
         repo.setLockMetadataProvider(lockModePostProcessor.getLockMetadataProvider());
 
         return repo;

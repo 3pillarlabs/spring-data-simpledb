@@ -11,4 +11,9 @@
 
     <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
 
+    <bean id="simpledbTemplate" class="org.springframework.data.simpledb.core.SimpleDbTemplate">
+        <constructor-arg name="accessID" value="AKIAIVX775TRPPSZTEMQ"/>
+        <constructor-arg name="secretKey" value="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"/>
+    </bean>
+
 </beans>

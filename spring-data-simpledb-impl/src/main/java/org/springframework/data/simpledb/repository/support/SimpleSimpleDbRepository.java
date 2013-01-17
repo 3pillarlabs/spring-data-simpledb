@@ -42,9 +42,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.springframework.data.jpa.repository.query.QueryUtils.*;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
+import org.springframework.data.simpledb.core.SimpleDbTemplate;
 
 /**
  * Default implementation of the {@link org.springframework.data.repository.CrudRepository} interface. This will offer
@@ -59,7 +61,8 @@ import org.springframework.data.simpledb.core.SimpleDbOperations;
 @Transactional(readOnly = true)
 public class SimpleSimpleDbRepository<T, ID extends Serializable> implements SimpleDbRepository<T, ID> {
 
-    private final SimpleDbOperations simpleDbOperations; //implement all SimpleDbRepository with operations defined in SimpleDbOperations
+    @Autowired
+    private SimpleDbOperations simpleDbOperations; //implement all SimpleDbRepository with operations defined in SimpleDbOperations
 
 	private final SimpleDbEntityInformation<T, ?> entityInformation;
 
@@ -70,12 +73,11 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Sim
 	 *
 	 * @param entityInformation must not be {@literal null}.
 	 */
-	public SimpleSimpleDbRepository(SimpleDbEntityInformation<T, ?> entityInformation, SimpleDbOperations simpleDbOperations) {
+	public SimpleSimpleDbRepository(SimpleDbEntityInformation<T, ?> entityInformation) {
 
 		Assert.notNull(entityInformation);
 
 		this.entityInformation = entityInformation;
-        this.simpleDbOperations = simpleDbOperations;
 	}
 
 //	/**
