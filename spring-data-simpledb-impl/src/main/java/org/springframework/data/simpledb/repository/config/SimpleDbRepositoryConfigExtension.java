@@ -15,24 +15,25 @@
  */
 package org.springframework.data.simpledb.repository.config;
 
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.config.ParsingUtils;
-import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource;
 import org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport;
 import org.springframework.data.repository.config.RepositoryConfigurationSource;
 import org.springframework.data.repository.config.XmlRepositoryConfigurationSource;
 import org.springframework.data.simpledb.repository.support.SimpleDbRepositoryFactoryBean;
 import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor;
-import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
 
+/**
+ * Responsibilities - provide repository factory bean
+ *                  - read additional properties
+ *                  - create root beans to be used by all instantiated repositories
+ */
 public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationExtensionSupport {
 
     private static final Class<?> PAB_POST_PROCESSOR = PersistenceAnnotationBeanPostProcessor.class;
@@ -43,6 +44,7 @@ public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationEx
      * (non-Javadoc)
      * @see org.springframework.data.repository.config14.RepositoryConfigurationExtension#getRepositoryInterface()
      */
+    @Override
     public String getRepositoryFactoryClassName() {
         return SimpleDbRepositoryFactoryBean.class.getName();
     }
@@ -64,7 +66,7 @@ public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationEx
     @Override
     public void postProcess(BeanDefinitionBuilder builder, XmlRepositoryConfigurationSource config) {
         // not for now. used for additional configuration
-        // will be useful when SimpleDb credentials will be provided.
+        // will be useful when SimpleDbImpl credentials will be provided.
 //        Element element = config.getElement();
 //
 //        postProcess(builder, element.getAttribute("transaction-manager-ref"),
@@ -82,7 +84,7 @@ public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationEx
     @Override
     public void postProcess(BeanDefinitionBuilder builder, AnnotationRepositoryConfigurationSource config) {
         // not for now. used for additional configuration
-        // will be useful when SimpleDb credentials will be provided.
+        // will be useful when SimpleDbImpl credentials will be provided.
 
 //        AnnotationAttributes attributes = config.getAttributes();
 //

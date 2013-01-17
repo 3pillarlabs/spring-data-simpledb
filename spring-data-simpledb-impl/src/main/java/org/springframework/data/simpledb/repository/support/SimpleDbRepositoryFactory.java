@@ -2,22 +2,13 @@ package org.springframework.data.simpledb.repository.support;
 
 import java.io.Serializable;
 
-import javax.persistence.EntityManager;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.query.JpaQueryLookupStrategy;
-import org.springframework.data.jpa.repository.query.QueryExtractor;
 import org.springframework.data.jpa.repository.support.*;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
-import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.query.QueryLookupStrategy;
-import org.springframework.data.simpledb.repository.SimpleDbRepository;
-import org.springframework.util.Assert;
-
-import static org.springframework.data.querydsl.QueryDslUtils.QUERY_DSL_PRESENT;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 
 /**
  * SimpleDB specific generic repository factory.
@@ -25,13 +16,17 @@ import org.springframework.data.simpledb.core.SimpleDbOperations;
 public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 
     private final LockModeRepositoryPostProcessor lockModePostProcessor;
+    private SimpleDbOperations<?, Serializable> simpledbOperations;
 
-    public SimpleDbRepositoryFactory() {
+    public SimpleDbRepositoryFactory(SimpleDbOperations<?, Serializable> simpledbOperations) {
+        this.simpledbOperations = simpledbOperations;
 
         this.lockModePostProcessor = LockModeRepositoryPostProcessor.INSTANCE;
 
         addRepositoryProxyPostProcessor(lockModePostProcessor);
     }
+
+
 
     /*
      * (non-Javadoc)
@@ -41,7 +36,7 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
     protected Object getTargetRepository(RepositoryMetadata metadata) {
         SimpleDbEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());
 
-        SimpleSimpleDbRepository<?, ?> repo =  new SimpleSimpleDbRepository(entityInformation);
+        SimpleSimpleDbRepository<?, ?> repo =  new SimpleSimpleDbRepository(entityInformation, simpledbOperations);
         repo.setLockMetadataProvider(lockModePostProcessor.getLockMetadataProvider());
 
         return repo;

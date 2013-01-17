@@ -3,4 +3,5 @@
 .springBeans
 .settings/
 .idea
+*.iml
 target/
