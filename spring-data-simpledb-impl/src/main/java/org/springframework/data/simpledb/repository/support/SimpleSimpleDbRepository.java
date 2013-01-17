@@ -21,7 +21,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.LockMetadataProvider;
-import org.springframework.data.simpledb.repository.SimpleDbRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.simpledb.core.SimpleDbEntity;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +35,7 @@ import org.springframework.data.simpledb.core.SimpleDbOperations;
 
 @org.springframework.stereotype.Repository
 @Transactional(readOnly = true)
-public class SimpleSimpleDbRepository<T, ID extends Serializable> implements SimpleDbRepository<T, ID> {
+public class SimpleSimpleDbRepository<T, ID extends Serializable> implements PagingAndSortingRepository<T, ID> {
 
     private final SimpleDbEntityInformation<T, ?> entityInformation;
     private LockMetadataProvider lockMetadataProvider;
