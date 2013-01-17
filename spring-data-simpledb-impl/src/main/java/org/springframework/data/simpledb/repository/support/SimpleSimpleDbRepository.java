@@ -57,6 +57,8 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Sim
      * @param simpledbOperations
      */
     public SimpleSimpleDbRepository(SimpleDbEntityInformation<T, ?> entityInformation, SimpleDbOperations<T, ?> simpledbOperations) {
+        Assert.notNull(simpledbOperations);
+
         this.operations = simpledbOperations;
 
         Assert.notNull(entityInformation);
