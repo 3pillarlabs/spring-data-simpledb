@@ -13,19 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.simpledb.repository.support;
+package org.springframework.data.simpledb.repository.support.entityinformation;
 
-import org.springframework.data.domain.Persistable;
-import org.springframework.data.jpa.repository.support.JpaEntityInformation;
-import org.springframework.data.jpa.repository.support.JpaMetamodelEntityInformation;
-import org.springframework.data.jpa.repository.support.JpaPersistableEntityInformation;
 import org.springframework.data.repository.core.support.AbstractEntityInformation;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbMetamodelEntityInformation;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.metamodel.Metamodel;
 import java.io.Serializable;
 
 /**
@@ -59,5 +53,6 @@ public abstract class SimpleDbEntityInformationSupport<T, ID extends Serializabl
 
 		return new SimpleDbMetamodelEntityInformation(domainClass);
 	}
+
 
 }

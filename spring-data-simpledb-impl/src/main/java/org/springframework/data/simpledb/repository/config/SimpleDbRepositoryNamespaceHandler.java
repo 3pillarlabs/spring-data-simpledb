@@ -13,11 +13,9 @@ public class SimpleDbRepositoryNamespaceHandler extends NamespaceHandlerSupport 
  * @see org.springframework.beans.factory.xml.NamespaceHandler#init()
  */
     public void init() {
-
         RepositoryConfigurationExtension extension = new SimpleDbRepositoryConfigExtension();
         RepositoryBeanDefinitionParser repositoryBeanDefinitionParser = new RepositoryBeanDefinitionParser(extension);
 
         registerBeanDefinitionParser("repositories", repositoryBeanDefinitionParser);
-//        registerBeanDefinitionParser("auditing", new AuditingBeanDefinitionParser());
     }
 }

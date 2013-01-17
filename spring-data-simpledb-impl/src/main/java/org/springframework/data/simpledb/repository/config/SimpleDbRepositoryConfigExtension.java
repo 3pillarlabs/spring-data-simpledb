@@ -32,6 +32,11 @@ import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
 
+/**
+ * Responsibilities - provide repository factory bean
+ *                  - read additional properties
+ *                  - create root beans to be used by all instantiated repositories
+ */
 public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationExtensionSupport {
 
     private static final Class<?> PAB_POST_PROCESSOR = PersistenceAnnotationBeanPostProcessor.class;
@@ -63,7 +68,7 @@ public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationEx
     @Override
     public void postProcess(BeanDefinitionBuilder builder, XmlRepositoryConfigurationSource config) {
         // not for now. used for additional configuration
-        // will be useful when SimpleDb credentials will be provided.
+        // will be useful when SimpleDbImpl credentials will be provided.
 //        Element element = config.getElement();
 //
 //        postProcess(builder, element.getAttribute("transaction-manager-ref"),
@@ -77,7 +82,7 @@ public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationEx
     @Override
     public void postProcess(BeanDefinitionBuilder builder, AnnotationRepositoryConfigurationSource config) {
         // not for now. used for additional configuration
-        // will be useful when SimpleDb credentials will be provided.
+        // will be useful when SimpleDbImpl credentials will be provided.
 
 //        AnnotationAttributes attributes = config.getAttributes();
 //

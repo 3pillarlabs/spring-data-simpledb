@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.simpledb.repository.support;
+package org.springframework.data.simpledb.repository.support.entityinformation;
 
 import org.springframework.data.repository.core.EntityInformation;
 
 import javax.persistence.metamodel.SingularAttribute;
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Extension of {@link org.springframework.data.repository.core.EntityInformation} to capture aditional JPA specific information about entities.
@@ -27,19 +28,9 @@ import java.io.Serializable;
  */
 public interface SimpleDbEntityInformation<T, ID extends Serializable> extends EntityInformation<T, ID> {
 
-    //add if desired additional information regarding simple db entities
+	String getDomain();
 
-//	/**
-//	 * Returns the id attribute of the entity.
-//	 *
-//	 * @return
-//	 */
-//	SingularAttribute<? super T, ?> getIdAttribute();
-//
-//	/**
-//	 * Returns the JPA entity name.
-//	 *
-//	 * @return
-//	 */
-//	String getEntityName();
+    String getItemName(T entity);
+
+    Map<String, String> getAttributes(T entity);
 }
