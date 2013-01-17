@@ -33,12 +33,11 @@ import org.w3c.dom.Element;
  * Responsibilities - provide repository factory bean
  *                  - read additional properties
  *                  - create root beans to be used by all instantiated repositories
+ *
+ * See JpaRepositoryConfigExtension
  */
 public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationExtensionSupport {
 
-    private static final Class<?> PAB_POST_PROCESSOR = PersistenceAnnotationBeanPostProcessor.class;
-    private static final Class<?> PET_POST_PROCESSOR = PersistenceExceptionTranslationPostProcessor.class;
-    private static final String DEFAULT_TRANSACTION_MANAGER_BEAN_NAME = "transactionManager";
 
     /*
      * (non-Javadoc)
@@ -65,13 +64,6 @@ public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationEx
      */
     @Override
     public void postProcess(BeanDefinitionBuilder builder, XmlRepositoryConfigurationSource config) {
-        // not for now. used for additional configuration
-        // will be useful when SimpleDbImpl credentials will be provided.
-//        Element element = config.getElement();
-//
-//        postProcess(builder, element.getAttribute("transaction-manager-ref"),
-//                element.getAttribute("entity-manager-factory-ref"), config.getSource());
-
         Element element = config.getElement();
         ParsingUtils.setPropertyReference(builder, element, "simpledb-template-ref", "simpleDbOperations");
 
@@ -83,13 +75,6 @@ public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationEx
      */
     @Override
     public void postProcess(BeanDefinitionBuilder builder, AnnotationRepositoryConfigurationSource config) {
-        // not for now. used for additional configuration
-        // will be useful when SimpleDbImpl credentials will be provided.
-
-//        AnnotationAttributes attributes = config.getAttributes();
-//
-//        postProcess(builder, attributes.getString("transactionManagerRef"),
-//                attributes.getString("entityManagerFactoryRef"), config.getSource());
 
         AnnotationAttributes attributes = config.getAttributes();
 
@@ -97,65 +82,4 @@ public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationEx
 
     }
 
-//    private void postProcess(BeanDefinitionBuilder builder, String transactionManagerRef, String entityManagerRef,
-//                             Object source) {
-//
-//        transactionManagerRef = StringUtils.hasText(transactionManagerRef) ? transactionManagerRef
-//                : DEFAULT_TRANSACTION_MANAGER_BEAN_NAME;
-//        builder.addPropertyValue("transactionManager", transactionManagerRef);
-//
-//        if (StringUtils.hasText(entityManagerRef)) {
-//            builder.addPropertyValue("entityManager", getEntityManagerBeanDefinitionFor(entityManagerRef, source));
-//        }
-//    }
-
-//    /**
-//     * Creates an anonymous factory to extract the actual {@link javax.persistence.EntityManager} from the
-//     * {@link javax.persistence.EntityManagerFactory} bean name reference.
-//     *
-//     * @param entityManagerFactoryBeanName
-//     * @param source
-//     * @return
-//     */
-//    private BeanDefinition getEntityManagerBeanDefinitionFor(String entityManagerFactoryBeanName, Object source) {
-//
-//        BeanDefinitionBuilder builder = BeanDefinitionBuilder
-//                .rootBeanDefinition("org.springframework.orm.jpa.SharedEntityManagerCreator");
-//        builder.setFactoryMethod("createSharedEntityManager");
-//        builder.addConstructorArgReference(entityManagerFactoryBeanName);
-//
-//        AbstractBeanDefinition bean = builder.getRawBeanDefinition();
-//        bean.setSource(source);
-//
-//        return bean;
-//    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport#registerBeansForRoot(org.springframework.beans.factory.support.BeanDefinitionRegistry, org.springframework.data.repository.config.RepositoryConfigurationSource)
-     */
-    @Override
-    public void registerBeansForRoot(BeanDefinitionRegistry registry, RepositoryConfigurationSource configurationSource) {
-       //not for now
-       //used for instance to register a persistence bean shared by all repositories
-
-
-//        super.registerBeansForRoot(registry, configurationSource);
-//
-//        if (!hasBean(PET_POST_PROCESSOR, registry)) {
-//
-//            AbstractBeanDefinition definition = BeanDefinitionBuilder.rootBeanDefinition(PET_POST_PROCESSOR)
-//                    .getBeanDefinition();
-//
-//            registerWithSourceAndGeneratedBeanName(registry, definition, configurationSource.getSource());
-//        }
-//
-//        if (!hasBean(PAB_POST_PROCESSOR, registry)) {
-//
-//            AbstractBeanDefinition definition = BeanDefinitionBuilder.rootBeanDefinition(PAB_POST_PROCESSOR)
-//                    .getBeanDefinition();
-//
-//            registerWithSourceAndGeneratedBeanName(registry, definition, configurationSource.getSource());
-//        }
-    }
 }

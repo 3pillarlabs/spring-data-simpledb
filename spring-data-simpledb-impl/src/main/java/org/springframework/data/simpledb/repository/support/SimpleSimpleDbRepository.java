@@ -32,15 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 
-/**
- * Default implementation of the {@link org.springframework.data.repository.CrudRepository} interface. This will offer you a more sophisticated interface than the plain
- * {@link javax.persistence.EntityManager} .
- *
- * @author Oliver Gierke
- * @author Eberhard Wolff
- * @param <T> the type of the entity to handle
- * @param <ID> the type of the entity's identifier
- */
+
 @org.springframework.stereotype.Repository
 @Transactional(readOnly = true)
 public class SimpleSimpleDbRepository<T, ID extends Serializable> implements SimpleDbRepository<T, ID> {
