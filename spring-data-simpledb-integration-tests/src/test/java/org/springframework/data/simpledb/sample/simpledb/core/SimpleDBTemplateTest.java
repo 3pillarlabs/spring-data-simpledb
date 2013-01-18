@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.simpledb.core.SimpleDbTemplate;
+import org.springframework.data.simpledb.core.SimpleDbOperationsImpl;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,7 +24,7 @@ public class SimpleDBTemplateTest {
 
     @Test
     public void sercrets_should_not_be_null() {
-        SimpleDbTemplate template = (SimpleDbTemplate)operations;
+        SimpleDbOperationsImpl template = (SimpleDbOperationsImpl)operations;
         Assert.assertNotNull(template.getAccessID());
         Assert.assertNotNull(template.getSecretKey());
         System.out.println(template.getAccessID()+":"+template.getSecretKey());
