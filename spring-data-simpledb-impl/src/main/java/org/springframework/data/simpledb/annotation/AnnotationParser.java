@@ -1,12 +1,20 @@
 package org.springframework.data.simpledb.annotation;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.simpledb.annotation.Domain;
 
 import javax.persistence.Column;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-public class AnnotationParser {
+public final class AnnotationParser {
+
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationParser.class);
+
+    private AnnotationParser(){}//Utility class
+
     public static String getDomain(Class clazz){
         Domain domain = (Domain)clazz.getAnnotation(Domain.class);
         return domain.value();
@@ -21,7 +29,7 @@ public class AnnotationParser {
                     f.setAccessible(true);
                     return (String) f.get(object);
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    LOGGER.error("Could not read simpleDb item name", e);
                 }
             }
         }
@@ -38,7 +46,7 @@ public class AnnotationParser {
                     f.setAccessible(true);
                     return (Map<String, String>) f.get(object);
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    LOGGER.error("Could not read simpleDb attributes", e);
                 }
             }
         }

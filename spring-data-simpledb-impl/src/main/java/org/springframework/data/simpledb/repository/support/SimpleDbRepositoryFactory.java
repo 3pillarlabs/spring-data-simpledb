@@ -12,6 +12,8 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 
 /**
  * SimpleDB specific generic repository factory.
+ *
+ * See JpaRepositoryFactory
  */
 public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 
@@ -65,8 +67,6 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
      */
     @Override
     protected QueryLookupStrategy getQueryLookupStrategy(QueryLookupStrategy.Key key) {
-
-//        return JpaQueryLookupStrategy.create(entityManager, key, extractor);
         return null;
     }
 
