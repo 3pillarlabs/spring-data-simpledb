@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simple-simpledb-repository-context.xml")
-public class SimpleDBTemplateTest {
+public class SimpleDBOperationsTest {
 
     @Autowired
     SimpleDbOperations operations;
@@ -24,9 +24,9 @@ public class SimpleDBTemplateTest {
 
     @Test
     public void sercrets_should_not_be_null() {
-        SimpleDbOperationsImpl template = (SimpleDbOperationsImpl)operations;
+        SimpleDbOperationsImpl template = (SimpleDbOperationsImpl) operations;
         Assert.assertNotNull(template.getAccessID());
         Assert.assertNotNull(template.getSecretKey());
-        System.out.println(template.getAccessID()+":"+template.getSecretKey());
+        System.out.println(template.getAccessID() + ":" + template.getSecretKey());
     }
 }
