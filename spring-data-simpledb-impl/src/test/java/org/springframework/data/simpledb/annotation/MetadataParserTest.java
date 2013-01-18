@@ -9,12 +9,11 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class AnnotationParserTest {
+public class MetadataParserTest {
 
-    private static final String SAMPLE_DOMAIN = "SAMPLE_DOMAIN";
     private static final String SAMPLE_ITEM = "SAMPLE_ITEM";
 
-    @Domain(SAMPLE_DOMAIN)
+
     static class SampleAnnotatedId {
         @Id
         private String itemName = SAMPLE_ITEM;
@@ -25,27 +24,26 @@ public class AnnotationParserTest {
 
     @Test
     public void should_read_Domain_value(){
-        String domain = AnnotationParser.getDomain(SampleAnnotatedId.class);
-        assertEquals(SAMPLE_DOMAIN, domain);
+        String domain = MetadataParser.getDomain(SampleAnnotatedId.class);
+        assertEquals("sample_annotated_id", domain);
     }
 
     @Test
     public void should_read_annotated_id_value(){
         SampleAnnotatedId entity = new SampleAnnotatedId();
-        String itemName = AnnotationParser.getItemName(entity);
+        String itemName = MetadataParser.getItemName(entity);
         assertEquals(SAMPLE_ITEM, itemName);
     }
 
     @Test
     public void should_read_Attributes(){
         SampleAnnotatedId entity = new SampleAnnotatedId();
-        Map<String, String> attributes = AnnotationParser.getAttributes(entity);
+        Map<String, String> attributes = MetadataParser.getAttributes(entity);
         assertNotNull(attributes);
     }
 
 
 
-    @Domain(SAMPLE_DOMAIN)
     static class SampleDeclaredId {
 
         private String id = SAMPLE_ITEM;
@@ -57,7 +55,7 @@ public class AnnotationParserTest {
     @Test
     public void should_read_declared_id_value(){
         SampleDeclaredId entity = new SampleDeclaredId();
-        String itemName = AnnotationParser.getItemName(entity);
+        String itemName = MetadataParser.getItemName(entity);
         assertEquals(SAMPLE_ITEM, itemName);
     }
 

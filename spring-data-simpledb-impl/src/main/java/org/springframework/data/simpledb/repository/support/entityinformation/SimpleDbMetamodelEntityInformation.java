@@ -15,10 +15,8 @@
  */
 package org.springframework.data.simpledb.repository.support.entityinformation;
 
-import org.springframework.data.simpledb.annotation.AnnotationParser;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
+import org.springframework.data.simpledb.annotation.MetadataParser;
 
-import javax.persistence.metamodel.SingularAttribute;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -47,7 +45,7 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
 	 */
 	@SuppressWarnings("unchecked")
 	public ID getId(T entity) {
-        return (ID) AnnotationParser.getItemName(entity);
+        return (ID) MetadataParser.getItemName(entity);
 	}
 
 	/*
@@ -64,16 +62,16 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
 
     @Override
     public String getDomain() {
-        return AnnotationParser.getDomain(getJavaType());
+        return MetadataParser.getDomain(getJavaType());
     }
 
     @Override
     public String getItemName(T entity) {
-        return AnnotationParser.getItemName(entity);
+        return MetadataParser.getItemName(entity);
     }
 
     @Override
     public Map<String, String> getAttributes(T entity) {
-        return AnnotationParser.getAttributes(entity);
+        return MetadataParser.getAttributes(entity);
     }
 }

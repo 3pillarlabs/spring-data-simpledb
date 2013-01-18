@@ -3,26 +3,45 @@ package org.springframework.data.simpledb.annotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.simpledb.annotation.Domain;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Column;
 import java.lang.reflect.Field;
 import java.util.Map;
 
 @Component
-public final class AnnotationParser {
+public final class MetadataParser {
 
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MetadataParser.class);
 
-    private AnnotationParser(){
+    private MetadataParser(){
         //Utility class
     }
 
+    /**
+     * Domain name are computed based on class names: UserJob -> user_job
+     * @param clazz
+     * @return
+     */
     public static String getDomain(Class clazz){
-        Domain domain = (Domain)clazz.getAnnotation(Domain.class);
-        return domain.value();
+        String camelCaseString = clazz.getSimpleName();
+
+        String[] words = splitCamelCaseString(camelCaseString);
+
+        return combineLowerCase(words,"_");
+    }
+
+    private static String[] splitCamelCaseString(String str) {
+        return str.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])");
+    }
+
+    private static String combineLowerCase(String[] values, String separator){
+        String ret = "";
+        for (String value: values){
+            ret += value.toLowerCase()+separator;
+        }
+
+        return ret.substring(0, ret.length()-1);
     }
 
     public static String getItemName(Object object){
