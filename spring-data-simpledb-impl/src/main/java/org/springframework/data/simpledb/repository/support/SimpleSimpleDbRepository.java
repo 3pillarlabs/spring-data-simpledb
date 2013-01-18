@@ -21,7 +21,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.LockMetadataProvider;
-import org.springframework.data.simpledb.repository.SimpleDbRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.simpledb.core.SimpleDbEntity;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,18 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 
-/**
- * Default implementation of the {@link org.springframework.data.repository.CrudRepository} interface. This will offer you a more sophisticated interface than the plain
- * {@link javax.persistence.EntityManager} .
- *
- * @author Oliver Gierke
- * @author Eberhard Wolff
- * @param <T> the type of the entity to handle
- * @param <ID> the type of the entity's identifier
- */
+
 @org.springframework.stereotype.Repository
 @Transactional(readOnly = true)
-public class SimpleSimpleDbRepository<T, ID extends Serializable> implements SimpleDbRepository<T, ID> {
+public class SimpleSimpleDbRepository<T, ID extends Serializable> implements PagingAndSortingRepository<T, ID> {
 
     private final SimpleDbEntityInformation<T, ?> entityInformation;
     private LockMetadataProvider lockMetadataProvider;
@@ -57,6 +49,8 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Sim
      * @param simpledbOperations
      */
     public SimpleSimpleDbRepository(SimpleDbEntityInformation<T, ?> entityInformation, SimpleDbOperations<T, ?> simpledbOperations) {
+        Assert.notNull(simpledbOperations);
+
         this.operations = simpledbOperations;
 
         Assert.notNull(entityInformation);

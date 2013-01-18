@@ -15,7 +15,7 @@ import org.springframework.data.simpledb.core.SimpleDbOperations;
 public class SimpleDbRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> extends RepositoryFactoryBeanSupport<T, S, ID> {
 
     @Autowired
-    private SimpleDbOperations simpleDbOperations; //implement all SimpleDbRepository with operations defined in SimpleDbOperations
+    private SimpleDbOperations simpleDbOperations;
 
     @Override
     protected RepositoryFactorySupport createRepositoryFactory() {

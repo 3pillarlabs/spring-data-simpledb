@@ -7,15 +7,15 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 public interface SimpleDbOperations<T, ID extends Serializable> {
     //TDOO here implement all there is to know about SimpleDB
 
-    public T addItem(SimpleDbEntity<T, ID> entity);
+    T addItem(SimpleDbEntity<T, ID> entity);
 
-    public T updateItem(SimpleDbEntity<T, ID> entity);
+    T updateItem(SimpleDbEntity<T, ID> entity);
 
-    public void delete(SimpleDbEntity sdbEntity);
+    void delete(SimpleDbEntity sdbEntity);
 
-    public T findOne(SimpleDbEntityInformation<T, ?> entityInformation, Serializable id);
+    T findOne(SimpleDbEntityInformation<T, ?> entityInformation, Serializable id);
 
-    public boolean exists(SimpleDbEntityInformation<T, ?> entityInformation, Serializable id);
+    boolean exists(SimpleDbEntityInformation<T, ?> entityInformation, Serializable id);
 
-    public List<T> findAll(SimpleDbEntityInformation<T, ?> entityInformation, Iterable<Serializable> ids);
+    List<T> findAll(SimpleDbEntityInformation<T, ?> entityInformation, Iterable<Serializable> ids);
 }
