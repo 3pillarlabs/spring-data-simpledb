@@ -2,6 +2,9 @@ package org.springframework.data.simpledb.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.simpledb.annotation.AnnotationParser;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 import java.io.Serializable;
@@ -10,6 +13,7 @@ import java.util.List;
 /**
  *
  */
+
 public class SimpleDbOperationsImpl<T, ID extends Serializable> implements SimpleDbOperations {
 
 
@@ -75,18 +79,6 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     public List findAll(SimpleDbEntityInformation entityInformation, Iterable ids) {
         LOGGER.info("Find All Domain \"{}\"\"", entityInformation.getDomain());
         return null;
-    }
-
-    private void dropDomain(){
-
-    }
-
-    private void createDomain(){
-
-    }
-
-    private void createDomainsIfNotExist(){
-
     }
 
     private void logOperation(String operation, SimpleDbEntity<T, ID> entity) {
