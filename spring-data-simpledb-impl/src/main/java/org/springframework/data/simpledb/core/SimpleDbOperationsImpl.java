@@ -6,20 +6,32 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
  */
-public class SimpleDbTemplate<T, ID extends Serializable> implements SimpleDbOperations {
+public class SimpleDbOperationsImpl<T, ID extends Serializable> implements SimpleDbOperations {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbTemplate.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbOperationsImpl.class);
     private final String accessID;
     private final String secretKey;
+    private final DDL ddl;
 
-    public SimpleDbTemplate(String accessID, String secretKey) {
+    public enum DDL{
+        drop_create,
+        update,
+        nothing
+    }
+
+    public SimpleDbOperationsImpl(String accessID, String secretKey) {
+        this(accessID, secretKey, DDL.nothing.name());
+    }
+
+    public SimpleDbOperationsImpl(String accessID, String secretKey, String ddl) {
         this.accessID = accessID;
         this.secretKey = secretKey;
+        this.ddl = DDL.valueOf(ddl);
     }
 
     public String getAccessID() {
@@ -65,7 +77,20 @@ public class SimpleDbTemplate<T, ID extends Serializable> implements SimpleDbOpe
         return null;
     }
 
+    private void dropDomain(){
+
+    }
+
+    private void createDomain(){
+
+    }
+
+    private void createDomainsIfNotExist(){
+
+    }
+
     private void logOperation(String operation, SimpleDbEntity<T, ID> entity) {
         LOGGER.info(operation + " \"{}\" ItemName \"{}\"\"", entity.getDomain(), entity.getItemName());
     }
+
 }

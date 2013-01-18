@@ -2,7 +2,6 @@ package org.springframework.data.simpledb.sample.simpledb.repository;
 
 
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.simpledb.sample.jpa.domain.User;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 
 
