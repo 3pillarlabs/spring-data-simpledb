@@ -12,6 +12,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -31,9 +34,11 @@ public class BasicSimpleDbUserRepositoryTest {
 
     @Test
     public void save_should_do_something() {
-
+        user.setItemName("TestItemName");
+        Map<String, String> atts = new LinkedHashMap<>();
+        atts.put("testAtt", "testValue");
+        user.setAtts(atts);
         user = repository.save(user);
-
     }
 
 }

@@ -16,26 +16,18 @@ public class DomainManager {
     private final AmazonSimpleDB sdb;
     private final DomainManagementPolicy policy;
 
-    public DomainManager(final String accessID, final String secretKey, String domainUpdatePolicy) {
-        Assert.notNull(accessID);
-        Assert.notNull(secretKey);
-        sdb = new AmazonSimpleDBClient(new AWSCredentials() {
-            @Override
-            public String getAWSAccessKeyId() {
-                return accessID;
-            }
 
-            @Override
-            public String getAWSSecretKey() {
-                return secretKey;
-            }
-        });
+    public DomainManager(AmazonSimpleDB sdb, String domainUpdatePolicy) {
+        Assert.notNull(sdb);
+        this.sdb = sdb;
 
         if(domainUpdatePolicy == null){
             domainUpdatePolicy = "NONE";
         }
         policy = DomainManagementPolicy.valueOf(domainUpdatePolicy);
+
     }
+
 
     public void manageDomain(String domainName){
         if(policy == DomainManagementPolicy.NONE){

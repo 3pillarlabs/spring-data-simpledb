@@ -9,6 +9,8 @@ import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.junit.Assert.assertNotNull;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simple-simpledb-repository-context.xml")
 public class SimpleDBOperationsTest {
@@ -18,15 +20,13 @@ public class SimpleDBOperationsTest {
 
     @Test
     public void operations_should_not_be_null() {
-        Assert.assertNotNull(operations);
+        assertNotNull(operations);
 
     }
 
     @Test
-    public void sercrets_should_not_be_null() {
+    public void keys_should_be_read_from_config_file() {
         SimpleDbOperationsImpl template = (SimpleDbOperationsImpl) operations;
-        Assert.assertNotNull(template.getAccessID());
-        Assert.assertNotNull(template.getSecretKey());
-        System.out.println(template.getAccessID() + ":" + template.getSecretKey());
+        assertNotNull(operations.getDomainManager());
     }
 }

@@ -9,6 +9,7 @@ import com.amazonaws.services.simpledb.model.PutAttributesRequest;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.simpledb.core.domain.DomainManager;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 import java.io.Serializable;
@@ -24,25 +25,14 @@ import org.springframework.util.Assert;
 public class SimpleDbOperationsImpl<T, ID extends Serializable> implements SimpleDbOperations {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbOperationsImpl.class);
-    private final DDL ddl;
     private final AmazonSimpleDB sdb;
-    private final String accessID;
-    private final String secretKey;
+    private final DomainManager domainManager;
 
-    public enum DDL {
-
-        drop_create,
-        update,
-        nothing
-    }
-
-    public SimpleDbOperationsImpl(String accessID, String secretKey) {
-        this(accessID, secretKey, DDL.nothing.name());
-    }
 
     public SimpleDbOperationsImpl(final String accessID, final String secretKey, String ddl) {
         Assert.notNull(accessID);
         Assert.notNull(secretKey);
+
         sdb = new AmazonSimpleDBClient(new AWSCredentials() {
             @Override
             public String getAWSAccessKeyId() {
@@ -54,17 +44,12 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
                 return secretKey;
             }
         });
-        this.accessID = accessID;
-        this.secretKey = secretKey;
-        this.ddl = DDL.valueOf(ddl);
+
+        this.domainManager = new DomainManager(sdb, ddl);
     }
 
-    public String getAccessID() {
-        return accessID;
-    }
-
-    public String getSecretKey() {
-        return secretKey;
+    public DomainManager getDomainManager() {
+        return domainManager;
     }
 
     @Override

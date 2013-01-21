@@ -38,6 +38,8 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
     protected Object getTargetRepository(RepositoryMetadata metadata) {
         SimpleDbEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());
 
+        simpledbOperations.getDomainManager().manageDomain(entityInformation.getDomain());
+
         SimpleSimpleDbRepository<?, ?> repo =  new SimpleSimpleDbRepository(entityInformation, simpledbOperations);
         repo.setLockMetadataProvider(lockModePostProcessor.getLockMetadataProvider());
 

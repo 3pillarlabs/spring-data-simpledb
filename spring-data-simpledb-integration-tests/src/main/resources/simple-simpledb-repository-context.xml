@@ -14,7 +14,7 @@
     <bean id="simpledbTemplate" class="org.springframework.data.simpledb.core.SimpleDbOperationsImpl">
         <constructor-arg name="accessID" value="AKIAIVX775TRPPSZTEMQ"/>
         <constructor-arg name="secretKey" value="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"/>
-        <constructor-arg name="ddl" value="drop_create" />
+        <constructor-arg name="ddl" value="DROP_CREATE" />
     </bean>
 
 </beans>
