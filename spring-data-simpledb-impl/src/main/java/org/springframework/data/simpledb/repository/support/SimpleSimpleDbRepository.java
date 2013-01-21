@@ -36,9 +36,9 @@ import org.springframework.data.simpledb.core.SimpleDbOperations;
 @Transactional(readOnly = true)
 public class SimpleSimpleDbRepository<T, ID extends Serializable> implements PagingAndSortingRepository<T, ID> {
 
-    private final SimpleDbEntityInformation<T, ?> entityInformation;
+    private final SimpleDbEntityInformation<T, ID> entityInformation;
     private LockMetadataProvider lockMetadataProvider;
-    private SimpleDbOperations<T, ?> operations;
+    private SimpleDbOperations<T, ID> operations;
 
     /**
      * Creates a new {@link org.springframework.data.jpa.repository.support.SimpleJpaRepository} to manage objects of the given
@@ -47,7 +47,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      * @param entityInformation must not be {@literal null}.
      * @param simpledbOperations
      */
-    public SimpleSimpleDbRepository(SimpleDbEntityInformation<T, ?> entityInformation, SimpleDbOperations<T, ?> simpledbOperations) {
+    public SimpleSimpleDbRepository(SimpleDbEntityInformation<T, ID> entityInformation, SimpleDbOperations<T, ID> simpledbOperations) {
         Assert.notNull(simpledbOperations);
         Assert.notNull(entityInformation);
         this.operations = simpledbOperations;

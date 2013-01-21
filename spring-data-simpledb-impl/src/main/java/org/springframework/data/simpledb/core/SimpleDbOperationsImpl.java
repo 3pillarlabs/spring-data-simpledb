@@ -1,8 +1,6 @@
 package org.springframework.data.simpledb.core;
 
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
-import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
 import com.amazonaws.services.simpledb.model.Item;
@@ -13,7 +11,6 @@ import com.amazonaws.services.simpledb.model.SelectResult;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.simpledb.core.domain.DomainManager;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 import java.io.Serializable;
@@ -30,16 +27,14 @@ import org.springframework.util.Assert;
 /**
  *
  */
-public class SimpleDbOperationsImpl<T, ID extends Serializable> implements SimpleDbOperations {
+public class SimpleDbOperationsImpl<T, ID extends Serializable> implements SimpleDbOperations<T, ID> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbOperationsImpl.class);
     private final AmazonSimpleDB sdb;
 
-
     public SimpleDbOperationsImpl(AmazonSimpleDB sdb) {
         this.sdb = sdb;
     }
-
 
     @Override
     public Object createItem(SimpleDbEntity entity) {
@@ -70,10 +65,79 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     }
 
     @Override
-    public Object readItem(SimpleDbEntityInformation entityInformation, Serializable id) {
+    public T readItem(SimpleDbEntityInformation<T, ID> entityInformation, ID id) {
         LOGGER.info("Read ItemName \"{}\"\"", id);
-//        entityInformation.getIdType();
-        return null;
+        List<ID> ids = new ArrayList<>();
+        {
+            ids.add(id);
+        }
+        return find(entityInformation, ids, null, null).get(0);
+    }
+
+    @Override
+    public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, Iterable<ID> ids, Sort sort, Pageable pageable) {
+        LOGGER.info("Find All Domain \"{}\"\"", entityInformation.getDomain());
+        final List<T> allItems = new ArrayList<>();
+        String selectString = "select * from " + entityInformation.getDomain();
+
+        if (ids != null && ids.iterator().hasNext()) {
+            Iterator<ID> iterator = ids.iterator();
+            selectString += " where ";
+            while (iterator.hasNext()) {
+                String id = iterator.next().toString();
+                selectString += "itemName()='" + id + "'";
+                if (iterator.hasNext()) {
+                    selectString += " or ";
+                }
+            }
+        }
+
+        System.out.println(selectString);
+
+        final SelectRequest selectRequest = new SelectRequest(selectString);
+
+        sdb.select(selectRequest);
+        final SelectResult selectResult = sdb.select(selectRequest);
+
+        for (Item item : selectResult.getItems()) {
+            try {
+                final T domainItem = (T) entityInformation.getJavaType().newInstance();
+                final Field idField = domainItem.getClass().getDeclaredField(entityInformation.getItemNameFieldName(domainItem));
+                idField.setAccessible(true);
+                idField.set(domainItem, item.getName());
+
+                final Map<String, String> attributes = new HashMap<>();
+                for (Attribute attr : item.getAttributes()) {
+                    attributes.put(attr.getName(), attr.getValue());
+                }
+
+                final Field attributesField = domainItem.getClass().getDeclaredField(entityInformation.getAttributesFieldName(domainItem));
+                attributesField.setAccessible(true);
+                attributesField.set(domainItem, attributes);
+
+                allItems.add(domainItem);
+            } catch (InstantiationException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+                LOGGER.error(e.getMessage());
+            }
+        }
+
+        return allItems;
+    }
+
+    @Override
+    public long count(SimpleDbEntityInformation entityInformation) {
+        LOGGER.info("Count items from domain \"{}\"\"", entityInformation.getDomain());
+        final SelectResult selectResult = sdb.select(new SelectRequest("select count(*) from " + entityInformation.getDomain()));
+        for (Item item : selectResult.getItems()) {
+            if (item.getName().equals("Domain")) {
+                for (Attribute attribute : item.getAttributes()) {
+                    if (attribute.getName().equals("Count")) {
+                        return Long.parseLong(attribute.getValue());
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
     private List<ReplaceableAttribute> toReplaceableAttributeList(Map<String, String> attributes, boolean replace) {
@@ -97,61 +161,4 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     private void logOperation(String operation, SimpleDbEntity<T, ID> entity) {
         LOGGER.info(operation + " \"{}\" ItemName \"{}\"\"", entity.getDomain(), entity.getItemName());
     }
-
-    @SuppressWarnings("unchecked")
-	@Override
-    public List find(SimpleDbEntityInformation entityInformation, Iterable ids, Sort sort, Pageable pageable) {
-        LOGGER.info("Find where domain \"{}\"\"", entityInformation.getDomain());
-        final List<T> allItems = new ArrayList<>();
-
-        final SelectRequest selectRequest = new SelectRequest("select * from " + entityInformation.getDomain());
-
-        sdb.select(selectRequest);
-        final SelectResult selectResult = sdb.select(selectRequest);
-
-        for(Item item: selectResult.getItems()) {
-        	try {
-				final T domainItem = (T)entityInformation.getJavaType().newInstance();
-				final Field idField = domainItem.getClass().getDeclaredField(entityInformation.getItemNameFieldName(domainItem));
-				idField.setAccessible(true);
-				idField.set(domainItem, item.getName());
-
-				final Map<String, String> attributes = new HashMap<String, String>();
-				for(Attribute attr: item.getAttributes()) {
-					attributes.put(attr.getName(), attr.getValue());
-				}
-
-				final Field attributesField = domainItem.getClass().getDeclaredField(entityInformation.getAttributesFieldName(domainItem));
-				attributesField.setAccessible(true);
-				attributesField.set(domainItem, attributes);
-
-				allItems.add(domainItem);
-			} catch (InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (NoSuchFieldException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			}
-        }
-
-        return allItems;
-    }
-
-    @Override
-    public long count(SimpleDbEntityInformation entityInformation) {
-        LOGGER.info("Count items from domain \"{}\"\"", entityInformation.getDomain());
-        final SelectResult selectResult  = sdb.select(new SelectRequest("select count(*) from "+entityInformation.getDomain()));
-        for(Item item: selectResult.getItems()) {
-            if(item.getName().equals("Domain")) {
-                for(Attribute attribute: item.getAttributes()) {
-                    if(attribute.getName().equals("Count")) {
-                        return Long.parseLong(attribute.getValue());
-                    }
-                }
-            }
-        }
-        return 0;
-    }
-
 }

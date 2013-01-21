@@ -15,11 +15,11 @@ public interface SimpleDbOperations<T, ID extends Serializable> {
 
     T updateItem(SimpleDbEntity<T, ID> entity);
 
-    void deleteItem(SimpleDbEntity sdbEntity);
+    void deleteItem(SimpleDbEntity<T, ID> sdbEntity);
 
-    T readItem(SimpleDbEntityInformation<T, ?> entityInformation, Serializable id);
+    T readItem(SimpleDbEntityInformation<T, ID> entityInformation, ID id);
 
     long count(SimpleDbEntityInformation<T, ?> entityInformation);
 
-    List<T> find(SimpleDbEntityInformation<T, ?> entityInformation, Iterable<?> ids, Sort sort, Pageable pageable);
+    List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, Iterable<ID> ids, Sort sort, Pageable pageable);
 }
