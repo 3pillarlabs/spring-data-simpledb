@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 
-
 @org.springframework.stereotype.Repository
 @Transactional(readOnly = true)
 public class SimpleSimpleDbRepository<T, ID extends Serializable> implements PagingAndSortingRepository<T, ID> {
@@ -50,11 +49,8 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      */
     public SimpleSimpleDbRepository(SimpleDbEntityInformation<T, ?> entityInformation, SimpleDbOperations<T, ?> simpledbOperations) {
         Assert.notNull(simpledbOperations);
-
-        this.operations = simpledbOperations;
-
         Assert.notNull(entityInformation);
-
+        this.operations = simpledbOperations;
         this.entityInformation = entityInformation;
     }
 
@@ -69,19 +65,47 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
 
     /*
      * (non-Javadoc)
+     * @see org.springframework.data.repository.CrudRepository#save(java.lang.Object)
+     */
+    @Transactional
+    @Override
+    public <S extends T> S save(S entity) {
+        SimpleDbEntity sdbEntity = new SimpleDbEntity(entityInformation, entity);
+        if (entityInformation.isNew(entity)) {
+            return (S) operations.addItem(sdbEntity);
+        } else {
+            return (S) operations.updateItem(sdbEntity);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.jpa.repository.JpaRepository#save(java.lang.Iterable)
+     */
+    @Transactional
+    @Override
+    public <S extends T> List<S> save(Iterable<S> entities) {
+        List<S> result = new ArrayList<>();
+        if (entities == null) {
+            return result;
+        }
+        for (S entity : entities) {
+            result.add(save(entity));
+        }
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
      * @see org.springframework.data.repository.CrudRepository#delete(java.io.Serializable)
      */
     @Transactional
     @Override
     public void delete(ID id) {
-
         Assert.notNull(id, "The given id must not be null!");
-
         if (!exists(id)) {
-            throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!",
-                    entityInformation.getJavaType(), id), 1);
+            throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!", entityInformation.getJavaType(), id), 1);
         }
-
         delete(findOne(id));
     }
 
@@ -92,8 +116,8 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
     @Transactional
     @Override
     public void delete(T entity) {
-        SimpleDbEntity sdbEntity = new SimpleDbEntity(entityInformation, entity);
         Assert.notNull(entity, "The entity must not be null!");
+        SimpleDbEntity sdbEntity = new SimpleDbEntity(entityInformation, entity);
         operations.delete(sdbEntity);
     }
 
@@ -104,9 +128,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
     @Transactional
     @Override
     public void delete(Iterable<? extends T> entities) {
-
         Assert.notNull(entities, "The given Iterable of entities not be null!");
-
         for (T entity : entities) {
             delete(entity);
         }
@@ -119,12 +141,10 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
     @Transactional
     @Override
     public void deleteAll() {
-
         for (T element : findAll()) {
             delete(element);
         }
     }
-
 
     /*
      * (non-Javadoc)
@@ -145,10 +165,8 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      */
     @Override
     public boolean exists(ID id) {
-
         Assert.notNull(id, "The given id must not be null!");
         return operations.exists(entityInformation, id);
-
     }
 
     /*
@@ -171,7 +189,6 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
         return null;
     }
 
-
     /*
      * (non-Javadoc)
      * @see org.springframework.data.jpa.repository.JpaRepository#findAll(org.springframework.data.domain.Sort)
@@ -188,7 +205,6 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      */
     @Override
     public Page<T> findAll(Pageable pageable) {
-
         if (null == pageable) {
             return new PageImpl<>(findAll());
         }
@@ -196,7 +212,6 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
         return null;
 
     }
-
 
     /*
      * (non-Javadoc)
@@ -206,43 +221,5 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
     public long count() {
         //TODO move to simpleDB Impl
         return 0;
-    }
-
-
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.CrudRepository#save(java.lang.Object)
-     */
-    @Transactional
-    @Override
-    public <S extends T> S save(S entity) {
-        SimpleDbEntity sdbEntity = new SimpleDbEntity(entityInformation, entity);
-        if (entityInformation.isNew(entity)) {
-            return (S) operations.addItem(sdbEntity);
-        } else {
-            return (S) operations.updateItem(sdbEntity);
-        }
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.jpa.repository.JpaRepository#save(java.lang.Iterable)
-     */
-    @Transactional
-    @Override
-    public <S extends T> List<S> save(Iterable<S> entities) {
-
-        List<S> result = new ArrayList<>();
-
-        if (entities == null) {
-            return result;
-        }
-
-        for (S entity : entities) {
-            result.add(save(entity));
-        }
-
-        return result;
     }
 }
