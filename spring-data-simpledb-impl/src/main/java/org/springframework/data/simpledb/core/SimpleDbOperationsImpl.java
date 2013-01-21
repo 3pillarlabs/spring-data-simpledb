@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
 
 /**
@@ -53,13 +55,14 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         this.domainManager = new DomainManager(sdb, ddl);
     }
 
+    @Override
     public DomainManager getDomainManager() {
         return domainManager;
     }
 
     @Override
-    public Object addItem(SimpleDbEntity entity) {
-        logOperation("Add  ", entity);
+    public Object createItem(SimpleDbEntity entity) {
+        logOperation("Create  ", entity);
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
         Assert.notNull(entity.getItemName(), "Item name should not be null");
         sdb.putAttributes(new PutAttributesRequest(entity.getDomain(), entity.getItemName(), toReplaceableAttributeList(entity.getAttributes(), false)));
@@ -76,7 +79,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     }
 
     @Override
-    public void delete(SimpleDbEntity entity) {
+    public void deleteItem(SimpleDbEntity entity) {
         logOperation("Delete", entity);
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
         Assert.notNull(entity.getItemName(), "Item name should not be null");
@@ -84,8 +87,8 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     }
 
     @Override
-    public Object findOne(SimpleDbEntityInformation entityInformation, Serializable id) {
-        LOGGER.info("FindOne ItemName \"{}\"\"", id);
+    public Object readItem(SimpleDbEntityInformation entityInformation, Serializable id) {
+        LOGGER.info("Read ItemName \"{}\"\"", id);
 //        entityInformation.getIdType();
         return null;
     }
@@ -149,4 +152,15 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     private void logOperation(String operation, SimpleDbEntity<T, ID> entity) {
         LOGGER.info(operation + " \"{}\" ItemName \"{}\"\"", entity.getDomain(), entity.getItemName());
     }
+
+    @Override
+    public List find(SimpleDbEntityInformation entityInformation, Iterable ids, Sort sort, Pageable pageable) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public long count() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }
