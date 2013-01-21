@@ -163,7 +163,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
 
     /*
      * (non-Javadoc)
-     * @see org.springframework.data.repository.CrudRepository#findAll(ID[])
+     * @see org.springframework.data.repository.CrudRepository#findAll(FIELD_NAME_DEFAULT_ID[])
      */
     @Override
     public List<T> findAll(Iterable<ID> ids) {

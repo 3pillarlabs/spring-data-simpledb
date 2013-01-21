@@ -3,6 +3,7 @@ package org.springframework.data.simpledb.annotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.simpledb.util.StringUtil;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -13,6 +14,7 @@ public final class MetadataParser {
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MetadataParser.class);
+    public static final String FIELD_NAME_DEFAULT_ID = "id";
 
     private MetadataParser(){
         //Utility class
@@ -26,23 +28,11 @@ public final class MetadataParser {
     public static String getDomain(Class clazz){
         String camelCaseString = clazz.getSimpleName();
 
-        String[] words = splitCamelCaseString(camelCaseString);
+        String[] words = StringUtil.splitCamelCaseString(camelCaseString);
 
-        return combineLowerCase(words,"_");
+        return StringUtil.combineLowerCase(words, "_");
     }
 
-    private static String[] splitCamelCaseString(String str) {
-        return str.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])");
-    }
-
-    private static String combineLowerCase(String[] values, String separator){
-        String ret = "";
-        for (String value: values){
-            ret += value.toLowerCase()+separator;
-        }
-
-        return ret.substring(0, ret.length()-1);
-    }
 
     public static String getItemName(Object object){
         Field idField = getIdField(object);
@@ -63,7 +53,7 @@ public final class MetadataParser {
         Class clazz = object.getClass();
         for (Field f: clazz.getDeclaredFields()) {
             //named id
-            if(f.getName().equals("id")){
+            if(f.getName().equals(FIELD_NAME_DEFAULT_ID)){
                 return f;
             }
 
