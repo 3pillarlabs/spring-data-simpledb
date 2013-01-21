@@ -175,7 +175,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      */
     @Override
     public List<T> findAll() {
-        return findAll((Iterable)null);
+        return operations.find(entityInformation, null, null, null);
     }
 
     /*

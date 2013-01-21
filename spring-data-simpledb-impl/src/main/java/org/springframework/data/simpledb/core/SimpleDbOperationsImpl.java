@@ -5,15 +5,21 @@ import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
+import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.PutAttributesRequest;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
+import com.amazonaws.services.simpledb.model.SelectRequest;
+import com.amazonaws.services.simpledb.model.SelectResult;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.simpledb.core.domain.DomainManager;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +63,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         logOperation("Create  ", entity);
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
         Assert.notNull(entity.getItemName(), "Item name should not be null");
+        Assert.notNull(entity.getAttributes(), "Attributes should not be null");
         sdb.putAttributes(new PutAttributesRequest(entity.getDomain(), entity.getItemName(), toReplaceableAttributeList(entity.getAttributes(), false)));
         return entity.getItem();
     }
@@ -66,6 +73,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         logOperation("Update", entity);
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
         Assert.notNull(entity.getItemName(), "Item name should not be null");
+        Assert.notNull(entity.getAttributes(), "Attributes should not be null");
         sdb.putAttributes(new PutAttributesRequest(entity.getDomain(), entity.getItemName(), toReplaceableAttributeList(entity.getAttributes(), true)));
         return entity.getItem();
     }
@@ -107,9 +115,44 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         LOGGER.info(operation + " \"{}\" ItemName \"{}\"\"", entity.getDomain(), entity.getItemName());
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public List find(SimpleDbEntityInformation entityInformation, Iterable ids, Sort sort, Pageable pageable) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        LOGGER.info("Find All Domain \"{}\"\"", entityInformation.getDomain());
+        final List<T> allItems = new ArrayList<>();
+        
+        final SelectRequest selectRequest = new SelectRequest("select * from " + entityInformation.getDomain());
+        
+        sdb.select(selectRequest);
+        final SelectResult selectResult = sdb.select(selectRequest);
+        
+        for(Item item: selectResult.getItems()) {
+        	try {
+				final T domainItem = (T)entityInformation.getJavaType().newInstance();
+				final Field idField = domainItem.getClass().getDeclaredField(entityInformation.getItemNameFieldName(domainItem));
+				idField.setAccessible(true);
+				idField.set(domainItem, item.getName());
+				
+				final Map<String, String> attributes = new HashMap<String, String>();
+				for(Attribute attr: item.getAttributes()) {
+					attributes.put(attr.getName(), attr.getValue());
+				}
+				
+				final Field attributesField = domainItem.getClass().getDeclaredField(entityInformation.getAttributesFieldName(domainItem));
+				attributesField.setAccessible(true);
+				attributesField.set(domainItem, attributes);
+				
+				allItems.add(domainItem);
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			}
+        }
+        
+        return allItems;
     }
 
     @Override

@@ -74,4 +74,16 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
     public Map<String, String> getAttributes(T entity) {
         return MetadataParser.getAttributes(entity);
     }
+
+    @Override
+    public String getItemNameFieldName(T entity) {
+    	return MetadataParser.getIdField(entity).getName();
+    }
+
+    
+    @Override
+    public String getAttributesFieldName(T entity) {
+    	return MetadataParser.getAttributesField(entity).getName();
+    }
+    
 }

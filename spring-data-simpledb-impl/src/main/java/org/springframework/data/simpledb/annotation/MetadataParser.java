@@ -49,7 +49,7 @@ public final class MetadataParser {
         return null;
     }
 
-    private static Field getIdField(Object object){
+    public static Field getIdField(Object object){
         Class clazz = object.getClass();
         for (Field f: clazz.getDeclaredFields()) {
             //named id
@@ -82,6 +82,18 @@ public final class MetadataParser {
         }
 
         return null;
+    }
+    
+    public static Field getAttributesField(Object object){
+        Class clazz = object.getClass();
+        for (Field f: clazz.getDeclaredFields()) {
+            //annotated with Attributes
+            Attributes attributes = f.getAnnotation(Attributes.class);
+            if (attributes != null){
+                return f;
+            }
+        }
 
+        return null;
     }
 }
