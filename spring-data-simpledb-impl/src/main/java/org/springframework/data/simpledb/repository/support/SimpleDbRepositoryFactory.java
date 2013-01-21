@@ -2,11 +2,16 @@ package org.springframework.data.simpledb.repository.support;
 
 import java.io.Serializable;
 
+import com.amazonaws.services.simpledb.AmazonSimpleDB;
+import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import org.springframework.data.jpa.repository.support.*;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.query.QueryLookupStrategy;
+import org.springframework.data.simpledb.core.SimpleDbConfig;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
+import org.springframework.data.simpledb.core.SimpleDbOperationsImpl;
+import org.springframework.data.simpledb.core.domain.DomainManager;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 
@@ -19,9 +24,12 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 
     private final LockModeRepositoryPostProcessor lockModePostProcessor;
     private SimpleDbOperations<?, Serializable> simpledbOperations;
+    private DomainManager domainManager;
 
-    public SimpleDbRepositoryFactory(SimpleDbOperations<?, Serializable> simpledbOperations) {
-        this.simpledbOperations = simpledbOperations;
+    public SimpleDbRepositoryFactory(AmazonSimpleDB sdb, SimpleDbConfig config) {
+        this.domainManager = new DomainManager(sdb, config.getDomainManagementPolicy());
+
+        this.simpledbOperations = new SimpleDbOperationsImpl(sdb);
 
         this.lockModePostProcessor = LockModeRepositoryPostProcessor.INSTANCE;
 
@@ -38,7 +46,7 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
     protected Object getTargetRepository(RepositoryMetadata metadata) {
         SimpleDbEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());
 
-        simpledbOperations.getDomainManager().manageDomain(entityInformation.getDomain());
+        domainManager.manageDomain(entityInformation.getDomain());
 
         SimpleSimpleDbRepository<?, ?> repo =  new SimpleSimpleDbRepository(entityInformation, simpledbOperations);
         repo.setLockMetadataProvider(lockModePostProcessor.getLockMetadataProvider());

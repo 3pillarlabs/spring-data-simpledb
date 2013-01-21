@@ -9,8 +9,6 @@ import org.springframework.data.simpledb.core.domain.DomainManager;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 public interface SimpleDbOperations<T, ID extends Serializable> {
-    public DomainManager getDomainManager();
-
     //TDOO here implement all there is to know about SimpleDB
 
     T createItem(SimpleDbEntity<T, ID> entity);
@@ -21,7 +19,7 @@ public interface SimpleDbOperations<T, ID extends Serializable> {
 
     T readItem(SimpleDbEntityInformation<T, ID> entityInformation, Serializable id);
 
-    long count();
+    long count(SimpleDbEntityInformation<T, ?> entityInformation);
 
     List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, Iterable<ID> ids, Sort sort, Pageable pageable);
 }

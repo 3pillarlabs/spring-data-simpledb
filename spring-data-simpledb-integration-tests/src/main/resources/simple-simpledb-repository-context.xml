@@ -11,6 +11,14 @@
 
     <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
 
+    <!--
+    <simpledb:config>
+        <property name="accessID" value="AKIAIVX775TRPPSZTEMQ"/>
+        <property name="secretKey" value="Nzy6w0iq8JI+DHgdiPPiuqixiMoWQmPhWFgQzOZY"/>
+        <property name="domainManagementPolicy" value="drop_create"/>
+    </simpledb:config>
+    -->
+
     <bean id="simpledbTemplate" class="org.springframework.data.simpledb.core.SimpleDbConfig">
         <constructor-arg name="accessID" value="AKIAIVX775TRPPSZTEMQ"/>
         <constructor-arg name="secretKey" value="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"/>

@@ -34,29 +34,12 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbOperationsImpl.class);
     private final AmazonSimpleDB sdb;
-    private final DomainManager domainManager;
 
 
-    public SimpleDbOperationsImpl(final SimpleDbConfig config) {
-        sdb = new AmazonSimpleDBClient(new AWSCredentials() {
-            @Override
-            public String getAWSAccessKeyId() {
-                return config.getAccessID();
-            }
-
-            @Override
-            public String getAWSSecretKey() {
-                return config.getSecretKey();
-            }
-        });
-
-        this.domainManager = new DomainManager(sdb, config.getDomainManagementPolicy());
+    public SimpleDbOperationsImpl(AmazonSimpleDB sdb) {
+        this.sdb = sdb;
     }
 
-    @Override
-    public DomainManager getDomainManager() {
-        return domainManager;
-    }
 
     @Override
     public Object createItem(SimpleDbEntity entity) {
@@ -140,23 +123,23 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         
         sdb.select(selectRequest);
         final SelectResult selectResult = sdb.select(selectRequest);
-        
+
         for(Item item: selectResult.getItems()) {
         	try {
 				final T domainItem = (T)entityInformation.getJavaType().newInstance();
 				final Field idField = domainItem.getClass().getDeclaredField(entityInformation.getItemNameFieldName(domainItem));
 				idField.setAccessible(true);
 				idField.set(domainItem, item.getName());
-				
+
 				final Map<String, String> attributes = new HashMap<String, String>();
 				for(Attribute attr: item.getAttributes()) {
 					attributes.put(attr.getName(), attr.getValue());
 				}
-				
+
 				final Field attributesField = domainItem.getClass().getDeclaredField(entityInformation.getAttributesFieldName(domainItem));
 				attributesField.setAccessible(true);
 				attributesField.set(domainItem, attributes);
-				
+
 				allItems.add(domainItem);
 			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
@@ -166,13 +149,24 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 				e.printStackTrace();
 			}
         }
-        
+
         return allItems;
     }
 
     @Override
-    public long count() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public long count(SimpleDbEntityInformation entityInformation) {
+        LOGGER.info("Count items from domain \"{}\"\"", entityInformation.getDomain());
+        final SelectResult selectResult  = sdb.select(new SelectRequest("select count(*) from "+entityInformation.getDomain()));
+        for(Item item: selectResult.getItems()) {
+            if(item.getName().equals("Domain")) {
+                for(Attribute attribute: item.getAttributes()) {
+                    if(attribute.getName().equals("Count")) {
+                        return Long.parseLong(attribute.getValue());
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
 }

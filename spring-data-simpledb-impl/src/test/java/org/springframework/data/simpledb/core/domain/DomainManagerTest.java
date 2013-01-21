@@ -58,4 +58,14 @@ public class DomainManagerTest {
         assertFalse(manager.exists("test_domain_none"));
     }
 
+
+    @Test(expected = IllegalArgumentException.class)
+    public void manageDomains_with_WRONG_policy_should_throw_exception(){
+        DomainManager manager = new DomainManager(AmazonSimpleDBClientFactory.getTestClient(), "wrong");
+        manager.manageDomain("test_domain_none");
+
+        assertFalse(manager.exists("test_domain_none"));
+    }
+
+
 }

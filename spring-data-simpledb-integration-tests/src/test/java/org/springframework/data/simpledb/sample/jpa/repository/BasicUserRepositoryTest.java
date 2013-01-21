@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Integration test showing the basic usage of {@link org.springframework.data.simpledb.sample.jpa.repository.BasicUserRepository}.
- * 
+ *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simple-jpa-repository-context.xml")
@@ -55,4 +55,11 @@ public class BasicUserRepositoryTest {
 
 		assertEquals("firstname", users.iterator().next().getFirstName());
 	}
+
+    @Test
+    public void count_shoud_return_something() {
+        user = repository.save(user);
+        long current = repository.count();
+        assertEquals(current, 1L);
+    }
 }

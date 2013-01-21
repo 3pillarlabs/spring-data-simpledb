@@ -26,13 +26,12 @@ public class DomainManager {
         Assert.notNull(sdb);
         this.sdb = sdb;
 
-        try {
-            policy = DomainManagementPolicy.valueOf(domainUpdatePolicy.toUpperCase());
-        } catch (IllegalArgumentException | NullPointerException exception){
-            //enum value not found
 
+        if(domainUpdatePolicy == null){
             policy = DomainManagementPolicy.NONE;
-            LOGGER.warn("Domain management policy could not be read. Using NONE");
+            LOGGER.warn("Domain management policy not configured. Using NONE");
+        } else {
+            policy = DomainManagementPolicy.valueOf(domainUpdatePolicy.toUpperCase());
         }
 
         LOGGER.debug("Read domain management policy: {}", policy);
