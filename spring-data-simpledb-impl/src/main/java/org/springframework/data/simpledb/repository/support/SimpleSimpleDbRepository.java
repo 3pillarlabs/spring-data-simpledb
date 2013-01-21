@@ -216,6 +216,6 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      */
     @Override
     public long count() {
-        return operations.count();
+        return operations.count(entityInformation);
     }
 }
