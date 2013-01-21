@@ -26,7 +26,7 @@ import java.util.Map;
  *
  * @author Oliver Gierke
  */
-public interface SimpleDbEntityInformation<T, ID extends Serializable> extends EntityInformation<T, ID> {
+public interface SimpleDbEntityInformation<T, ID extends Serializable> extends EntityInformation<T, ID>, SimpleDBEntityMappingInformation<T> {
 
 	String getDomain();
 

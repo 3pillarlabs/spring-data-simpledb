@@ -18,9 +18,15 @@ public class SimpleDbUser {
     public void setItemName(String itemName) {
         this.itemName = itemName;
     }
+    public String getItemName() {
+		return itemName;
+	}
 
 
     public void setAtts(Map<String, String> atts) {
         this.atts = atts;
     }
+    public Map<String, String> getAtts() {
+		return atts;
+	}
 }

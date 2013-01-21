@@ -83,8 +83,7 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
     
     @Override
     public String getAttributesFieldName(T entity) {
-    	// TODO Auto-generated method stub
-    	return null;
+    	return MetadataParser.getAttributesField(entity).getName();
     }
     
 }

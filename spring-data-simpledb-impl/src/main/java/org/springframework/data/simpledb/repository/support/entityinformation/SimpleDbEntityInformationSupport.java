@@ -28,7 +28,7 @@ import java.io.Serializable;
  * @author Oliver Gierke
  */
 public abstract class SimpleDbEntityInformationSupport<T, ID extends Serializable> extends AbstractEntityInformation<T, ID>
-		implements SimpleDbEntityInformation<T, ID>, SimpleDBEntityMappingInformation<T> {
+		implements SimpleDbEntityInformation<T, ID> {
 
 	/**
 	 * Creates a new {@link org.springframework.data.jpa.repository.support.JpaEntityInformationSupport} with the given domain class.
