@@ -11,6 +11,7 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.springframework.util.Assert;
@@ -110,7 +111,8 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     private List<ReplaceableAttribute> toReplaceableAttributeList(Map<String, String> attributes, boolean replace) {
         List<ReplaceableAttribute> result = new ArrayList<>();
-        for (String key : attributes.keySet()) {
+        for (Iterator<String> it = attributes.keySet().iterator(); it.hasNext();) {
+            String key = it.next();
             result.add(new ReplaceableAttribute(key, attributes.get(key), replace));
         }
         return result;
