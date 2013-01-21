@@ -131,5 +131,11 @@
           <scope>runtime</scope>
       </dependency>
 
+      <dependency>
+          <groupId>com.amazonaws</groupId>
+          <artifactId>aws-java-sdk</artifactId>
+          <version>1.1.5</version>
+      </dependency>
+
   </dependencies>
 </project>

@@ -63,6 +63,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     @Override
     public Object findOne(SimpleDbEntityInformation entityInformation, Serializable id) {
         LOGGER.info("FindOne ItemName \"{}\"\"", id);
+//        entityInformation.getIdType();
         return null;
     }
 

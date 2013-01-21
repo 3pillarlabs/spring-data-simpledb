@@ -13,7 +13,8 @@
     </parent>
 
 
-  <name>Spring Data SimpleDB Implementation</name>
+
+    <name>Spring Data SimpleDB Implementation</name>
     <build>
         <plugins>
             <plugin>
