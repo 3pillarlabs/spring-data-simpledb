@@ -72,7 +72,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
     public <S extends T> S save(S entity) {
         SimpleDbEntity sdbEntity = new SimpleDbEntity(entityInformation, entity);
         if (entityInformation.isNew(entity)) {
-            return (S) operations.addItem(sdbEntity);
+            return (S) operations.createItem(sdbEntity);
         } else {
             return (S) operations.updateItem(sdbEntity);
         }
@@ -118,7 +118,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
     public void delete(T entity) {
         Assert.notNull(entity, "The entity must not be null!");
         SimpleDbEntity sdbEntity = new SimpleDbEntity(entityInformation, entity);
-        operations.delete(sdbEntity);
+        operations.deleteItem(sdbEntity);
     }
 
     /*
@@ -156,7 +156,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
     @Override
     public T findOne(ID id) {
         Assert.notNull(id, "The given id must not be null!");
-        return operations.findOne(entityInformation, id);
+        return operations.readItem(entityInformation, id);
     }
 
     /*
@@ -166,7 +166,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
     @Override
     public boolean exists(ID id) {
         Assert.notNull(id, "The given id must not be null!");
-        return operations.exists(entityInformation, id);
+        return findOne(id) != null;
     }
 
     /*
@@ -175,8 +175,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      */
     @Override
     public List<T> findAll() {
-        //TODO move to simpleDB Impl
-        return null;
+        return findAll((Iterable)null);
     }
 
     /*
@@ -185,8 +184,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      */
     @Override
     public List<T> findAll(Iterable<ID> ids) {
-        //TODO move to simpleDB Impl
-        return null;
+        return operations.find(entityInformation, ids, null, null);
     }
 
     /*
@@ -195,8 +193,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      */
     @Override
     public List<T> findAll(Sort sort) {
-        //TODO move to simpleDB Impl
-        return null;
+        return operations.find(entityInformation, null, sort, null);
     }
 
     /*
@@ -208,9 +205,9 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
         if (null == pageable) {
             return new PageImpl<>(findAll());
         }
-        //TODO move to simpleDB Impl
-        return null;
-
+        Long count = count();
+        List<T> list = operations.find(entityInformation, null, null, pageable);
+        return new PageImpl<>(list, pageable, count);
     }
 
     /*
@@ -219,7 +216,6 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      */
     @Override
     public long count() {
-        //TODO move to simpleDB Impl
-        return 0;
+        return operations.count();
     }
 }
