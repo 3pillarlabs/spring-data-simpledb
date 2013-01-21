@@ -1,21 +1,16 @@
 package org.springframework.data.simpledb.sample.simpledb.repository;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.simpledb.sample.jpa.domain.User;
-import org.springframework.data.simpledb.sample.jpa.repository.BasicUserRepository;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simple-simpledb-repository-context.xml")
@@ -39,6 +34,11 @@ public class BasicSimpleDbUserRepositoryTest {
         atts.put("testAtt", "testValue");
         user.setAtts(atts);
         user = repository.save(user);
+    }
+    
+    @Test
+    public void findAll_test() {
+    	System.out.println(repository.findAll());
     }
 
 }

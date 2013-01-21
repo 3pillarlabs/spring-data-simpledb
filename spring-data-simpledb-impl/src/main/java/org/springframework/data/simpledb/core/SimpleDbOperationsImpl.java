@@ -5,14 +5,19 @@ import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
+import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.PutAttributesRequest;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
+import com.amazonaws.services.simpledb.model.SelectRequest;
+import com.amazonaws.services.simpledb.model.SelectResult;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.simpledb.core.domain.DomainManager;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -91,10 +96,36 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         return false;
     }
 
-    @Override
+	@Override
+	@SuppressWarnings("unchecked")
     public List findAll(SimpleDbEntityInformation entityInformation, Iterable ids) {
         LOGGER.info("Find All Domain \"{}\"\"", entityInformation.getDomain());
-        return null;
+        final List<T> allItems = new ArrayList<>();
+        
+        final SelectRequest selectRequest = new SelectRequest("select * from " + entityInformation.getDomain());
+        
+        sdb.select(selectRequest);
+        final SelectResult selectResult = sdb.select(selectRequest);
+        
+        for(Item item: selectResult.getItems()) {
+        	try {
+				final T domainItem = (T)entityInformation.getJavaType().newInstance();
+				final Field idField = domainItem.getClass().getDeclaredField(entityInformation.get);
+				idField.setAccessible(true);
+				idField.set(domainItem, item.getName());
+				allItems.add(domainItem);
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+        
+        return allItems;
     }
 
     private List<ReplaceableAttribute> toReplaceableAttributeList(Map<String, String> attributes, boolean replace) {

@@ -175,8 +175,9 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      */
     @Override
     public List<T> findAll() {
-        //TODO move to simpleDB Impl
-        return null;
+    	final Iterable<Serializable> it = new ArrayList<>();
+    	
+    	return operations.findAll(entityInformation, it);
     }
 
     /*

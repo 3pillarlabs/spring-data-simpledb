@@ -31,6 +31,7 @@ public interface SimpleDbEntityInformation<T, ID extends Serializable> extends E
 	String getDomain();
 
     String getItemName(T entity);
-
+   
     Map<String, String> getAttributes(T entity);
+    
 }
