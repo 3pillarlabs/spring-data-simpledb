@@ -18,12 +18,6 @@ public class SimpleDBConfigTest {
     SimpleDbConfig config;
 
     @Test
-    public void operations_should_not_be_null() {
-        assertNotNull(config);
-
-    }
-
-    @Test
     public void should_read_from_config_file() {
         assertNotNull(config.getSecretKey());
     }

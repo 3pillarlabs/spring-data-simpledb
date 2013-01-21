@@ -2,6 +2,9 @@ package org.springframework.data.simpledb.repository.support;
 
 import java.io.Serializable;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.services.simpledb.AmazonSimpleDB;
+import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.repository.Repository;
@@ -19,9 +22,24 @@ public class SimpleDbRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
     @Autowired
     private SimpleDbConfig simpleDbConfig;
 
+    private AmazonSimpleDB sdb;
+
     @Override
     protected RepositoryFactorySupport createRepositoryFactory() {
-        SimpleDbOperations operations = new SimpleDbOperationsImpl<>(simpleDbConfig);
-        return new SimpleDbRepositoryFactory(operations);
+        sdb = new AmazonSimpleDBClient(new AWSCredentials() {
+            @Override
+            public String getAWSAccessKeyId() {
+                return simpleDbConfig.getAccessID();
+            }
+
+            @Override
+            public String getAWSSecretKey() {
+                return simpleDbConfig.getSecretKey();
+            }
+        });
+
+
+
+        return new SimpleDbRepositoryFactory(sdb, simpleDbConfig);
     }
 }

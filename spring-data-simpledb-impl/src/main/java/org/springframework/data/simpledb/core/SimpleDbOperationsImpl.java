@@ -34,29 +34,12 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbOperationsImpl.class);
     private final AmazonSimpleDB sdb;
-    private final DomainManager domainManager;
 
 
-    public SimpleDbOperationsImpl(final SimpleDbConfig config) {
-        sdb = new AmazonSimpleDBClient(new AWSCredentials() {
-            @Override
-            public String getAWSAccessKeyId() {
-                return config.getAccessID();
-            }
-
-            @Override
-            public String getAWSSecretKey() {
-                return config.getSecretKey();
-            }
-        });
-
-        this.domainManager = new DomainManager(sdb, config.getDomainManagementPolicy());
+    public SimpleDbOperationsImpl(AmazonSimpleDB sdb) {
+        this.sdb = sdb;
     }
 
-    @Override
-    public DomainManager getDomainManager() {
-        return domainManager;
-    }
 
     @Override
     public Object createItem(SimpleDbEntity entity) {
