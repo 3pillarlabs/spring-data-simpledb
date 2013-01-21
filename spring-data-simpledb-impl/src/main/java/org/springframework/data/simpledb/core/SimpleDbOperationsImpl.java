@@ -101,30 +101,30 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     @SuppressWarnings("unchecked")
 	@Override
     public List find(SimpleDbEntityInformation entityInformation, Iterable ids, Sort sort, Pageable pageable) {
-        LOGGER.info("Find All Domain \"{}\"\"", entityInformation.getDomain());
+        LOGGER.info("Find where domain \"{}\"\"", entityInformation.getDomain());
         final List<T> allItems = new ArrayList<>();
-        
+
         final SelectRequest selectRequest = new SelectRequest("select * from " + entityInformation.getDomain());
-        
+
         sdb.select(selectRequest);
         final SelectResult selectResult = sdb.select(selectRequest);
-        
+
         for(Item item: selectResult.getItems()) {
         	try {
 				final T domainItem = (T)entityInformation.getJavaType().newInstance();
 				final Field idField = domainItem.getClass().getDeclaredField(entityInformation.getItemNameFieldName(domainItem));
 				idField.setAccessible(true);
 				idField.set(domainItem, item.getName());
-				
+
 				final Map<String, String> attributes = new HashMap<String, String>();
 				for(Attribute attr: item.getAttributes()) {
 					attributes.put(attr.getName(), attr.getValue());
 				}
-				
+
 				final Field attributesField = domainItem.getClass().getDeclaredField(entityInformation.getAttributesFieldName(domainItem));
 				attributesField.setAccessible(true);
 				attributesField.set(domainItem, attributes);
-				
+
 				allItems.add(domainItem);
 			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
@@ -134,13 +134,24 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 				e.printStackTrace();
 			}
         }
-        
+
         return allItems;
     }
 
     @Override
-    public long count() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public long count(SimpleDbEntityInformation entityInformation) {
+        LOGGER.info("Count items from domain \"{}\"\"", entityInformation.getDomain());
+        final SelectResult selectResult  = sdb.select(new SelectRequest("select count(*) from "+entityInformation.getDomain()));
+        for(Item item: selectResult.getItems()) {
+            if(item.getName().equals("Domain")) {
+                for(Attribute attribute: item.getAttributes()) {
+                    if(attribute.getName().equals("Count")) {
+                        return Long.parseLong(attribute.getValue());
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
 }

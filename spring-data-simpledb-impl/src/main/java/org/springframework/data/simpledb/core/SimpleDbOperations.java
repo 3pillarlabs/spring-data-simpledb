@@ -19,7 +19,7 @@ public interface SimpleDbOperations<T, ID extends Serializable> {
 
     T readItem(SimpleDbEntityInformation<T, ?> entityInformation, Serializable id);
 
-    long count();
+    long count(SimpleDbEntityInformation<T, ?> entityInformation);
 
     List<T> find(SimpleDbEntityInformation<T, ?> entityInformation, Iterable<?> ids, Sort sort, Pageable pageable);
 }
