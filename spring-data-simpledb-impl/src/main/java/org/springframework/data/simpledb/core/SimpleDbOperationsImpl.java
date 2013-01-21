@@ -37,7 +37,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     private final DomainManager domainManager;
 
 
-    public SimpleDbOperationsImpl(final String accessID, final String secretKey, String ddl) {
+    public SimpleDbOperationsImpl(final String accessID, final String secretKey, String domainManagementPolicy) {
         Assert.notNull(accessID);
         Assert.notNull(secretKey);
 
@@ -53,7 +53,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
             }
         });
 
-        this.domainManager = new DomainManager(sdb, ddl);
+        this.domainManager = new DomainManager(sdb, domainManagementPolicy);
     }
 
     @Override

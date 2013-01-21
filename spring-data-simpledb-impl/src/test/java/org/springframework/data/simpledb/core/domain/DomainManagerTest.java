@@ -13,6 +13,9 @@ public class DomainManagerTest {
         manager.manageDomain("test_domain");
 
         assertTrue(manager.exists("test_domain"));
+
+        //cleanup
+        manager.dropDomain("test_domain");
     }
 
 
@@ -30,5 +33,29 @@ public class DomainManagerTest {
         manager.manageDomain("sample_update");
 
         assertTrue(manager.exists("sample_update"));
+
+        //cleanup
+        manager.dropDomain("sample_update");
     }
+
+    @Test
+    public void domain_management_policies_should_be_read_case_insensitive(){
+        DomainManager manager = new DomainManager(AmazonSimpleDBClientFactory.getTestClient(), "drop_create");
+        manager.manageDomain("test_domain");
+
+        assertTrue(manager.exists("test_domain"));
+
+        //cleanup
+        manager.dropDomain("test_domain");
+    }
+
+
+    @Test
+    public void manageDomains_with_UPDATE_should_use_default_NONE_policy(){
+        DomainManager manager = new DomainManager(AmazonSimpleDBClientFactory.getTestClient(), null);
+        manager.manageDomain("test_domain_none");
+
+        assertFalse(manager.exists("test_domain_none"));
+    }
+
 }
