@@ -14,15 +14,16 @@ import org.springframework.util.Assert;
 /**
  *
  */
-
 public class SimpleDbOperationsImpl<T, ID extends Serializable> implements SimpleDbOperations {
-
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbOperationsImpl.class);
     private final DDL ddl;
     private final AmazonSimpleDB sdb;
+    private final String accessID;
+    private final String secretKey;
 
-    public enum DDL{
+    public enum DDL {
+
         drop_create,
         update,
         nothing
@@ -36,7 +37,6 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         Assert.notNull(accessID);
         Assert.notNull(secretKey);
         sdb = new AmazonSimpleDBClient(new AWSCredentials() {
-
             @Override
             public String getAWSAccessKeyId() {
                 return accessID;
@@ -46,10 +46,18 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
             public String getAWSSecretKey() {
                 return secretKey;
             }
-
         });
+        this.accessID = accessID;
+        this.secretKey = secretKey;
         this.ddl = DDL.valueOf(ddl);
+    }
 
+    public String getAccessID() {
+        return accessID;
+    }
+
+    public String getSecretKey() {
+        return secretKey;
     }
 
     @Override
@@ -90,5 +98,4 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     private void logOperation(String operation, SimpleDbEntity<T, ID> entity) {
         LOGGER.info(operation + " \"{}\" ItemName \"{}\"\"", entity.getDomain(), entity.getItemName());
     }
-
 }
