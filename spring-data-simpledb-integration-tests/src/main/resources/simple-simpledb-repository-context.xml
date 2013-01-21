@@ -5,24 +5,16 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
-		http://www.springframework.org/schema/data/simpledb https://raw.github.com/ThreePillarGlobal/spring-data-simpledb/master/spring-simpledb.xsd?login=ksza&amp;token=ec707a99ae4e67336a18b309117d4370">
+		http://www.springframework.org/schema/data/simpledb https://raw.github.com/ThreePillarGlobal/spring-data-simpledb/dev/spring-data-simpledb-impl/src/main/resources/META-INF/spring-simpledb.xsd?login=cmester&amp;token=09d23a215953a601e5698b5dbfde6f99">
 
     <import resource="infrastructure.xml" />
 
     <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
 
-    <!--
     <simpledb:config>
-        <property name="accessID" value="AKIAIVX775TRPPSZTEMQ"/>
-        <property name="secretKey" value="Nzy6w0iq8JI+DHgdiPPiuqixiMoWQmPhWFgQzOZY"/>
-        <property name="domainManagementPolicy" value="drop_create"/>
+        <simpledb:property name="accessID" value="AKIAIVX775TRPPSZTEMQ"/>
+        <simpledb:property name="secretKey" value="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"/>
+        <simpledb:property name="domainManagementPolicy" value="drop_create"/>
     </simpledb:config>
-    -->
-
-    <bean id="simpledbTemplate" class="org.springframework.data.simpledb.core.SimpleDbConfig">
-        <constructor-arg name="accessID" value="AKIAIVX775TRPPSZTEMQ"/>
-        <constructor-arg name="secretKey" value="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"/>
-        <constructor-arg name="domainManagementPolicy" value="drop_create" />
-    </bean>
 
 </beans>

@@ -19,9 +19,6 @@ import org.springframework.data.simpledb.core.SimpleDbOperationsImpl;
  */
 public class SimpleDbRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> extends RepositoryFactoryBeanSupport<T, S, ID> {
 
-    @Autowired
-    private SimpleDbConfig simpleDbConfig;
-
     private AmazonSimpleDB sdb;
 
     @Override
@@ -29,17 +26,17 @@ public class SimpleDbRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
         sdb = new AmazonSimpleDBClient(new AWSCredentials() {
             @Override
             public String getAWSAccessKeyId() {
-                return simpleDbConfig.getAccessID();
+                return SimpleDbConfig.getInstance().getAccessID();
             }
 
             @Override
             public String getAWSSecretKey() {
-                return simpleDbConfig.getSecretKey();
+                return SimpleDbConfig.getInstance().getSecretKey();
             }
         });
 
 
 
-        return new SimpleDbRepositoryFactory(sdb, simpleDbConfig);
+        return new SimpleDbRepositoryFactory(sdb, SimpleDbConfig.getInstance());
     }
 }
