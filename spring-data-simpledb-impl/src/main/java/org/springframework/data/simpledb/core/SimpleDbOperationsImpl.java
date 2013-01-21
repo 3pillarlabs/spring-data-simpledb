@@ -1,5 +1,6 @@
 package org.springframework.data.simpledb.core;
 
+import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import org.slf4j.Logger;
@@ -18,8 +19,6 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbOperationsImpl.class);
-    private final String accessID;
-    private final String secretKey;
     private final DDL ddl;
     private final AmazonSimpleDB sdb;
 
@@ -33,22 +32,24 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         this(accessID, secretKey, DDL.nothing.name());
     }
 
-    public SimpleDbOperationsImpl(String accessID, String secretKey, String ddl) {
+    public SimpleDbOperationsImpl(final String accessID, final String secretKey, String ddl) {
         Assert.notNull(accessID);
         Assert.notNull(secretKey);
-        sdb = new AmazonSimpleDBClient(null);
-        this.accessID = accessID;
-        this.secretKey = secretKey;
+        sdb = new AmazonSimpleDBClient(new AWSCredentials() {
+
+            @Override
+            public String getAWSAccessKeyId() {
+                return accessID;
+            }
+
+            @Override
+            public String getAWSSecretKey() {
+                return secretKey;
+            }
+
+        });
         this.ddl = DDL.valueOf(ddl);
 
-    }
-
-    public String getAccessID() {
-        return accessID;
-    }
-
-    public String getSecretKey() {
-        return secretKey;
     }
 
     @Override
