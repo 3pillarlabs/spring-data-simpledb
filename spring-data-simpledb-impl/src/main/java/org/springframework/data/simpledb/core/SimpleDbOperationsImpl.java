@@ -1,25 +1,29 @@
 package org.springframework.data.simpledb.core;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.services.simpledb.AmazonSimpleDB;
+import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 import java.io.Serializable;
 import java.util.List;
+import org.springframework.util.Assert;
 
 /**
  *
  */
-
 public class SimpleDbOperationsImpl<T, ID extends Serializable> implements SimpleDbOperations {
 
-
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbOperationsImpl.class);
+    private final DDL ddl;
+    private final AmazonSimpleDB sdb;
     private final String accessID;
     private final String secretKey;
-    private final DDL ddl;
 
-    public enum DDL{
+    public enum DDL {
+
         drop_create,
         update,
         nothing
@@ -29,7 +33,20 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         this(accessID, secretKey, DDL.nothing.name());
     }
 
-    public SimpleDbOperationsImpl(String accessID, String secretKey, String ddl) {
+    public SimpleDbOperationsImpl(final String accessID, final String secretKey, String ddl) {
+        Assert.notNull(accessID);
+        Assert.notNull(secretKey);
+        sdb = new AmazonSimpleDBClient(new AWSCredentials() {
+            @Override
+            public String getAWSAccessKeyId() {
+                return accessID;
+            }
+
+            @Override
+            public String getAWSSecretKey() {
+                return secretKey;
+            }
+        });
         this.accessID = accessID;
         this.secretKey = secretKey;
         this.ddl = DDL.valueOf(ddl);
@@ -82,5 +99,4 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     private void logOperation(String operation, SimpleDbEntity<T, ID> entity) {
         LOGGER.info(operation + " \"{}\" ItemName \"{}\"\"", entity.getDomain(), entity.getItemName());
     }
-
 }
