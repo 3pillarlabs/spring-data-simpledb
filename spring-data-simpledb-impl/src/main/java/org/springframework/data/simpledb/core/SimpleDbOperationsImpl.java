@@ -31,23 +31,20 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     private final DomainManager domainManager;
 
 
-    public SimpleDbOperationsImpl(final String accessID, final String secretKey, String domainManagementPolicy) {
-        Assert.notNull(accessID);
-        Assert.notNull(secretKey);
-
+    public SimpleDbOperationsImpl(final SimpleDbConfig config) {
         sdb = new AmazonSimpleDBClient(new AWSCredentials() {
             @Override
             public String getAWSAccessKeyId() {
-                return accessID;
+                return config.getAccessID();
             }
 
             @Override
             public String getAWSSecretKey() {
-                return secretKey;
+                return config.getSecretKey();
             }
         });
 
-        this.domainManager = new DomainManager(sdb, domainManagementPolicy);
+        this.domainManager = new DomainManager(sdb, config.getDomainManagementPolicy());
     }
 
     @Override
