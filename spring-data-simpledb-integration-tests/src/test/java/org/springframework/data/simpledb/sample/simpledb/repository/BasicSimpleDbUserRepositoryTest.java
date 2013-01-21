@@ -1,6 +1,9 @@
 package org.springframework.data.simpledb.sample.simpledb.repository;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -42,11 +45,15 @@ public class BasicSimpleDbUserRepositoryTest {
     	final Iterable<SimpleDbUser> allItems = repository.findAll();
     	
     	Assert.notNull(allItems);
-    	for(SimpleDbUser item: allItems) {
-    		Assert.isTrue(item.getItemName().equals("TestItemName"));
-    		Assert.isTrue(! item.getAtts().isEmpty());
-    		Assert.isTrue(item.getAtts().get("testAtt").equals("testValue"));
-    	}
+    }
+    
+    @Test
+    public void findAllIds_test() {
+    	List<String> ids = new ArrayList<>();
+    	ids.add("TestItemName");
+    	ids.add("2");
+    	final Iterable<SimpleDbUser> allItems = repository.findAll(ids);
+    	Assert.notNull(allItems);
     }
 
 }

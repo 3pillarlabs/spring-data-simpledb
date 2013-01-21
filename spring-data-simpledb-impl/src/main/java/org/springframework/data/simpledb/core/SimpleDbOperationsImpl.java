@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
 /**
  *
  */
-public class SimpleDbOperationsImpl<T, ID extends Serializable> implements SimpleDbOperations {
+public class SimpleDbOperationsImpl<T, ID extends Serializable> implements SimpleDbOperations<T, ID> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbOperationsImpl.class);
     private final AmazonSimpleDB sdb;
@@ -115,13 +115,28 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         LOGGER.info(operation + " \"{}\" ItemName \"{}\"\"", entity.getDomain(), entity.getItemName());
     }
 
-    @SuppressWarnings("unchecked")
 	@Override
-    public List find(SimpleDbEntityInformation entityInformation, Iterable ids, Sort sort, Pageable pageable) {
-        LOGGER.info("Find All Domain \"{}\"\"", entityInformation.getDomain());
-        final List<T> allItems = new ArrayList<>();
+	public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation,
+			Iterable<ID> ids, Sort sort, Pageable pageable) {
+		LOGGER.info("Find All Domain \"{}\"\"", entityInformation.getDomain());
+		final List<T> allItems = new ArrayList<>();
+		String selectString = "select * from " + entityInformation.getDomain();
+
+		if(ids != null && ids.iterator().hasNext()) {
+			Iterator<ID> iterator = ids.iterator();
+			selectString += " where ";
+			while (iterator.hasNext()) {
+				String id = iterator.next().toString();
+				selectString += "itemName()='" + id + "'";
+				if(iterator.hasNext()) {
+					selectString += " or ";
+				}
+			}
+		}
+
+		System.out.println(selectString);
         
-        final SelectRequest selectRequest = new SelectRequest("select * from " + entityInformation.getDomain());
+        final SelectRequest selectRequest = new SelectRequest(selectString);
         
         sdb.select(selectRequest);
         final SelectResult selectResult = sdb.select(selectRequest);
