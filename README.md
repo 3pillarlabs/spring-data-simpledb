@@ -49,24 +49,24 @@ Next, create and entity to model your domain:
 
 ```java
 public class SimpleDBUser {
-  @org.springframework.data.annotation.Id
-   private String itemName;
+    @org.springframework.data.annotation.Id
+    private String itemName;
 		
-  @org.springframework.data.simpledb.annotation.Attributes
-  private Map<String, String> atts;
+    @org.springframework.data.simpledb.annotation.Attributes
+    private Map<String, String> atts;
 
-  public void setItemName(String itemName) {
-    this.itemName = itemName;
-  }
-  public String getItemName() {
-    return itemName;
-  }
-  public void setAtts(Map<String, String> atts) {
-    this.atts = atts;
-  }
-  public Map<String, String> getAtts() {
-    return atts;
-  }
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
+    public String getItemName() {
+        return itemName;
+    }
+    public void setAtts(Map<String, String> atts) {
+        this.atts = atts;
+    }
+    public Map<String, String> getAtts() {
+        return atts;
+    }
 }
 ```
 
@@ -91,24 +91,24 @@ Write a test client:
 @ContextConfiguration("classpath:your-config-file.xml")
 public class BasicSimpleDbUserRepositoryTest {
      
-  @Autowired BasicSimpleDbUserRepository repository;
+    @Autowired BasicSimpleDbUserRepository repository;
      
-  @Test
-  public void sampleTestCase() {
-    SimpleDbUser user = new SimpleDbUser();
-    repository.save(user);
+    @Test
+    public void sampleTestCase() {
+        SimpleDbUser user = new SimpleDbUser();
+        repository.save(user);
 			
-    user.setItemName("TestItemName");
-    Map<String, String> atts = new LinkedHashMap<>();
-    atts.put("name", "John Doe");
-    atts.put("age", "27");
+        user.setItemName("TestItemName");
+        Map<String, String> atts = new LinkedHashMap<>();
+        atts.put("name", "John Doe");
+        atts.put("age", "27");
 			
-    user.setAtts(atts);
+        user.setAtts(atts);
 			
-    user = repository.save(user);
+        user = repository.save(user);
          
-    Assert.notNull(repository.findAll());
-  }
+        Assert.notNull(repository.findAll());
+    }
 }
 ```
 
