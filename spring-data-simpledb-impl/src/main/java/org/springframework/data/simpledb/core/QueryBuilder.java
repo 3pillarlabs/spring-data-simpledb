@@ -59,6 +59,9 @@ public class QueryBuilder<T, ID extends Serializable> {
                     query.append(order.getProperty()).append(" ").append(order.getDirection().name().toLowerCase());
                 }
             }
+            if(pageable.getPageSize()>0) {
+                query.append(" limit ").append(pageable.getPageSize());
+            }
         }
         System.out.println(query.toString());
         return query.toString();

@@ -35,7 +35,6 @@ public class SimpleDbRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
         });
 
 
-
         return new SimpleDbRepositoryFactory(sdb, SimpleDbConfig.getInstance());
     }
 }
