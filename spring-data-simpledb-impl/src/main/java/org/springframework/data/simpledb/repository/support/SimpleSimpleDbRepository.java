@@ -30,6 +30,7 @@ import org.springframework.util.Assert;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.data.simpledb.core.QueryBuilder;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 
 @org.springframework.stereotype.Repository
@@ -175,7 +176,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      */
     @Override
     public List<T> findAll() {
-        return operations.find(entityInformation, null, null, null);
+        return operations.find(entityInformation, new QueryBuilder(entityInformation));
     }
 
     /*
@@ -184,7 +185,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      */
     @Override
     public List<T> findAll(Iterable<ID> ids) {
-        return operations.find(entityInformation, ids, null, null);
+        return operations.find(entityInformation, new QueryBuilder(entityInformation).with(ids));
     }
 
     /*
@@ -193,7 +194,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      */
     @Override
     public List<T> findAll(Sort sort) {
-        return operations.find(entityInformation, null, sort, null);
+        return operations.find(entityInformation, new QueryBuilder(entityInformation).with(sort));
     }
 
     /*
@@ -206,7 +207,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
             return new PageImpl<>(findAll());
         }
         Long count = count();
-        List<T> list = operations.find(entityInformation, null, null, pageable);
+        List<T> list = operations.find(entityInformation, new QueryBuilder(entityInformation).with(pageable));
         return new PageImpl<>(list, pageable, count);
     }
 

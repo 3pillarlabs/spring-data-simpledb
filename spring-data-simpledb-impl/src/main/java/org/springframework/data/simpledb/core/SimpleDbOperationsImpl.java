@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
@@ -71,28 +72,13 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         {
             ids.add(id);
         }
-        return find(entityInformation, ids, null, null).get(0);
+        return find(entityInformation, new QueryBuilder(entityInformation).with(ids)).get(0);
     }
 
     @Override
-    public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, Iterable<ID> ids, Sort sort, Pageable pageable) {
+    public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, QueryBuilder queryBuilder) {
         LOGGER.info("Find All Domain \"{}\"\"", entityInformation.getDomain());
-        //construct the query
-        StringBuilder query = new StringBuilder();
-        query.append("select * from ").append(entityInformation.getDomain());
-        if (ids != null && ids.iterator().hasNext()) {
-            Iterator<ID> iterator = ids.iterator();
-            query.append(" where ");
-            while (iterator.hasNext()) {
-                query.append("itemName()='").append(iterator.next().toString()).append("'");
-                if (iterator.hasNext()) {
-                    query.append(" or ");
-                }
-            }
-        }
-        //System.out.println(query.toString());
-        final SelectResult selectResult = sdb.select(new SelectRequest(query.toString()));
-        //process the query result
+        final SelectResult selectResult = sdb.select(new SelectRequest(queryBuilder.toString()));
         final List<T> allItems = new ArrayList<>();
         for (Item item : selectResult.getItems()) {
             try {
