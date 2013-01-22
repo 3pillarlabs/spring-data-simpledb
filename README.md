@@ -41,38 +41,33 @@ Setup Spring Data SimpleDB repository support:
 
 You must use the _config_ tag in order to customize the _accessID_ and _secretKey_ credentials for access to your Amazon SimpleDB instance.  The *DOMAIN_MANAGEMENT_POLICY* specifies how to handle the domains you have; possible values are:
 
-* DROP_CREATE   -  to drop the existing domain and create a new one; recommended for testing purposes
-* UPDATE	        -  to create the domain if not existing in simpleDB
-* NONE                      -  to create domains manually
+* *DROP_CREATE*		-  to drop the existing domain and create a new one; recommended for testing purposes
+* *UPDATE*	            	-  to create the domain if not existing in simpleDB
+* *NONE*                      	-  to create domains manually
 
 Next, create and entity to model your domain:
 
 ```java
-	public class SimpleDBUser {
+public class SimpleDBUser {
+  @org.springframework.data.annotation.Id
+   private String itemName;
+		
+  @org.springframework.data.simpledb.annotation.Attributes
+  private Map<String, String> atts;
 
-    		@org.springframework.data.annotation.Id
-    		private String itemName;
-
-
-    		@org.springframework.data.simpledb.annotation.Attributes
-    		private Map<String, String> atts;
-
-
-    		public void setItemName(String itemName) {
-        			this.itemName = itemName;
-   		 }
-    		public String getItemName() {
-			return itemName;
-		}
-
-
-	    	public void setAtts(Map<String, String> atts) {
-		        this.atts = atts;
-    		}
-		public Map<String, String> getAtts() {
-			return atts;
-		}
-	}
+  public void setItemName(String itemName) {
+    this.itemName = itemName;
+  }
+  public String getItemName() {
+    return itemName;
+  }
+  public void setAtts(Map<String, String> atts) {
+    this.atts = atts;
+  }
+  public Map<String, String> getAtts() {
+    return atts;
+  }
+}
 ```
 
 The domain name is inferred from the class name. Therefore, the class name is separated into words, using the camel-case convention; each word is further transformed into lower-case letters and separated by "_". This way the domain name inferred from our entity's class name will be *simple_db_user*.
@@ -86,34 +81,34 @@ The domain class _must_ contain a property which can be used as *item name* (eit
 Create a repository interface:
 
 ```java
-	public interface BasicSimpleDbUserRepository extends CrudRepository<SimpleDbUser, String> { }
+public interface BasicSimpleDbUserRepository extends CrudRepository<SimpleDbUser, String> { }
 ```
 
 Write a test client:
 
 ```java
-	@RunWith(SpringJUnit4TestRunner.class)
-	@ContextConfiguration("classpath:your-config-file.xml")
-	public class BasicSimpleDbUserRepositoryTest {
+@RunWith(SpringJUnit4TestRunner.class)
+@ContextConfiguration("classpath:your-config-file.xml")
+public class BasicSimpleDbUserRepositoryTest {
      
-  		@Autowired BasicSimpleDbUserRepository repository;
+  @Autowired BasicSimpleDbUserRepository repository;
      
-  		@Test
-  		public void sampleTestCase() {
-    			SimpleDbUser user = new SimpleDbUser();
-    			repository.save(user);
+  @Test
+  public void sampleTestCase() {
+    SimpleDbUser user = new SimpleDbUser();
+    repository.save(user);
 			
-			user.setItemName("TestItemName");
-        			Map<String, String> atts = new LinkedHashMap<>();
-        			atts.put("name", "John Doe");
-			atts.put("age", "27");
+    user.setItemName("TestItemName");
+    Map<String, String> atts = new LinkedHashMap<>();
+    atts.put("name", "John Doe");
+    atts.put("age", "27");
 			
-        			user.setAtts(atts);
+    user.setAtts(atts);
 			
-        			user = repository.save(user);
+    user = repository.save(user);
          
-         			Assert.notNull(repository.findAll());
-  		}
-	}
+    Assert.notNull(repository.findAll());
+  }
+}
 ```
 
