@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +30,12 @@ public class BasicSimpleDbUserRepositoryTest {
     @Before
     public void setUp() {
         user = new SimpleDbUser();
+    }
+
+
+    @After
+    public void tearDown(){
+        repository.deleteAll();
     }
 
     @Test
