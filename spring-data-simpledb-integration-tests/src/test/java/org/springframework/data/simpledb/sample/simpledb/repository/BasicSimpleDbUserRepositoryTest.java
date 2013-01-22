@@ -37,7 +37,7 @@ public class BasicSimpleDbUserRepositoryTest {
         repository.save(user);
 
 
-        SimpleDbUser foundUser = repository.findOne(user.getItemName());
+        SimpleDbUser foundUser =  incrementalWaitFindOne(user.getItemName());
 
         assertEquals(user.getItemName(), foundUser.getItemName());
         assertEquals(user.getAtts(), foundUser.getAtts());
@@ -49,8 +49,11 @@ public class BasicSimpleDbUserRepositoryTest {
         List<SimpleDbUser> list = createListOfItems(3);
 
         repository.save(list);
+        incrementalWaitCount(list.size());
+
         assertEquals(list.size(), repository.count());
     }
+
 
     @Test
     public void save_should_create_new_item_for_modified_item_name() {
@@ -62,12 +65,12 @@ public class BasicSimpleDbUserRepositoryTest {
         user.setItemName(itemName);
         repository.save(user);
 
-        SimpleDbUser foundUser = repository.findOne("SecondItem");
+        SimpleDbUser foundUser = incrementalWaitFindOne("SecondItem");
         assertNotNull(foundUser);
         assertEquals(user.getAtts(), foundUser.getAtts());
 
         //initial user is still present
-        foundUser = repository.findOne("FirstItem");
+        foundUser = incrementalWaitFindOne("FirstItem");
         assertNotNull(foundUser);
         assertEquals(user.getAtts(), foundUser.getAtts());
     }
@@ -78,15 +81,18 @@ public class BasicSimpleDbUserRepositoryTest {
         String itemName = "FirstItem";
 
         SimpleDbUser user = createUserWithSampleAttributes(itemName);
+        repository.save(user);
 
-        user = repository.findOne(itemName);
+        user = incrementalWaitFindOne(itemName);
         user.getAtts().put("extraAttribute", "extraAttributeValue");
         repository.save(user);
 
-        SimpleDbUser foundUser = repository.findOne(itemName);
+        SimpleDbUser foundUser = incrementalWaitFindOneWithAttributesCount(itemName, user.getAtts().size());
 
         assertEquals("extraAttributeValue", foundUser.getAtts().get("extraAttribute"));
     }
+
+
 
 
     @Test
@@ -95,7 +101,11 @@ public class BasicSimpleDbUserRepositoryTest {
         SimpleDbUser user = createUserWithSampleAttributes(itemName);
         user = repository.save(user);
 
+        incrementalWaitFindOne(itemName);
+
         repository.delete(user);
+
+        incrementalWaitForDeletion(itemName);
 
         user = repository.findOne(itemName);
         assertNull(user);
@@ -106,8 +116,10 @@ public class BasicSimpleDbUserRepositoryTest {
         String itemName = "FirstItem";
         SimpleDbUser user = createUserWithSampleAttributes(itemName);
         repository.save(user);
+        incrementalWaitFindOne(itemName);
 
         repository.delete(itemName);
+        incrementalWaitForDeletion(itemName);
 
         user = repository.findOne(itemName);
         assertNull(user);
@@ -117,7 +129,10 @@ public class BasicSimpleDbUserRepositoryTest {
     public void delete_should_remove_list_of_items() {
         List<SimpleDbUser> list = createListOfItems(3);
         repository.save(list);
+        incrementalWaitCount(3);
+
         repository.delete(list);
+        incrementalWaitForDeletion(list.get(2).getItemName());
 
         assertEquals(0, repository.count());
     }
@@ -128,7 +143,7 @@ public class BasicSimpleDbUserRepositoryTest {
         SimpleDbUser user = createUserWithSampleAttributes(itemName);
         repository.save(user);
 
-        SimpleDbUser foundUser = repository.findOne(itemName);
+        SimpleDbUser foundUser = incrementalWaitFindOne(itemName);
 
         assertNotNull(foundUser);
         assertEquals(user.getItemName(), foundUser.getItemName());
@@ -140,6 +155,8 @@ public class BasicSimpleDbUserRepositoryTest {
     public void findAll_should_return_all_items() {
         List<SimpleDbUser> testUsers = createListOfItems(3);
         repository.save(testUsers);
+
+        incrementalWaitFindOne(testUsers.get(2).getItemName());
 
         Iterable<SimpleDbUser> users = repository.findAll();
 
@@ -166,6 +183,7 @@ public class BasicSimpleDbUserRepositoryTest {
         String itemName = "FirstItem";
         SimpleDbUser user = createUserWithSampleAttributes(itemName);
         repository.save(user);
+        incrementalWaitFindOne(itemName);
 
         assertTrue(repository.exists(user.getItemName()));
     }
@@ -205,5 +223,70 @@ public class BasicSimpleDbUserRepositoryTest {
         }
         return list;
     }
+
+
+    private void incrementalWaitForDeletion(String itemName)   {
+        SimpleDbUser ret = repository.findOne(itemName);
+        int retries = 0;
+        while (ret != null && retries < 20){
+            ret = repository.findOne(itemName);
+            retries++;
+            try {
+                Thread.currentThread().sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private SimpleDbUser incrementalWaitFindOne(String itemName){
+        SimpleDbUser ret = null;
+        int retries = 0;
+        while (ret == null && retries < 20){
+            ret = repository.findOne(itemName);
+            retries++;
+            try {
+                Thread.currentThread().sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return ret;
+
+    }
+
+    private SimpleDbUser incrementalWaitFindOneWithAttributesCount(String itemName, int attributesCount){
+        SimpleDbUser ret = null;
+        int retries = 0;
+        while ((ret == null || (ret.getAtts() != null && ret.getAtts().size() != attributesCount))&& retries < 10){
+            ret = repository.findOne(itemName);
+            retries++;
+            try {
+                Thread.currentThread().sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return ret;
+
+    }
+
+    private void incrementalWaitCount(int expectedCount){
+        int retries = 0;
+        while (repository.count()<expectedCount && retries < 10){
+            retries++;
+            try {
+                Thread.currentThread().sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+
 
 }
