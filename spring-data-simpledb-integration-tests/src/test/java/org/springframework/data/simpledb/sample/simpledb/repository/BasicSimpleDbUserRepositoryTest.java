@@ -1,14 +1,11 @@
 package org.springframework.data.simpledb.sample.simpledb.repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.After;
+
 import static org.junit.Assert.*;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,9 +22,6 @@ public class BasicSimpleDbUserRepositoryTest {
     @Autowired
     BasicSimpleDbUserRepository repository;
 
-    @Before
-    public void setUp() {
-    }
 
     @After
     public void tearDown() {
@@ -35,95 +29,82 @@ public class BasicSimpleDbUserRepositoryTest {
     }
 
     @Test
-    public void test_save() {
+    public void save_should_persist_single_item() {
         String itemName = "FirstItem";
 
-        SimpleDbUser user = createUser(itemName);
-        user = repository.save(user);
-
-        assertNotNull(user);
-        assertEquals(itemName, user.getItemName());
-        assertEquals(itemName+"val1",user.getAtts().get(itemName+"key1"));
-    }
-
-    @Test
-    public void test_save_which_does_an_update() {
-        String itemName = "FirstItem";
-        repository.save(createUser(itemName));
-
-        SimpleDbUser user = repository.findOne(itemName);
-        user.getAtts().put(itemName+"key4", itemName+"val4");
+        SimpleDbUser user = createUserWithSampleAttributes(itemName);
+        //save returns argument, does not fetch from simpledb!!!
         repository.save(user);
 
-        user = repository.findOne(itemName);
 
-        assertNotNull(user);
-        assertEquals(itemName, user.getItemName());
-        assertEquals(itemName+"val4", user.getAtts().get(itemName+"key4"));
+        SimpleDbUser foundUser = repository.findOne(user.getItemName());
+
+        assertEquals(user.getItemName(), foundUser.getItemName());
+        assertEquals(user.getAtts(), foundUser.getAtts());
     }
 
-    @Test
-    public void test_findOne() {
-        String itemName = "FirstItem";
-        repository.save(createUser(itemName));
-        repository.save(createUser("SecondItem"));
-
-        SimpleDbUser user = repository.findOne("FirstItem");
-        assertNotNull(user);
-        assertEquals("FirstItem", user.getItemName());
-        assertEquals(itemName+"val1",user.getAtts().get(itemName+"key1"));
-    }
 
     @Test
-    public void test_save_with_iterable() {
-
-    }
-
-    @Test
-    public void test_exists() {
-
-    }
-
-    @Test
-    public void test_findAll() {
-        List<SimpleDbUser> users = createListOfItemes();
-        repository.save(users);
-
-        Iterable<SimpleDbUser> foundUsers = repository.findAll();
-
-        assertNotNull(foundUsers);
-        assertEquals(3, count(foundUsers));
-    }
-
-    @Test
-    public void test_findAll_with_iterable() {
-
-    }
-
-    @Test
-    public void test_count() {
-        List<SimpleDbUser> list = new ArrayList<>();
-
-        String itemName = "FirstItem";
-        SimpleDbUser user = createUser(itemName);
-        list.add(user);
-
-        itemName = "SecondItem";
-        SimpleDbUser secondUser = createUser(itemName);
-        list.add(secondUser);
-
-        itemName = "ThirdItem";
-        SimpleDbUser thirdUser = createUser(itemName);
-        list.add(thirdUser);
+    public void save_should_persist_item_list() {
+        List<SimpleDbUser> list = createListOfItems(3);
 
         repository.save(list);
-        assertEquals(3, repository.count());
+        assertEquals(list.size(), repository.count());
     }
 
     @Test
-    public void test_delete_by_id() {
+    public void save_should_create_new_item_for_modified_item_name() {
         String itemName = "FirstItem";
-        SimpleDbUser user = createUser(itemName);
+        SimpleDbUser user = createUserWithSampleAttributes(itemName);
+        repository.save(user);
+
+        itemName = "SecondItem";
+        user.setItemName(itemName);
+        repository.save(user);
+
+        SimpleDbUser foundUser = repository.findOne("SecondItem");
+        assertNotNull(foundUser);
+        assertEquals(user.getAtts(), foundUser.getAtts());
+
+        //initial user is still present
+        foundUser = repository.findOne("FirstItem");
+        assertNotNull(foundUser);
+        assertEquals(user.getAtts(), foundUser.getAtts());
+    }
+
+
+    @Test
+    public void test_save_should_persist_added_attributes() {
+        String itemName = "FirstItem";
+
+        SimpleDbUser user = createUserWithSampleAttributes(itemName);
+
+        user = repository.findOne(itemName);
+        user.getAtts().put("extraAttribute", "extraAttributeValue");
+        repository.save(user);
+
+        SimpleDbUser foundUser = repository.findOne(itemName);
+
+        assertEquals("extraAttributeValue", foundUser.getAtts().get("extraAttribute"));
+    }
+
+
+    @Test
+    public void delete_should_remove_item() {
+        String itemName = "FirstItem";
+        SimpleDbUser user = createUserWithSampleAttributes(itemName);
+        user = repository.save(user);
+
+        repository.delete(user);
+
+        user = repository.findOne(itemName);
+        assertNull(user);
+    }
+
+    @Test
+    public void delete_should_remove_item_by_itemName() {
+        String itemName = "FirstItem";
+        SimpleDbUser user = createUserWithSampleAttributes(itemName);
         repository.save(user);
 
         repository.delete(itemName);
@@ -133,30 +114,61 @@ public class BasicSimpleDbUserRepositoryTest {
     }
 
     @Test
-    public void test_delete_by_type() {
-        String itemName = "FirstItem";
-        SimpleDbUser user = createUser(itemName);
-        repository.save(user);
-
-        repository.delete(user);
-
-        user = repository.findOne(itemName);
-        assertNull(user);
-    }
-
-    @Test
-    public void test_delete_by_iterable() {
-        List<SimpleDbUser> list = createListOfItemes();
+    public void delete_should_remove_list_of_items() {
+        List<SimpleDbUser> list = createListOfItems(3);
         repository.save(list);
         repository.delete(list);
+
         assertEquals(0, repository.count());
     }
 
     @Test
-    public void test_deleteAll() {
+    public void findOne_should_return_one_item() {
+        String itemName = "FirstItem";
+        SimpleDbUser user = createUserWithSampleAttributes(itemName);
+        repository.save(user);
 
+        SimpleDbUser foundUser = repository.findOne(itemName);
+
+        assertNotNull(foundUser);
+        assertEquals(user.getItemName(), foundUser.getItemName());
+        assertEquals(user.getAtts(), foundUser.getAtts());
     }
 
+
+    @Test
+    public void findAll_should_return_all_items() {
+        List<SimpleDbUser> testUsers = createListOfItems(3);
+        repository.save(testUsers);
+
+        Iterable<SimpleDbUser> users = repository.findAll();
+
+        assertNotNull(users);
+        assertEquals(testUsers.size(), count(users));
+    }
+
+    @Test
+    public void findAll_with_iterable_should_return_a_list_of_items() {
+        List<SimpleDbUser> testUsers = createListOfItems(3);
+        repository.save(testUsers);
+
+
+        SimpleDbUser first = testUsers.get(0);
+        Iterable<String> ids = Arrays.asList(new String[]{first.getItemName()});
+        Iterable<SimpleDbUser> foundUsers = repository.findAll(ids);
+
+        assertNotNull(foundUsers);
+        assertEquals(first.getItemName(), foundUsers.iterator().next().getItemName());
+    }
+
+    @Test
+    public void exists_should_return_true_for_existing_items(){
+        String itemName = "FirstItem";
+        SimpleDbUser user = createUserWithSampleAttributes(itemName);
+        repository.save(user);
+
+        assertTrue(repository.exists(user.getItemName()));
+    }
 
     private int count(Iterable<SimpleDbUser> users) {
         Iterator<SimpleDbUser> iterator = users.iterator();
@@ -168,32 +180,30 @@ public class BasicSimpleDbUserRepositoryTest {
         return count;
     }
 
-    private SimpleDbUser createUser(String itemName) {
-        SimpleDbUser user = new SimpleDbUser();
+    private SimpleDbUser createUserWithSampleAttributes(String itemName) {
+
+        Map<String, String> sampleAttributeMap = new LinkedHashMap<>();
         {
-            user.setItemName(itemName);
-            Map<String, String> attributes;
-            user.setAtts(attributes = new HashMap<>());
-            {
-                attributes.put(itemName+"key1", itemName+"val1");
-                attributes.put(itemName+"key2", itemName+"val2");
-                attributes.put(itemName+"key3", itemName+"val3");
-            }
+            sampleAttributeMap.put(itemName + "_Key1", itemName + "_Value1");
+            sampleAttributeMap.put(itemName + "_Key2", itemName + "_Value2");
+            sampleAttributeMap.put(itemName + "_Key3", itemName + "_Value3");
         }
+
+        SimpleDbUser user = new SimpleDbUser();
+        user.setItemName(itemName);
+        user.setAtts(sampleAttributeMap);
         return user;
     }
 
-    private List<SimpleDbUser> createListOfItemes() {
+    private List<SimpleDbUser> createListOfItems(int length) {
         List<SimpleDbUser> list = new ArrayList<>();
-        String itemName = "FirstItem";
-        SimpleDbUser user = createUser(itemName);
-        list.add(user);
-        itemName = "SecondItem";
-        SimpleDbUser secondUser = createUser(itemName);
-        list.add(secondUser);
-        itemName = "ThirdItem";
-        SimpleDbUser thirdUser = createUser(itemName);
-        list.add(thirdUser);
+
+        for (int i = 0; i < length; i++) {
+            String itemName = "Item_" + i;
+            SimpleDbUser user = createUserWithSampleAttributes(itemName);
+            list.add(user);
+        }
         return list;
     }
+
 }

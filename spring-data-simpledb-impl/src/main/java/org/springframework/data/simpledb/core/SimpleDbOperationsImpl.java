@@ -74,7 +74,8 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         {
             ids.add(id);
         }
-        return find(entityInformation, new QueryBuilder(entityInformation).with(ids)).get(0);
+        List<T> results = find(entityInformation, new QueryBuilder(entityInformation).with(ids));
+        return results.size()==1?results.get(0):null;
     }
 
     @Override
