@@ -78,23 +78,28 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, Iterable<ID> ids, Sort sort, Pageable pageable) {
         LOGGER.info("Find All Domain \"{}\"\"", entityInformation.getDomain());
         final List<T> allItems = new ArrayList<>();
-        String selectString = "select * from " + entityInformation.getDomain();
+        StringBuilder selectString = new StringBuilder();
+        selectString.append("SELECT * FROM ")
+                    .append(entityInformation.getDomain());
 
         if (ids != null && ids.iterator().hasNext()) {
             Iterator<ID> iterator = ids.iterator();
-            selectString += " where ";
+            selectString.append(" WHERE ");
+
             while (iterator.hasNext()) {
                 String id = iterator.next().toString();
-                selectString += "itemName()='" + id + "'";
+                selectString.append(" itemName() = '")
+                            .append(id)
+                            .append("'");
                 if (iterator.hasNext()) {
-                    selectString += " or ";
+                    selectString.append(" OR ");
                 }
             }
         }
 
-        System.out.println(selectString);
+        System.out.println(selectString.toString());
 
-        final SelectRequest selectRequest = new SelectRequest(selectString);
+        final SelectRequest selectRequest = new SelectRequest(selectString.toString());
 
         sdb.select(selectRequest);
         final SelectResult selectResult = sdb.select(selectRequest);
@@ -142,19 +147,21 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     private List<ReplaceableAttribute> toReplaceableAttributeList(Map<String, String> attributes, boolean replace) {
         List<ReplaceableAttribute> result = new ArrayList<>();
-        for (Iterator<String> it = attributes.keySet().iterator(); it.hasNext();) {
-            String key = it.next();
-            result.add(new ReplaceableAttribute(key, attributes.get(key), replace));
+
+        for(Map.Entry<String, String> attributesEntry : attributes.entrySet()) {
+            result.add(new ReplaceableAttribute(attributesEntry.getKey(), attributesEntry.getValue(), replace));
         }
+
         return result;
     }
 
     private List<Attribute> toAttributeList(Map<String, String> attributes) {
         List<Attribute> result = new ArrayList<>();
-        for (Iterator<String> it = attributes.keySet().iterator(); it.hasNext();) {
-            String key = it.next();
-            result.add(new Attribute(key, attributes.get(key)));
+
+        for(Map.Entry<String, String> attributesEntry : attributes.entrySet()) {
+            result.add(new Attribute(attributesEntry.getKey(), attributesEntry.getValue()));
         }
+
         return result;
     }
 
