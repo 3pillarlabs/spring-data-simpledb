@@ -11,22 +11,22 @@ The Spring Data SimpleDB module aims to provide a familiar and consistent Spring
 Clone the Spring Data SimpleDB module into and define it as a dependency in your project's Maven file:
 
 ```xml
-    <dependency>
-        <groupId>org.springframework.data.simpledb</groupId>
-        <artifactId>spring-data-simpledb</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </dependency>
+<dependency>
+    <groupId>org.springframework.data.simpledb</groupId>
+    <artifactId>spring-data-simpledb</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
 ```
 
 Setup Spring Data SimpleDB repository support:
 
 ```xml
-	<?xml version="1.0" encoding="UTF-8"?>
-	<beans xmlns="http://www.springframework.org/schema/beans"
-       		     xmlns:simpledb="http://www.springframework.org/schema/data/simpledb"	
-       		     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       		     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-						       http://www.springframework.org/schema/data/simpledb https://raw.github.com/ThreePillarGlobal/spring-data-simpledb/dev/spring-data-simpledb-impl/src/main/resources/META-INF/spring-simpledb.xsd?login=cmester&amp;token=09d23a215953a601e5698b5dbfde6f99">
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+              xmlns:simpledb="http://www.springframework.org/schema/data/simpledb"	
+       	     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       	     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	                                             http://www.springframework.org/schema/data/simpledb https://raw.github.com/ThreePillarGlobal/spring-data-simpledb/dev/spring-data-simpledb-impl/src/main/resources/META-INF/spring-simpledb.xsd?login=cmester&amp;token=09d23a215953a601e5698b5dbfde6f99">
 
     <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
 
