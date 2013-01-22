@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
@@ -31,9 +32,11 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbOperationsImpl.class);
     private final AmazonSimpleDB sdb;
+    private final DomainItemBuilder domainItemBuilder;
 
     public SimpleDbOperationsImpl(AmazonSimpleDB sdb) {
         this.sdb = sdb;
+        domainItemBuilder = new DomainItemBuilder<T, ID>();
     }
 
     @Override
@@ -77,10 +80,9 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     @Override
     public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, Iterable<ID> ids, Sort sort, Pageable pageable) {
         LOGGER.info("Find All Domain \"{}\"\"", entityInformation.getDomain());
-        final List<T> allItems = new ArrayList<>();
         StringBuilder selectString = new StringBuilder();
         selectString.append("SELECT * FROM ")
-                    .append(entityInformation.getDomain());
+                .append(entityInformation.getDomain());
 
         if (ids != null && ids.iterator().hasNext()) {
             Iterator<ID> iterator = ids.iterator();
@@ -89,8 +91,8 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
             while (iterator.hasNext()) {
                 String id = iterator.next().toString();
                 selectString.append(" itemName() = '")
-                            .append(id)
-                            .append("'");
+                        .append(id)
+                        .append("'");
                 if (iterator.hasNext()) {
                     selectString.append(" OR ");
                 }
@@ -102,29 +104,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         sdb.select(selectRequest);
         final SelectResult selectResult = sdb.select(selectRequest);
 
-        for (Item item : selectResult.getItems()) {
-            try {
-                final T domainItem = (T) entityInformation.getJavaType().newInstance();
-                final Field idField = domainItem.getClass().getDeclaredField(entityInformation.getItemNameFieldName(domainItem));
-                idField.setAccessible(true);
-                idField.set(domainItem, item.getName());
-
-                final Map<String, String> attributes = new HashMap<>();
-                for (Attribute attr : item.getAttributes()) {
-                    attributes.put(attr.getName(), attr.getValue());
-                }
-
-                final Field attributesField = domainItem.getClass().getDeclaredField(entityInformation.getAttributesFieldName(domainItem));
-                attributesField.setAccessible(true);
-                attributesField.set(domainItem, attributes);
-
-                allItems.add(domainItem);
-            } catch (InstantiationException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-                LOGGER.error(e.getMessage());
-            }
-        }
-
-        return allItems;
+        return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
     }
 
     @Override
@@ -146,7 +126,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     private List<ReplaceableAttribute> toReplaceableAttributeList(Map<String, String> attributes, boolean replace) {
         List<ReplaceableAttribute> result = new ArrayList<>();
 
-        for(Map.Entry<String, String> attributesEntry : attributes.entrySet()) {
+        for (Map.Entry<String, String> attributesEntry : attributes.entrySet()) {
             result.add(new ReplaceableAttribute(attributesEntry.getKey(), attributesEntry.getValue(), replace));
         }
 
@@ -156,7 +136,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     private List<Attribute> toAttributeList(Map<String, String> attributes) {
         List<Attribute> result = new ArrayList<>();
 
-        for(Map.Entry<String, String> attributesEntry : attributes.entrySet()) {
+        for (Map.Entry<String, String> attributesEntry : attributes.entrySet()) {
             result.add(new Attribute(attributesEntry.getKey(), attributesEntry.getValue()));
         }
 
