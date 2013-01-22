@@ -51,7 +51,7 @@ public class BasicSimpleDbUserRepositoryTest {
         assertEquals(sampleAttributeMap, user.getAtts());
     }
 
-    //@Test
+    @Test
     public void save_should_persist_item_list(){
         List<SimpleDbUser> list = new ArrayList<>();
 
