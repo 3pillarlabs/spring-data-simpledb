@@ -77,50 +77,45 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     @Override
     public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, Iterable<ID> ids, Sort sort, Pageable pageable) {
         LOGGER.info("Find All Domain \"{}\"\"", entityInformation.getDomain());
-        final List<T> allItems = new ArrayList<>();
-        String selectString = "select * from " + entityInformation.getDomain();
-
+        //construct the query
+        StringBuilder query = new StringBuilder();
+        query.append("select * from ").append(entityInformation.getDomain());
         if (ids != null && ids.iterator().hasNext()) {
             Iterator<ID> iterator = ids.iterator();
-            selectString += " where ";
+            query.append(" where ");
             while (iterator.hasNext()) {
-                String id = iterator.next().toString();
-                selectString += "itemName()='" + id + "'";
+                query.append("itemName()='").append(iterator.next().toString()).append("'");
                 if (iterator.hasNext()) {
-                    selectString += " or ";
+                    query.append(" or ");
                 }
             }
         }
-
-        System.out.println(selectString);
-
-        final SelectRequest selectRequest = new SelectRequest(selectString);
-
-        sdb.select(selectRequest);
-        final SelectResult selectResult = sdb.select(selectRequest);
-
+        //System.out.println(query.toString());
+        final SelectResult selectResult = sdb.select(new SelectRequest(query.toString()));
+        //process the query result
+        final List<T> allItems = new ArrayList<>();
         for (Item item : selectResult.getItems()) {
             try {
                 final T domainItem = (T) entityInformation.getJavaType().newInstance();
                 final Field idField = domainItem.getClass().getDeclaredField(entityInformation.getItemNameFieldName(domainItem));
-                idField.setAccessible(true);
-                idField.set(domainItem, item.getName());
-
+                {
+                    idField.setAccessible(true);
+                    idField.set(domainItem, item.getName());
+                }
                 final Map<String, String> attributes = new HashMap<>();
                 for (Attribute attr : item.getAttributes()) {
                     attributes.put(attr.getName(), attr.getValue());
                 }
-
                 final Field attributesField = domainItem.getClass().getDeclaredField(entityInformation.getAttributesFieldName(domainItem));
-                attributesField.setAccessible(true);
-                attributesField.set(domainItem, attributes);
-
+                {
+                    attributesField.setAccessible(true);
+                    attributesField.set(domainItem, attributes);
+                }
                 allItems.add(domainItem);
             } catch (InstantiationException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
                 LOGGER.error(e.getMessage());
             }
         }
-
         return allItems;
     }
 
