@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.springframework.core.annotation.Order;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
@@ -32,9 +32,11 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbOperationsImpl.class);
     private final AmazonSimpleDB sdb;
+    private final DomainItemBuilder domainItemBuilder;
 
     public SimpleDbOperationsImpl(AmazonSimpleDB sdb) {
         this.sdb = sdb;
+        domainItemBuilder = new DomainItemBuilder<>();
     }
 
     @Override
@@ -79,30 +81,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, QueryBuilder queryBuilder) {
         LOGGER.info("Find All Domain \"{}\"\"", entityInformation.getDomain());
         final SelectResult selectResult = sdb.select(new SelectRequest(queryBuilder.toString()));
-        final List<T> allItems = new ArrayList<>();
-        for (Item item : selectResult.getItems()) {
-            try {
-                final T domainItem = (T) entityInformation.getJavaType().newInstance();
-                final Field idField = domainItem.getClass().getDeclaredField(entityInformation.getItemNameFieldName(domainItem));
-                {
-                    idField.setAccessible(true);
-                    idField.set(domainItem, item.getName());
-                }
-                final Map<String, String> attributes = new HashMap<>();
-                for (Attribute attr : item.getAttributes()) {
-                    attributes.put(attr.getName(), attr.getValue());
-                }
-                final Field attributesField = domainItem.getClass().getDeclaredField(entityInformation.getAttributesFieldName(domainItem));
-                {
-                    attributesField.setAccessible(true);
-                    attributesField.set(domainItem, attributes);
-                }
-                allItems.add(domainItem);
-            } catch (InstantiationException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-                LOGGER.error(e.getMessage());
-            }
-        }
-        return allItems;
+        return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
     }
 
     @Override
@@ -123,19 +102,21 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     private List<ReplaceableAttribute> toReplaceableAttributeList(Map<String, String> attributes, boolean replace) {
         List<ReplaceableAttribute> result = new ArrayList<>();
-        for (Iterator<String> it = attributes.keySet().iterator(); it.hasNext();) {
-            String key = it.next();
-            result.add(new ReplaceableAttribute(key, attributes.get(key), replace));
+
+        for (Map.Entry<String, String> attributesEntry : attributes.entrySet()) {
+            result.add(new ReplaceableAttribute(attributesEntry.getKey(), attributesEntry.getValue(), replace));
         }
+
         return result;
     }
 
     private List<Attribute> toAttributeList(Map<String, String> attributes) {
         List<Attribute> result = new ArrayList<>();
-        for (Iterator<String> it = attributes.keySet().iterator(); it.hasNext();) {
-            String key = it.next();
-            result.add(new Attribute(key, attributes.get(key)));
+
+        for (Map.Entry<String, String> attributesEntry : attributes.entrySet()) {
+            result.add(new Attribute(attributesEntry.getKey(), attributesEntry.getValue()));
         }
+
         return result;
     }
 
