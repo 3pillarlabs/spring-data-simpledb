@@ -53,22 +53,10 @@ public class BasicSimpleDbUserRepositoryTest {
 
     @Test
     public void save_should_persist_item_list(){
-        List<SimpleDbUser> list = new ArrayList<>();
-
-        String itemName = "FirstItem";
-        SimpleDbUser user = createUser(itemName, sampleAttributeMap);
-        list.add(user);
-
-        itemName = "SecondItem";
-        SimpleDbUser secondUser = createUser(itemName, sampleAttributeMap);
-        list.add(secondUser);
-
-        itemName = "ThirdItem";
-        SimpleDbUser thirdUser = createUser(itemName, sampleAttributeMap);
-        list.add(thirdUser);
-
+        List<SimpleDbUser> list = createListOfItems(3);
         repository.save(list);
-        assertEquals(3, repository.count());
+
+        assertEquals(list.size(), repository.count());
     }
 
     @Test
@@ -136,9 +124,10 @@ public class BasicSimpleDbUserRepositoryTest {
 
     @Test
     public void delete_should_remove_list_of_items(){
-        List<SimpleDbUser> list = createListOfItemes();
-
+     List<SimpleDbUser> list = createListOfItems(3);
+        repository.save(list);
         repository.delete(list);
+
         assertEquals(0,repository.count());
     }
 
@@ -158,22 +147,24 @@ public class BasicSimpleDbUserRepositoryTest {
 
     @Test
     public void findAll_should_return_all_items(){
-        createListOfItemes();
+        List<SimpleDbUser> testUsers = createListOfItems(3);
+        repository.save(testUsers);
 
-        Iterable<SimpleDbUser> users = repository.findAll();
+         Iterable<SimpleDbUser> users = repository.findAll();
 
         assertNotNull(users);
-        assertEquals(3, count(users));
+        assertEquals(testUsers.size(), count(users));
     }
 
     @Test
     public void findAll_should_return_a_list_of_items(){
-        createListOfItemes();
+        List<SimpleDbUser> testUsers = createListOfItems(3);
+        repository.save(testUsers);
 
         Iterable<SimpleDbUser> users = repository.findAll();
 
         assertNotNull(users);
-        assertEquals(3, count(users));
+        assertEquals(testUsers.size(), count(users));
     }
 
     private int count(Iterable<SimpleDbUser> users){
@@ -186,19 +177,6 @@ public class BasicSimpleDbUserRepositoryTest {
         return count;
     }
 
-    private SimpleDbUser findUser(String itemName){
-        Iterable<SimpleDbUser> allItems = repository.findAll();
-        //Iterator<SimpleDbUser> iterator = allItems.iterator();
-        for(Iterator<SimpleDbUser> iterator = allItems.iterator();iterator.hasNext();){
-            SimpleDbUser resultUser = iterator.next();
-            if (resultUser.getItemName().equals(itemName)){
-                return resultUser;
-            }
-        }
-
-        return null;
-    }
-
     private SimpleDbUser createUser(String itemName, Map<String, String> atts){
         user = new SimpleDbUser();
         user.setItemName(itemName);
@@ -206,20 +184,14 @@ public class BasicSimpleDbUserRepositoryTest {
         return user;
     }
 
-    private List<SimpleDbUser> createListOfItemes(){
+    private List<SimpleDbUser> createListOfItems(int length){
         List<SimpleDbUser> list = new ArrayList<>();
 
-        String itemName = "FirstItem";
-        SimpleDbUser user = createUser(itemName, sampleAttributeMap);
-        list.add(user);
-        itemName = "SecondItem";
-        SimpleDbUser secondUser = createUser(itemName, sampleAttributeMap);
-        list.add(secondUser);
-        itemName = "ThirdItem";
-        SimpleDbUser thirdUser = createUser(itemName, sampleAttributeMap);
-        list.add(thirdUser);
-
-        repository.save(list);
+        for (int i=0; i< length; i++){
+            String itemName = "Item_"+i;
+            SimpleDbUser user = createUser(itemName, sampleAttributeMap);
+            list.add(user);
+        }
         return list;
     }
 
