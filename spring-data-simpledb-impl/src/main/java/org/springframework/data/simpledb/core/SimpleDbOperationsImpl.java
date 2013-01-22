@@ -97,8 +97,6 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
             }
         }
 
-        System.out.println(selectString.toString());
-
         final SelectRequest selectRequest = new SelectRequest(selectString.toString());
 
         sdb.select(selectRequest);
