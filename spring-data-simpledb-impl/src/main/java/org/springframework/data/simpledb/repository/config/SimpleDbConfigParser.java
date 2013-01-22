@@ -13,11 +13,13 @@ public class SimpleDbConfigParser implements BeanDefinitionParser {
     @Override
     public BeanDefinition parse(Element element, ParserContext parserContext) {
 
-        NodeList childNodes = element.getChildNodes();
+        SimpleDbConfig.createInstance(readProperty(element, "accessID"), readProperty(element, "secretKey"), readProperty(element, "domainManagementPolicy"));
 
-        String accessID = null;
-        String secretKey = null;
-        String domainManagementPolicy = null;
+        return null;
+    }
+
+    private String readProperty(Element element , String propertyName) {
+        NodeList childNodes = element.getChildNodes();
 
         for (int i=0; i< childNodes.getLength(); i++){
             Node item = childNodes.item(i);
@@ -26,19 +28,12 @@ public class SimpleDbConfigParser implements BeanDefinitionParser {
                 Node name = attributes.getNamedItem("name");
                 Node value = attributes.getNamedItem("value");
 
-                if(name.getNodeValue().equals("accessID")){
-                    accessID = value.getNodeValue();
-                } else if (name.getNodeValue().equals("secretKey")){
-                    secretKey =   value.getNodeValue();
-                }  else if (name.getNodeValue().equals("domainManagementPolicy"))  {
-                    domainManagementPolicy = value.getNodeValue();
+                if(name.getNodeValue().equals(propertyName)){
+                    return value.getNodeValue();
                 }
-
             }
         }
+        return null;
 
-        SimpleDbConfig.createInstance(accessID, secretKey, domainManagementPolicy);
-
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
