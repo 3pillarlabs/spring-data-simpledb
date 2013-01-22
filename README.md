@@ -31,19 +31,19 @@ Setup Spring Data SimpleDB repository support:
     <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
 
     <simpledb:config>
-        <simpledb:property name="accessID" value="AWS Access Key ID" />
-        <simpledb:property name="secretKey" value="AWS Secret Access Key"/>
-        <simpledb:property name="domainManagementPolicy" value="DOMAIN_MANAGEMENT_POLICY"/>
+        <simpledb:property name="accessID" value="$AWS_ACCESS_ID" />
+        <simpledb:property name="secretKey" value="$AWS_SECRET_KEY"/>
+        <simpledb:property name="domainManagementPolicy" value="$DOMAIN_MANAGEMENT_POLICY"/>
     </simpledb:config>
 
 </beans>
 ```
 
-You must use the _config_ tag in order to customize the _accessID_ and _secretKey_ credentials for access to your Amazon SimpleDB instance.  The *DOMAIN_MANAGEMENT_POLICY* specifies how to handle the domains you have; possible values are:
+You must use the _config_ tag in order to customize the _$AWS_ACCESS_ID_ and _$AWS_SECRET_KEY_ credentials for access to your Amazon SimpleDB instance.  The *$DOMAIN_MANAGEMENT_POLICY* specifies how to handle the domains you have; possible values are:
 
-* *DROP_CREATE*		-  to drop the existing domain and create a new one; recommended for testing purposes
-* *UPDATE*	            	-  to create the domain if not existing in simpleDB
-* *NONE*                      	-  to create domains manually
+* *DROP_CREATE*		-  When a repository instance is created. The corresponding amazon simple db domain will be dropped and recreated; recommended for testing purposes.
+* *UPDATE*	        -  When a repository instance is created. The corresponding amazon simple db domain will be created only if it's not already existing.
+* *NONE*            -  No simple db domain gets created. This option implies that all domains are created in simple db manually.
 
 Next, create and entity to model your domain:
 
@@ -70,9 +70,9 @@ public class SimpleDBUser {
 }
 ```
 
-The domain name is inferred from the class name. Therefore, the class name is separated into words, using the camel-case convention; each word is further transformed into lower-case letters and separated by "_". This way the domain name inferred from our entity's class name will be *simple_db_user*.
+The domain name is inferred from the class name. Therefore, the class name is separated into words, using the camel-case convention; each word is further transformed into lower-case letters and separated by "_". This way the domain name inferred from our entity's class name (SimpleDBUser) will be *simple_db_user*.
 
-To specify the attribute holding the *item* name (the elements contained in Simple DB domains) you can either annotate one of the class attributes with the standard *org.springframework.data.annotation.Id* annotation, or you can simply define an *id* field as part of your domain class.
+To specify the attribute holding the *item* name you can either annotate one of the class attributes with the standard *org.springframework.data.annotation.Id* annotation, or you can simply define an *id* field as part of your domain class.
 
 To define the *attributes* (and their values) of the *item*, define Map<String, String> property in your domain class and annotate it with the *org.springframework.data.simpledb.annotation.Attributes* annotation defined in the Spring Data SimpleDB module. Each key in the hash represents an attribute's name and each value associated to a specific key represents the value assigned to that specific attribute.
 
