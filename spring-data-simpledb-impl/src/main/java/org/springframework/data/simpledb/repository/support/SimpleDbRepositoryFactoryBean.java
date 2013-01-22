@@ -19,11 +19,10 @@ import org.springframework.data.simpledb.core.SimpleDbOperationsImpl;
  */
 public class SimpleDbRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> extends RepositoryFactoryBeanSupport<T, S, ID> {
 
-    private AmazonSimpleDB sdb;
 
     @Override
     protected RepositoryFactorySupport createRepositoryFactory() {
-        sdb = new AmazonSimpleDBClient(new AWSCredentials() {
+        AmazonSimpleDB sdb = new AmazonSimpleDBClient(new AWSCredentials() {
             @Override
             public String getAWSAccessKeyId() {
                 return SimpleDbConfig.getInstance().getAccessID();
