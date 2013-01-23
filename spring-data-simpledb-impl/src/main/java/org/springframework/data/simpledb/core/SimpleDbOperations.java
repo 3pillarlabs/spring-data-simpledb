@@ -21,5 +21,5 @@ public interface SimpleDbOperations<T, ID extends Serializable> {
 
     long count(SimpleDbEntityInformation<T, ?> entityInformation);
 
-    List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, QueryBuilder queryBuilder);
+    List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, SelectQueryBuilder queryBuilder);
 }

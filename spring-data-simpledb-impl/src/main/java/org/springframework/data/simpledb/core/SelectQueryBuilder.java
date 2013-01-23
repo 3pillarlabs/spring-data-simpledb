@@ -6,28 +6,28 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
-public class QueryBuilder<T, ID extends Serializable> {
+public class SelectQueryBuilder<T, ID extends Serializable> {
 
     private Iterable ids;
     private Pageable pageable;
     SimpleDbEntityInformation<T, ID> entityInformation;
 
-    public QueryBuilder(SimpleDbEntityInformation<T, ID> entityInformation) {
+    public SelectQueryBuilder(SimpleDbEntityInformation<T, ID> entityInformation) {
         this.entityInformation = entityInformation;
     }
 
-    public QueryBuilder with(Iterable iterable) {
+    public SelectQueryBuilder with(Iterable iterable) {
         this.ids = iterable;
         return this;
     }
 
-    public QueryBuilder with(Sort sort) {
+    public SelectQueryBuilder with(Sort sort) {
         pageable = new PageableImpl();
         ((PageableImpl) pageable).setSort(sort);
         return this;
     }
 
-    public QueryBuilder with(Pageable pageable) {
+    public SelectQueryBuilder with(Pageable pageable) {
         this.pageable = pageable;
         return this;
     }
