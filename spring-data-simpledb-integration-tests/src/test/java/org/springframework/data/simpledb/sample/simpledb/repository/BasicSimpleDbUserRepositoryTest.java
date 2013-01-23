@@ -6,7 +6,6 @@ import org.junit.After;
 
 import static org.junit.Assert.*;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +35,8 @@ public class BasicSimpleDbUserRepositoryTest {
         //save returns argument, does not fetch from simpledb!!!
         repository.save(user);
 
-
-        SimpleDbUser foundUser =  incrementalWaitFindOne(user.getItemName());
+        incrementalWaitFindOne(user.getItemName());
+        SimpleDbUser foundUser = repository.findOne(user.getItemName());
 
         assertEquals(user.getItemName(), foundUser.getItemName());
         assertEquals(user.getAtts(), foundUser.getAtts());
@@ -65,12 +64,15 @@ public class BasicSimpleDbUserRepositoryTest {
         user.setItemName(itemName);
         repository.save(user);
 
-        SimpleDbUser foundUser = incrementalWaitFindOne("SecondItem");
+        incrementalWaitFindOne("SecondItem");
+        SimpleDbUser foundUser = repository.findOne("SecondItem");
+
         assertNotNull(foundUser);
         assertEquals(user.getAtts(), foundUser.getAtts());
 
         //initial user is still present
-        foundUser = incrementalWaitFindOne("FirstItem");
+        incrementalWaitFindOne("FirstItem");
+        foundUser = repository.findOne("FirstItem");
         assertNotNull(foundUser);
         assertEquals(user.getAtts(), foundUser.getAtts());
     }
@@ -83,16 +85,18 @@ public class BasicSimpleDbUserRepositoryTest {
         SimpleDbUser user = createUserWithSampleAttributes(itemName);
         repository.save(user);
 
-        user = incrementalWaitFindOne(itemName);
+
+        incrementalWaitFindOne(itemName);
+        user = repository.findOne(itemName);
+
         user.getAtts().put("extraAttribute", "extraAttributeValue");
         repository.save(user);
 
-        SimpleDbUser foundUser = incrementalWaitFindOneWithAttributesCount(itemName, user.getAtts().size());
+        incrementalFindOneWithAttributesCount(itemName, user.getAtts().size());
+        SimpleDbUser foundUser = repository.findOne(itemName);
 
         assertEquals("extraAttributeValue", foundUser.getAtts().get("extraAttribute"));
     }
-
-
 
 
     @Test
@@ -132,6 +136,8 @@ public class BasicSimpleDbUserRepositoryTest {
         incrementalWaitCount(3);
 
         repository.delete(list);
+        incrementalWaitForDeletion(list.get(0).getItemName());
+        incrementalWaitForDeletion(list.get(1).getItemName());
         incrementalWaitForDeletion(list.get(2).getItemName());
 
         assertEquals(0, repository.count());
@@ -143,7 +149,9 @@ public class BasicSimpleDbUserRepositoryTest {
         SimpleDbUser user = createUserWithSampleAttributes(itemName);
         repository.save(user);
 
-        SimpleDbUser foundUser = incrementalWaitFindOne(itemName);
+
+        incrementalWaitFindOne(itemName);
+        SimpleDbUser foundUser = repository.findOne(itemName);
 
         assertNotNull(foundUser);
         assertEquals(user.getItemName(), foundUser.getItemName());
@@ -179,7 +187,7 @@ public class BasicSimpleDbUserRepositoryTest {
     }
 
     @Test
-    public void exists_should_return_true_for_existing_items(){
+    public void exists_should_return_true_for_existing_items() {
         String itemName = "FirstItem";
         SimpleDbUser user = createUserWithSampleAttributes(itemName);
         repository.save(user);
@@ -224,69 +232,58 @@ public class BasicSimpleDbUserRepositoryTest {
         return list;
     }
 
-
-    private void incrementalWaitForDeletion(String itemName)   {
-        SimpleDbUser ret = repository.findOne(itemName);
-        int retries = 0;
-        while (ret != null && retries < 20){
-            ret = repository.findOne(itemName);
-            retries++;
-            try {
-                Thread.currentThread().sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    private void incrementalWaitForDeletion(final String itemName) {
+        try {
+            Thread.currentThread().sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+        new IncrementalWait<SimpleDbUser>() {
+            @Override
+            public SimpleDbUser execute() {
+                return repository.findOne(itemName);
+            }
+        }.untilResponseNull();
     }
 
-    private SimpleDbUser incrementalWaitFindOne(String itemName){
-        SimpleDbUser ret = null;
-        int retries = 0;
-        while (ret == null && retries < 20){
-            ret = repository.findOne(itemName);
-            retries++;
-            try {
-                Thread.currentThread().sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+    private void incrementalWaitFindOne(final String itemName) {
+        new IncrementalWait<SimpleDbUser>() {
+            @Override
+            public SimpleDbUser execute() {
+                return repository.findOne(itemName);
             }
-        }
-
-        return ret;
-
+        }.untilResponseNotNull();
     }
 
-    private SimpleDbUser incrementalWaitFindOneWithAttributesCount(String itemName, int attributesCount){
-        SimpleDbUser ret = null;
-        int retries = 0;
-        while ((ret == null || (ret.getAtts() != null && ret.getAtts().size() != attributesCount))&& retries < 10){
-            ret = repository.findOne(itemName);
-            retries++;
-            try {
-                Thread.currentThread().sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+    private void incrementalFindOneWithAttributesCount(final String itemName, final int attributesCount) {
+        new IncrementalWait<SimpleDbUser>() {
+            @Override
+            public SimpleDbUser execute() {
+                return repository.findOne(itemName);
             }
-        }
 
-        return ret;
-
-    }
-
-    private void incrementalWaitCount(int expectedCount){
-        int retries = 0;
-        while (repository.count()<expectedCount && retries < 10){
-            retries++;
-            try {
-                Thread.currentThread().sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            @Override
+            public boolean condition(SimpleDbUser user) {
+                return user.getAtts() != null && user.getAtts().size() != attributesCount;
             }
-        }
+
+        }.untilResponseSatisfiesCondition();
     }
 
 
-
+    private void incrementalWaitCount(final int expectedCount) {
+        try {
+            Thread.currentThread().sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        new IncrementalWait<SimpleDbUser>() {
+            @Override
+            public boolean condition() {
+                return repository.count() == expectedCount;
+            }
+        }.untilCondition();
+    }
 
 
 }
