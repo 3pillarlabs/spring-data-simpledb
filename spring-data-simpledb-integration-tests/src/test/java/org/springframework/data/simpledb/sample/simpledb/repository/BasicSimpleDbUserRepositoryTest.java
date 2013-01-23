@@ -21,7 +21,6 @@ public class BasicSimpleDbUserRepositoryTest {
     @Autowired
     BasicSimpleDbUserRepository repository;
 
-
     @After
     public void tearDown() {
         repository.deleteAll();
@@ -31,7 +30,7 @@ public class BasicSimpleDbUserRepositoryTest {
     public void save_should_persist_single_item() {
         String itemName = "FirstItem";
 
-        SimpleDbUser user = createUserWithSampleAttributes(itemName);
+        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
         //save returns argument, does not fetch from simpledb!!!
         repository.save(user);
 
@@ -42,10 +41,9 @@ public class BasicSimpleDbUserRepositoryTest {
         assertEquals(user.getAtts(), foundUser.getAtts());
     }
 
-
     @Test
     public void save_should_persist_item_list() {
-        List<SimpleDbUser> list = createListOfItems(3);
+        List<SimpleDbUser> list = SimpleDbUserBuilder.createListOfItems(3);
 
         repository.save(list);
         incrementalWaitCount(list.size());
@@ -53,11 +51,10 @@ public class BasicSimpleDbUserRepositoryTest {
         assertEquals(list.size(), repository.count());
     }
 
-
     @Test
     public void save_should_create_new_item_for_modified_item_name() {
         String itemName = "FirstItem";
-        SimpleDbUser user = createUserWithSampleAttributes(itemName);
+        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
         repository.save(user);
 
         itemName = "SecondItem";
@@ -77,12 +74,11 @@ public class BasicSimpleDbUserRepositoryTest {
         assertEquals(user.getAtts(), foundUser.getAtts());
     }
 
-
     @Test
     public void test_save_should_persist_added_attributes() {
         String itemName = "FirstItem";
 
-        SimpleDbUser user = createUserWithSampleAttributes(itemName);
+        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
         repository.save(user);
 
 
@@ -98,11 +94,10 @@ public class BasicSimpleDbUserRepositoryTest {
         assertEquals("extraAttributeValue", foundUser.getAtts().get("extraAttribute"));
     }
 
-
     @Test
     public void delete_should_remove_item() {
         String itemName = "FirstItem";
-        SimpleDbUser user = createUserWithSampleAttributes(itemName);
+        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
         user = repository.save(user);
 
         incrementalWaitFindOne(itemName);
@@ -118,7 +113,7 @@ public class BasicSimpleDbUserRepositoryTest {
     @Test
     public void delete_should_remove_item_by_itemName() {
         String itemName = "FirstItem";
-        SimpleDbUser user = createUserWithSampleAttributes(itemName);
+        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
         repository.save(user);
         incrementalWaitFindOne(itemName);
 
@@ -131,7 +126,7 @@ public class BasicSimpleDbUserRepositoryTest {
 
     @Test
     public void delete_should_remove_list_of_items() {
-        List<SimpleDbUser> list = createListOfItems(3);
+        List<SimpleDbUser> list = SimpleDbUserBuilder.createListOfItems(3);
         repository.save(list);
         incrementalWaitCount(3);
 
@@ -146,7 +141,7 @@ public class BasicSimpleDbUserRepositoryTest {
     @Test
     public void findOne_should_return_one_item() {
         String itemName = "FirstItem";
-        SimpleDbUser user = createUserWithSampleAttributes(itemName);
+        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
         repository.save(user);
 
 
@@ -158,10 +153,9 @@ public class BasicSimpleDbUserRepositoryTest {
         assertEquals(user.getAtts(), foundUser.getAtts());
     }
 
-
     @Test
     public void findAll_should_return_all_items() {
-        List<SimpleDbUser> testUsers = createListOfItems(3);
+        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
         repository.save(testUsers);
 
         incrementalWaitFindOne(testUsers.get(2).getItemName());
@@ -174,7 +168,7 @@ public class BasicSimpleDbUserRepositoryTest {
 
     @Test
     public void findAll_with_iterable_should_return_a_list_of_items() {
-        List<SimpleDbUser> testUsers = createListOfItems(3);
+        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
         repository.save(testUsers);
 
 
@@ -189,7 +183,7 @@ public class BasicSimpleDbUserRepositoryTest {
     @Test
     public void exists_should_return_true_for_existing_items() {
         String itemName = "FirstItem";
-        SimpleDbUser user = createUserWithSampleAttributes(itemName);
+        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
         repository.save(user);
         incrementalWaitFindOne(itemName);
 
@@ -204,32 +198,6 @@ public class BasicSimpleDbUserRepositoryTest {
             iterator.next();
         }
         return count;
-    }
-
-    private SimpleDbUser createUserWithSampleAttributes(String itemName) {
-
-        Map<String, String> sampleAttributeMap = new LinkedHashMap<>();
-        {
-            sampleAttributeMap.put(itemName + "_Key1", itemName + "_Value1");
-            sampleAttributeMap.put(itemName + "_Key2", itemName + "_Value2");
-            sampleAttributeMap.put(itemName + "_Key3", itemName + "_Value3");
-        }
-
-        SimpleDbUser user = new SimpleDbUser();
-        user.setItemName(itemName);
-        user.setAtts(sampleAttributeMap);
-        return user;
-    }
-
-    private List<SimpleDbUser> createListOfItems(int length) {
-        List<SimpleDbUser> list = new ArrayList<>();
-
-        for (int i = 0; i < length; i++) {
-            String itemName = "Item_" + i;
-            SimpleDbUser user = createUserWithSampleAttributes(itemName);
-            list.add(user);
-        }
-        return list;
     }
 
     private void incrementalWaitForDeletion(final String itemName) {
@@ -266,10 +234,8 @@ public class BasicSimpleDbUserRepositoryTest {
             public boolean condition(SimpleDbUser user) {
                 return user.getAtts() != null && user.getAtts().size() != attributesCount;
             }
-
         }.untilResponseSatisfiesCondition();
     }
-
 
     private void incrementalWaitCount(final int expectedCount) {
         try {
@@ -284,6 +250,4 @@ public class BasicSimpleDbUserRepositoryTest {
             }
         }.untilCondition();
     }
-
-
 }
