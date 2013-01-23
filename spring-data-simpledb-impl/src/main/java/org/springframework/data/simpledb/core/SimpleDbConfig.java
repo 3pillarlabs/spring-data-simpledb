@@ -2,7 +2,7 @@ package org.springframework.data.simpledb.core;
 
 import org.springframework.util.Assert;
 
-public class SimpleDbConfig {
+public final class SimpleDbConfig {
 
     private String accessID;
     private String secretKey;
