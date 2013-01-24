@@ -1,0 +1,117 @@
+package org.springframework.data.simpledb.util;
+
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+public class SimpleDBAttributeConverter {
+
+	public static final int LONG_DIGITS = 20;
+	public static final BigDecimal OFFSET_VALUE = new BigDecimal(Long.MIN_VALUE).negate();
+
+	private static String padOrConvertIfRequired(Object ob) {
+		if (ob instanceof Integer || ob instanceof Long || ob instanceof Short || ob instanceof Byte) {
+			// then pad
+			return AmazonSimpleDBUtil.encodeRealNumberRange(new BigDecimal(ob.toString()), AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE);
+		} else if ((ob instanceof Double && !((Double) ob).isInfinite() && !((Double) ob).isNaN()) || (ob instanceof Float && !((Float) ob).isInfinite() && !((Float) ob).isNaN())) {
+			// then pad
+			return AmazonSimpleDBUtil.encodeRealNumberRange(new BigDecimal(ob.toString()), AmazonSimpleDBUtil.LONG_DIGITS, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE);
+		} else if (ob instanceof BigDecimal) {
+			// then pad
+			return AmazonSimpleDBUtil.encodeRealNumberRange((BigDecimal) ob, AmazonSimpleDBUtil.LONG_DIGITS, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE);
+		} else if (ob instanceof Date) {
+			Date d = (Date) ob;
+			return AmazonSimpleDBUtil.encodeDate(d);
+		} else if (ob instanceof byte[]) {
+			return AmazonSimpleDBUtil.encodeByteArray((byte[]) ob);
+		}
+		
+		return ob.toString();
+	}
+
+	public static String toSimpleDBAttribute(final Object fieldValue) {
+		return padOrConvertIfRequired(fieldValue);
+	}
+	
+	public static List<String> toSimpleDBAttribute(final Collection<?> fieldValue) {
+		final List<String> result = new ArrayList<>();
+		
+		if(fieldValue instanceof Collection<?>) {
+			final Collection<?> fieldValues = (Collection<?>)fieldValue;
+			
+			for(final Iterator<?> it = fieldValues.iterator(); it.hasNext(); ){
+				final Object val = it.next();
+				result.add(toSimpleDBAttribute(val));
+			}
+		}
+		
+		return result;
+	}
+
+	public static Object toDomainFieldPrimitive(String value, Class<?> retType) throws ParseException {
+		Object val = null;
+		
+		if (Integer.class.isAssignableFrom(retType) || retType == int.class) {
+			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).toString();
+			
+			if (retType == int.class) {
+				retType = Integer.class;
+			}
+		} else if (Long.class.isAssignableFrom(retType) || retType == long.class) {
+			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).toString();
+			
+			if (retType == long.class) {
+				retType = Long.class;
+			}
+		} if (Short.class.isAssignableFrom(retType) || retType == short.class) {
+			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).toString();
+			
+			if (retType == short.class) {
+				retType = Short.class;
+			}
+		} else if (Byte.class.isAssignableFrom(retType) || retType == byte.class) {
+			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).toString();
+			
+			if (retType == byte.class) {
+				retType = Byte.class;
+			}
+		} else if (Float.class.isAssignableFrom(retType) || retType == float.class) {
+			// Ignore NaN and Infinity
+			if (!value.matches(".*Infinity|NaN")) {
+				val = AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE).toString();
+			} else {
+				val = Float.NaN;
+			}
+			
+			if (retType == float.class) {
+				retType = Float.class;
+			}
+		} else if (Double.class.isAssignableFrom(retType) || retType == double.class) {
+			// Ignore NaN and Infinity
+			if (!value.matches(".*Infinity|NaN")) {
+				val = AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE).toString();
+			} else { 
+				val = Double.NaN;
+			}
+			
+			if (retType == double.class) {
+				retType = Double.class;
+			}
+		} else if (BigDecimal.class.isAssignableFrom(retType)) {
+			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE).toString();
+		} else if (byte[].class.isAssignableFrom(retType)) {
+			val = AmazonSimpleDBUtil.decodeByteArray(value);
+		} else if (Date.class.isAssignableFrom(retType)) {
+			val = AmazonSimpleDBUtil.decodeDate(value);
+		} else if (Boolean.class.isAssignableFrom(retType)) {
+			val = Boolean.parseBoolean(value);
+		}
+		
+		return val;
+	}
+
+}
