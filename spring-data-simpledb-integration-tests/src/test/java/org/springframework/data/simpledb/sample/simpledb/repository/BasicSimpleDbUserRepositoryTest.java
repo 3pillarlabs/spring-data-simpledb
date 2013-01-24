@@ -41,6 +41,15 @@ public class BasicSimpleDbUserRepositoryTest {
         assertEquals(user.getItemName(), foundUser.getItemName());
         assertEquals(user.getAtts(), foundUser.getAtts());
     }
+    @Test
+    public void save_should_generateId() {
+
+        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(null);
+
+        user = repository.save(user);
+
+        assertNotNull(user.getItemName());
+    }
 
     @Test
     public void save_should_persist_item_list() {
