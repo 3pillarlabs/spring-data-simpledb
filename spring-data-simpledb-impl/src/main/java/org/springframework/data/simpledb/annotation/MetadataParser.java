@@ -31,13 +31,21 @@ public final class MetadataParser {
      * @return
      */
     public static String getDomain(Class clazz){
+        StringBuilder ret = new StringBuilder();
+        String database = getDatabase(clazz);
+        if(database !=null){
+            ret.append(database);
+            ret.append(".");
+        }
+
+
+
         String camelCaseString = clazz.getSimpleName();
 
-        String[] words = StringUtil.splitCamelCaseString(camelCaseString);
+        ret.append(StringUtil.toLowerFirstChar(camelCaseString));
 
-        return StringUtil.combineLowerCase(words, "_");
+        return ret.toString();
     }
-
 
     public static String getItemName(Object object){
         Field idField = getIdField(object);
@@ -53,6 +61,8 @@ public final class MetadataParser {
 
         return null;
     }
+
+
 
     public static Field getIdField(Object object){
         Class<?> clazz = object.getClass();
@@ -117,6 +127,15 @@ public final class MetadataParser {
         }
 
         return fieldList;
+    }
+
+    private static String getDatabase(Class clazz){
+        Database database = (Database)clazz.getAnnotation(Database.class);
+        if(database != null){
+            return database.value();
+        }
+
+        return null;
     }
 
 
