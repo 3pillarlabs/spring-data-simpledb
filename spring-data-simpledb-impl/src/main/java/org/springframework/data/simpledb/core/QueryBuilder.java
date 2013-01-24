@@ -54,7 +54,7 @@ public class QueryBuilder<T, ID extends Serializable> {
         } else {
             query.append("*");
         }
-        query.append(" from ").append(entityInformation.getDomain());
+        query.append(" from ").append(quote(entityInformation.getDomain()));
         if (ids != null && ids.iterator().hasNext()) {
             Iterator<ID> iterator = ids.iterator();
             query.append(" where (");
@@ -90,6 +90,11 @@ public class QueryBuilder<T, ID extends Serializable> {
         }
         System.out.println(query.toString());
         return query.toString();
+    }
+
+
+    public String quote(String simpleDbName){
+        return "`" + simpleDbName + "`";
     }
 
     private static class PageableImpl implements Pageable {
