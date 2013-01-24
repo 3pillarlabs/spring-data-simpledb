@@ -2,12 +2,15 @@ package org.springframework.data.simpledb.annotation;
 
 import org.junit.Test;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class MetadataParserTest {
 
@@ -59,5 +62,55 @@ public class MetadataParserTest {
         assertEquals(SAMPLE_ITEM, itemName);
     }
 
+    @Test
+    public void getPrimitiveFields_should_return_list_of_primitives_bypassing_ID_Atrributes_and_Transient() {
+        List<Field> returnedPrimitives = MetadataParser.getPrimitiveFields(new SampleDeclaredPrimitives());
+        List<Field> returnedPrimitivesConvention = MetadataParser.getPrimitiveFields(new SampleDeclaredPrimitivesConventionId());
+
+        try {
+            assertTrue(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("intPrimitive")));
+            assertTrue(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("longPrimitive")));
+            assertTrue(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("doublePrimitive")));
+            assertTrue(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("booleanPrimitive")));
+
+            assertFalse(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("shouldBeTransient"))) ;
+            assertFalse(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("idField"))) ;
+            assertFalse(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("someUsefullAttributes")));
+
+            assertFalse(returnedPrimitivesConvention.contains(SampleDeclaredPrimitivesConventionId.class.getDeclaredField("id"))) ;
+            assertTrue(returnedPrimitivesConvention.contains(SampleDeclaredPrimitivesConventionId.class.getDeclaredField("intPrimitive"))) ;
+
+        } catch (NoSuchFieldException e) {
+            fail();
+        }
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void two_ids_from_entity_shold_fail_on_runtime() {
+        MetadataParser.getIdField(new TwoIdsShouldFail());
+    }
+
+    static class SampleDeclaredPrimitives {
+        @Transient
+        private int shouldBeTransient;
+        @Id
+        private int idField;
+        private int intPrimitive;
+        private long longPrimitive;
+        private double doublePrimitive;
+        private boolean booleanPrimitive;
+
+        @Attributes Map<String, String> someUsefullAttributes = new HashMap<>();
+    }
+
+    static class SampleDeclaredPrimitivesConventionId {
+        String id;
+        int intPrimitive;
+    }
+
+    static class TwoIdsShouldFail {
+        String id;
+        @Id String anotherId;
+    }
 
 }
