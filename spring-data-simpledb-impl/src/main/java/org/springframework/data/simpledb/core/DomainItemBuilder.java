@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,28 +28,20 @@ public class DomainItemBuilder<T, ID extends Serializable> {
     }
 
     public T buildDomainItem(SimpleDbEntityInformation<T, ID> entityInformation, Item item) {
-        T domainItem = null;
-        try {
-            domainItem = entityInformation.getJavaType().newInstance();
-            final Field idField = domainItem.getClass().getDeclaredField(entityInformation.getItemNameFieldName(domainItem));
+        SimpleDbEntity entity = new SimpleDbEntity(entityInformation);
 
-            idField.setAccessible(true);
-            idField.set(domainItem, item.getName());
+        entity.setId(item.getName());
+        final Map<String, String> attributes = convertSimpleDbAttributes(item.getAttributes());
+        entity.setAttributes(attributes);
 
-            final Map<String, String> attributes = new HashMap<>();
-            for (Attribute attr : item.getAttributes()) {
-                attributes.put(attr.getName(), attr.getValue());
-            }
+        return (T) entity.getItem();
+    }
 
-            final Field attributesField = domainItem.getClass().getDeclaredField(entityInformation.getAttributesFieldName(domainItem));
-
-            attributesField.setAccessible(true);
-            attributesField.set(domainItem, attributes);
-
-        } catch (InstantiationException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-            LOGGER.error(e.getMessage(), e);
+    private Map<String, String> convertSimpleDbAttributes(List<Attribute> simpleDbAttributes) {
+        final Map<String, String> attributes = new HashMap<>();
+        for (Attribute attr : simpleDbAttributes) {
+            attributes.put(attr.getName(), attr.getValue());
         }
-
-        return domainItem;
+        return attributes;
     }
 }
