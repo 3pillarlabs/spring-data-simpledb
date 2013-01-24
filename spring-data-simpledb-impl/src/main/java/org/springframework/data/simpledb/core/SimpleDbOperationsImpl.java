@@ -22,11 +22,11 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbOperationsImpl.class);
     private final AmazonSimpleDB sdb;
     private final DomainItemBuilder domainItemBuilder;
-    private final boolean consistent;
+    private final boolean consistentRead;
 
     public SimpleDbOperationsImpl(AmazonSimpleDB sdb) {
         this.sdb = sdb;
-        this.consistent = SimpleDbConfig.getInstance().isConsistent();
+        this.consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
         domainItemBuilder = new DomainItemBuilder<>();
     }
 
@@ -71,15 +71,15 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     @Override
     public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, QueryBuilder queryBuilder) {
-        LOGGER.info("Find All Domain \"{}\"\" isConsistent=\"{}\"\"", entityInformation.getDomain(), consistent);
-        final SelectResult selectResult = sdb.select(new SelectRequest(queryBuilder.toString(), consistent));
+        LOGGER.info("Find All Domain \"{}\"\" isConsistent=\"{}\"\"", entityInformation.getDomain(), consistentRead);
+        final SelectResult selectResult = sdb.select(new SelectRequest(queryBuilder.toString(), consistentRead));
         return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
     }
 
     @Override
     public long count(SimpleDbEntityInformation entityInformation) {
-        LOGGER.info("Count items from domain \"{}\"\"", entityInformation.getDomain());
-        final SelectResult selectResult = sdb.select(new SelectRequest(new QueryBuilder(entityInformation).with(QueryBuilder.Count.ON).toString()));
+        LOGGER.info("Count items from domain \"{}\"\" isConsistent=\"{}\"\"", entityInformation.getDomain(), consistentRead);
+        final SelectResult selectResult = sdb.select(new SelectRequest(new QueryBuilder(entityInformation).with(QueryBuilder.Count.ON).toString(), consistentRead));
         for (Item item : selectResult.getItems()) {
             if (item.getName().equals("Domain")) {
                 for (Attribute attribute : item.getAttributes()) {

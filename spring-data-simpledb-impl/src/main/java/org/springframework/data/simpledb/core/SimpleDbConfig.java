@@ -7,7 +7,7 @@ public final class SimpleDbConfig {
     private String accessID;
     private String secretKey;
     private String domainManagementPolicy;
-    private String consistent;
+    private String consistentRead;
 
     private static SimpleDbConfig instance;
 
@@ -24,14 +24,14 @@ public final class SimpleDbConfig {
     }
 
 
-    private SimpleDbConfig(final String accessID, final String secretKey, String domainManagementPolicy, String consistent){
+    private SimpleDbConfig(final String accessID, final String secretKey, String domainManagementPolicy, String consistentRead){
         Assert.notNull(accessID);
         Assert.notNull(secretKey);
 
         this.accessID = accessID;
         this.secretKey = secretKey;
         this.domainManagementPolicy = domainManagementPolicy;
-        this.consistent = consistent;
+        this.consistentRead = consistentRead;
 
     }
 
@@ -48,7 +48,7 @@ public final class SimpleDbConfig {
         return domainManagementPolicy;
     }
 
-    public boolean isConsistent() {
-        return "true".equalsIgnoreCase(consistent);
+    public boolean isConsistentRead() {
+        return "true".equalsIgnoreCase(consistentRead);
     }
 }
