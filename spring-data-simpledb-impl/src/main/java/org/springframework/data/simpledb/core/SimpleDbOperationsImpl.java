@@ -1,13 +1,8 @@
 package org.springframework.data.simpledb.core;
 
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
-import com.amazonaws.services.simpledb.model.Attribute;
-import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
-import com.amazonaws.services.simpledb.model.Item;
-import com.amazonaws.services.simpledb.model.PutAttributesRequest;
-import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
-import com.amazonaws.services.simpledb.model.SelectRequest;
-import com.amazonaws.services.simpledb.model.SelectResult;
+import com.amazonaws.services.simpledb.model.*;
+import com.amazonaws.services.simpledb.util.SimpleDBUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +40,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
         Assert.notNull(entity.getItemName(), "Item name should not be null");
         Assert.notNull(entity.getAttributes(), "Attributes should not be null");
+        UpdateCondition condition = new UpdateCondition();
         sdb.putAttributes(new PutAttributesRequest(entity.getDomain(), entity.getItemName(), toReplaceableAttributeList(entity.getAttributes(), false)));
         return entity.getItem();
     }

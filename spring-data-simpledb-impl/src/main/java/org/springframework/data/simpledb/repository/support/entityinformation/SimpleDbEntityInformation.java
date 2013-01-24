@@ -17,7 +17,6 @@ package org.springframework.data.simpledb.repository.support.entityinformation;
 
 import org.springframework.data.repository.core.EntityInformation;
 
-import javax.persistence.metamodel.SingularAttribute;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -28,10 +27,10 @@ import java.util.Map;
  */
 public interface SimpleDbEntityInformation<T, ID extends Serializable> extends EntityInformation<T, ID>, SimpleDBEntityMappingInformation<T> {
 
-	String getDomain();
+    String getDomain();
 
     String getItemName(T entity);
-   
+
     Map<String, String> getAttributes(T entity);
-    
+
 }
