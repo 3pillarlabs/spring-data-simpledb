@@ -3,10 +3,15 @@ package org.springframework.data.simpledb.annotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.simpledb.util.StringUtil;
 import org.springframework.stereotype.Component;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -96,4 +101,23 @@ public final class MetadataParser {
 
         return null;
     }
+
+    public static List<Field> getPrimitiveFields(Object object) {
+        List<Field> fieldList = new ArrayList<>();
+
+        for(Field field : object.getClass().getDeclaredFields()) {
+
+               if(field.getAnnotation(Attributes.class) == null
+                    && field.getAnnotation(Transient.class) == null
+                    && !(field.equals(MetadataParser.getIdField(object)))
+                    && field.getType().isPrimitive()) {
+
+                fieldList.add(field);
+            }
+        }
+
+        return fieldList;
+    }
+
+
 }
