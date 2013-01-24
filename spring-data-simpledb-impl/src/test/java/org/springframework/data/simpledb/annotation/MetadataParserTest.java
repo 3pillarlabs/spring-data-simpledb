@@ -85,12 +85,16 @@ public class MetadataParserTest {
         }
     }
 
+    @Test(expected = RuntimeException.class)
+    public void two_ids_from_entity_shold_fail_on_runtime() {
+        MetadataParser.getIdField(new TwoIdsShouldFail());
+    }
+
     static class SampleDeclaredPrimitives {
         @Transient
         private int shouldBeTransient;
         @Id
         private int idField;
-        private String id;
         private int intPrimitive;
         private long longPrimitive;
         private double doublePrimitive;
@@ -103,4 +107,10 @@ public class MetadataParserTest {
         String id;
         int intPrimitive;
     }
+
+    static class TwoIdsShouldFail {
+        String id;
+        @Id String anotherId;
+    }
+
 }

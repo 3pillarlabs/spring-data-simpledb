@@ -55,21 +55,21 @@ public final class MetadataParser {
     }
 
     public static Field getIdField(Object object){
-        Class clazz = object.getClass();
-        for (Field f: clazz.getDeclaredFields()) {
-            //named id
-            if(f.getName().equals(FIELD_NAME_DEFAULT_ID)){
-                return f;
+        Class<?> clazz = object.getClass();
+        Field idField = null;
+
+        for (Field f : clazz.getDeclaredFields()) {
+            //named id or annotated with Id
+            if(f.getName().equals(FIELD_NAME_DEFAULT_ID) || f.getAnnotation(Id.class) != null){
+                if(idField != null) {
+                    throw new RuntimeException("You cannot have two id fields");
+                }
+                idField = f;
             }
 
-            //or annotated with Id
-            Id id = f.getAnnotation(Id.class);
-            if (id != null){
-                return f;
-            }
         }
 
-        return null;
+        return idField;
     }
 
     public static Map<String, String> getAttributes(Object object){
@@ -77,7 +77,7 @@ public final class MetadataParser {
         for (Field f: clazz.getDeclaredFields()) {
             Attributes attributes = f.getAnnotation(Attributes.class);
             if (attributes != null){
-                try {
+               try {
                     f.setAccessible(true);
                     return (Map<String, String>) f.get(object);
                 } catch (IllegalAccessException e) {
