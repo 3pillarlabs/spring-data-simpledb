@@ -70,12 +70,12 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         {
             ids.add(id);
         }
-        List<T> results = find(entityInformation, new SelectQueryBuilder(entityInformation).with(ids));
+        List<T> results = find(entityInformation, new QueryBuilder(entityInformation).with(ids));
         return results.size()==1?results.get(0):null;
     }
 
     @Override
-    public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, SelectQueryBuilder queryBuilder) {
+    public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, QueryBuilder queryBuilder) {
         LOGGER.info("Find All Domain \"{}\"\"", entityInformation.getDomain());
         final SelectResult selectResult = sdb.select(new SelectRequest(queryBuilder.toString()));
         return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
@@ -84,7 +84,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     @Override
     public long count(SimpleDbEntityInformation entityInformation) {
         LOGGER.info("Count items from domain \"{}\"\"", entityInformation.getDomain());
-        final SelectResult selectResult = sdb.select(new SelectRequest("select count(*) from " + entityInformation.getDomain()));
+        final SelectResult selectResult = sdb.select(new SelectRequest(new QueryBuilder<>(entityInformation).with(QueryBuilder.Count.ON).toString()));
         for (Item item : selectResult.getItems()) {
             if (item.getName().equals("Domain")) {
                 for (Attribute attribute : item.getAttributes()) {
