@@ -2,22 +2,16 @@ package org.springframework.data.simpledb.core;
 
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.model.*;
-import com.amazonaws.services.simpledb.util.SimpleDBUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
 
 /**
@@ -39,6 +33,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         logOperation("Create  ", entity);
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
         Assert.notNull(entity.getAttributes(), "Attributes should not be null");
+        entity.generateIdIfNotSet();
         sdb.putAttributes(new PutAttributesRequest(entity.getDomain(), entity.getItemName(), toReplaceableAttributeList(entity.getAttributes(), false)));
         return entity.getItem();
     }

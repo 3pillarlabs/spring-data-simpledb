@@ -45,7 +45,7 @@ public class SimpleDbEntity <T, ID extends Serializable> {
     }
 
 
-    public void generateId() {
+    public void generateIdIfNotSet() {
         if(entityInformation.getItemName(item)==null){
             setId(UUID.randomUUID().toString());
         }

@@ -28,7 +28,7 @@ public class SimpleDbEntityTest {
     public void generateId_should_populate_itemName_of_Item(){
         SampleDomainObject object = new SampleDomainObject();
         SimpleDbEntity sdbEntity = new SimpleDbEntity(readEntityInformation(), object);
-        sdbEntity.generateId();
+        sdbEntity.generateIdIfNotSet();
         assertNotNull(object.getItemName());
 
     }
@@ -38,7 +38,7 @@ public class SimpleDbEntityTest {
         SampleDomainObject object = new SampleDomainObject();
         object.setItemName("gigi");
         SimpleDbEntity sdbEntity = new SimpleDbEntity(readEntityInformation(), object);
-        sdbEntity.generateId();
+        sdbEntity.generateIdIfNotSet();
         assertEquals("gigi",object.getItemName());
     }
 
@@ -48,11 +48,11 @@ public class SimpleDbEntityTest {
         SampleDomainObject object2 = new SampleDomainObject();
 
         SimpleDbEntity sdbEntity1 = new SimpleDbEntity(readEntityInformation(), object1);
-        sdbEntity1.generateId();
+        sdbEntity1.generateIdIfNotSet();
         SimpleDbEntity sdbEntity2 = new SimpleDbEntity(readEntityInformation(), object2);
-        sdbEntity2.generateId();
+        sdbEntity2.generateIdIfNotSet();
 
-        assertNotEquals(object1.getItemName(),object2.getItemName());
+        assertNotEquals(object1.getItemName(), object2.getItemName());
 
 
     }
