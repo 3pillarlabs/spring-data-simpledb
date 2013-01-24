@@ -2,23 +2,15 @@ package org.springframework.data.simpledb.core;
 
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.model.*;
-import com.amazonaws.services.simpledb.util.SimpleDBUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.util.Assert;
 
 /**
  *
@@ -28,9 +20,11 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbOperationsImpl.class);
     private final AmazonSimpleDB sdb;
     private final DomainItemBuilder domainItemBuilder;
+    private final boolean consistent;
 
     public SimpleDbOperationsImpl(AmazonSimpleDB sdb) {
         this.sdb = sdb;
+        this.consistent = SimpleDbConfig.getInstance().isConsistent();
         domainItemBuilder = new DomainItemBuilder<>();
     }
 
@@ -76,8 +70,8 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     @Override
     public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, QueryBuilder queryBuilder) {
-        LOGGER.info("Find All Domain \"{}\"\"", entityInformation.getDomain());
-        final SelectResult selectResult = sdb.select(new SelectRequest(queryBuilder.toString()));
+        LOGGER.info("Find All Domain \"{}\"\" isConsistent=\"{}\"\"", entityInformation.getDomain(), consistent);
+        final SelectResult selectResult = sdb.select(new SelectRequest(queryBuilder.toString(), consistent));
         return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
     }
 

@@ -50,11 +50,7 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
     @Override
     public <S extends T> S save(S entity) {
         SimpleDbEntity sdbEntity = new SimpleDbEntity(entityInformation, entity);
-        if (entityInformation.isNew(entity)) {
-            return (S) operations.createItem(sdbEntity);
-        } else {
             return (S) operations.updateItem(sdbEntity);
-        }
     }
 
     /*
