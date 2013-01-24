@@ -38,9 +38,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     public Object createItem(SimpleDbEntity entity) {
         logOperation("Create  ", entity);
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
-        Assert.notNull(entity.getItemName(), "Item name should not be null");
         Assert.notNull(entity.getAttributes(), "Attributes should not be null");
-        UpdateCondition condition = new UpdateCondition();
         sdb.putAttributes(new PutAttributesRequest(entity.getDomain(), entity.getItemName(), toReplaceableAttributeList(entity.getAttributes(), false)));
         return entity.getItem();
     }
@@ -84,7 +82,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     @Override
     public long count(SimpleDbEntityInformation entityInformation) {
         LOGGER.info("Count items from domain \"{}\"\"", entityInformation.getDomain());
-        final SelectResult selectResult = sdb.select(new SelectRequest(new QueryBuilder<>(entityInformation).with(QueryBuilder.Count.ON).toString()));
+        final SelectResult selectResult = sdb.select(new SelectRequest(new QueryBuilder(entityInformation).with(QueryBuilder.Count.ON).toString()));
         for (Item item : selectResult.getItems()) {
             if (item.getName().equals("Domain")) {
                 for (Attribute attribute : item.getAttributes()) {
