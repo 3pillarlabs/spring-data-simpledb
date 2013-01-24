@@ -31,21 +31,11 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     }
 
     @Override
-    public Object createItem(SimpleDbEntity entity) {
-        logOperation("Create  ", entity);
-        Assert.notNull(entity.getDomain(), "Domain name should not be null");
-        Assert.notNull(entity.getAttributes(), "Attributes should not be null");
-        entity.generateIdIfNotSet();
-        sdb.putAttributes(new PutAttributesRequest(entity.getDomain(), entity.getItemName(), toReplaceableAttributeList(entity.getAttributes(), false)));
-        return entity.getItem();
-    }
-
-    @Override
     public Object updateItem(SimpleDbEntity entity) {
         logOperation("Update", entity);
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
-        Assert.notNull(entity.getItemName(), "Item name should not be null");
         Assert.notNull(entity.getAttributes(), "Attributes should not be null");
+        entity.generateIdIfNotSet();
         sdb.putAttributes(new PutAttributesRequest(entity.getDomain(), entity.getItemName(), toReplaceableAttributeList(entity.getAttributes(), true)));
         return entity.getItem();
     }
