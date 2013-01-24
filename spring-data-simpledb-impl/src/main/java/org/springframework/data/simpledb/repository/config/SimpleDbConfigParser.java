@@ -13,7 +13,7 @@ public class SimpleDbConfigParser implements BeanDefinitionParser {
     @Override
     public BeanDefinition parse(Element element, ParserContext parserContext) {
 
-        SimpleDbConfig.createInstance(readProperty(element, "accessID"), readProperty(element, "secretKey"), readProperty(element, "domainManagementPolicy"));
+        SimpleDbConfig.createInstance(readProperty(element, "accessID"), readProperty(element, "secretKey"), readProperty(element, "domainManagementPolicy"), readProperty(element, "consistentRead"));
 
         return null;
     }

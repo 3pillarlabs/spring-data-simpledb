@@ -77,7 +77,7 @@ public class QueryBuilder<T, ID extends Serializable> {
                     } else {
                         query.append(" where ");
                     }
-                    query.append(order.getProperty()).append(" is not null ").append(" order by ");
+                    query.append(order.getProperty()).append(" is not null order by ");
                     query.append(order.getProperty()).append(" ").append(order.getDirection().name().toLowerCase());
                 }
                 if(sortIt.hasNext()) {
