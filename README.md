@@ -112,3 +112,7 @@ public class BasicSimpleDbUserRepositoryTest {
 }
 ```
 
+## Know Limitations ##
+
+### Primitive field conversions ###
+The current version supports converting all primitive types but *Character*. More that that, *Float.MIN_VALUE* and *Double.MIN_VALUE* cannot be converted accurately.
