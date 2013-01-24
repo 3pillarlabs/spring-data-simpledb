@@ -6,41 +6,55 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
-public class SelectQueryBuilder<T, ID extends Serializable> {
+public class QueryBuilder<T, ID extends Serializable> {
 
+    public enum Count {
+        ON,
+        OFF
+    }
+
+    private Count count;
     private Iterable ids;
     private Pageable pageable;
     SimpleDbEntityInformation<T, ID> entityInformation;
 
-    public SelectQueryBuilder(SimpleDbEntityInformation<T, ID> entityInformation) {
+    public QueryBuilder(SimpleDbEntityInformation<T, ID> entityInformation) {
         this.entityInformation = entityInformation;
     }
 
-    public SelectQueryBuilder with(Iterable iterable) {
+    public QueryBuilder with(Iterable iterable) {
         this.ids = iterable;
         return this;
     }
 
-    public SelectQueryBuilder with(Sort sort) {
+    public QueryBuilder with(Sort sort) {
         pageable = new PageableImpl();
         ((PageableImpl) pageable).setSort(sort);
         return this;
     }
 
-    public SelectQueryBuilder with(Pageable pageable) {
+    public QueryBuilder with(Pageable pageable) {
         this.pageable = pageable;
+        return this;
+    }
+
+    public QueryBuilder with(Count count) {
+        this.count = count;
         return this;
     }
 
     @Override
     public String toString() {
         //TODO change itemName() to ID field from domain object
-        //TODO refactor
-        //select * from Gigi where Age is not null order by Age desc
-        //select * from Gigi where itemName()='Item_01' or itemName()='Item_02'
-        //select * from Gigi where (itemName()='Item_01' or itemName()='Item_02') and Age is not null order by Age desc
+        //TEMPLATE: select count(*) from Gigi where (itemName()='Item_01' or itemName()='Item_02') and Age is not null order by Age desc
         StringBuilder query = new StringBuilder();
-        query.append("select * from ").append(entityInformation.getDomain());
+        query.append("select ");
+        if(count == Count.ON) {
+            query.append("count(*)");
+        } else {
+            query.append("*");
+        }
+        query.append(" from ").append(entityInformation.getDomain());
         if (ids != null && ids.iterator().hasNext()) {
             Iterator<ID> iterator = ids.iterator();
             query.append(" where (");
