@@ -15,39 +15,27 @@
  */
 package org.springframework.data.simpledb.repository.support;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.support.LockMetadataProvider;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.simpledb.core.SelectQueryBuilder;
 import org.springframework.data.simpledb.core.SimpleDbEntity;
+import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.data.simpledb.core.SelectQueryBuilder;
-import org.springframework.data.simpledb.core.SimpleDbOperations;
 
 @org.springframework.stereotype.Repository
-@Transactional(readOnly = true)
 public class SimpleSimpleDbRepository<T, ID extends Serializable> implements PagingAndSortingRepository<T, ID> {
 
     private final SimpleDbEntityInformation<T, ID> entityInformation;
-    private LockMetadataProvider lockMetadataProvider;
     private SimpleDbOperations<T, ID> operations;
 
-    /**
-     * Creates a new {@link org.springframework.data.jpa.repository.support.SimpleJpaRepository} to manage objects of the given
-     * {@link org.springframework.data.jpa.repository.support.JpaEntityInformation}.
-     *
-     * @param entityInformation must not be {@literal null}.
-     * @param simpledbOperations
-     */
     public SimpleSimpleDbRepository(SimpleDbEntityInformation<T, ID> entityInformation, SimpleDbOperations<T, ID> simpledbOperations) {
         Assert.notNull(simpledbOperations);
         Assert.notNull(entityInformation);
@@ -55,20 +43,10 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
         this.entityInformation = entityInformation;
     }
 
-    /**
-     * Configures a custom {@link org.springframework.data.jpa.repository.support.LockMetadataProvider} to be used to detect {@link javax.persistence.LockModeType}s to be applied to queries.
-     *
-     * @param lockMetadataProvider
-     */
-    public void setLockMetadataProvider(LockMetadataProvider lockMetadataProvider) {
-        this.lockMetadataProvider = lockMetadataProvider;
-    }
-
     /*
      * (non-Javadoc)
      * @see org.springframework.data.repository.CrudRepository#save(java.lang.Object)
      */
-    @Transactional
     @Override
     public <S extends T> S save(S entity) {
         SimpleDbEntity sdbEntity = new SimpleDbEntity(entityInformation, entity);
@@ -83,7 +61,6 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      * (non-Javadoc)
      * @see org.springframework.data.jpa.repository.JpaRepository#save(java.lang.Iterable)
      */
-    @Transactional
     @Override
     public <S extends T> List<S> save(Iterable<S> entities) {
         List<S> result = new ArrayList<>();
@@ -100,12 +77,11 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      * (non-Javadoc)
      * @see org.springframework.data.repository.CrudRepository#delete(java.io.Serializable)
      */
-    @Transactional
     @Override
     public void delete(ID id) {
         Assert.notNull(id, "The given id must not be null!");
         if (!exists(id)) {
-            throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!", entityInformation.getJavaType(), id), 1);
+            throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!", entityInformation.getJavaType(), id));
         }
         delete(findOne(id));
     }
@@ -114,7 +90,6 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      * (non-Javadoc)
      * @see org.springframework.data.repository.CrudRepository#delete(java.lang.Object)
      */
-    @Transactional
     @Override
     public void delete(T entity) {
         Assert.notNull(entity, "The entity must not be null!");
@@ -126,7 +101,6 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      * (non-Javadoc)
      * @see org.springframework.data.repository.CrudRepository#delete(java.lang.Iterable)
      */
-    @Transactional
     @Override
     public void delete(Iterable<? extends T> entities) {
         Assert.notNull(entities, "The given Iterable of entities not be null!");
@@ -139,7 +113,6 @@ public class SimpleSimpleDbRepository<T, ID extends Serializable> implements Pag
      * (non-Javadoc)
      * @see org.springframework.data.repository.Repository#deleteAll()
      */
-    @Transactional
     @Override
     public void deleteAll() {
         for (T element : findAll()) {

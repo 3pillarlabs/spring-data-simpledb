@@ -1,10 +1,6 @@
 package org.springframework.data.simpledb.repository.support;
 
-import java.io.Serializable;
-
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
-import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
-import org.springframework.data.jpa.repository.support.*;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.query.QueryLookupStrategy;
@@ -15,6 +11,8 @@ import org.springframework.data.simpledb.core.domain.DomainManager;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 
+import java.io.Serializable;
+
 /**
  * SimpleDB specific generic repository factory.
  *
@@ -22,7 +20,6 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
  */
 public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 
-    private final LockModeRepositoryPostProcessor lockModePostProcessor;
     private SimpleDbOperations<?, Serializable> simpledbOperations;
     private DomainManager domainManager;
 
@@ -31,9 +28,6 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 
         this.simpledbOperations = new SimpleDbOperationsImpl(sdb);
 
-        this.lockModePostProcessor = LockModeRepositoryPostProcessor.INSTANCE;
-
-        addRepositoryProxyPostProcessor(lockModePostProcessor);
     }
 
 
@@ -49,7 +43,6 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
         domainManager.manageDomain(entityInformation.getDomain());
 
         SimpleSimpleDbRepository<?, ?> repo =  new SimpleSimpleDbRepository(entityInformation, simpledbOperations);
-        repo.setLockMetadataProvider(lockModePostProcessor.getLockMetadataProvider());
 
         return repo;
     }
