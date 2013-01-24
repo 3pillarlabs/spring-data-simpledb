@@ -20,7 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.simpledb.core.SelectQueryBuilder;
+import org.springframework.data.simpledb.core.QueryBuilder;
 import org.springframework.data.simpledb.core.SimpleDbEntity;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
@@ -29,8 +29,6 @@ import org.springframework.util.Assert;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.data.simpledb.core.QueryBuilder;
-import org.springframework.data.simpledb.core.SimpleDbOperations;
 
 @org.springframework.stereotype.Repository
 public class SimpleSimpleDbRepository<T, ID extends Serializable> implements PagingAndSortingRepository<T, ID> {
