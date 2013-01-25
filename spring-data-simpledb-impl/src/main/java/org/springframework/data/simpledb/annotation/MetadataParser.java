@@ -4,13 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.simpledb.core.SimpleDbConfig;
 import org.springframework.data.simpledb.util.StringUtil;
 import org.springframework.stereotype.Component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -32,13 +31,12 @@ public final class MetadataParser {
      */
     public static String getDomain(Class clazz){
         StringBuilder ret = new StringBuilder();
-        String database = getDatabase(clazz);
-        if(database !=null){
-            ret.append(database);
+
+        String domainPrefix = getDomainPrefix(clazz);
+        if(domainPrefix !=null){
+            ret.append(domainPrefix);
             ret.append(".");
         }
-
-
 
         String camelCaseString = clazz.getSimpleName();
 
@@ -129,13 +127,13 @@ public final class MetadataParser {
         return fieldList;
     }
 
-    private static String getDatabase(Class clazz){
-        Database database = (Database)clazz.getAnnotation(Database.class);
-        if(database != null){
-            return database.value();
+    private static String getDomainPrefix(Class clazz){
+        DomainPrefix domainPrefix = (DomainPrefix)clazz.getAnnotation(DomainPrefix.class);
+        if(domainPrefix != null){
+            return domainPrefix.value();
         }
 
-        return null;
+        return SimpleDbConfig.getInstance().getDomainPrefix();
     }
 
 

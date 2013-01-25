@@ -2,11 +2,9 @@ package org.springframework.data.simpledb.sample.simpledb.domain;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.simpledb.annotation.Attributes;
-import org.springframework.data.simpledb.annotation.Database;
 
 import java.util.Map;
 
-@Database(value = "testDB")
 public class SimpleDbUser {
 
     @Id
