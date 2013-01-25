@@ -1,7 +1,5 @@
 package org.springframework.data.simpledb.core;
 
-import org.springframework.util.Assert;
-
 public final class SimpleDbConfig {
 
     private String accessID;
