@@ -15,9 +15,9 @@ public interface SimpleDbOperations<T, ID extends Serializable> {
 
     void deleteItem(SimpleDbEntity<T, ID> sdbEntity);
 
-    T readItem(SimpleDbEntityInformation<T, ID> entityInformation, ID id);
+    T readItem(SimpleDbEntityInformation<T, ID> entityInformation, ID id, boolean consistentRead);
 
-    long count(SimpleDbEntityInformation<T, ?> entityInformation);
+    long count(SimpleDbEntityInformation<T, ?> entityInformation, boolean consistentRead);
 
-    List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, QueryBuilder queryBuilder);
+    List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, QueryBuilder queryBuilder, boolean consistentRead);
 }

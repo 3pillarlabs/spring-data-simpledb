@@ -42,7 +42,7 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 
         domainManager.manageDomain(entityInformation.getDomain());
 
-        SimpleSimpleDbRepository<?, ?> repo =  new SimpleSimpleDbRepository(entityInformation, simpledbOperations);
+        SimpleDbRepositoryImpl<?, ?> repo =  new SimpleDbRepositoryImpl(entityInformation, simpledbOperations);
 
         return repo;
     }
@@ -56,7 +56,7 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
      */
     @Override
     protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
-            return SimpleSimpleDbRepository.class;
+            return SimpleDbRepositoryImpl.class;
     }
 
 
