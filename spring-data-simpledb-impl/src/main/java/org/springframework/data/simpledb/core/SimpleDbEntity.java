@@ -2,6 +2,7 @@ package org.springframework.data.simpledb.core;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.simpledb.annotation.MetadataParser;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+import org.springframework.util.Assert;
 
 public class SimpleDbEntity <T, ID extends Serializable> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbEntity.class);
@@ -51,7 +53,6 @@ public class SimpleDbEntity <T, ID extends Serializable> {
         return item;
     }
 
-
     public void generateIdIfNotSet() {
         if(entityInformation.getItemName(item)==null){
             setId(UUID.randomUUID().toString());
@@ -69,15 +70,37 @@ public class SimpleDbEntity <T, ID extends Serializable> {
         }
     }
 
-    public void setAttributes(Map<String, String> attributes) {
-        try {
-            final Field attributesField = item.getClass().getDeclaredField(entityInformation.getAttributesFieldName(item));
-
-            attributesField.setAccessible(true);
-            attributesField.set(item, attributes);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new MappingException("Could not set attribute field", e);
-        }
+    public void setAttributes(Map<String, List<String>> attributes) {
+    	for(final String key: attributes.keySet()) {
+    		/* we only support simple primitives (list should be of size = 1) */
+    		final List<String> values = attributes.get(key);
+    		Assert.notNull(values);
+    		Assert.isTrue(values.size() == 1);
+    		
+    		try {
+				final Field attributesField = item.getClass().getDeclaredField(key);
+				
+	            attributesField.setAccessible(true);
+	            attributesField.set(item, SimpleDBAttributeConverter.toDomainFieldPrimitive(values.get(0), attributesField.getType()));
+			} catch (NoSuchFieldException | SecurityException e) {
+				throw new MappingException("Could not set attribute field " + key, e);
+			} catch (IllegalArgumentException e) {
+				LOGGER.error("Illegal argument exception parsing field {}. Exception: {}", key, e);
+			} catch (IllegalAccessException e) {
+				LOGGER.error("Illegal access exception parsing field {}. Exception: {}", key, e);
+			} catch (ParseException e) {
+				LOGGER.error("Parsing exception parsing field {}. Exception: {}", key, e);
+			}
+    	}
+    	
+//        try {
+//            final Field attributesField = item.getClass().getDeclaredField(entityInformation.getAttributesFieldName(item));
+//
+//            attributesField.setAccessible(true);
+//            attributesField.set(item, attributes);
+//        } catch (NoSuchFieldException | IllegalAccessException e) {
+//            throw new MappingException("Could not set attribute field", e);
+//        }
     }
     
     /**

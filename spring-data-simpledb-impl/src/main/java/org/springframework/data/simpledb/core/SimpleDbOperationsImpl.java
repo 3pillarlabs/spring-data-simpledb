@@ -34,9 +34,14 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     public Object updateItem(SimpleDbEntity entity) {
         logOperation("Update", entity);
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
-        Assert.notNull(entity.getAttributes(), "Attributes should not be null");
         entity.generateIdIfNotSet();
-        sdb.putAttributes(new PutAttributesRequest(entity.getDomain(), entity.getItemName(), toReplaceableAttributeList(entity.getAttributes(), true)));
+        
+        final PutAttributesRequest putRequest = new PutAttributesRequest();
+        putRequest.setDomainName(entity.getDomain());
+        putRequest.setItemName(entity.getItemName());
+        putRequest.setAttributes(toReplaceableAttributeList(entity.getSerializedPrimitiveAttributes(), false));
+        
+        sdb.putAttributes(putRequest);
         return entity.getItem();
     }
 
@@ -45,7 +50,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         logOperation("Delete", entity);
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
         Assert.notNull(entity.getItemName(), "Item name should not be null");
-        sdb.deleteAttributes(new DeleteAttributesRequest(entity.getDomain(), entity.getItemName(), toAttributeList(entity.getAttributes())));
+        sdb.deleteAttributes(new DeleteAttributesRequest(entity.getDomain(), entity.getItemName(), toAttributeList(entity.getSerializedPrimitiveAttributes())));
     }
 
     @Override
@@ -82,21 +87,27 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         return 0;
     }
 
-    private List<ReplaceableAttribute> toReplaceableAttributeList(Map<String, String> attributes, boolean replace) {
-        List<ReplaceableAttribute> result = new ArrayList<>();
-
-        for (Map.Entry<String, String> attributesEntry : attributes.entrySet()) {
-            result.add(new ReplaceableAttribute(attributesEntry.getKey(), attributesEntry.getValue(), replace));
+    private List<ReplaceableAttribute> toReplaceableAttributeList(Map<String, List<String>> attributes, boolean replace) {
+        final List<ReplaceableAttribute> result = new ArrayList<>();
+        
+        final Map<String, List<String>> attrs = attributes; 
+        for(final String attributeName: attrs.keySet()) {
+        	for(final String attributeValue: attrs.get(attributeName)) {
+        		result.add(new ReplaceableAttribute(attributeName, attributeValue, replace));
+        	}
         }
 
         return result;
     }
 
-    private List<Attribute> toAttributeList(Map<String, String> attributes) {
-        List<Attribute> result = new ArrayList<>();
-
-        for (Map.Entry<String, String> attributesEntry : attributes.entrySet()) {
-            result.add(new Attribute(attributesEntry.getKey(), attributesEntry.getValue()));
+    private List<Attribute> toAttributeList(Map<String, List<String>> attributes) {
+        final List<Attribute> result = new ArrayList<>();
+        
+        final Map<String, List<String>> attrs = attributes; 
+        for(final String attributeName: attrs.keySet()) {
+        	for(final String attributeValue: attrs.get(attributeName)) {
+        		result.add(new Attribute(attributeName, attributeValue));
+        	}
         }
 
         return result;

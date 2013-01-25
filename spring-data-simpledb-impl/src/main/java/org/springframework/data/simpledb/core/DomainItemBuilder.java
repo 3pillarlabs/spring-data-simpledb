@@ -31,17 +31,27 @@ public class DomainItemBuilder<T, ID extends Serializable> {
         SimpleDbEntity entity = new SimpleDbEntity(entityInformation);
 
         entity.setId(item.getName());
-        final Map<String, String> attributes = convertSimpleDbAttributes(item.getAttributes());
+        final Map<String, List<String>> attributes = convertSimpleDbAttributes(item.getAttributes());
         entity.setAttributes(attributes);
 
         return (T) entity.getItem();
     }
 
-    private Map<String, String> convertSimpleDbAttributes(List<Attribute> simpleDbAttributes) {
-        final Map<String, String> attributes = new HashMap<>();
+    private Map<String, List<String>> convertSimpleDbAttributes(List<Attribute> simpleDbAttributes) {
+        final Map<String, List<String>> attributes = new HashMap<>();
+        
         for (Attribute attr : simpleDbAttributes) {
-            attributes.put(attr.getName(), attr.getValue());
+        	List<String> attributeValues = new ArrayList<>();
+        	
+        	if(attributes.containsKey(attr.getName())) {
+        		attributeValues = attributes.get(attr.getName());
+        	}
+        	
+        	attributeValues.add(attr.getValue());
+            
+            attributes.put(attr.getName(), attributeValues);
         }
+        
         return attributes;
     }
 }

@@ -39,7 +39,14 @@ public class BasicSimpleDbUserRepositoryTest {
         SimpleDbUser foundUser = repository.findOne(user.getItemName());
 
         assertEquals(user.getItemName(), foundUser.getItemName());
-        assertEquals(user.getAtts(), foundUser.getAtts());
+        
+        assertEquals(user.getIntField(), foundUser.getIntField());
+        assertTrue(user.getFloatField() == foundUser.getFloatField());
+        assertTrue(user.getDoubleField() == foundUser.getDoubleField());
+        assertEquals(user.getLongField(), foundUser.getLongField());
+        assertEquals(user.getShortField(), foundUser.getShortField());
+        assertEquals(user.getByteField(), foundUser.getByteField());
+        assertEquals(user.getBooleanField(), foundUser.getBooleanField());
     }
     @Test
     public void save_should_generateId() {
@@ -75,33 +82,15 @@ public class BasicSimpleDbUserRepositoryTest {
         SimpleDbUser foundUser = repository.findOne("SecondItem");
 
         assertNotNull(foundUser);
-        assertEquals(user.getAtts(), foundUser.getAtts());
+        assertEquals(user.getIntField(), foundUser.getIntField());
+        assertTrue(user.getFloatField() == foundUser.getFloatField());
 
         //initial user is still present
         incrementalWaitFindOne("FirstItem");
         foundUser = repository.findOne("FirstItem");
         assertNotNull(foundUser);
-        assertEquals(user.getAtts(), foundUser.getAtts());
-    }
-
-    @Test
-    public void test_save_should_persist_added_attributes() {
-        String itemName = "FirstItem";
-
-        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
-        repository.save(user);
-
-
-        incrementalWaitFindOne(itemName);
-        user = repository.findOne(itemName);
-
-        user.getAtts().put("extraAttribute", "extraAttributeValue");
-        repository.save(user);
-
-        incrementalFindOneWithAttributesCount(itemName, user.getAtts().size());
-        SimpleDbUser foundUser = repository.findOne(itemName);
-
-        assertEquals("extraAttributeValue", foundUser.getAtts().get("extraAttribute"));
+        assertEquals(user.getIntField(), foundUser.getIntField());
+        assertTrue(user.getFloatField() == foundUser.getFloatField());
     }
 
     @Test
@@ -160,7 +149,8 @@ public class BasicSimpleDbUserRepositoryTest {
 
         assertNotNull(foundUser);
         assertEquals(user.getItemName(), foundUser.getItemName());
-        assertEquals(user.getAtts(), foundUser.getAtts());
+        assertEquals(user.getIntField(), foundUser.getIntField());
+        assertTrue(user.getFloatField() == foundUser.getFloatField());
     }
 
     @Test
@@ -180,7 +170,6 @@ public class BasicSimpleDbUserRepositoryTest {
     public void findAll_with_iterable_should_return_a_list_of_items() {
         List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
         repository.save(testUsers);
-
 
         SimpleDbUser first = testUsers.get(0);
         Iterable<String> ids = Arrays.asList(new String[]{first.getItemName()});
@@ -231,20 +220,6 @@ public class BasicSimpleDbUserRepositoryTest {
                 return repository.findOne(itemName);
             }
         }.untilResponseNotNull();
-    }
-
-    private void incrementalFindOneWithAttributesCount(final String itemName, final int attributesCount) {
-        new IncrementalWait<SimpleDbUser>() {
-            @Override
-            public SimpleDbUser execute() {
-                return repository.findOne(itemName);
-            }
-
-            @Override
-            public boolean condition(SimpleDbUser user) {
-                return user.getAtts() != null && user.getAtts().size() != attributesCount;
-            }
-        }.untilResponseSatisfiesCondition();
     }
 
     private void incrementalWaitCount(final int expectedCount) {

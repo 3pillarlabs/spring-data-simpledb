@@ -82,7 +82,7 @@ public class SimpleDBAttributeConverter {
 			val = AmazonSimpleDBUtil.decodeByteArray(value);
 		} else if (Date.class.isAssignableFrom(retType)) {
 			val = AmazonSimpleDBUtil.decodeDate(value);
-		} else if (Boolean.class.isAssignableFrom(retType)) {
+		} else if (Boolean.class.isAssignableFrom(retType) || retType == boolean.class) {
 			val = Boolean.parseBoolean(value);
 		}
 		
