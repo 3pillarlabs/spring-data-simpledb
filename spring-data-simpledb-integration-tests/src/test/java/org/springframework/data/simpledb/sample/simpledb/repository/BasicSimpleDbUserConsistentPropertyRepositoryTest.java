@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-consistent-repository-context.xml")
 //@Ignore(value = "work in progress")
-public class BasicSimpleDbUserConsistentRepositoryTest {
+public class BasicSimpleDbUserConsistentPropertyRepositoryTest {
 
     @Autowired
     BasicSimpleDbUserRepository repository;
@@ -45,10 +45,10 @@ public class BasicSimpleDbUserConsistentRepositoryTest {
 
         SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
         repository.save(user);
-        assertEquals(1,repository.count());
+        assertEquals(1, repository.count());
 
         repository.delete(itemName);
-        assertEquals(0,repository.count());
+        assertEquals(0, repository.count());
     }
 
 }
