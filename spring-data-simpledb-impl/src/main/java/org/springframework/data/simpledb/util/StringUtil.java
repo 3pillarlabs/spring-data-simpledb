@@ -23,4 +23,19 @@ public final class StringUtil {
         return str.substring(0, str.length()-1);
     }
 
+
+    public static String toLowerFirstChar(String source){
+        if(source == null){
+            return null;
+        }
+
+        if(source.length() == 1){
+            return source.toLowerCase();
+        } else {
+            String rest = source.substring(1);
+            String start = String.valueOf(source.charAt(0));
+            return start.toLowerCase() + rest;
+        }
+    }
+
 }

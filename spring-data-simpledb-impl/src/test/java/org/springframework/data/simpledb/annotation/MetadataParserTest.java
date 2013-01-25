@@ -17,18 +17,19 @@ public class MetadataParserTest {
     private static final String SAMPLE_ITEM = "SAMPLE_ITEM";
 
 
+    @DomainPrefix(value = "testDB")
     static class SampleAnnotatedId {
         @Id
         private String itemName = SAMPLE_ITEM;
 
-        @Attributes
+       @Attributes
         private Map<String, String> atts = new LinkedHashMap<String, String>();
     }
 
     @Test
     public void should_read_Domain_value(){
         String domain = MetadataParser.getDomain(SampleAnnotatedId.class);
-        assertEquals("sample_annotated_id", domain);
+        assertEquals("testDB.sampleAnnotatedId", domain);
     }
 
     @Test
@@ -60,6 +61,13 @@ public class MetadataParserTest {
         SampleDeclaredId entity = new SampleDeclaredId();
         String itemName = MetadataParser.getItemName(entity);
         assertEquals(SAMPLE_ITEM, itemName);
+    }
+
+    @Test
+    public void should_read_declared_domain_value(){
+        SampleDeclaredId entity = new SampleDeclaredId();
+        String domain = MetadataParser.getDomain(entity.getClass());
+        assertEquals("sampleDeclaredId", domain);
     }
 
     @Test

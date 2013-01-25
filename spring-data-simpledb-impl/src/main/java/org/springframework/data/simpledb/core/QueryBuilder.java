@@ -2,11 +2,17 @@ package org.springframework.data.simpledb.core;
 
 import java.io.Serializable;
 import java.util.Iterator;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 public class QueryBuilder<T, ID extends Serializable> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryBuilder.class);
+
 
     public enum Count {
         ON,
@@ -16,7 +22,7 @@ public class QueryBuilder<T, ID extends Serializable> {
     private Count count;
     private Iterable ids;
     private Pageable pageable;
-    SimpleDbEntityInformation<T, ID> entityInformation;
+    private SimpleDbEntityInformation<T, ID> entityInformation;
 
     public QueryBuilder(SimpleDbEntityInformation<T, ID> entityInformation) {
         this.entityInformation = entityInformation;
@@ -54,7 +60,7 @@ public class QueryBuilder<T, ID extends Serializable> {
         } else {
             query.append("*");
         }
-        query.append(" from ").append(entityInformation.getDomain());
+        query.append(" from ").append(quote(entityInformation.getDomain()));
         if (ids != null && ids.iterator().hasNext()) {
             Iterator<ID> iterator = ids.iterator();
             query.append(" where (");
@@ -88,13 +94,19 @@ public class QueryBuilder<T, ID extends Serializable> {
                 query.append(" limit ").append(pageable.getPageSize());
             }
         }
-        System.out.println(query.toString());
-        return query.toString();
+        String result = query.toString();
+        LOGGER.debug("Created query: {}", result);
+        return result;
+    }
+
+
+    public String quote(String simpleDbName){
+        return "`" + simpleDbName + "`";
     }
 
     private static class PageableImpl implements Pageable {
 
-        Sort sort;
+        private Sort sort;
 
         public PageableImpl() {
         }

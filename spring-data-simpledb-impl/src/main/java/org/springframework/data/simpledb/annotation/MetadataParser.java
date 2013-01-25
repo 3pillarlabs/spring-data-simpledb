@@ -4,13 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.mapping.model.MappingException;
+import org.springframework.data.simpledb.core.SimpleDbConfig;
 import org.springframework.data.simpledb.util.StringUtil;
 import org.springframework.stereotype.Component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -31,13 +31,20 @@ public final class MetadataParser {
      * @return
      */
     public static String getDomain(Class clazz){
+        StringBuilder ret = new StringBuilder();
+
+        String domainPrefix = getDomainPrefix(clazz);
+        if(domainPrefix !=null){
+            ret.append(domainPrefix);
+            ret.append(".");
+        }
+
         String camelCaseString = clazz.getSimpleName();
 
-        String[] words = StringUtil.splitCamelCaseString(camelCaseString);
+        ret.append(StringUtil.toLowerFirstChar(camelCaseString));
 
-        return StringUtil.combineLowerCase(words, "_");
+        return ret.toString();
     }
-
 
     public static String getItemName(Object object){
         Field idField = getIdField(object);
@@ -47,12 +54,14 @@ public final class MetadataParser {
                 idField.setAccessible(true);
                 return (String) idField.get(object);
             } catch (IllegalAccessException e) {
-                LOGGER.error("Could not read simpleDb item name", e);
+                throw new MappingException("Could not read simpleDb id field", e);
             }
         }
 
         return null;
     }
+
+
 
     public static Field getIdField(Object object){
         Class<?> clazz = object.getClass();
@@ -62,7 +71,7 @@ public final class MetadataParser {
             //named id or annotated with Id
             if(f.getName().equals(FIELD_NAME_DEFAULT_ID) || f.getAnnotation(Id.class) != null){
                 if(idField != null) {
-                    throw new RuntimeException("You cannot have two id fields");
+                    throw new MappingException("Multiple id fields detected for class " + clazz.getName());
                 }
                 idField = f;
             }
@@ -117,6 +126,15 @@ public final class MetadataParser {
         }
 
         return fieldList;
+    }
+
+    private static String getDomainPrefix(Class clazz){
+        DomainPrefix domainPrefix = (DomainPrefix)clazz.getAnnotation(DomainPrefix.class);
+        if(domainPrefix != null){
+            return domainPrefix.value();
+        }
+
+        return SimpleDbConfig.getInstance().getDomainPrefix();
     }
 
 
