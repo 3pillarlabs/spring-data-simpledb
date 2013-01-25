@@ -1,15 +1,22 @@
 package org.springframework.data.simpledb.core;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.simpledb.annotation.MetadataParser;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
+import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+
 public class SimpleDbEntity <T, ID extends Serializable> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbEntity.class);
+	
     private SimpleDbEntityInformation<T, ?> entityInformation;
     private T item;
 
@@ -71,6 +78,27 @@ public class SimpleDbEntity <T, ID extends Serializable> {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new MappingException("Could not set attribute field", e);
         }
-
+    }
+    
+    /**
+     * @return a map of serialized field name with the corresponding list of values (if the field is a collection of primitives)
+     */
+    public Map<String, List<String>> getSerializedPrimitiveAttributes() {
+    	final Map<String, List<String>> result = new HashMap<>();
+    	
+    	for(final Field itemField: MetadataParser.getPrimitiveFields(item)) {
+    		final List<String> fieldValues = new ArrayList<>();
+    		
+    		try {
+    			itemField.setAccessible(Boolean.TRUE);
+				fieldValues.add(SimpleDBAttributeConverter.toSimpleDBAttribute(itemField.get(item)));
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				LOGGER.error("Could not retrieve field value {}. Exception: {} ", itemField.getName(), e);
+			}
+    		
+    		result.put(itemField.getName(), fieldValues);
+    	}
+    	
+    	return result;
     }
 }

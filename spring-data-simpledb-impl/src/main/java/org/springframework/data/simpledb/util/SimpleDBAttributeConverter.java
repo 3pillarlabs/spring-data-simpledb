@@ -55,29 +55,29 @@ public class SimpleDBAttributeConverter {
 		Object val = null;
 		
 		if (Integer.class.isAssignableFrom(retType) || retType == int.class) {
-			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).toString();
+			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).intValue();
 		} else if (Long.class.isAssignableFrom(retType) || retType == long.class) {
-			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).toString();
+			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).longValue();
 		} if (Short.class.isAssignableFrom(retType) || retType == short.class) {
-			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).toString();
+			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).shortValue();
 		} else if (Byte.class.isAssignableFrom(retType) || retType == byte.class) {
-			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).toString();
+			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).byteValue();
 		} else if (Float.class.isAssignableFrom(retType) || retType == float.class) {
 			// Ignore NaN and Infinity
 			if (!value.matches(".*Infinity|NaN")) {
-				val = AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE).toString();
+				val = AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE).floatValue();
 			} else {
 				val = Float.NaN;
 			}
 		} else if (Double.class.isAssignableFrom(retType) || retType == double.class) {
 			// Ignore NaN and Infinity
 			if (!value.matches(".*Infinity|NaN")) {
-				val = AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE).toString();
+				val = AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE).doubleValue();
 			} else { 
 				val = Double.NaN;
 			}
 		} else if (BigDecimal.class.isAssignableFrom(retType)) {
-			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE).toString();
+			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE);
 		} else if (byte[].class.isAssignableFrom(retType)) {
 			val = AmazonSimpleDBUtil.decodeByteArray(value);
 		} else if (Date.class.isAssignableFrom(retType)) {
