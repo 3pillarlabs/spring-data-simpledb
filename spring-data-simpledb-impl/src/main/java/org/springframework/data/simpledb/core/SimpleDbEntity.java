@@ -1,7 +1,6 @@
 package org.springframework.data.simpledb.core;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 import java.io.Serializable;

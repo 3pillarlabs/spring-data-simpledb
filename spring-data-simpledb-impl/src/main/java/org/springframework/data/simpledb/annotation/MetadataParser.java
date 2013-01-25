@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.SimpleDbConfig;
 import org.springframework.data.simpledb.util.StringUtil;
 import org.springframework.stereotype.Component;
@@ -53,7 +54,7 @@ public final class MetadataParser {
                 idField.setAccessible(true);
                 return (String) idField.get(object);
             } catch (IllegalAccessException e) {
-                LOGGER.error("Could not read simpleDb item name", e);
+                throw new MappingException("Could not read simpleDb id field", e);
             }
         }
 
@@ -70,7 +71,7 @@ public final class MetadataParser {
             //named id or annotated with Id
             if(f.getName().equals(FIELD_NAME_DEFAULT_ID) || f.getAnnotation(Id.class) != null){
                 if(idField != null) {
-                    throw new RuntimeException("You cannot have two id fields");
+                    throw new MappingException("Multiple id fields detected for class " + clazz.getName());
                 }
                 idField = f;
             }
