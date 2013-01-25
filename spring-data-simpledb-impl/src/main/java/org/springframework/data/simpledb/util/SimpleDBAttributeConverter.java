@@ -37,14 +37,13 @@ public class SimpleDBAttributeConverter {
 		return padOrConvertIfRequired(fieldValue);
 	}
 	
-	public static List<String> toSimpleDBAttribute(final Collection<?> fieldValue) {
+	public static List<String> toSimpleDBAttribute(final Collection<?> fieldValues) {
 		final List<String> result = new ArrayList<>();
 		
-		if(fieldValue instanceof Collection<?>) {
-			final Collection<?> fieldValues = (Collection<?>)fieldValue;
+		if(fieldValues != null) {
 			
-			for(final Iterator<?> it = fieldValues.iterator(); it.hasNext(); ){
-				final Object val = it.next();
+			Object val = null;
+			for(final Iterator<?> it = fieldValues.iterator(); it.hasNext(); val = it.next()){
 				result.add(toSimpleDBAttribute(val));
 			}
 		}
@@ -57,28 +56,12 @@ public class SimpleDBAttributeConverter {
 		
 		if (Integer.class.isAssignableFrom(retType) || retType == int.class) {
 			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).toString();
-			
-			if (retType == int.class) {
-				retType = Integer.class;
-			}
 		} else if (Long.class.isAssignableFrom(retType) || retType == long.class) {
 			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).toString();
-			
-			if (retType == long.class) {
-				retType = Long.class;
-			}
 		} if (Short.class.isAssignableFrom(retType) || retType == short.class) {
 			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).toString();
-			
-			if (retType == short.class) {
-				retType = Short.class;
-			}
 		} else if (Byte.class.isAssignableFrom(retType) || retType == byte.class) {
 			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).toString();
-			
-			if (retType == byte.class) {
-				retType = Byte.class;
-			}
 		} else if (Float.class.isAssignableFrom(retType) || retType == float.class) {
 			// Ignore NaN and Infinity
 			if (!value.matches(".*Infinity|NaN")) {
@@ -86,20 +69,12 @@ public class SimpleDBAttributeConverter {
 			} else {
 				val = Float.NaN;
 			}
-			
-			if (retType == float.class) {
-				retType = Float.class;
-			}
 		} else if (Double.class.isAssignableFrom(retType) || retType == double.class) {
 			// Ignore NaN and Infinity
 			if (!value.matches(".*Infinity|NaN")) {
 				val = AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE).toString();
 			} else { 
 				val = Double.NaN;
-			}
-			
-			if (retType == double.class) {
-				retType = Double.class;
 			}
 		} else if (BigDecimal.class.isAssignableFrom(retType)) {
 			val = AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE).toString();
