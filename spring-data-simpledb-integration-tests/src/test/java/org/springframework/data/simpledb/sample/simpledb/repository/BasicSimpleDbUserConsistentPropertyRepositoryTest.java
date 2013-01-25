@@ -196,6 +196,16 @@ public class BasicSimpleDbUserConsistentPropertyRepositoryTest {
         assertEquals(0, repository.count());
     }
 
+    @Test
+    public void save_should_generateId() {
+
+        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(null);
+
+        user = repository.save(user);
+
+        assertNotNull(user.getItemName());
+    }
+
     private int count(Iterable<SimpleDbUser> users) {
         Iterator<SimpleDbUser> iterator = users.iterator();
         int count = 0;
