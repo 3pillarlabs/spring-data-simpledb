@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.Date;
 
 import static org.junit.Assert.*;
@@ -39,145 +40,127 @@ public class SimpleDBAttributeConverterTest {
 		domainEntity.booleanField = true;
 		domainEntity.dateField = new Date(200);
 	}
+	
+	private String toDomainFieldPrimitive(String value, Class<?> clazz) throws ParseException {
+		return SimpleDBAttributeConverter.toDomainFieldPrimitive(value, clazz).toString();
+	}
 
+	private String toSimpleDBAttributeValue(SampleEntity domainEntity, String fieldName) throws IllegalAccessException, NoSuchFieldException {
+		return SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField(fieldName).get(domainEntity));
+	}
+	
 	@Test
 	public void toDomainFieldPrimitive_int_test() throws Exception {
 		/* test positive */
-		String convertedValue = SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField("intField").get(domainEntity));
+		String convertedValue = toSimpleDBAttributeValue(domainEntity, "intField");
 		assertNotNull(convertedValue);
-		assertTrue(Integer.parseInt(SimpleDBAttributeConverter.toDomainFieldPrimitive(convertedValue, Integer.class).toString()) == domainEntity.intField);
+		assertTrue(Integer.parseInt(toDomainFieldPrimitive(convertedValue, Integer.class)) == domainEntity.intField);
 
 		/* test negative */
 		domainEntity.intField = Integer.MIN_VALUE;
-		convertedValue = SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField("intField").get(domainEntity));
+		convertedValue = toSimpleDBAttributeValue(domainEntity, "intField");
 		assertNotNull(convertedValue);
-		assertTrue(Integer.parseInt(SimpleDBAttributeConverter.toDomainFieldPrimitive(convertedValue, Integer.class).toString()) == domainEntity.intField);
+		assertTrue(Integer.parseInt(toDomainFieldPrimitive(convertedValue, Integer.class)) == domainEntity.intField);
 	}
 
 	@Test
 	public void toDomainFieldPrimitive_float_test() throws Exception {
 		/* test positive */
-		String convertedValue = SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField("floatField").get(domainEntity));
+		String convertedValue = toSimpleDBAttributeValue(domainEntity, "floatField");
 		assertNotNull(convertedValue);
-		assertTrue(Float.parseFloat(SimpleDBAttributeConverter.toDomainFieldPrimitive(convertedValue, Float.class).toString()) == domainEntity.floatField);
+		assertTrue(Float.parseFloat(toDomainFieldPrimitive(convertedValue, Float.class)) == domainEntity.floatField);
 
 		/* test negative */
 
 		/* TODO: Float.MIN_VALUE is not converted correctly */
 		domainEntity.floatField = Float.MIN_VALUE;
-		convertedValue = SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField("floatField").get(domainEntity));
+		convertedValue = toSimpleDBAttributeValue(domainEntity, "floatField");
 		assertNotNull(convertedValue);
-		assertTrue(Float.parseFloat(SimpleDBAttributeConverter.toDomainFieldPrimitive(convertedValue, Float.class).toString()) != domainEntity.floatField);
+		assertTrue(Float.parseFloat(toDomainFieldPrimitive(convertedValue, Float.class)) != domainEntity.floatField);
 
 		domainEntity.floatField = Float.MIN_VALUE + 1;
-		convertedValue = SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField("floatField").get(domainEntity));
+		convertedValue = toSimpleDBAttributeValue(domainEntity, "floatField");
 		assertNotNull(convertedValue);
-		assertTrue(Float.parseFloat(SimpleDBAttributeConverter.toDomainFieldPrimitive(convertedValue, Float.class).toString()) == domainEntity.floatField);
+		assertTrue(Float.parseFloat(toDomainFieldPrimitive(convertedValue, Float.class)) == domainEntity.floatField);
 	}
 
 	@Test
 	public void toDomainFieldPrimitive_double_test() throws Exception {
 		/* test positive */
-		String convertedValue = SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField("doubleField").get(domainEntity));
+		String convertedValue = toSimpleDBAttributeValue(domainEntity, "doubleField");
 		assertNotNull(convertedValue);
-		assertTrue(Double.parseDouble(SimpleDBAttributeConverter.toDomainFieldPrimitive(convertedValue, Double.class).toString()) == domainEntity.doubleField);
+		assertTrue(Double.parseDouble(toDomainFieldPrimitive(convertedValue, Double.class)) == domainEntity.doubleField);
 
 		/* test negative */
 
 		/* TODO: Double.MIN_VALUE is not converted correctly */
 		domainEntity.doubleField = Double.MIN_VALUE;
-		convertedValue = SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField("doubleField").get(domainEntity));
+		convertedValue = toSimpleDBAttributeValue(domainEntity, "doubleField");
 		assertNotNull(convertedValue);
-		assertTrue(Double.parseDouble(SimpleDBAttributeConverter.toDomainFieldPrimitive(convertedValue, Double.class).toString()) != domainEntity.doubleField);
+		assertTrue(Double.parseDouble(toDomainFieldPrimitive(convertedValue, Double.class)) != domainEntity.doubleField);
 
 		domainEntity.doubleField = -0.000000000001d;
-		convertedValue = SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField("doubleField").get(domainEntity));
+		convertedValue = toSimpleDBAttributeValue(domainEntity, "doubleField");
 		assertNotNull(convertedValue);
-		assertTrue(Double.parseDouble(SimpleDBAttributeConverter.toDomainFieldPrimitive(convertedValue, Double.class).toString()) == domainEntity.doubleField);
+		assertTrue(Double.parseDouble(toDomainFieldPrimitive(convertedValue, Double.class)) == domainEntity.doubleField);
 	}
 
 	@Test
 	public void toDomainFieldPrimitive_short_test() throws Exception {
 		/* test positive */
-		String convertedValue = SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField("shortField").get(domainEntity));
+		String convertedValue = toSimpleDBAttributeValue(domainEntity, "shortField");
 		assertNotNull(convertedValue);
-		assertTrue(Short.parseShort(SimpleDBAttributeConverter.toDomainFieldPrimitive(convertedValue, Short.class).toString()) == domainEntity.shortField);
+		assertTrue(Short.parseShort(toDomainFieldPrimitive(convertedValue, Short.class)) == domainEntity.shortField);
 
 		/* test negative */
 		domainEntity.shortField = Short.MIN_VALUE;
-		convertedValue = SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField("shortField").get(domainEntity));
+		convertedValue = toSimpleDBAttributeValue(domainEntity, "shortField");
 		assertNotNull(convertedValue);
-		assertTrue(Short.parseShort(SimpleDBAttributeConverter.toDomainFieldPrimitive(convertedValue, Short.class).toString()) == domainEntity.shortField);
+		assertTrue(Short.parseShort(toDomainFieldPrimitive(convertedValue, Short.class)) == domainEntity.shortField);
 	}
 
 	@Test
 	public void toDomainFieldPrimitive_long_test() throws Exception {
-		String convertedValue = SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField("longField").get(domainEntity));
+		String convertedValue = toSimpleDBAttributeValue(domainEntity, "longField");
 		assertNotNull(convertedValue);
-		assertTrue(Long.parseLong(SimpleDBAttributeConverter.toDomainFieldPrimitive(convertedValue, Long.class).toString()) == domainEntity.longField);
+		assertTrue(Long.parseLong(toDomainFieldPrimitive(convertedValue, Long.class)) == domainEntity.longField);
 	}
 
 	@Test
 	public void toDomainFieldPrimitive_byte_test() throws Exception {
 		/* test positive */
-		String convertedValue = SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField("byteField").get(domainEntity));
+		String convertedValue = toSimpleDBAttributeValue(domainEntity, "byteField");
 		assertNotNull(convertedValue);
-		assertTrue(Byte.parseByte(SimpleDBAttributeConverter.toDomainFieldPrimitive(convertedValue, Byte.class).toString()) == domainEntity.byteField);
+		assertTrue(Byte.parseByte(toDomainFieldPrimitive(convertedValue, Byte.class)) == domainEntity.byteField);
 
 		/* test negative */
 		domainEntity.byteField = Byte.MIN_VALUE;
-		convertedValue = SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField("byteField").get(domainEntity));
+		convertedValue = toSimpleDBAttributeValue(domainEntity, "byteField");
 		assertNotNull(convertedValue);
-		assertTrue(Byte.parseByte(SimpleDBAttributeConverter.toDomainFieldPrimitive(convertedValue, Byte.class).toString()) == domainEntity.byteField);
+		assertTrue(Byte.parseByte(toDomainFieldPrimitive(convertedValue, Byte.class)) == domainEntity.byteField);
 	}
 
 	@Test
 	public void toDomainFieldPrimitive_boolean_test() throws Exception {
-		String convertedValue = SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField("booleanField").get(domainEntity));
+		String convertedValue = toSimpleDBAttributeValue(domainEntity, "booleanField");
 		assertNotNull(convertedValue);
-		assertTrue(((Boolean)SimpleDBAttributeConverter.toDomainFieldPrimitive(convertedValue, Boolean.class)).equals(domainEntity.booleanField));
-	}
-
-	@Test
-	public void toDomainFieldPrimitive_date_test() throws Exception {
-		String convertedValue = SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField("dateField").get(domainEntity));
-		assertNotNull(convertedValue);
-		assertTrue(((Date)SimpleDBAttributeConverter.toDomainFieldPrimitive(convertedValue, Date.class)).equals(domainEntity.dateField));
+		assertTrue(Boolean.parseBoolean(toDomainFieldPrimitive(convertedValue, Boolean.class)) == domainEntity.booleanField);
 	}
 	
 	/* ********************* individually test converter methods ********************** */
     @Test
-    public void test_padding_long_value(){
-        long longValue = 12345L;
-        String encoded = SimpleDBAttributeConverter.toSimpleDBAttributeValue(longValue);
+    public void test_encode_int_value_number_of_digits() {
+        int x = 1, numberOfDigits = 11;
+        BigDecimal bdx = new BigDecimal(x);
+        String encoded = AmazonSimpleDBUtil.encodeRealNumberRange(bdx, numberOfDigits, new BigDecimal(Integer.MIN_VALUE).negate());
+        assertEquals(numberOfDigits, encoded.length());
         
-        assertEquals("09223372036854788153", encoded);
-    }
-    
-    @Test
-    public void test_padding_int_value(){
-        int intValue = 1;
-        String encoded = SimpleDBAttributeConverter.toSimpleDBAttributeValue(intValue);
-        
-        assertEquals("09223372036854775809", encoded);
-    }
-    
-    @Test
-    public void test_encode_int_value() {
-    	int x = -390293;
-        String encoded;
-        BigDecimal bdx;
-        
+        x = 1;
+        numberOfDigits = 20;
         bdx = new BigDecimal(x);
-        encoded = AmazonSimpleDBUtil.encodeRealNumberRange(bdx, 11, new BigDecimal(Integer.MIN_VALUE).negate());
-        assertEquals("02147093355", encoded);
-    }
-    
-    @Test
-    public void test_decode_int_value() {
-    	String encodedInt = "02147093355";
-    	BigDecimal bgdecoded = AmazonSimpleDBUtil.decodeRealNumberRange(encodedInt, new BigDecimal(Integer.MIN_VALUE).negate());
-        assertEquals(-390293, bgdecoded.intValue());
+        encoded = AmazonSimpleDBUtil.encodeRealNumberRange(bdx, numberOfDigits, new BigDecimal(Integer.MIN_VALUE).negate());
+        
+        assertEquals(numberOfDigits, encoded.length());
     }
 
     @Test
