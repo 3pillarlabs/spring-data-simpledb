@@ -6,7 +6,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.SimpleDbConfig;
-import org.springframework.data.simpledb.util.StringUtil;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -113,21 +112,29 @@ public final class MetadataParser {
         return null;
     }
 
-    public static List<Field> getPrimitiveFields(Object object) {
+    public static List<Field> getPrimitiveHolders(Object object) {
         List<Field> fieldList = new ArrayList<>();
+            populateFieldCollection(object, fieldList, PrimitivesTypeHolder.PRIMITIVE);
+        return fieldList;
+    }
 
+    public static List<Field> getPrimitiveCollectionHolders(Object object) {
+        List<Field> fieldList = new ArrayList<>();
+            populateFieldCollection(object, fieldList, PrimitivesTypeHolder.COLLECTION);
+        return fieldList;
+    }
+
+    private static void populateFieldCollection(Object object, List<Field> fieldList, PrimitivesTypeHolder typeHolder) {
         for(Field field : object.getClass().getDeclaredFields()) {
 
                if(field.getAnnotation(Attributes.class) == null
                     && field.getAnnotation(Transient.class) == null
                     && !(field.equals(MetadataParser.getIdField(object)))
-                    && field.getType().isPrimitive()) {
+                    && typeHolder.isOfType(field.getType())) {
 
                 fieldList.add(field);
             }
         }
-
-        return fieldList;
     }
 
     private static String getDomainPrefix(Class clazz){
@@ -138,6 +145,4 @@ public final class MetadataParser {
 
         return SimpleDbConfig.getInstance().getDomainPrefix();
     }
-
-
 }

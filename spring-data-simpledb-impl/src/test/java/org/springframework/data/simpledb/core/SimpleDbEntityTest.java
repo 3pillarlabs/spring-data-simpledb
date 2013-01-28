@@ -1,11 +1,6 @@
 package org.springframework.data.simpledb.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +10,8 @@ import org.springframework.data.simpledb.core.domain.SimpleDbSampleEntity;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+
+import static org.junit.Assert.*;
 
 public class SimpleDbEntityTest {
 
@@ -64,7 +61,9 @@ public class SimpleDbEntityTest {
     	entity.setDoubleField(1.2d);
     	entity.setByteField((byte) 1);
     	entity.setBooleanField(Boolean.TRUE);
-    	
+      entity.setStringField("string");
+      entity.setDoubleWrapper(Double.valueOf("2323.32d"));
+
         SimpleDbEntity<SampleEntity, String> sdbEntity = new SimpleDbEntity<>(this.<SampleEntity>readEntityInformation(SampleEntity.class), entity);
 
         assertNotNull(sdbEntity);
@@ -102,5 +101,13 @@ public class SimpleDbEntityTest {
         /* test boolean field */
         List<String> booleanValues = attributes.get("booleanField");
         assertTrue(entity.getBooleanField() == ((Boolean)SimpleDBAttributeConverter.toDomainFieldPrimitive(booleanValues.get(0), Boolean.class)).booleanValue());
+
+        /* test String field */
+        List<String> stringValues = attributes.get("stringField");
+        assertTrue(entity.getStringField() == ((String)SimpleDBAttributeConverter.toDomainFieldPrimitive(stringValues.get(0), String.class)));
+
+        /* test Double field */
+        List<String> doubleWrapperValue = attributes.get("doubleWrapper");
+        assertTrue(entity.getDoubleWrapper() == ((Double) SimpleDBAttributeConverter.toDomainFieldPrimitive(doubleWrapperValue.get(0), Double.class)).doubleValue());
     }
 }

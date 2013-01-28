@@ -1,5 +1,6 @@
 package org.springframework.data.simpledb.util;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -35,6 +36,22 @@ public class SimpleDBAttributeConverter {
 
     public static String toSimpleDBAttributeValue(final Object fieldValue) {
         return padOrConvertIfRequired(fieldValue);
+    }
+
+    public static String toSimpleDBAttributeValues(final Object primitiveCollectionFieldValues) {
+        final StringBuilder attributeValuesBuilder = new StringBuilder();
+        int primitiveCollLength = Array.getLength(primitiveCollectionFieldValues);
+
+        for (int idx = 0; idx < primitiveCollLength; idx++) {
+            Object itemValue = Array.get(primitiveCollectionFieldValues, idx);
+            attributeValuesBuilder.append(padOrConvertIfRequired(itemValue));
+
+            if(idx < primitiveCollLength - 1) {
+                attributeValuesBuilder.append(",");
+            }
+        }
+
+        return attributeValuesBuilder.toString();
     }
 
     public static List<String> toSimpleDBAttribute(final Collection<?> fieldValues) {
@@ -85,8 +102,21 @@ public class SimpleDBAttributeConverter {
             val = AmazonSimpleDBUtil.decodeDate(value);
         } else if (Boolean.class.isAssignableFrom(retType) || retType == boolean.class) {
             val = Boolean.parseBoolean(value);
+        } else if (String.class.isAssignableFrom(retType)) {
+            val = value;
         }
 
         return val;
+    }
+
+    public static Object toDomainFieldPrimitiveCollection(String value, Class<?> retType) throws ParseException {
+        List<String> splitedValues = StringUtil.splitStringByDelim(value, ",");
+        Object primitiveCollection = Array.newInstance(retType, splitedValues.size());
+
+        for (int idx = 0; idx < splitedValues.size(); idx++) {
+            Array.set(primitiveCollection, idx, toDomainFieldPrimitive(splitedValues.get(idx), retType));
+        }
+
+        return primitiveCollection;
     }
 }

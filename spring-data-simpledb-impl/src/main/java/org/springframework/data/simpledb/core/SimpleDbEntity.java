@@ -98,21 +98,42 @@ public class SimpleDbEntity <T, ID extends Serializable> {
      * @return a map of serialized field name with the corresponding list of values (if the field is a collection of primitives)
      */
     public Map<String, List<String>> getSerializedPrimitiveAttributes() {
-    	final Map<String, List<String>> result = new HashMap<>();
-    	
-    	for(final Field itemField: MetadataParser.getPrimitiveFields(item)) {
-    		final List<String> fieldValues = new ArrayList<>();
-    		
-    		try {
-    			itemField.setAccessible(Boolean.TRUE);
-				fieldValues.add(SimpleDBAttributeConverter.toSimpleDBAttributeValue(itemField.get(item)));
-			} catch (Exception e) {
-				throw new MappingException("Could not retrieve field value " + itemField.getName(), e);
-			}
-    		
-    		result.put(itemField.getName(), fieldValues);
-    	}
-    	
-    	return result;
+        final Map<String, List<String>> result = new HashMap<>();
+
+        for (final Field itemField : MetadataParser.getPrimitiveHolders(item)) {
+            final List<String> fieldValues = new ArrayList<>();
+
+            try {
+                itemField.setAccessible(Boolean.TRUE);
+                fieldValues.add(SimpleDBAttributeConverter.toSimpleDBAttributeValue(itemField.get(item)));
+            } catch (Exception e) {
+                throw new MappingException("Could not retrieve field value " + itemField.getName(), e);
+            }
+
+            result.put(itemField.getName(), fieldValues);
+        }
+
+        for (final Field itemField : MetadataParser.getPrimitiveCollectionHolders(item)) {
+            final List<String> fieldValues = new ArrayList<>();
+
+            try {
+                SimpleDBAttributeConverter.toSimpleDBAttributeValues(itemField.get(item));
+            } catch (IllegalAccessException e) {
+                throw new MappingException("Could not retrieve field values " + e);
+            }
+
+            try {
+
+                itemField.setAccessible(Boolean.TRUE);
+                itemField.get(item);
+
+            } catch (Exception e) {
+                throw new MappingException("Could not retrieve field value " + itemField.getName(), e);
+            }
+
+
+        }
+
+        return result;
     }
 }

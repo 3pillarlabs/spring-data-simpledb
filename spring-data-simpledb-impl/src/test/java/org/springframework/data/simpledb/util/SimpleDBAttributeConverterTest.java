@@ -3,6 +3,7 @@ package org.springframework.data.simpledb.util;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
@@ -209,6 +210,33 @@ public class SimpleDBAttributeConverterTest {
         encodeAndDecode(x);
     }
 
+    @Test
+    public void toSimpleDBAttributeValues_should_return_an_string_representation_of_concatenated_array_elements() throws ParseException {
+        final int[] someInts = {1, 2, 3, 4};
+        final String expectedValue = "1,2,3,4";
+
+        Object returnedPrimitiveCol = SimpleDBAttributeConverter.toDomainFieldPrimitiveCollection(expectedValue, int.class);
+        int arrayLength = Array.getLength(returnedPrimitiveCol);
+
+        for (int idx = 0; idx < arrayLength; idx++) {
+            assertEquals(someInts[idx], Array.get(returnedPrimitiveCol, idx));
+        }
+    }
+
+    @Test
+    public void encode_decode_primitive_collections() throws ParseException {
+        int[] someInts = {1, 2, 3, 4};
+
+        String paddedReturnedString = SimpleDBAttributeConverter.toSimpleDBAttributeValues(someInts);
+
+        Object returnedPrimitiveCol = SimpleDBAttributeConverter.toDomainFieldPrimitiveCollection(paddedReturnedString, int.class);
+        int arrayLength = Array.getLength(returnedPrimitiveCol);
+
+        for (int idx = 0; idx < arrayLength; idx++) {
+            assertEquals(someInts[idx], Array.get(returnedPrimitiveCol, idx));
+        }
+    }
+
     private void encodeAndDecode(double x) {
         encodeAndDecode(new BigDecimal(x));
     }
@@ -231,5 +259,4 @@ public class SimpleDBAttributeConverterTest {
         bgdecoded = AmazonSimpleDBUtil.decodeRealNumberRange(encoded, 20, new BigDecimal(Long.MIN_VALUE).negate());
         assertTrue(bdx.compareTo(bgdecoded) == 0);
     }
-
 }

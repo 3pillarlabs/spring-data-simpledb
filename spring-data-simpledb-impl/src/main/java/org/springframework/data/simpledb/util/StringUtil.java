@@ -1,5 +1,8 @@
 package org.springframework.data.simpledb.util;
 
+import java.util.Arrays;
+import java.util.List;
+
 public final class StringUtil {
 
     private StringUtil() {
@@ -35,5 +38,9 @@ public final class StringUtil {
             String start = String.valueOf(source.charAt(0));
             return start.toLowerCase() + rest;
         }
+    }
+
+    public static List<String> splitStringByDelim(String actual, String deliminator) {
+        return Arrays.asList(actual.split(deliminator));
     }
 }
