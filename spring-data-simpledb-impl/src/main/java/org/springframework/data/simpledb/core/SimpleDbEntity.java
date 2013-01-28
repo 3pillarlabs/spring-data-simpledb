@@ -79,6 +79,10 @@ public class SimpleDbEntity<T, ID extends Serializable> {
                 final Field attributesField = item.getClass().getDeclaredField(key);
                 {
                     attributesField.setAccessible(true);
+
+                    //if(MetadataParser.)
+
+
                     attributesField.set(item, SimpleDBAttributeConverter.toDomainFieldPrimitive(values.get(0), attributesField.getType()));
                 }
             } catch (Exception e) {

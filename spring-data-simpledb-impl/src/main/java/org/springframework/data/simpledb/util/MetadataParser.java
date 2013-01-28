@@ -128,28 +128,22 @@ public final class MetadataParser {
         return fieldList;
     }
 
-    private static boolean isPrimitiveField(Field field, Object object) {
+    public static boolean isPrimitiveField(Field field, Object object) {
         return field.getAnnotation(Attributes.class) == null && field.getAnnotation(Transient.class) == null && !(field.equals(MetadataParser.getIdField(object))) && field.getType().isPrimitive();
     }
 
     public static List<Field> getNestedDomainFields(Object object) {
         final List<Field> fieldList = new ArrayList<>();
-        final List<Field> primitiveFields = getPrimitiveFields(object);
 
         for (Field field : object.getClass().getDeclaredFields()) {
-            if (!(primitiveFields.contains(field)
-                    || Number.class.isAssignableFrom(field.getType())
-                    || Collection.class.isAssignableFrom(field.getType())
-                    || Boolean.class.isAssignableFrom(field.getType())
-                    || String.class.isAssignableFrom(field.getType())
-                    || Date.class.isAssignableFrom(field.getType()))) {
+            if (isNestedDomainField(field, object)) {
                 fieldList.add(field);
             }
         }
         return fieldList;
     }
 
-    public boolean isNestedBomainField(Field field, Object object) {
+    public static boolean isNestedDomainField(Field field, Object object) {
         return !(isPrimitiveField(field, object)
                 || Number.class.isAssignableFrom(field.getType())
                 || Collection.class.isAssignableFrom(field.getType())
