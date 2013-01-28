@@ -107,12 +107,16 @@ public class SimpleDbEntity <T, ID extends Serializable> {
     	for(final Field itemField: MetadataParser.getNestedDomainFields(item)) {
     		try {
     			itemField.setAccessible(Boolean.TRUE);
-				final Object nestedEntity = itemField.get(item);
-				final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(nestedEntity.getClass());
-				final SimpleDbEntity wrapper = new SimpleDbEntity(entityMetadata, nestedEntity);
+				final Object nestedEntityInstance = itemField.get(item);
 				
-				final String domainName = MetadataParser.getDomain(nestedEntity.getClass());
-				final Map<String, List<String>> serializedNestedEntity = wrapper.toAttributes(domainNamePrefix.isEmpty() ? domainName : domainNamePrefix + "." + domainName);
+				final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(nestedEntityInstance.getClass());
+				final SimpleDbEntity nestedEntity = new SimpleDbEntity(entityMetadata, nestedEntityInstance);
+				
+				final String nestedEntityDomainName = MetadataParser.getDomain(nestedEntityInstance.getClass());
+				final String nestedEntityAttributePrefix = domainNamePrefix.isEmpty() ? nestedEntityDomainName : domainNamePrefix + "." + nestedEntityDomainName;
+				
+				/* recursive call */
+				final Map<String, List<String>> serializedNestedEntity = nestedEntity.toAttributes(nestedEntityAttributePrefix);
 				
 				result.putAll(serializedNestedEntity);
 			} catch (IllegalArgumentException | IllegalAccessException e) {

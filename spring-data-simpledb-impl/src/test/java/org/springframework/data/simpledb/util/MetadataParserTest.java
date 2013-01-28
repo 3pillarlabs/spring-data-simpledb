@@ -1,20 +1,21 @@
 package org.springframework.data.simpledb.util;
 
-import org.springframework.data.simpledb.util.MetadataParser;
-import org.springframework.data.simpledb.util.MetadataParserTest.AClass.BClass;
-import org.junit.Test;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.Test;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.simpledb.annotation.Attributes;
 import org.springframework.data.simpledb.annotation.DomainPrefix;
-
-import static org.junit.Assert.*;
 
 public class MetadataParserTest {
 
@@ -125,33 +126,4 @@ public class MetadataParserTest {
 		@Id String anotherId;
 	}
 	
-	/* ********************** Test nested domain entity detection ************** */
-	@Test
-	public void should_parse_only_valid_nested_domain_entities() {
-		final List<Field> parsedNestedEntities = MetadataParser.getNestedDomainFields(new AClass());
-		
-		assertNotNull(parsedNestedEntities);
-		assertTrue(parsedNestedEntities.size() == 1);
-		assertEquals(BClass.class, parsedNestedEntities.get(0).getType());
-	}
-	
-	@SuppressWarnings("unused")
-	static class AClass {
-		@Id
-		private String id;
-		
-		private int intField;
-		private BClass nestedB;
-	
-		private Integer integerField;
-		private List<Float> floatList;
-		
-		static class BClass {
-			/* id by convention */
-			private String id;
-			
-			private int intField;
-		}
-	}
-
 }

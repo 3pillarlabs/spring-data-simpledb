@@ -110,7 +110,7 @@ public class SimpleDbEntityTest {
     
     /* ***************************** Test serilizing nested domain entities ******************* */
     @Test
-    public void should_serilise_nested_domain_fields() {
+    public void should_generate_attribute_keys_for_nested_domain_fields() {
     	final AClass aDomain = new AClass(); {
     		aDomain.integerField = 13;
     		aDomain.nestedB = new BClass(); {
