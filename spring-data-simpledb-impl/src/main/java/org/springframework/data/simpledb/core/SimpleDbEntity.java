@@ -9,8 +9,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.mapping.model.MappingException;
-import org.springframework.data.simpledb.util.MetadataParser;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
+import org.springframework.data.simpledb.util.MetadataParser;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 import org.springframework.util.Assert;
 
@@ -93,11 +94,47 @@ public class SimpleDbEntity <T, ID extends Serializable> {
 //            throw new MappingException("Could not set attribute field", e);
 //        }
     }
+
+    /**
+     * @param domainNamePrefix the prefix the attribute names should be prefixed with 
+     * 
+     * @return a map of all serialized field name with the corresponding list of values (if the field is a collection of primitives)
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private Map<String, List<String>> toAttributes(final String domainNamePrefix) {
+    	final Map<String, List<String>> result = getSerializedPrimitiveAttributes(domainNamePrefix);
+
+    	for(final Field itemField: MetadataParser.getNestedDomainFields(item)) {
+    		try {
+    			itemField.setAccessible(Boolean.TRUE);
+				final Object nestedEntity = itemField.get(item);
+				final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(nestedEntity.getClass());
+				final SimpleDbEntity wrapper = new SimpleDbEntity(entityMetadata, nestedEntity);
+				
+				final String domainName = MetadataParser.getDomain(nestedEntity.getClass());
+				final Map<String, List<String>> serializedNestedEntity = wrapper.toAttributes(domainNamePrefix.isEmpty() ? domainName : domainNamePrefix + "." + domainName);
+				
+				result.putAll(serializedNestedEntity);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				throw new MappingException("Could not retrieve field value " + itemField.getName(), e);
+			}
+    	}
+    	
+    	return result;
+    }
+    
+    public Map<String, List<String>> toAttributes() {
+    	return toAttributes("");
+    }
     
     /**
      * @return a map of serialized field name with the corresponding list of values (if the field is a collection of primitives)
      */
     public Map<String, List<String>> getSerializedPrimitiveAttributes() {
+    	return getSerializedPrimitiveAttributes("");
+    }
+    
+    private Map<String, List<String>> getSerializedPrimitiveAttributes(final String prefix) {
     	final Map<String, List<String>> result = new HashMap<>();
     	
     	for(final Field itemField: MetadataParser.getPrimitiveFields(item)) {
@@ -110,9 +147,10 @@ public class SimpleDbEntity <T, ID extends Serializable> {
 				throw new MappingException("Could not retrieve field value " + itemField.getName(), e);
 			}
     		
-    		result.put(itemField.getName(), fieldValues);
+    		result.put(prefix.isEmpty() ? itemField.getName() : prefix + "." + itemField.getName(), fieldValues);
     	}
     	
     	return result;
     }
+
 }
