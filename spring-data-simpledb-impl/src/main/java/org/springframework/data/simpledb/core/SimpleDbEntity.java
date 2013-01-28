@@ -96,13 +96,13 @@ public class SimpleDbEntity <T, ID extends Serializable> {
     }
 
     /**
-     * @param domainNamePrefix the prefix the attribute names should be prefixed with 
+     * @param fieldNamePrefix the prefix the attribute names should be prefixed with 
      * 
      * @return a map of all serialized field name with the corresponding list of values (if the field is a collection of primitives)
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private Map<String, List<String>> toAttributes(final String domainNamePrefix) {
-    	final Map<String, List<String>> result = getSerializedPrimitiveAttributes(domainNamePrefix);
+    private Map<String, List<String>> toAttributes(final String fieldNamePrefix) {
+    	final Map<String, List<String>> result = getSerializedPrimitiveAttributes(fieldNamePrefix);
 
     	for(final Field itemField: MetadataParser.getNestedDomainFields(item)) {
     		try {
@@ -112,8 +112,8 @@ public class SimpleDbEntity <T, ID extends Serializable> {
 				final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(nestedEntityInstance.getClass());
 				final SimpleDbEntity nestedEntity = new SimpleDbEntity(entityMetadata, nestedEntityInstance);
 				
-				final String nestedEntityDomainName = MetadataParser.getDomain(nestedEntityInstance.getClass());
-				final String nestedEntityAttributePrefix = domainNamePrefix.isEmpty() ? nestedEntityDomainName : domainNamePrefix + "." + nestedEntityDomainName;
+				final String nestedEntityFieldName = itemField.getName();
+				final String nestedEntityAttributePrefix = fieldNamePrefix.isEmpty() ? nestedEntityFieldName : fieldNamePrefix + "." + nestedEntityFieldName;
 				
 				/* recursive call */
 				final Map<String, List<String>> serializedNestedEntity = nestedEntity.toAttributes(nestedEntityAttributePrefix);

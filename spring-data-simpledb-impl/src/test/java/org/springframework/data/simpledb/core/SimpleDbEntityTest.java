@@ -130,8 +130,8 @@ public class SimpleDbEntityTest {
     	
     	final Set<String> keySet = attributes.keySet();
     	assertTrue(keySet.contains("intField"));
-    	assertTrue(keySet.contains("bClass.floatField"));
-    	assertTrue(keySet.contains("bClass.cClass.doubleField"));
+    	assertTrue(keySet.contains("nestedB.floatField"));
+    	assertTrue(keySet.contains("nestedB.nestedNestedC.doubleField"));
     }
     
 	@SuppressWarnings("unused")
