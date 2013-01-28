@@ -52,15 +52,7 @@ public class BasicSimpleDbUserRepositoryTest {
         assertEquals(user.getBooleanField(), foundUser.getBooleanField());
 	}
 
-    @Test
-    public void save_should_generateId() {
 
-        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(null);
-
-        user = repository.save(user);
-
-        assertNotNull(user.getItemName());
-    }
 
   private void incrementalWaitFindOne(final String itemName) {
         new IncrementalWait<SimpleDbUser>() {

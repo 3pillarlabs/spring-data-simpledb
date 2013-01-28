@@ -23,6 +23,7 @@ public class BasicSimpleDbUserConsistentExtendedRepositoryTest {
 
     @After
     public void tearDown() {
+        //may fail
         repository.deleteAll(true);
     }
 

@@ -30,6 +30,7 @@ import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @org.springframework.stereotype.Repository
@@ -176,13 +177,21 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
     public void delete(ID id, boolean consistentRead) {
         Assert.notNull(id, "The given id must not be null!");
 
-        T entity = findOne(id, consistentRead);
 
-        if (entity == null) {
-            throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!", entityInformation.getJavaType(), id));
+        SimpleDbEntity sdbEntity = null;
+        if(consistentRead) {
+            T entity = findOne(id, consistentRead);
+
+            if (entity == null) {
+                throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!", entityInformation.getJavaType(), id));
+            }
+            sdbEntity = new SimpleDbEntity(entityInformation, entity);
+        }  else {
+            sdbEntity = new SimpleDbEntity(entityInformation);
+            sdbEntity.setAttributes(new LinkedHashMap<String, String>());
+            sdbEntity.setId((String)id);
         }
 
-        SimpleDbEntity sdbEntity = new SimpleDbEntity(entityInformation, entity);
         operations.deleteItem(sdbEntity);
     }
 
@@ -202,7 +211,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 
     @Override
     public void deleteAll(boolean consistentRead) {
-        for (T element : findAll()) {
+        for (T element : findAll(consistentRead)) {
             delete(element, consistentRead);
         }
     }
