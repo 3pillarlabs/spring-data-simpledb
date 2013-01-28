@@ -32,7 +32,7 @@ public final class MetadataParser {
      * @param clazz
      * @return
      */
-    public static String getDomain(Class clazz){
+    public static String getDomain(Class<?> clazz){
         StringBuilder ret = new StringBuilder();
 
         String domainPrefix = getDomainPrefix(clazz);
@@ -66,10 +66,13 @@ public final class MetadataParser {
 
 
     public static Field getIdField(Object object){
-        Class<?> clazz = object.getClass();
+    	return getIdField(object.getClass());
+    }
+    
+    public static Field getIdField(Class<?> clazz) {
         Field idField = null;
 
-        for (Field f : clazz.getDeclaredFields()) {
+        for (Field f: clazz.getDeclaredFields()) {
             //named id or annotated with Id
             if(f.getName().equals(FIELD_NAME_DEFAULT_ID) || f.getAnnotation(Id.class) != null){
                 if(idField != null) {
@@ -83,8 +86,9 @@ public final class MetadataParser {
         return idField;
     }
 
-    public static Map<String, String> getAttributes(Object object){
-        Class clazz = object.getClass();
+    @SuppressWarnings("unchecked")
+	public static Map<String, String> getAttributes(Object object){
+        Class<?> clazz = object.getClass();
         for (Field f: clazz.getDeclaredFields()) {
             Attributes attributes = f.getAnnotation(Attributes.class);
             if (attributes != null){
@@ -101,7 +105,7 @@ public final class MetadataParser {
     }
     
     public static Field getAttributesField(Object object){
-        Class clazz = object.getClass();
+        Class<?> clazz = object.getClass();
         for (Field f: clazz.getDeclaredFields()) {
             //annotated with Attributes
             Attributes attributes = f.getAnnotation(Attributes.class);
@@ -114,9 +118,9 @@ public final class MetadataParser {
     }
 
     public static List<Field> getPrimitiveFields(Object object) {
-        List<Field> fieldList = new ArrayList<>();
+        final List<Field> fieldList = new ArrayList<>();
 
-        for(Field field : object.getClass().getDeclaredFields()) {
+        for(Field field: object.getClass().getDeclaredFields()) {
 
                if(field.getAnnotation(Attributes.class) == null
                     && field.getAnnotation(Transient.class) == null
@@ -129,8 +133,25 @@ public final class MetadataParser {
 
         return fieldList;
     }
+    
+    public static List<Field> getNestedDomainFields(Object object) {
+    	final List<Field> fieldList = new ArrayList<>();
+    	
+    	for(Field field: object.getClass().getDeclaredFields()) {
+    		
+    		/* 
+    		 * The only way to identify a domain entity is by checking for 
+    		 * the existence of an 'id' field 
+    		 */
+    		if(! field.getType().isPrimitive() && MetadataParser.getIdField(field.getType()) != null) {
+    			fieldList.add(field);
+    		}
+    	}
+    	
+    	return fieldList;
+    }
 
-    private static String getDomainPrefix(Class clazz){
+    private static String getDomainPrefix(Class<?> clazz){
         DomainPrefix domainPrefix = (DomainPrefix)clazz.getAnnotation(DomainPrefix.class);
         if(domainPrefix != null){
             return domainPrefix.value();

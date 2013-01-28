@@ -1,6 +1,7 @@
 package org.springframework.data.simpledb.util;
 
 import org.springframework.data.simpledb.util.MetadataParser;
+import org.springframework.data.simpledb.util.MetadataParserTest.AClass.BClass;
 import org.junit.Test;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -52,7 +53,7 @@ public class MetadataParserTest {
 
 
 	static class SampleDeclaredId {
-
+		@SuppressWarnings("unused")
 		private String id = SAMPLE_ITEM;
 
 		@Attributes
@@ -100,6 +101,7 @@ public class MetadataParserTest {
 		MetadataParser.getIdField(new TwoIdsShouldFail());
 	}
 
+	@SuppressWarnings("unused")
 	static class SampleDeclaredPrimitives {
 		@Transient
 		private int shouldBeTransient;
@@ -121,6 +123,40 @@ public class MetadataParserTest {
 	static class TwoIdsShouldFail {
 		String id;
 		@Id String anotherId;
+	}
+	
+	/* ********************** Test nested domain entity detection ************** */
+	@Test
+	public void should_parse_only_valid_nested_domain_entities() {
+		final List<Field> parsedNestedEntities = MetadataParser.getNestedDomainFields(new AClass());
+		
+		assertNotNull(parsedNestedEntities);
+		assertTrue(parsedNestedEntities.size() == 1);
+		assertEquals(BClass.class, parsedNestedEntities.get(0).getType());
+	}
+	
+	@SuppressWarnings("unused")
+	static class AClass {
+		@Id
+		private String id;
+		
+		private int intField;
+		private BClass nestedB;
+	
+		private DecoyClass nestedDecoy;
+		
+		static class BClass {
+			/* id by convention */
+			private String id;
+			
+			private int intField;
+		}
+		
+		static class DecoyClass {
+			/* has no id field */
+			
+			private int intField;
+		}
 	}
 
 }
