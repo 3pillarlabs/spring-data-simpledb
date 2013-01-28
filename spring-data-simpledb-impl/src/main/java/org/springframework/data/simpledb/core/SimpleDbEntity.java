@@ -1,30 +1,22 @@
 package org.springframework.data.simpledb.core;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.mapping.model.MappingException;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.annotation.MetadataParser;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 import org.springframework.util.Assert;
 
 public class SimpleDbEntity <T, ID extends Serializable> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbEntity.class);
-	
-    private SimpleDbEntityInformation<T, ?> entityInformation;
+
+	private SimpleDbEntityInformation<T, ?> entityInformation;
     private T item;
 
     public SimpleDbEntity(SimpleDbEntityInformation<T, ?> entityInformation, T item){
@@ -87,14 +79,8 @@ public class SimpleDbEntity <T, ID extends Serializable> {
 				
 	            attributesField.setAccessible(true);
 	            attributesField.set(item, SimpleDBAttributeConverter.toDomainFieldPrimitive(values.get(0), attributesField.getType()));
-			} catch (NoSuchFieldException | SecurityException e) {
+			} catch (Exception e) {
 				throw new MappingException("Could not set attribute field " + key, e);
-			} catch (IllegalArgumentException e) {
-				LOGGER.error("Illegal argument exception parsing field {}. Exception: {}", key, e);
-			} catch (IllegalAccessException e) {
-				LOGGER.error("Illegal access exception parsing field {}. Exception: {}", key, e);
-			} catch (ParseException e) {
-				LOGGER.error("Parsing exception parsing field {}. Exception: {}", key, e);
 			}
     	}
     	
@@ -120,8 +106,8 @@ public class SimpleDbEntity <T, ID extends Serializable> {
     		try {
     			itemField.setAccessible(Boolean.TRUE);
 				fieldValues.add(SimpleDBAttributeConverter.toSimpleDBAttributeValue(itemField.get(item)));
-			} catch (IllegalArgumentException | IllegalAccessException e) {
-				LOGGER.error("Could not retrieve field value {}. Exception: {} ", itemField.getName(), e);
+			} catch (Exception e) {
+				throw new MappingException("Could not retrieve field value " + itemField.getName(), e);
 			}
     		
     		result.put(itemField.getName(), fieldValues);
