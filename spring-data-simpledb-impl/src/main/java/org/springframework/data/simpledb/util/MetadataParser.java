@@ -21,24 +21,24 @@ import org.springframework.data.simpledb.annotation.DomainPrefix;
 @Component
 public final class MetadataParser {
 
-
     private static final Logger LOGGER = LoggerFactory.getLogger(MetadataParser.class);
     public static final String FIELD_NAME_DEFAULT_ID = "id";
 
-    private MetadataParser(){
+    private MetadataParser() {
         //Utility class
     }
 
     /**
      * Domain name are computed based on class names: UserJob -> user_job
+     *
      * @param clazz
      * @return
      */
-    public static String getDomain(Class<?> clazz){
+    public static String getDomain(Class<?> clazz) {
         StringBuilder ret = new StringBuilder();
 
         String domainPrefix = getDomainPrefix(clazz);
-        if(domainPrefix !=null){
+        if (domainPrefix != null) {
             ret.append(domainPrefix);
             ret.append(".");
         }
@@ -50,10 +50,10 @@ public final class MetadataParser {
         return ret.toString();
     }
 
-    public static String getItemName(Object object){
+    public static String getItemName(Object object) {
         Field idField = getIdField(object);
 
-        if (idField != null){
+        if (idField != null) {
             try {
                 idField.setAccessible(true);
                 return (String) idField.get(object);
@@ -65,19 +65,17 @@ public final class MetadataParser {
         return null;
     }
 
-
-
-    public static Field getIdField(Object object){
-    	return getIdField(object.getClass());
+    public static Field getIdField(Object object) {
+        return getIdField(object.getClass());
     }
-    
+
     public static Field getIdField(Class<?> clazz) {
         Field idField = null;
 
-        for (Field f: clazz.getDeclaredFields()) {
+        for (Field f : clazz.getDeclaredFields()) {
             //named id or annotated with Id
-            if(f.getName().equals(FIELD_NAME_DEFAULT_ID) || f.getAnnotation(Id.class) != null){
-                if(idField != null) {
+            if (f.getName().equals(FIELD_NAME_DEFAULT_ID) || f.getAnnotation(Id.class) != null) {
+                if (idField != null) {
                     throw new MappingException("Multiple id fields detected for class " + clazz.getName());
                 }
                 idField = f;
@@ -89,12 +87,12 @@ public final class MetadataParser {
     }
 
     @SuppressWarnings("unchecked")
-	public static Map<String, String> getAttributes(Object object){
+    public static Map<String, String> getAttributes(Object object) {
         Class<?> clazz = object.getClass();
-        for (Field f: clazz.getDeclaredFields()) {
+        for (Field f : clazz.getDeclaredFields()) {
             Attributes attributes = f.getAnnotation(Attributes.class);
-            if (attributes != null){
-               try {
+            if (attributes != null) {
+                try {
                     f.setAccessible(true);
                     return (Map<String, String>) f.get(object);
                 } catch (IllegalAccessException e) {
@@ -105,13 +103,13 @@ public final class MetadataParser {
 
         return null;
     }
-    
-    public static Field getAttributesField(Object object){
+
+    public static Field getAttributesField(Object object) {
         Class<?> clazz = object.getClass();
-        for (Field f: clazz.getDeclaredFields()) {
+        for (Field f : clazz.getDeclaredFields()) {
             //annotated with Attributes
             Attributes attributes = f.getAnnotation(Attributes.class);
-            if (attributes != null){
+            if (attributes != null) {
                 return f;
             }
         }
@@ -122,48 +120,50 @@ public final class MetadataParser {
     public static List<Field> getPrimitiveFields(Object object) {
         final List<Field> fieldList = new ArrayList<>();
 
-        for(Field field: object.getClass().getDeclaredFields()) {
-
-               if(field.getAnnotation(Attributes.class) == null
-                    && field.getAnnotation(Transient.class) == null
-                    && !(field.equals(MetadataParser.getIdField(object)))
-                    && field.getType().isPrimitive()) {
-
+        for (Field field : object.getClass().getDeclaredFields()) {
+            if (isPrimitiveField(field, object)) {
                 fieldList.add(field);
             }
         }
-
         return fieldList;
     }
-    
-    public static List<Field> getNestedDomainFields(Object object) {
-    	final List<Field> fieldList = new ArrayList<>();
-    	final List<Field> primitiveFields = getPrimitiveFields(object);
-    	
-    	for(Field field: object.getClass().getDeclaredFields()) {
-    		
-    		if(! ( primitiveFields.contains(field)
-    				|| Number.class.isAssignableFrom(field.getType())
-    				|| Collection.class.isAssignableFrom(field.getType())
-    				|| Boolean.class.isAssignableFrom(field.getType())
-    				|| String.class.isAssignableFrom(field.getType())
-    				|| Date.class.isAssignableFrom(field.getType()) )) {
-    			
-    			fieldList.add(field);
-    		}
-    	}
-    	
-    	return fieldList;
+
+    private static boolean isPrimitiveField(Field field, Object object) {
+        return field.getAnnotation(Attributes.class) == null && field.getAnnotation(Transient.class) == null && !(field.equals(MetadataParser.getIdField(object))) && field.getType().isPrimitive();
     }
 
-    private static String getDomainPrefix(Class<?> clazz){
-        DomainPrefix domainPrefix = (DomainPrefix)clazz.getAnnotation(DomainPrefix.class);
-        if(domainPrefix != null){
+    public static List<Field> getNestedDomainFields(Object object) {
+        final List<Field> fieldList = new ArrayList<>();
+        final List<Field> primitiveFields = getPrimitiveFields(object);
+
+        for (Field field : object.getClass().getDeclaredFields()) {
+            if (!(primitiveFields.contains(field)
+                    || Number.class.isAssignableFrom(field.getType())
+                    || Collection.class.isAssignableFrom(field.getType())
+                    || Boolean.class.isAssignableFrom(field.getType())
+                    || String.class.isAssignableFrom(field.getType())
+                    || Date.class.isAssignableFrom(field.getType()))) {
+                fieldList.add(field);
+            }
+        }
+        return fieldList;
+    }
+
+    public boolean isNestedBomainField(Field field, Object object) {
+        return !(isPrimitiveField(field, object)
+                || Number.class.isAssignableFrom(field.getType())
+                || Collection.class.isAssignableFrom(field.getType())
+                || Boolean.class.isAssignableFrom(field.getType())
+                || String.class.isAssignableFrom(field.getType())
+                || Date.class.isAssignableFrom(field.getType()));
+    }
+
+    private static String getDomainPrefix(Class<?> clazz) {
+        DomainPrefix domainPrefix = (DomainPrefix) clazz.getAnnotation(DomainPrefix.class);
+        if (domainPrefix != null) {
             return domainPrefix.value();
         }
 
         return SimpleDbConfig.getInstance().getDomainPrefix();
     }
-
-
 }
