@@ -17,25 +17,25 @@ public class NestedDomainEntitiesTest {
 	static class AClass {
 		@Id
 		private String id;
-		
+
 		private int intField;
 		private BClass nestedB;
-	
+
 		private Integer integerField;
 		private List<Float> floatList;
-		
+
 		static class BClass {
-			
+
 			private int intField;
 		}
 	}
-	
+
 	@Test
 	public void should_parse_only_valid_nested_domain_entities() {
 		final List<Field> parsedNestedEntities = MetadataParser.getNestedDomainFields(new AClass());
-		
+
 		assertTrue(parsedNestedEntities.size() == 1);
 		assertEquals(BClass.class, parsedNestedEntities.get(0).getType());
 	}
-	
+
 }

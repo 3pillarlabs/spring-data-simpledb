@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
@@ -69,35 +71,64 @@ public class SimpleDbEntity<T, ID extends Serializable> {
     }
 
     public void setAttributes(Map<String, List<String>> attributes) {
-        for (final String key : attributes.keySet()) {
-            /* we only support simple primitives (list should be of size = 1) */
-            final List<String> values = attributes.get(key);
-            Assert.notNull(values);
-            Assert.isTrue(values.size() == 1);
-
-            try {
-                final Field attributesField = item.getClass().getDeclaredField(key);
-                {
-                    attributesField.setAccessible(true);
-
-                    //if(MetadataParser.)
-
-
-                    attributesField.set(item, SimpleDBAttributeConverter.toDomainFieldPrimitive(values.get(0), attributesField.getType()));
+        try {
+            for (final String key : attributes.keySet()) {
+                final List<String> values = attributes.get(key);
+                Assert.notNull(values);
+                Assert.isTrue(values.size() == 1);
+                if (isPrimitiveKey(key)) {
+                    final Field attributesField = item.getClass().getDeclaredField(key);
+                    {
+                        attributesField.setAccessible(true);
+                        attributesField.set(item, SimpleDBAttributeConverter.toDomainFieldPrimitive(values.get(0), attributesField.getType()));
+                    }
                 }
-            } catch (Exception e) {
-                throw new MappingException("Could not set attribute field " + key, e);
+            }
+            //key is not primitive
+            final Map<String, Map<String, List<String>>> nestedAttributeValues = splitNestedAttributeValues(attributes);
+            if (nestedAttributeValues.size() > 0) {
+                for (final String key : nestedAttributeValues.keySet()) {
+                    final Field attributesField = item.getClass().getDeclaredField(key);
+
+                    final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(attributesField.getType());
+                    final SimpleDbEntity nestedEntity = new SimpleDbEntity(entityMetadata);
+
+                    /* recursive call */
+                    nestedEntity.setAttributes(nestedAttributeValues.get(key));
+
+                    attributesField.setAccessible(true);
+                    attributesField.set(item, nestedEntity.getItem());
+                }
+            }
+        } catch (Exception e) {
+            throw new MappingException("Could not map attributes", e);
+        }
+    }
+
+    private boolean isPrimitiveKey(final String key) {
+        return !key.contains(".");
+    }
+
+    private Map<String, Map<String, List<String>>> splitNestedAttributeValues(Map<String, List<String>> attributes) {
+        final Map<String, Map<String, List<String>>> nestedFieldAttributes = new HashMap<>();
+
+        for (String key : attributes.keySet()) {
+            if (key.contains(".")) {
+                Map<String, List<String>> nestedFieldValues = new HashMap<>();
+                int prefixIndex = key.indexOf('.');
+                final String nestedFieldName = key.substring(0, prefixIndex);
+                final String subField = key.substring(prefixIndex + 1);
+
+                if (nestedFieldAttributes.containsKey(nestedFieldName)) {
+                    nestedFieldValues = nestedFieldAttributes.get(nestedFieldName);
+                }
+
+                nestedFieldValues.put(subField, attributes.get(key));
+
+                nestedFieldAttributes.put(nestedFieldName, nestedFieldValues);
             }
         }
-
-//        try {
-//            final Field attributesField = item.getClass().getDeclaredField(entityInformation.getAttributesFieldName(item));
-//
-//            attributesField.setAccessible(true);
-//            attributesField.set(item, attributes);
-//        } catch (NoSuchFieldException | IllegalAccessException e) {
-//            throw new MappingException("Could not set attribute field", e);
-//        }
+        return nestedFieldAttributes;
     }
 
     /**
