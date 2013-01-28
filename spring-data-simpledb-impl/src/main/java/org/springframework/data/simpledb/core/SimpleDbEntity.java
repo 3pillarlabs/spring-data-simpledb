@@ -119,7 +119,7 @@ public class SimpleDbEntity <T, ID extends Serializable> {
     		
     		try {
     			itemField.setAccessible(Boolean.TRUE);
-				fieldValues.add(SimpleDBAttributeConverter.toSimpleDBAttribute(itemField.get(item)));
+				fieldValues.add(SimpleDBAttributeConverter.toSimpleDBAttributeValue(itemField.get(item)));
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				LOGGER.error("Could not retrieve field value {}. Exception: {} ", itemField.getName(), e);
 			}

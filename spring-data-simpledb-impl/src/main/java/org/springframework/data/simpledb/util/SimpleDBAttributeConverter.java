@@ -33,7 +33,7 @@ public class SimpleDBAttributeConverter {
 		return ob.toString();
 	}
 
-	public static String toSimpleDBAttribute(final Object fieldValue) {
+	public static String toSimpleDBAttributeValue(final Object fieldValue) {
 		return padOrConvertIfRequired(fieldValue);
 	}
 	
@@ -44,7 +44,7 @@ public class SimpleDBAttributeConverter {
 			
 			Object val = null;
 			for(final Iterator<?> it = fieldValues.iterator(); it.hasNext(); val = it.next()){
-				result.add(toSimpleDBAttribute(val));
+				result.add(toSimpleDBAttributeValue(val));
 			}
 		}
 		
