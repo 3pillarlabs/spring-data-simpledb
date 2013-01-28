@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.mapping.model.MappingException;
-import org.springframework.data.simpledb.annotation.MetadataParser;
+import org.springframework.data.simpledb.util.MetadataParser;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 import org.springframework.util.Assert;

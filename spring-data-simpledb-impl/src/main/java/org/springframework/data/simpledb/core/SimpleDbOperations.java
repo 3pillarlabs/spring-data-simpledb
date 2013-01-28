@@ -9,7 +9,6 @@ import org.springframework.data.simpledb.core.domain.DomainManager;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 public interface SimpleDbOperations<T, ID extends Serializable> {
-    //TDOO here implement all there is to know about SimpleDB
 
     T updateItem(SimpleDbEntity<T, ID> entity);
 

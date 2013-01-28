@@ -2,7 +2,7 @@ package org.springframework.data.simpledb.util;
 
 public final class StringUtil {
 
-    private StringUtil(){
+    private StringUtil() {
         //utility class
     }
 
@@ -10,9 +10,9 @@ public final class StringUtil {
         return str.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])");
     }
 
-    public static String combineLowerCase(String[] values, String separator){
-        StringBuffer buffer = new StringBuffer("");
-        for (String value: values){
+    public static String combineLowerCase(String[] values, String separator) {
+        StringBuilder buffer = new StringBuilder("");
+        for (String value : values) {
             buffer.append(value.toLowerCase());
             buffer.append(separator);
         }
@@ -20,16 +20,15 @@ public final class StringUtil {
         String str = buffer.toString();
 
         //remove last separator
-        return str.substring(0, str.length()-1);
+        return str.substring(0, str.length() - 1);
     }
 
-
-    public static String toLowerFirstChar(String source){
-        if(source == null){
+    public static String toLowerFirstChar(String source) {
+        if (source == null) {
             return null;
         }
 
-        if(source.length() == 1){
+        if (source.length() == 1) {
             return source.toLowerCase();
         } else {
             String rest = source.substring(1);
@@ -37,5 +36,4 @@ public final class StringUtil {
             return start.toLowerCase() + rest;
         }
     }
-
 }

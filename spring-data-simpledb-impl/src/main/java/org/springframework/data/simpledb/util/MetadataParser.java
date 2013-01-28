@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.annotation;
+package org.springframework.data.simpledb.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +13,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.springframework.data.simpledb.annotation.Attributes;
+import org.springframework.data.simpledb.annotation.DomainPrefix;
 
 @Component
 public final class MetadataParser {

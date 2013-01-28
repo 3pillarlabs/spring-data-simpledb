@@ -1,25 +1,16 @@
 package org.springframework.data.simpledb.util;
-/*******************************************************************************
- *  Copyright 2007 Amazon Technologies, Inc.
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *
- *  You may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at: http://aws.amazon.com/apache2.0
- *  This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- *  CONDITIONS OF ANY KIND, either express or implied. See the License for the
- *  specific language governing permissions and limitations under the License.
+
+/**
  * *****************************************************************************
- *    __  _    _  ___
- *   (  )( \/\/ )/ __)
- *   /__\ \    / \__ \
- *  (_)(_) \/\/  (___/
+ * Copyright 2007 Amazon Technologies, Inc. Licensed under the Apache License, Version 2.0 (the "License");
  *
- *  Amazon Simple DB Java Library
- *  API Version: 2007-11-07
- *  Generated: Fri Jan 18 01:13:17 PST 2008
+ * You may not use this file except in compliance with the License. You may obtain a copy of the License at: http://aws.amazon.com/apache2.0 This file is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ * ***************************************************************************** __ _ _ ___ ( )( \/\/ )/ __) /__\ \ / \__ \ (_)(_) \/\/ (___/
+ *
+ * Amazon Simple DB Java Library API Version: 2007-11-07 Generated: Fri Jan 18 01:13:17 PST 2008
  *
  */
-
 import org.apache.commons.codec.binary.Base64;
 
 import java.math.BigDecimal;
@@ -28,13 +19,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Provides collection of static functions for conversion of various values into strings that may be
- * compared lexicographically.
+ * Provides collection of static functions for conversion of various values into strings that may be compared lexicographically.
  *
  */
 public class AmazonSimpleDBUtil {
 
-    /** static value hardcoding date format used for conversation of Date into String */
+    /**
+     * static value hardcoding date format used for conversation of Date into String
+     */
     private static String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     public static final int LONG_DIGITS = 20;
 
@@ -42,7 +34,7 @@ public class AmazonSimpleDBUtil {
         BigDecimal offsetNumber = number.add(offsetValue);
         String longString = offsetNumber.toString();
         int numZeroes = maxNumDigits - longString.length();
-        StringBuffer strBuffer = new StringBuffer(numZeroes + longString.length());
+        StringBuilder strBuffer = new StringBuilder(numZeroes + longString.length());
         for (int i = 0; i < numZeroes; i++) {
             strBuffer.insert(i, '0');
         }
@@ -59,7 +51,7 @@ public class AmazonSimpleDBUtil {
         String longString = offsetNumber.toString();
         int numBeforeDecimal = longString.length();
         int numZeroes = maxDigitsLeft + maxDigitsRight - numBeforeDecimal;
-        StringBuffer strBuffer = new StringBuffer(numZeroes + longString.length());
+        StringBuilder strBuffer = new StringBuilder(numZeroes + longString.length());
         for (int i = 0; i < numZeroes; i++) {
             strBuffer.insert(i, '0');
         }
@@ -97,14 +89,13 @@ public class AmazonSimpleDBUtil {
      * Decodes date value from the string representation created using encodeDate(..) function.
      *
      * @param	value	string representation of the date value
-     * @return			original date value
+     * @return	original date value
      */
     public static Date decodeDate(String value) throws ParseException {
         String javaValue = value.substring(0, value.length() - 3) + value.substring(value.length() - 2);
         SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormat);
         return dateFormatter.parse(javaValue);
     }
-
 
     /**
      * Encodes date value into a base64-encoded string.
@@ -118,7 +109,7 @@ public class AmazonSimpleDBUtil {
     /**
      * Decodes byte[] value from the string representation created using encodeDate(..) function.
      *
-     * @param    value    string representation of the date value
+     * @param value string representation of the date value
      * @return original byte[] value
      */
     public static byte[] decodeByteArray(String value) throws ParseException {
