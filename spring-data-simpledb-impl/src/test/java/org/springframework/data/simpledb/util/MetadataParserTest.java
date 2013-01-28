@@ -143,17 +143,12 @@ public class MetadataParserTest {
 		private int intField;
 		private BClass nestedB;
 	
-		private DecoyClass nestedDecoy;
+		private Integer integerField;
+		private List<Float> floatList;
 		
 		static class BClass {
 			/* id by convention */
 			private String id;
-			
-			private int intField;
-		}
-		
-		static class DecoyClass {
-			/* has no id field */
 			
 			private int intField;
 		}

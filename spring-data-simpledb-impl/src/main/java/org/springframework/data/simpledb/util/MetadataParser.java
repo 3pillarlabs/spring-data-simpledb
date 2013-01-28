@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.springframework.data.simpledb.annotation.Attributes;
@@ -136,14 +138,17 @@ public final class MetadataParser {
     
     public static List<Field> getNestedDomainFields(Object object) {
     	final List<Field> fieldList = new ArrayList<>();
+    	final List<Field> primitiveFields = getPrimitiveFields(object);
     	
     	for(Field field: object.getClass().getDeclaredFields()) {
     		
-    		/* 
-    		 * The only way to identify a domain entity is by checking for 
-    		 * the existence of an 'id' field 
-    		 */
-    		if(! field.getType().isPrimitive() && MetadataParser.getIdField(field.getType()) != null) {
+    		if(! ( primitiveFields.contains(field)
+    				|| Number.class.isAssignableFrom(field.getType())
+    				|| Collection.class.isAssignableFrom(field.getType())
+    				|| Boolean.class.isAssignableFrom(field.getType())
+    				|| String.class.isAssignableFrom(field.getType())
+    				|| Date.class.isAssignableFrom(field.getType()) )) {
+    			
     			fieldList.add(field);
     		}
     	}
