@@ -1,5 +1,7 @@
 package org.springframework.data.simpledb.sample.simpledb.repository;
 
+import org.springframework.data.simpledb.sample.simpledb.repository.util.IncrementalWait;
+import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +17,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:simple-simpledb-repository-context.xml")
+@ContextConfiguration(locations = "classpath:simpledb-repository-context.xml")
 //@Ignore(value = "work in progress")
 public class BasicSimpleDbUserRepositoryTest {
 
@@ -38,7 +40,7 @@ public class BasicSimpleDbUserRepositoryTest {
         SimpleDbUser foundUser = repository.findOne(user.getItemName());
 
         assertEquals(user.getItemName(), foundUser.getItemName());
-        
+
         assertMatchingAttributes(user, foundUser);
     }
 

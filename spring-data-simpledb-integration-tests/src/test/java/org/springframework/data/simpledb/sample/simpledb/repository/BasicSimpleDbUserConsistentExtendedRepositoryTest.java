@@ -1,5 +1,6 @@
 package org.springframework.data.simpledb.sample.simpledb.repository;
 
+import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -13,7 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:simple-simpledb-repository-context.xml")
+@ContextConfiguration(locations = "classpath:simpledb-repository-context.xml")
 //@Ignore(value = "work in progress")
 public class BasicSimpleDbUserConsistentExtendedRepositoryTest {
 
@@ -33,7 +34,7 @@ public class BasicSimpleDbUserConsistentExtendedRepositoryTest {
 
         SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
         repository.save(user, true);
-        
+
         SimpleDbUser findOneResult = repository.findOne(itemName, true);
 		assertNotNull(findOneResult);
 

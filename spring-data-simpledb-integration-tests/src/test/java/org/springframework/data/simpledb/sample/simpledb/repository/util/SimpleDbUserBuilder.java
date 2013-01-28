@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.sample.simpledb.repository;
+package org.springframework.data.simpledb.sample.simpledb.repository.util;
 
 import java.util.ArrayList;
 import java.util.List;
