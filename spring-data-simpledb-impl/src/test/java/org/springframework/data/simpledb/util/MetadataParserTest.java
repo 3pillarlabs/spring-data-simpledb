@@ -1,19 +1,21 @@
 package org.springframework.data.simpledb.util;
 
-import org.springframework.data.simpledb.util.MetadataParser;
-import org.junit.Test;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.Test;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.simpledb.annotation.Attributes;
 import org.springframework.data.simpledb.annotation.DomainPrefix;
-
-import static org.junit.Assert.*;
 
 public class MetadataParserTest {
 
@@ -52,7 +54,7 @@ public class MetadataParserTest {
 
 
 	static class SampleDeclaredId {
-
+		@SuppressWarnings("unused")
 		private String id = SAMPLE_ITEM;
 
 		@Attributes
@@ -100,6 +102,7 @@ public class MetadataParserTest {
 		MetadataParser.getIdField(new TwoIdsShouldFail());
 	}
 
+	@SuppressWarnings("unused")
 	static class SampleDeclaredPrimitives {
 		@Transient
 		private int shouldBeTransient;
@@ -122,5 +125,5 @@ public class MetadataParserTest {
 		String id;
 		@Id String anotherId;
 	}
-
+	
 }

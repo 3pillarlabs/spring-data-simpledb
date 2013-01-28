@@ -9,8 +9,12 @@ import static org.junit.Assert.assertTrue;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.simpledb.core.SimpleDbEntityTest.AClass.BClass;
+import org.springframework.data.simpledb.core.SimpleDbEntityTest.AClass.BClass.CClass;
 import org.springframework.data.simpledb.core.domain.SimpleDbSampleEntity;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
@@ -103,4 +107,52 @@ public class SimpleDbEntityTest {
         List<String> booleanValues = attributes.get("booleanField");
         assertTrue(entity.getBooleanField() == ((Boolean)SimpleDBAttributeConverter.toDomainFieldPrimitive(booleanValues.get(0), Boolean.class)).booleanValue());
     }
+    
+    /* ***************************** Test serilizing nested domain entities ******************* */
+    @Test
+    public void should_generate_attribute_keys_for_nested_domain_fields() {
+    	final AClass aDomain = new AClass(); {
+    		aDomain.integerField = 13;
+    		aDomain.nestedB = new BClass(); {
+    			aDomain.nestedB.floatField = 21f;
+    			aDomain.nestedB.nestedNestedC = new CClass(); {
+    				aDomain.nestedB.nestedNestedC.doubleField = 14d;
+    			}
+    		}
+    		aDomain.integerField = new Integer(35);
+    	}
+    	
+    	SimpleDbEntity<AClass, String> sdbEntity = new SimpleDbEntity<>(this.<AClass>readEntityInformation(AClass.class), aDomain);
+    	final Map<String, List<String>> attributes = sdbEntity.toAttributes();
+    	
+    	assertNotNull(attributes);
+    	assertTrue(attributes.size() == 3);
+    	
+    	final Set<String> keySet = attributes.keySet();
+    	assertTrue(keySet.contains("intField"));
+    	assertTrue(keySet.contains("nestedB.floatField"));
+    	assertTrue(keySet.contains("nestedB.nestedNestedC.doubleField"));
+    }
+    
+	@SuppressWarnings("unused")
+	static class AClass {
+		@Id
+		private String id;
+		
+		private int intField;
+		private BClass nestedB;
+	
+		private Integer integerField;
+		
+		static class BClass {
+			private float floatField;
+			
+			private CClass nestedNestedC;
+			
+			static class CClass {
+				
+				private double doubleField;
+			}
+		}
+	}
 }
