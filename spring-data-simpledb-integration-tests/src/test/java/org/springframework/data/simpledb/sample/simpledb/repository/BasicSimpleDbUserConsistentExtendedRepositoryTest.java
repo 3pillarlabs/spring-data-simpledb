@@ -13,17 +13,17 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:simpledb-consistent-repository-context.xml")
+@ContextConfiguration(locations = "classpath:simple-simpledb-repository-context.xml")
 //@Ignore(value = "work in progress")
-public class BasicSimpleDbUserConsistentRepositoryTest {
+public class BasicSimpleDbUserConsistentExtendedRepositoryTest {
 
     @Autowired
-    BasicSimpleDbUserRepository repository;
+    SimpleDbUserRepositoryConsistent repository;
 
 
     @After
     public void tearDown() {
-        repository.deleteAll();
+        repository.deleteAll(true);
     }
 
     @Test
@@ -31,13 +31,13 @@ public class BasicSimpleDbUserConsistentRepositoryTest {
         String itemName = "FirstItem";
 
         SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
-        repository.save(user);
+        repository.save(user, true);
         
-        SimpleDbUser findOneResult = repository.findOne(itemName);
+        SimpleDbUser findOneResult = repository.findOne(itemName, true);
 		assertNotNull(findOneResult);
 
-        repository.delete(itemName);
-        assertNull(repository.findOne(itemName));
+        repository.delete(itemName, true);
+        assertNull(repository.findOne(itemName, true));
     }
 
     @Test
@@ -45,11 +45,11 @@ public class BasicSimpleDbUserConsistentRepositoryTest {
         String itemName = "FirstItem";
 
         SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
-        repository.save(user);
-        assertEquals(1,repository.count());
+        repository.save(user, true);
+        assertEquals(1, repository.count(true));
 
-        repository.delete(itemName);
-        assertEquals(0,repository.count());
+        repository.delete(itemName, true);
+        assertEquals(0, repository.count(true));
     }
 
 }

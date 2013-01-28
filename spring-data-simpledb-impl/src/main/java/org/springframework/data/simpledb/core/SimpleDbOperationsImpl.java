@@ -22,11 +22,9 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbOperationsImpl.class);
     private final AmazonSimpleDB sdb;
     private final DomainItemBuilder domainItemBuilder;
-    private final boolean consistentRead;
 
     public SimpleDbOperationsImpl(AmazonSimpleDB sdb) {
         this.sdb = sdb;
-        this.consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
         domainItemBuilder = new DomainItemBuilder<>();
     }
 
@@ -54,25 +52,25 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     }
 
     @Override
-    public T readItem(SimpleDbEntityInformation<T, ID> entityInformation, ID id) {
+    public T readItem(SimpleDbEntityInformation<T, ID> entityInformation, ID id, boolean consistentRead) {
         LOGGER.info("Read ItemName \"{}\"\"", id);
         List<ID> ids = new ArrayList<>();
         {
             ids.add(id);
         }
-        List<T> results = find(entityInformation, new QueryBuilder(entityInformation).with(ids));
+        List<T> results = find(entityInformation, new QueryBuilder(entityInformation).with(ids), consistentRead);
         return results.size()==1?results.get(0):null;
     }
 
     @Override
-    public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, QueryBuilder queryBuilder) {
+    public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, QueryBuilder queryBuilder, boolean consistentRead) {
         LOGGER.info("Find All Domain \"{}\"\" isConsistent=\"{}\"\"", entityInformation.getDomain(), consistentRead);
         final SelectResult selectResult = sdb.select(new SelectRequest(queryBuilder.toString(), consistentRead));
         return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
     }
 
     @Override
-    public long count(SimpleDbEntityInformation entityInformation) {
+    public long count(SimpleDbEntityInformation entityInformation, boolean consistentRead) {
         LOGGER.info("Count items from domain \"{}\"\" isConsistent=\"{}\"\"", entityInformation.getDomain(), consistentRead);
         final SelectResult selectResult = sdb.select(new SelectRequest(new QueryBuilder(entityInformation).with(QueryBuilder.Count.ON).toString(), consistentRead));
         for (Item item : selectResult.getItems()) {

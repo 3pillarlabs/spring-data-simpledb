@@ -9,15 +9,18 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 import java.util.*;
 
 import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.*;
 
 public class DomainItemBuilderTest {
 
     public static final String SAMPLE_ITEM_NAME = "SAMPLE_ITEM_NAME";
     public static final String SAMPLE_ATT_NAME = "name";
     public static final String SAMPLE_ATT_VALUE = "value";
-	private static final Boolean SAMPLE_BOOLEAN_ATT_VALUE = Boolean.TRUE;
+<<<<<<< HEAD
+    public static final boolean SAMPLE_BOOLEAN_ATT_VALUE = Boolean.TRUE;
+    private DomainItemBuilder<SampleDomainEntity, String> domainItemBuilder;
+=======
     private DomainItemBuilder<SimpleDbSampleEntity, String> domainItemBuilder;
+>>>>>>> 29c5fd5640bc620e973075e835ef1a96cae117a6
 
     @Test
     public void buildDomainItem_should_convert_item_name() {
@@ -28,7 +31,7 @@ public class DomainItemBuilderTest {
         domainItemBuilder = new DomainItemBuilder<>();
         SimpleDbSampleEntity returnedDomainEntity = domainItemBuilder.buildDomainItem(entityInformation, sampleItem);
 
-        assertEquals(SAMPLE_ITEM_NAME, returnedDomainEntity.getItemName());
+        assertEquals(SAMPLE_ITEM_NAME, returnedDomainEntity.itemName);
     }
 
     @Test
@@ -42,8 +45,20 @@ public class DomainItemBuilderTest {
         domainItemBuilder = new DomainItemBuilder<>();
         SimpleDbSampleEntity returnedDomainEntity = domainItemBuilder.buildDomainItem(entityInformation, sampleItem);
 
-        assertTrue(returnedDomainEntity.getBooleanField() == SAMPLE_BOOLEAN_ATT_VALUE);
+        assertEquals(SAMPLE_BOOLEAN_ATT_VALUE, returnedDomainEntity.booleanField == SAMPLE_BOOLEAN_ATT_VALUE);
     }
 
 
+<<<<<<< HEAD
+        @Id
+        private String itemName;
+
+        private boolean booleanField;
+    }
+
+    private SimpleDbEntityInformation<SampleDomainEntity, String> readEntityInformation() {
+        return (SimpleDbEntityInformation<SampleDomainEntity, String>) SimpleDbEntityInformationSupport.getMetadata(SampleDomainEntity.class);
+    }
+=======
+>>>>>>> 29c5fd5640bc620e973075e835ef1a96cae117a6
 }

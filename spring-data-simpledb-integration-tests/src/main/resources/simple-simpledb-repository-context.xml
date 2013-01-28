@@ -14,6 +14,7 @@
         <simpledb:property name="accessID" value="AKIAIVX775TRPPSZTEMQ"/>
         <simpledb:property name="secretKey" value="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"/>
         <simpledb:property name="domainManagementPolicy" value="drop_create"/>
+        <simpledb:property name="domainPrefix" value="testDB"/>
     </simpledb:config>
 
 </beans>

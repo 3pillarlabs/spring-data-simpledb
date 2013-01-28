@@ -4,13 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.mapping.model.MappingException;
+import org.springframework.data.simpledb.core.SimpleDbConfig;
 import org.springframework.data.simpledb.util.StringUtil;
 import org.springframework.stereotype.Component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -32,13 +32,12 @@ public final class MetadataParser {
      */
     public static String getDomain(Class clazz){
         StringBuilder ret = new StringBuilder();
-        String database = getDatabase(clazz);
-        if(database !=null){
-            ret.append(database);
+
+        String domainPrefix = getDomainPrefix(clazz);
+        if(domainPrefix !=null){
+            ret.append(domainPrefix);
             ret.append(".");
         }
-
-
 
         String camelCaseString = clazz.getSimpleName();
 
@@ -55,7 +54,7 @@ public final class MetadataParser {
                 idField.setAccessible(true);
                 return (String) idField.get(object);
             } catch (IllegalAccessException e) {
-                LOGGER.error("Could not read simpleDb item name", e);
+                throw new MappingException("Could not read simpleDb id field", e);
             }
         }
 
@@ -72,7 +71,7 @@ public final class MetadataParser {
             //named id or annotated with Id
             if(f.getName().equals(FIELD_NAME_DEFAULT_ID) || f.getAnnotation(Id.class) != null){
                 if(idField != null) {
-                    throw new RuntimeException("You cannot have two id fields");
+                    throw new MappingException("Multiple id fields detected for class " + clazz.getName());
                 }
                 idField = f;
             }
@@ -129,13 +128,13 @@ public final class MetadataParser {
         return fieldList;
     }
 
-    private static String getDatabase(Class clazz){
-        Database database = (Database)clazz.getAnnotation(Database.class);
-        if(database != null){
-            return database.value();
+    private static String getDomainPrefix(Class clazz){
+        DomainPrefix domainPrefix = (DomainPrefix)clazz.getAnnotation(DomainPrefix.class);
+        if(domainPrefix != null){
+            return domainPrefix.value();
         }
 
-        return null;
+        return SimpleDbConfig.getInstance().getDomainPrefix();
     }
 
 

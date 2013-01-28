@@ -17,7 +17,7 @@ public class MetadataParserTest {
     private static final String SAMPLE_ITEM = "SAMPLE_ITEM";
 
 
-    @Database(value = "testDB")
+    @DomainPrefix(value = "testDB")
     static class SampleAnnotatedId {
         @Id
         private String itemName = SAMPLE_ITEM;
