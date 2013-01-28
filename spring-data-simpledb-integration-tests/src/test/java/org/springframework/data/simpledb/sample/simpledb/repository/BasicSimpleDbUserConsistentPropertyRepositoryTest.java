@@ -12,7 +12,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-consistent-repository-context.xml")
@@ -28,7 +27,16 @@ public class BasicSimpleDbUserConsistentPropertyRepositoryTest {
         repository.deleteAll();
     }
 
-
+	private void assertMatchingAttributes(SimpleDbUser user, SimpleDbUser foundUser) {
+		assertEquals(user.getIntField(), foundUser.getIntField());
+        assertTrue(user.getFloatField() == foundUser.getFloatField());
+        assertTrue(user.getDoubleField() == foundUser.getDoubleField());
+        assertEquals(user.getLongField(), foundUser.getLongField());
+        assertEquals(user.getShortField(), foundUser.getShortField());
+        assertEquals(user.getByteField(), foundUser.getByteField());
+        assertEquals(user.getBooleanField(), foundUser.getBooleanField());
+	}
+    
     @Test
     public void save_should_persist_single_item() {
         String itemName = "FirstItem";
@@ -39,7 +47,7 @@ public class BasicSimpleDbUserConsistentPropertyRepositoryTest {
         SimpleDbUser foundUser = repository.findOne(user.getItemName());
 
         assertEquals(user.getItemName(), foundUser.getItemName());
-        assertEquals(user.getAtts(), foundUser.getAtts());
+        assertMatchingAttributes(user, foundUser);
     }
 
     @Test
@@ -64,33 +72,12 @@ public class BasicSimpleDbUserConsistentPropertyRepositoryTest {
         SimpleDbUser foundUser = repository.findOne("SecondItem");
 
         assertNotNull(foundUser);
-        assertEquals(user.getAtts(), foundUser.getAtts());
+        assertMatchingAttributes(user, foundUser);
 
         foundUser = repository.findOne("FirstItem");
         assertNotNull(foundUser);
-        assertEquals(user.getAtts(), foundUser.getAtts());
+        assertMatchingAttributes(user, foundUser);
     }
-
-
-
-    @Test
-    public void test_save_should_persist_added_attributes() {
-        String itemName = "FirstItem";
-
-        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
-        repository.save(user);
-
-
-        user = repository.findOne(itemName);
-
-        user.getAtts().put("extraAttribute", "extraAttributeValue");
-        repository.save(user);
-
-        SimpleDbUser foundUser = repository.findOne(itemName);
-
-        assertEquals("extraAttributeValue", foundUser.getAtts().get("extraAttribute"));
-    }
-
 
     @Test
     public void delete_should_remove_item() {
@@ -135,7 +122,7 @@ public class BasicSimpleDbUserConsistentPropertyRepositoryTest {
 
         assertNotNull(foundUser);
         assertEquals(user.getItemName(), foundUser.getItemName());
-        assertEquals(user.getAtts(), foundUser.getAtts());
+        assertMatchingAttributes(user, foundUser);
     }
 
     @Test
@@ -194,6 +181,16 @@ public class BasicSimpleDbUserConsistentPropertyRepositoryTest {
 
         repository.delete(itemName);
         assertEquals(0, repository.count());
+    }
+
+    @Test
+    public void save_should_generateId() {
+
+        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(null);
+
+        user = repository.save(user);
+
+        assertNotNull(user.getItemName());
     }
 
     private int count(Iterable<SimpleDbUser> users) {

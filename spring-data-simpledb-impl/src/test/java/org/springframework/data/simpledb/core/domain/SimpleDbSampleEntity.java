@@ -12,7 +12,8 @@ public class SimpleDbSampleEntity {
     @Id
     private String itemName;
 
-
+    private boolean booleanField;
+    
     @Attributes
     private Map<String, String> atts;
 
@@ -22,6 +23,13 @@ public class SimpleDbSampleEntity {
     }
     public String getItemName() {
 		return itemName;
+	}
+    
+    public boolean getBooleanField() {
+		return booleanField;
+	}
+    public void setBooleanField(boolean booleanField) {
+		this.booleanField = booleanField;
 	}
 
 

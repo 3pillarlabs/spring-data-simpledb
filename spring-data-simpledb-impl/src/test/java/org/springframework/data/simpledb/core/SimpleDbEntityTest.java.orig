@@ -11,10 +11,37 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.data.simpledb.core.domain.SimpleDbSampleEntity;
+<<<<<<< HEAD
+import org.springframework.data.annotation.Id;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+
+public class SimpleDbEntityTest {
+
+    static class SampleDomainObject {
+    	
+        @Id
+        private String itemName = null;
+
+        public String getItemName() {
+            return itemName;
+        }
+        public void setItemName(String itemName) {
+            this.itemName = itemName;
+        }
+    }
+
+    @Test
+    public void generateId_should_populate_itemName_of_Item(){
+        SampleDomainObject object = new SampleDomainObject();
+        SimpleDbEntity<SampleDomainObject, String> sdbEntity = new SimpleDbEntity<>(this.<SampleDomainObject>readEntityInformation(SampleDomainObject.class), object);
+=======
+import org.springframework.data.simpledb.core.domain.SimpleDbSampleEntity;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class SimpleDbEntityTest {
 
@@ -22,6 +49,7 @@ public class SimpleDbEntityTest {
     public void generateId_should_populate_itemName_of_Item(){
         SimpleDbSampleEntity object = new SimpleDbSampleEntity();
         SimpleDbEntity sdbEntity = new SimpleDbEntity(SimpleDbSampleEntity.entityInformation(), object);
+>>>>>>> 29c5fd5640bc620e973075e835ef1a96cae117a6
         sdbEntity.generateIdIfNotSet();
         assertNotNull(object.getItemName());
 
@@ -31,7 +59,11 @@ public class SimpleDbEntityTest {
     public void generateId_should_not_overwrite_existing_id(){
         SimpleDbSampleEntity object = new SimpleDbSampleEntity();
         object.setItemName("gigi");
+<<<<<<< HEAD
+        SimpleDbEntity<SampleDomainObject, String> sdbEntity = new SimpleDbEntity<>(this.<SampleDomainObject>readEntityInformation(SampleDomainObject.class), object);
+=======
         SimpleDbEntity sdbEntity = new SimpleDbEntity(SimpleDbSampleEntity.entityInformation(), object);
+>>>>>>> 29c5fd5640bc620e973075e835ef1a96cae117a6
         sdbEntity.generateIdIfNotSet();
         assertEquals("gigi",object.getItemName());
     }
@@ -41,9 +73,15 @@ public class SimpleDbEntityTest {
         SimpleDbSampleEntity object1 = new SimpleDbSampleEntity();
         SimpleDbSampleEntity object2 = new SimpleDbSampleEntity();
 
+<<<<<<< HEAD
+        SimpleDbEntity<SampleDomainObject, String> sdbEntity1 = new SimpleDbEntity<>(this.<SampleDomainObject>readEntityInformation(SampleDomainObject.class), object1);
+        sdbEntity1.generateIdIfNotSet();
+        SimpleDbEntity<SampleDomainObject, String> sdbEntity2 = new SimpleDbEntity<>(this.<SampleDomainObject>readEntityInformation(SampleDomainObject.class), object2);
+=======
         SimpleDbEntity sdbEntity1 = new SimpleDbEntity(SimpleDbSampleEntity.entityInformation(), object1);
         sdbEntity1.generateIdIfNotSet();
         SimpleDbEntity sdbEntity2 = new SimpleDbEntity(SimpleDbSampleEntity.entityInformation(), object2);
+>>>>>>> 29c5fd5640bc620e973075e835ef1a96cae117a6
         sdbEntity2.generateIdIfNotSet();
 
         assertNotEquals(object1.getItemName(), object2.getItemName());
@@ -99,8 +137,11 @@ public class SimpleDbEntityTest {
         List<String> byteValues = attributes.get("byteField");
         assertTrue(entity.getByteField() == ((Byte)SimpleDBAttributeConverter.toDomainFieldPrimitive(byteValues.get(0), Byte.class)).byteValue());
 
+<<<<<<< HEAD
         /* test boolean field */
         List<String> booleanValues = attributes.get("booleanField");
         assertTrue(entity.getBooleanField() == ((Boolean)SimpleDBAttributeConverter.toDomainFieldPrimitive(booleanValues.get(0), Boolean.class)).booleanValue());
     }
+=======
+>>>>>>> 29c5fd5640bc620e973075e835ef1a96cae117a6
 }

@@ -42,6 +42,7 @@ public class BasicSimpleDbUserRepositoryTest {
         assertMatchingAttributes(user, foundUser);
     }
 
+<<<<<<< HEAD
 	private void assertMatchingAttributes(SimpleDbUser user, SimpleDbUser foundUser) {
 		assertEquals(user.getIntField(), foundUser.getIntField());
         assertTrue(user.getFloatField() == foundUser.getFloatField());
@@ -52,6 +53,12 @@ public class BasicSimpleDbUserRepositoryTest {
         assertEquals(user.getBooleanField(), foundUser.getBooleanField());
 	}
 
+    @Test
+    public void save_should_generateId() {
+
+        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(null);
+=======
+>>>>>>> 313c0759fb75578533036621c384afebe4a8b7a6
 
 
   private void incrementalWaitFindOne(final String itemName) {

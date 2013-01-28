@@ -12,6 +12,11 @@ import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+<<<<<<< HEAD:spring-data-simpledb-integration-tests/src/test/java/org/springframework/data/simpledb/sample/simpledb/repository/BasicSimpleDbUserConsistentRepositoryTest.java
+=======
+import static org.junit.Assert.*;
+
+>>>>>>> 29c5fd5640bc620e973075e835ef1a96cae117a6:spring-data-simpledb-integration-tests/src/test/java/org/springframework/data/simpledb/sample/simpledb/repository/BasicSimpleDbUserConsistentExtendedRepositoryTest.java
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simple-simpledb-repository-context.xml")
 //@Ignore(value = "work in progress")
@@ -23,7 +28,6 @@ public class BasicSimpleDbUserConsistentExtendedRepositoryTest {
 
     @After
     public void tearDown() {
-        //may fail
         repository.deleteAll(true);
     }
 
@@ -32,25 +36,17 @@ public class BasicSimpleDbUserConsistentExtendedRepositoryTest {
         String itemName = "FirstItem";
 
         SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
-        repository.save(user, true);
+<<<<<<< HEAD:spring-data-simpledb-integration-tests/src/test/java/org/springframework/data/simpledb/sample/simpledb/repository/BasicSimpleDbUserConsistentRepositoryTest.java
+        repository.save(user);
         
-        SimpleDbUser findOneResult = repository.findOne(itemName, true);
+        SimpleDbUser findOneResult = repository.findOne(itemName);
 		assertNotNull(findOneResult);
+=======
+        repository.save(user, true);
+        assertNotNull(repository.findOne(itemName, true));
+>>>>>>> 29c5fd5640bc620e973075e835ef1a96cae117a6:spring-data-simpledb-integration-tests/src/test/java/org/springframework/data/simpledb/sample/simpledb/repository/BasicSimpleDbUserConsistentExtendedRepositoryTest.java
 
         repository.delete(itemName, true);
         assertNull(repository.findOne(itemName, true));
     }
-
-    @Test
-    public void consistent_count_should_return_total_number_of_item_with_no_delay() {
-        String itemName = "FirstItem";
-
-        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
-        repository.save(user, true);
-        assertEquals(1, repository.count(true));
-
-        repository.delete(itemName, true);
-        assertEquals(0, repository.count(true));
-    }
-
 }
