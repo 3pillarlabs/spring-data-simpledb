@@ -1,115 +1,88 @@
 package org.springframework.data.simpledb.core;
 
-import java.io.Serializable;
-import java.util.Iterator;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
+import java.io.Serializable;
+import java.util.Iterator;
+
 public class QueryBuilder<T, ID extends Serializable> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryBuilder.class);
 
-
-    public enum Count {
-        ON,
-        OFF
-    }
-
-    private Count count;
-    private Iterable ids;
-    private Pageable pageable;
     private SimpleDbEntityInformation<T, ID> entityInformation;
+    StringBuilder query = new StringBuilder();
+
 
     public QueryBuilder(SimpleDbEntityInformation<T, ID> entityInformation) {
         this.entityInformation = entityInformation;
+        query.append("select * from ").append(quote(entityInformation.getDomain()));
+    }
+
+    public QueryBuilder withCount() {
+        //replace select statement
+        query = new StringBuilder();
+        query.append("select count(*) from ").append(quote(entityInformation.getDomain()));
+        return this;
     }
 
     public QueryBuilder with(Iterable iterable) {
-        this.ids = iterable;
+        Iterator<ID> iterator = iterable.iterator();
+        appendWhereOrEndClause(query);
+
+        query.append("(");
+        while (iterator.hasNext()) {
+            query.append("itemName()='").append(iterator.next().toString()).append("'");
+            if (iterator.hasNext()) {
+                query.append(" or ");
+            }
+        }
+        query.append(")");
         return this;
     }
 
     public QueryBuilder with(Sort sort) {
-        pageable = new PageableImpl();
+        Pageable pageable = new PageableImpl();
         ((PageableImpl) pageable).setSort(sort);
-        return this;
+        return with(pageable);
     }
 
     public QueryBuilder with(Pageable pageable) {
-        this.pageable = pageable;
-        return this;
-    }
+        Sort sort = pageable.getSort();
+        if (sort != null) {
+            Iterator<Sort.Order> sortIt = sort.iterator();
+            if (sortIt.hasNext()) {
+                Sort.Order order = sortIt.next();
+                appendWhereOrEndClause(query);
+                query.append(order.getProperty()).append(" is not null order by ");
+                query.append(order.getProperty()).append(" ").append(order.getDirection().name().toLowerCase());
+            }
+            if (sortIt.hasNext()) {
+                throw new IllegalArgumentException("SimpleDb does not support multiple sorting");
+            }
+        }
+        if (pageable.getPageSize() > 0) {
+            query.append(" limit ").append(pageable.getPageSize());
+        }
 
-    public QueryBuilder with(Count count) {
-        this.count = count;
         return this;
     }
 
     @Override
     public String toString() {
         //TODO change itemName() to ID field from domain object
-        //TEMPLATE: select count(*) from Gigi where (itemName()='Item_01' or itemName()='Item_02') and Age is not null order by Age desc
-        StringBuilder query = new StringBuilder();
-        query.append("select ");
-        if(count == Count.ON) {
-            query.append("count(*)");
-        } else {
-            query.append("*");
-        }
-        query.append(" from ").append(quote(entityInformation.getDomain()));
-        if (ids != null && ids.iterator().hasNext()) {
-            Iterator<ID> iterator = ids.iterator();
-            query.append(" where (");
-            while (iterator.hasNext()) {
-                query.append("itemName()='").append(iterator.next().toString()).append("'");
-                if (iterator.hasNext()) {
-                    query.append(" or ");
-                }
-            }
-            query.append(")");
-        }
-        if (pageable != null) {
-            Sort sort = pageable.getSort();
-            if (sort != null) {
-                Iterator<Sort.Order> sortIt = sort.iterator();
-                if (sortIt.hasNext()) {
-                    Sort.Order order = sortIt.next();
-                    if(query.indexOf("where") > 0 ) {
-                        query.append(" and ");
-                    } else {
-                        query.append(" where ");
-                    }
-                    query.append(order.getProperty()).append(" is not null order by ");
-                    query.append(order.getProperty()).append(" ").append(order.getDirection().name().toLowerCase());
-                }
-                if(sortIt.hasNext()) {
-                    throw new IllegalArgumentException("SimpleDb does not support multiple sorting");
-                }
-            }
-            if(pageable.getPageSize()>0) {
-                query.append(" limit ").append(pageable.getPageSize());
-            }
-        }
         String result = query.toString();
         LOGGER.debug("Created query: {}", result);
         return result;
     }
 
 
-    public String quote(String simpleDbName){
-        return "`" + simpleDbName + "`";
-    }
-
     private static class PageableImpl implements Pageable {
 
         private Sort sort;
-
-        public PageableImpl() {
-        }
 
         @Override
         public int getPageNumber() {
@@ -135,4 +108,17 @@ public class QueryBuilder<T, ID extends Serializable> {
             this.sort = sort;
         }
     }
+
+    private void appendWhereOrEndClause(StringBuilder query) {
+        if (query.indexOf("where") > 0) {
+            query.append(" and ");
+        } else {
+            query.append(" where ");
+        }
+    }
+
+    private String quote(String simpleDbName) {
+        return "`" + simpleDbName + "`";
+    }
+
 }

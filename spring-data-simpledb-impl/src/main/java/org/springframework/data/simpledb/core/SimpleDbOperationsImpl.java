@@ -72,7 +72,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     @Override
     public long count(SimpleDbEntityInformation entityInformation, boolean consistentRead) {
         LOGGER.info("Count items from domain \"{}\"\" isConsistent=\"{}\"\"", entityInformation.getDomain(), consistentRead);
-        final SelectResult selectResult = sdb.select(new SelectRequest(new QueryBuilder(entityInformation).with(QueryBuilder.Count.ON).toString(), consistentRead));
+        final SelectResult selectResult = sdb.select(new SelectRequest(new QueryBuilder(entityInformation).withCount().toString(), consistentRead));
         for (Item item : selectResult.getItems()) {
             if (item.getName().equals("Domain")) {
                 for (Attribute attribute : item.getAttributes()) {

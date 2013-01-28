@@ -42,23 +42,11 @@ public class QueryBuilderTest {
     public void should_include_count_clause_if_requested() throws Exception {
 
         QueryBuilder builder = new QueryBuilder(SimpleDbSampleEntity.entityInformation());
-        builder.with(QueryBuilder.Count.ON);
+        builder.withCount();
 
         String returnedQuery = builder.toString();
 
         assertThat(returnedQuery,  containsString("select count(*) from"));
-
-    }
-
-    @Test
-    public void should_not_include_count_clause_if_requested() throws Exception {
-
-        QueryBuilder builder = new QueryBuilder(SimpleDbSampleEntity.entityInformation());
-        builder.with(QueryBuilder.Count.OFF);
-
-        String returnedQuery = builder.toString();
-
-        assertThat(returnedQuery, not(containsString("select count(*) from")));
 
     }
 
