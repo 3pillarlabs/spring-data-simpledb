@@ -14,7 +14,7 @@ import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.util.*;
 import java.util.Map.Entry;
-import  org.springframework.data.simpledb.util.SimpleDBEntityUtil;
+import  org.springframework.data.simpledb.util.AttributesKeySplitter;
 
 import com.amazonaws.services.simpledb.model.Item;
 
@@ -99,7 +99,7 @@ public class EntityWrapper<T, ID extends Serializable> {
             setPrimitiveAttributes(attributes);
 
             //key is not primitive
-            final Map<String, Map<String, List<String>>> nestedAttributeValues = SimpleDBEntityUtil.splitNestedAttributeValues(attributes);
+            final Map<String, Map<String, List<String>>> nestedAttributeValues = AttributesKeySplitter.splitNestedAttributeKeys(attributes);
             if (nestedAttributeValues.size() > 0) {
                 for (final String key : nestedAttributeValues.keySet()) {
                     final Field attributesField = item.getClass().getDeclaredField(key);
@@ -127,7 +127,7 @@ public class EntityWrapper<T, ID extends Serializable> {
             Assert.notNull(values);
             Assert.isTrue(values.size() == 1);
 
-            if (SimpleDBEntityUtil.isPrimitiveKey(key)) {
+            if (AttributesKeySplitter.isPrimitiveKey(key)) {
                 final Field attributesField = item.getClass().getDeclaredField(key);
                 {
                     attributesField.setAccessible(true);

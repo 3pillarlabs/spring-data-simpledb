@@ -124,4 +124,19 @@ class User {
         _name = n;
     }
 
+    public void setGender(Gender _gender) {
+        this._gender = _gender;
+    }
+
+    public boolean isVerified() {
+        return _isVerified;
+    }
+
+    public void setVerified(boolean _isVerified) {
+        this._isVerified = _isVerified;
+    }
+
+    public void setUserImage(byte[] _userImage) {
+        this._userImage = _userImage;
+    }
 }
