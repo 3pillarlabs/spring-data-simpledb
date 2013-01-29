@@ -20,10 +20,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.simpledb.core.SimpleDbEntity;
 import org.springframework.data.simpledb.core.QueryBuilder;
 import org.springframework.data.simpledb.core.SimpleDbConfig;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.repository.SimpleDbPagingAndSortingRepository;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.util.Assert;
@@ -116,7 +116,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
     //--------------------------------------------------
     @Override
     public <S extends T> S save(S entity, boolean consistentRead) {
-        EntityWrapper sdbEntity = new EntityWrapper(entityInformation, entity);
+        SimpleDbEntity sdbEntity = new SimpleDbEntity(entityInformation, entity);
         S result = (S) operations.updateItem(sdbEntity);
         if (!consistentRead) {
             return result;
@@ -177,16 +177,16 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
         Assert.notNull(id, "The given id must not be null!");
 
 
-        EntityWrapper sdbEntity = null;
+        SimpleDbEntity sdbEntity = null;
         if (consistentRead) {
             T entity = findOne(id, consistentRead);
 
             if (entity == null) {
                 throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!", entityInformation.getJavaType(), id));
             }
-            sdbEntity = new EntityWrapper(entityInformation, entity);
+            sdbEntity = new SimpleDbEntity(entityInformation, entity);
         } else {
-            sdbEntity = new EntityWrapper(entityInformation);
+            sdbEntity = new SimpleDbEntity(entityInformation);
             sdbEntity.setAttributes(new LinkedHashMap<String, List<String>>());
             sdbEntity.setId((String) id);
         }

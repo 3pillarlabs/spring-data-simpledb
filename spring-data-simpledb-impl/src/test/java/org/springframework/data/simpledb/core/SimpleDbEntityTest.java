@@ -12,7 +12,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.simpledb.core.SimpleDbEntityTest.AClass.BClass;
 import org.springframework.data.simpledb.core.SimpleDbEntityTest.AClass.BClass.CClass;
 import org.springframework.data.simpledb.core.domain.SimpleDbSampleEntity;
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
@@ -24,7 +23,7 @@ public class SimpleDbEntityTest {
     @Test
     public void generateId_should_populate_itemName_of_Item() {
         SimpleDbSampleEntity object = new SimpleDbSampleEntity();
-        EntityWrapper sdbEntity = new EntityWrapper(SimpleDbSampleEntity.entityInformation(), object);
+        SimpleDbEntity sdbEntity = new SimpleDbEntity(SimpleDbSampleEntity.entityInformation(), object);
         sdbEntity.generateIdIfNotSet();
         assertNotNull(object.getItemName());
 
@@ -34,7 +33,7 @@ public class SimpleDbEntityTest {
     public void generateId_should_not_overwrite_existing_id() {
         SimpleDbSampleEntity object = new SimpleDbSampleEntity();
         object.setItemName("gigi");
-        EntityWrapper sdbEntity = new EntityWrapper(SimpleDbSampleEntity.entityInformation(), object);
+        SimpleDbEntity sdbEntity = new SimpleDbEntity(SimpleDbSampleEntity.entityInformation(), object);
         sdbEntity.generateIdIfNotSet();
         assertEquals("gigi", object.getItemName());
     }
@@ -44,9 +43,9 @@ public class SimpleDbEntityTest {
         SimpleDbSampleEntity object1 = new SimpleDbSampleEntity();
         SimpleDbSampleEntity object2 = new SimpleDbSampleEntity();
 
-        EntityWrapper sdbEntity1 = new EntityWrapper(SimpleDbSampleEntity.entityInformation(), object1);
+        SimpleDbEntity sdbEntity1 = new SimpleDbEntity(SimpleDbSampleEntity.entityInformation(), object1);
         sdbEntity1.generateIdIfNotSet();
-        EntityWrapper sdbEntity2 = new EntityWrapper(SimpleDbSampleEntity.entityInformation(), object2);
+        SimpleDbEntity sdbEntity2 = new SimpleDbEntity(SimpleDbSampleEntity.entityInformation(), object2);
         sdbEntity2.generateIdIfNotSet();
 
         assertNotEquals(object1.getItemName(), object2.getItemName());
@@ -70,7 +69,7 @@ public class SimpleDbEntityTest {
       entity.setStringField("string");
       entity.setDoubleWrapper(Double.valueOf("2323.32d"));
 
-        EntityWrapper<SampleEntity, String> sdbEntity = new EntityWrapper<>(this.<SampleEntity>readEntityInformation(SampleEntity.class), entity);
+        SimpleDbEntity<SampleEntity, String> sdbEntity = new SimpleDbEntity<>(this.<SampleEntity>readEntityInformation(SampleEntity.class), entity);
 
         assertNotNull(sdbEntity);
 
@@ -132,7 +131,7 @@ public class SimpleDbEntityTest {
             }
         }
 
-        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomain);
+        SimpleDbEntity<AClass, String> sdbEntity = new SimpleDbEntity<>(this.<AClass>readEntityInformation(AClass.class), aDomain);
         final Map<String, List<String>> attributes = sdbEntity.toAttributes();
 
         assertNotNull(attributes);
@@ -159,12 +158,12 @@ public class SimpleDbEntityTest {
             }
         }
 
-        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomain);
+        SimpleDbEntity<AClass, String> sdbEntity = new SimpleDbEntity<>(this.<AClass>readEntityInformation(AClass.class), aDomain);
         final Map<String, List<String>> attributes = sdbEntity.toAttributes();
 
 
         /* convert back */
-        final EntityWrapper<AClass, String> convertedEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class));
+        final SimpleDbEntity<AClass, String> convertedEntity = new SimpleDbEntity<>(this.<AClass>readEntityInformation(AClass.class));
         convertedEntity.setAttributes(attributes);
 
         assertTrue(aDomain.equals(convertedEntity.getItem()));

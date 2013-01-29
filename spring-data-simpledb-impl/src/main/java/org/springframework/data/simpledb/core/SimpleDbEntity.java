@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.core.entity;
+package org.springframework.data.simpledb.core;
 
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
@@ -14,17 +14,17 @@ import java.util.*;
 import java.util.Map.Entry;
 import  org.springframework.data.simpledb.util.SimpleDBEntityUtil;
 
-public class EntityWrapper<T, ID extends Serializable> {
+public class SimpleDbEntity<T, ID extends Serializable> {
 
     private SimpleDbEntityInformation<T, ?> entityInformation;
     private T item;
 
-    public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation, T item) {
+    public SimpleDbEntity(SimpleDbEntityInformation<T, ?> entityInformation, T item) {
         this.entityInformation = entityInformation;
         this.item = item;
     }
 
-    public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation) {
+    public SimpleDbEntity(SimpleDbEntityInformation<T, ?> entityInformation) {
         this.entityInformation = entityInformation;
         try {
             this.item = entityInformation.getJavaType().newInstance();
@@ -78,7 +78,7 @@ public class EntityWrapper<T, ID extends Serializable> {
                     final Field attributesField = item.getClass().getDeclaredField(key);
 
                     final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(attributesField.getType());
-                    final EntityWrapper nestedEntity = new EntityWrapper(entityMetadata);
+                    final SimpleDbEntity nestedEntity = new SimpleDbEntity(entityMetadata);
 
                     /* recursive call */
                     nestedEntity.setAttributes(nestedAttributeValues.get(key));
@@ -129,7 +129,7 @@ public class EntityWrapper<T, ID extends Serializable> {
                 final Object nestedEntityInstance = itemField.get(item);
 
                 final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(nestedEntityInstance.getClass());
-                final EntityWrapper nestedEntity = new EntityWrapper(entityMetadata, nestedEntityInstance);
+                final SimpleDbEntity nestedEntity = new SimpleDbEntity(entityMetadata, nestedEntityInstance);
 
                 final String nestedEntityFieldName = itemField.getName();
                 final String nestedEntityAttributePrefix = fieldNamePrefix.isEmpty() ? nestedEntityFieldName : fieldNamePrefix + "." + nestedEntityFieldName;

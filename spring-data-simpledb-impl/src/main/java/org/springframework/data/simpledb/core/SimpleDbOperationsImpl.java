@@ -5,7 +5,6 @@ import com.amazonaws.services.simpledb.model.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 import java.io.Serializable;
@@ -31,7 +30,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     }
 
     @Override
-    public Object updateItem(EntityWrapper entity) {
+    public Object updateItem(SimpleDbEntity entity) {
         logOperation("Update", entity);
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
         entity.generateIdIfNotSet();
@@ -46,7 +45,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     }
 
     @Override
-    public void deleteItem(EntityWrapper entity) {
+    public void deleteItem(SimpleDbEntity entity) {
         logOperation("Delete", entity);
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
         Assert.notNull(entity.getItemName(), "Item name should not be null");
@@ -114,7 +113,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         return result;
     }
 
-    private void logOperation(String operation, EntityWrapper<T, ID> entity) {
+    private void logOperation(String operation, SimpleDbEntity<T, ID> entity) {
         LOGGER.info(operation + " \"{}\" ItemName \"{}\"\"", entity.getDomain(), entity.getItemName());
     }
 }

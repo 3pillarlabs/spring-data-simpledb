@@ -6,14 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import org.springframework.data.simpledb.core.domain.DomainManager;
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 public interface SimpleDbOperations<T, ID extends Serializable> {
 
-    T updateItem(EntityWrapper<T, ID> entity);
+    T updateItem(SimpleDbEntity<T, ID> entity);
 
-    void deleteItem(EntityWrapper<T, ID> sdbEntity);
+    void deleteItem(SimpleDbEntity<T, ID> sdbEntity);
 
     T readItem(SimpleDbEntityInformation<T, ID> entityInformation, ID id, boolean consistentRead);
 
