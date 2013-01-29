@@ -8,6 +8,8 @@ import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.annotation.Attributes;
 import org.springframework.data.simpledb.annotation.DomainPrefix;
 import org.springframework.data.simpledb.core.SimpleDbConfig;
+import org.springframework.data.simpledb.core.entity.field.FieldType;
+import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -113,24 +115,21 @@ public final class MetadataParser {
     }
 
     public static List<Field> getSupportedFields(Object object) {
-    	final List<Field> supportedFields = getSupportedFields(object, FieldTypeIdentifier.PRIMITIVE);
-    	supportedFields.addAll(getSupportedFields(object, FieldTypeIdentifier.CORE_TYPE));
-    	
-    	return supportedFields;
+    	return getSupportedFields(object, FieldType.PRIMITIVE, FieldType.CORE_TYPE);
     }
 
     public static List<Field> getPrimitiveCollectionFields(Object object) {
-       return getSupportedFields(object, FieldTypeIdentifier.PRIMITIVE_ARRAY);
+    	return getSupportedFields(object, FieldType.PRIMITIVE_ARRAY);
     }
 
-    private static List<Field> getSupportedFields(Object object, FieldTypeIdentifier typeIdentifier) {
+    private static List<Field> getSupportedFields(Object object, FieldType... fieldTypes) {
         List<Field> fieldList = new ArrayList<>();
         for(Field field : object.getClass().getDeclaredFields()) {
 
                if(field.getAnnotation(Attributes.class) == null
                     && field.getAnnotation(Transient.class) == null
                     && !(field.equals(MetadataParser.getIdField(object)))
-                    && typeIdentifier.isOfType(field)) {
+                    && FieldTypeIdentifier.isOfType(field, fieldTypes)) {
                 fieldList.add(field);
             }
         }
@@ -149,12 +148,7 @@ public final class MetadataParser {
     }
 
     public static boolean isNestedDomainField(Field field, Object object) {
-        return !(FieldTypeIdentifier.PRIMITIVE.isOfType(field)
-                || Number.class.isAssignableFrom(field.getType())
-                || Collection.class.isAssignableFrom(field.getType())
-                || Boolean.class.isAssignableFrom(field.getType())
-                || String.class.isAssignableFrom(field.getType())
-                || Date.class.isAssignableFrom(field.getType()));
+        return FieldTypeIdentifier.isOfType(field, FieldType.NESTED_ENTITY);
     }
 
     private static String getDomainPrefix(Class<?> clazz) {
