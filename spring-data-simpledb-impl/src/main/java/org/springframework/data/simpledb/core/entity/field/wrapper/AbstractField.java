@@ -3,7 +3,9 @@ package org.springframework.data.simpledb.core.entity.field.wrapper;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.util.Assert;
 
@@ -19,12 +21,15 @@ public abstract class AbstractField<T, ID extends Serializable> {
 		
 		this.field = field;
 		this.parent = parent;
+		
+		this.field.setAccessible(Boolean.TRUE);
 	}
 	
 	/**
+	 * @param prefix TODO
 	 * @return serialized value in string representation
 	 */
-	public abstract List<String> serialize();
+	public abstract Map<String, List<String>> serialize(String prefix);
 	
 	/**
 	 * Convert and set the values on the parent instance 
@@ -42,7 +47,19 @@ public abstract class AbstractField<T, ID extends Serializable> {
 		
 	}
 	
-	protected EntityWrapper<T, ID> getParent() {
+	Object getValue() {
+		try {
+			return this.field.get(parent.getItem());
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			throw new MappingException("Could not retrieve field value " + this.field.getName(), e);
+		}
+	}
+	
+	String getName() {
+		return field.getName();
+	}
+	
+	EntityWrapper<T, ID> getParent() {
 		return this.parent;
 	}
 	

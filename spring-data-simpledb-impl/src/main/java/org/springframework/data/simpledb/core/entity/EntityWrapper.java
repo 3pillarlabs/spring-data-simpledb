@@ -1,6 +1,8 @@
 package org.springframework.data.simpledb.core.entity;
 
 import org.springframework.data.mapping.model.MappingException;
+import org.springframework.data.simpledb.core.entity.field.wrapper.AbstractField;
+import org.springframework.data.simpledb.core.entity.field.wrapper.FieldWrapperFactory;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 import org.springframework.data.simpledb.util.MetadataParser;
@@ -16,12 +18,21 @@ import  org.springframework.data.simpledb.util.SimpleDBEntityUtil;
 
 public class EntityWrapper<T, ID extends Serializable> {
 
+	/* entity metadata */
     private SimpleDbEntityInformation<T, ?> entityInformation;
+    
+    /* field wrappers */
+    private List<AbstractField<T, ID>> wrappedFields = new ArrayList<>();
+    
     private T item;
 
     public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation, T item) {
         this.entityInformation = entityInformation;
         this.item = item;
+        
+        for(final Field field: item.getClass().getDeclaredFields()) {
+        	wrappedFields.add(FieldWrapperFactory.createFieldWrapper(field, this));
+        }
     }
 
     public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation) {
@@ -111,7 +122,17 @@ public class EntityWrapper<T, ID extends Serializable> {
     }
 
     public Map<String, List<String>> toAttributes() {
-        return toAttributes("");
+        return toAttributes_refactored("");
+    }
+    
+    private Map<String, List<String>> toAttributes_refactored(final String fieldNamePrefix) {
+    	final Map<String, List<String>> result = new HashMap<>();
+    	
+    	for(final AbstractField<T, ID> wrappedField: wrappedFields) {
+    		result.putAll(wrappedField.serialize(fieldNamePrefix));
+    	}
+    	
+    	return result;
     }
 
     /**

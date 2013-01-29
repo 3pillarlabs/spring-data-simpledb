@@ -3,9 +3,12 @@ package org.springframework.data.simpledb.core.entity.field.wrapper;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
+import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 
 public class PrimitiveField<T, ID extends Serializable> extends AbstractField<T, ID> {
 
@@ -14,10 +17,14 @@ public class PrimitiveField<T, ID extends Serializable> extends AbstractField<T,
 	}
 
 	@Override
-	public List<String> serialize() {
-		final List<String> result = new ArrayList<>();
+	public Map<String, List<String>> serialize(String prefix) {
+		final Map<String, List<String>> result = new HashMap<>();
 		
-		/* serialization routine goes here */
+		final List<String> fieldValues = new ArrayList<>();
+
+		fieldValues.add(SimpleDBAttributeConverter.toSimpleDBAttributeValue(this.getValue()));
+
+		result.put(prefix.isEmpty() ? getName() : prefix + "." + getName(), fieldValues);
 		
 		return result;
 	}
