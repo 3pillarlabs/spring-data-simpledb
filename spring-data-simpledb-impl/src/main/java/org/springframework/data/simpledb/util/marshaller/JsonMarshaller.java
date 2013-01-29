@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 public class JsonMarshaller implements Marshaller {
 
@@ -44,6 +45,25 @@ public class JsonMarshaller implements Marshaller {
             if (clazz.equals(String.class)) {
                 return (T) input;
             }
+            throw new MappingException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+
+        return unmarshalledObject;
+    }
+
+    public <T> T unmarshal(String input, TypeReference<Map> typeReference) {
+
+        if (input == null) {
+            log.warn("Null input given to unmarshal, will return null.");
+            return null;
+        }
+
+        T unmarshalledObject;
+        try {
+            unmarshalledObject = mapper.readValue(input, typeReference);
+        } catch (JsonParseException e) {
             throw new MappingException(e.getMessage(), e);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);

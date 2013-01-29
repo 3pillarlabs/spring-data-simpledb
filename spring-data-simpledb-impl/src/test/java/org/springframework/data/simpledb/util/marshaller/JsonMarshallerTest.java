@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -31,67 +32,93 @@ public class JsonMarshallerTest {
         // Verify
         assertNotNull(expectedUser);
         assertEquals(User.Gender.MALE, expectedUser.getGender());
+        assertEquals("Joe", expectedUser.getName().getFirst());
+        assertEquals("Sixpack", expectedUser.getName().getLast());
+        assertNotNull(expectedUser.getUserImage());
     }
 
-    private static class User {
-        public enum Gender {MALE, FEMALE}
+    @Test
+    public void unmarshal_should_properly_unmarshal_a_json_string_representing_a_map_into_the_target_class_instance() throws IOException {
 
-        public static class Name {
-            private String _first, _last;
+        // Prepare
+        String userJsonString = new String(IOUtils.toByteArray(this.getClass().getClassLoader()
+                .getResourceAsStream("org/springframework/data/simpledb/util/marshaller/user_collection.json")));
+        assertNotNull(userJsonString);
 
-            public String getFirst() {
-                return _first;
-            }
+        // Exercise
+        Map<String, User> expectedUserMap = cut.unmarshal(userJsonString, Map.class);
 
-            public String getLast() {
-                return _last;
-            }
+        // Verify
+        assertNotNull(expectedUserMap);
+        assertEquals(2, expectedUserMap.size());
 
-            public void setFirst(String s) {
-                _first = s;
-            }
+        User user1 = expectedUserMap.get("user1");
+        assertEquals("Joe", user1.getName().getFirst());
 
-            public void setLast(String s) {
-                _last = s;
-            }
+        User user2 = expectedUserMap.get("user1");
+        assertEquals("user2", user2.getName().getFirst());
+    }
+
+
+}
+
+class User {
+    public enum Gender {MALE, FEMALE}
+
+    public static class Name {
+        private String _first, _last;
+
+        public String getFirst() {
+            return _first;
         }
 
-        private Gender _gender;
-        private Name _name;
-        private boolean _isVerified;
-        private byte[] _userImage;
-
-        public Name getName() {
-            return _name;
+        public String getLast() {
+            return _last;
         }
 
-        public boolean isVerified() {
-            return _isVerified;
+        public void setFirst(String s) {
+            _first = s;
         }
 
-        public Gender getGender() {
-            return _gender;
-        }
-
-        public byte[] getUserImage() {
-            return _userImage;
-        }
-
-        public void setName(Name n) {
-            _name = n;
-        }
-
-        public void setVerified(boolean b) {
-            _isVerified = b;
-        }
-
-        public void setGender(Gender g) {
-            _gender = g;
-        }
-
-        public void setUserImage(byte[] b) {
-            _userImage = b;
+        public void setLast(String s) {
+            _last = s;
         }
     }
 
+    private Gender _gender;
+    private Name _name;
+    private boolean _isVerified;
+    private byte[] _userImage;
+
+    public Name getName() {
+        return _name;
+    }
+
+    public boolean isVerified() {
+        return _isVerified;
+    }
+
+    public Gender getGender() {
+        return _gender;
+    }
+
+    public byte[] getUserImage() {
+        return _userImage;
+    }
+
+    public void setName(Name n) {
+        _name = n;
+    }
+
+    public void setVerified(boolean b) {
+        _isVerified = b;
+    }
+
+    public void setGender(Gender g) {
+        _gender = g;
+    }
+
+    public void setUserImage(byte[] b) {
+        _userImage = b;
+    }
 }
