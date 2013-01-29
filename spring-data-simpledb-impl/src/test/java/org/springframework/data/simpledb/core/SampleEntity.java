@@ -9,8 +9,10 @@ public class SampleEntity {
 	private long longField;
 	private byte byteField;
 	private boolean booleanField;
+   private String stringField;
+   private Double doubleWrapper;
 
-	public int getIntField() {
+    public int getIntField() {
 		return intField;
 	}
 	public void setIntField(int intField) {
@@ -58,4 +60,20 @@ public class SampleEntity {
 	public void setBooleanField(boolean booleanField) {
 		this.booleanField = booleanField;
 	}
+
+    public String getStringField() {
+        return stringField;
+    }
+
+    public void setStringField(String stringField) {
+        this.stringField = stringField;
+    }
+
+    public Double getDoubleWrapper() {
+        return doubleWrapper;
+    }
+
+    public void setDoubleWrapper(Double doubleWrapper) {
+        this.doubleWrapper = doubleWrapper;
+    }
 }

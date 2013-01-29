@@ -30,8 +30,6 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 
     }
 
-
-
     /*
      * (non-Javadoc)
      * @see org.springframework.data.repository.core.support.RepositoryFactorySupport#getTargetRepository(org.springframework.data.repository.core.RepositoryMetadata)
@@ -42,7 +40,7 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 
         domainManager.manageDomain(entityInformation.getDomain());
 
-        SimpleDbRepositoryImpl<?, ?> repo =  new SimpleDbRepositoryImpl(entityInformation, simpledbOperations);
+        SimpleDbRepositoryImpl<?, ?> repo = new SimpleDbRepositoryImpl(entityInformation, simpledbOperations);
 
         return repo;
     }
@@ -56,7 +54,7 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
      */
     @Override
     protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
-            return SimpleDbRepositoryImpl.class;
+        return SimpleDbRepositoryImpl.class;
     }
 
 
@@ -86,5 +84,4 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 
         return (SimpleDbEntityInformation<T, ID>) SimpleDbEntityInformationSupport.getMetadata(domainClass);
     }
-
 }

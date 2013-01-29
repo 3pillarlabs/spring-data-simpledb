@@ -114,14 +114,13 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
     }
 
     //--------------------------------------------------
-
     @Override
     public <S extends T> S save(S entity, boolean consistentRead) {
         SimpleDbEntity sdbEntity = new SimpleDbEntity(entityInformation, entity);
         S result = (S) operations.updateItem(sdbEntity);
-        if(!consistentRead){
+        if (!consistentRead) {
             return result;
-        }else{
+        } else {
             return (S) findOne(entityInformation.getId(entity), true);
         }
     }
@@ -179,17 +178,17 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 
 
         SimpleDbEntity sdbEntity = null;
-        if(consistentRead) {
+        if (consistentRead) {
             T entity = findOne(id, consistentRead);
 
             if (entity == null) {
                 throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!", entityInformation.getJavaType(), id));
             }
             sdbEntity = new SimpleDbEntity(entityInformation, entity);
-        }  else {
+        } else {
             sdbEntity = new SimpleDbEntity(entityInformation);
-            sdbEntity.setAttributes(new LinkedHashMap<String, String>());
-            sdbEntity.setId((String)id);
+            sdbEntity.setAttributes(new LinkedHashMap<String, List<String>>());
+            sdbEntity.setId((String) id);
         }
 
         operations.deleteItem(sdbEntity);

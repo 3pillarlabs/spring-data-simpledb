@@ -13,11 +13,12 @@ import java.util.List;
  * Created by: mgrozea
  */
 public interface SimpleDbPagingAndSortingRepository<T, ID extends Serializable> extends Repository<T, ID> {
+
     /**
      * Retrives an entity by its id.
      *
      * @param id must not be {@literal null}.
-     * @param consistentRead  true for consistent read from master node
+     * @param consistentRead true for consistent read from master node
      * @return the entity with the given id or {@literal null} if none found
      * @throws IllegalArgumentException if {@code id} is {@literal null}
      */
@@ -27,7 +28,7 @@ public interface SimpleDbPagingAndSortingRepository<T, ID extends Serializable> 
      * Returns whether an entity with the given id exists.
      *
      * @param id must not be {@literal null}.
-     * @param consistentRead  true for consistent read from master node
+     * @param consistentRead true for consistent read from master node
      * @return true if an entity with the given id exists, alse otherwise
      * @throws IllegalArgumentException if {@code id} is {@literal null}
      */
@@ -36,7 +37,7 @@ public interface SimpleDbPagingAndSortingRepository<T, ID extends Serializable> 
     /**
      * Returns all instances of the type.
      *
-     * @param consistentRead  true for consistent read from master node
+     * @param consistentRead true for consistent read from master node
      * @return all entities
      */
     Iterable<T> findAll(boolean consistentRead);
@@ -45,7 +46,7 @@ public interface SimpleDbPagingAndSortingRepository<T, ID extends Serializable> 
      * Returns all instances of the type with the given IDs.
      *
      * @param ids
-     * @param consistentRead  true for consistent read from master node
+     * @param consistentRead true for consistent read from master node
      * @return
      */
     Iterable<T> findAll(Iterable<ID> ids, boolean consistentRead);
@@ -53,7 +54,7 @@ public interface SimpleDbPagingAndSortingRepository<T, ID extends Serializable> 
     /**
      * Returns the number of entities available.
      *
-     * @param consistentRead  true for consistent read from master node
+     * @param consistentRead true for consistent read from master node
      * @return the number of entities
      */
     long count(boolean consistentRead);
@@ -62,7 +63,7 @@ public interface SimpleDbPagingAndSortingRepository<T, ID extends Serializable> 
      * Returns all entities sorted by the given options.
      *
      * @param sort
-     * @param consistentRead  true for consistent read from master node
+     * @param consistentRead true for consistent read from master node
      * @return all entities sorted by the given options
      */
     Iterable<T> findAll(Sort sort, boolean consistentRead);
@@ -71,17 +72,16 @@ public interface SimpleDbPagingAndSortingRepository<T, ID extends Serializable> 
      * Returns a {@link org.springframework.data.domain.Page} of entities meeting the paging restriction provided in the {@code Pageable} object.
      *
      * @param pageable
-     * @param consistentRead  true for consistent read from master node
+     * @param consistentRead true for consistent read from master node
      * @return a page of entities
      */
     Page<T> findAll(Pageable pageable, boolean consistentRead);
 
     /**
-     * Saves a given entity. Use the returned instance for further operations as the save operation might have changed the
-     * entity instance completely.
+     * Saves a given entity. Use the returned instance for further operations as the save operation might have changed the entity instance completely.
      *
      * @param entity
-     * @param consistentRead  true for consistent read from master node
+     * @param consistentRead true for consistent read from master node
      * @return the saved entity
      */
     public <S extends T> S save(S entity, boolean consistentRead);
@@ -91,7 +91,7 @@ public interface SimpleDbPagingAndSortingRepository<T, ID extends Serializable> 
      *
      * @param entities
      * @return the saved entities
-     * @param consistentRead  true for consistent read from master node
+     * @param consistentRead true for consistent read from master node
      * @throws IllegalArgumentException in case the given entity is (@literal null}.
      */
     public <S extends T> List<S> save(Iterable<S> entities, boolean consistentRead);
@@ -100,7 +100,7 @@ public interface SimpleDbPagingAndSortingRepository<T, ID extends Serializable> 
      * Deletes the entity with the given id.
      *
      * @param id must not be {@literal null}.
-     * @param consistentRead  true for consistent read from master node
+     * @param consistentRead true for consistent read from master node
      * @throws IllegalArgumentException in case the given {@code id} is {@literal null}
      */
     public void delete(ID id, boolean consistentRead);

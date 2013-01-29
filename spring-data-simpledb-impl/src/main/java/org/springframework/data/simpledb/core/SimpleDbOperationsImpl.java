@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.util.Assert;
 
@@ -72,7 +73,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     @Override
     public long count(SimpleDbEntityInformation entityInformation, boolean consistentRead) {
         LOGGER.info("Count items from domain \"{}\"\" isConsistent=\"{}\"\"", entityInformation.getDomain(), consistentRead);
-        final SelectResult selectResult = sdb.select(new SelectRequest(new QueryBuilder(entityInformation).with(QueryBuilder.Count.ON).toString(), consistentRead));
+        final SelectResult selectResult = sdb.select(new SelectRequest(new QueryBuilder(entityInformation).withCount().toString(), consistentRead));
         for (Item item : selectResult.getItems()) {
             if (item.getName().equals("Domain")) {
                 for (Attribute attribute : item.getAttributes()) {
@@ -88,10 +89,11 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     private List<ReplaceableAttribute> toReplaceableAttributeList(Map<String, List<String>> attributes, boolean replace) {
         final List<ReplaceableAttribute> result = new ArrayList<>();
         
-        final Map<String, List<String>> attrs = attributes; 
-        for(final String attributeName: attrs.keySet()) {
-        	for(final String attributeValue: attrs.get(attributeName)) {
-        		result.add(new ReplaceableAttribute(attributeName, attributeValue, replace));
+        final Map<String, List<String>> attrs = attributes;
+        
+        for(final Entry<String, List<String>> entry: attrs.entrySet()) {
+        	for(final String attributeValue: entry.getValue()) {
+        		result.add(new ReplaceableAttribute(entry.getKey(), attributeValue, replace));
         	}
         }
 
@@ -102,9 +104,9 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         final List<Attribute> result = new ArrayList<>();
         
         final Map<String, List<String>> attrs = attributes; 
-        for(final String attributeName: attrs.keySet()) {
-        	for(final String attributeValue: attrs.get(attributeName)) {
-        		result.add(new Attribute(attributeName, attributeValue));
+        for(final Entry<String, List<String>> entry: attrs.entrySet()) {
+        	for(final String attributeValue: entry.getValue()) {
+        		result.add(new Attribute(entry.getKey(), attributeValue));
         	}
         }
 

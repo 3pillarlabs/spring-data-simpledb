@@ -1,5 +1,6 @@
 package org.springframework.data.simpledb.sample.simpledb.repository;
 
+import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
