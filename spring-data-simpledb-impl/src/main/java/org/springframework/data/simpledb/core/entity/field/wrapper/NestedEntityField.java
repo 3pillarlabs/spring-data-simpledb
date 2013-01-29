@@ -31,7 +31,7 @@ public class NestedEntityField<T, ID extends Serializable> extends AbstractField
         final String nestedEntityAttributePrefix = prefix.isEmpty() ? nestedEntityFieldName : prefix + "." + nestedEntityFieldName;
 
         /* recursive call */
-        final Map<String, List<String>> serializedNestedEntity = wrappedNestedEntity.toAttributes(nestedEntityAttributePrefix);
+        final Map<String, List<String>> serializedNestedEntity = wrappedNestedEntity.serialize(nestedEntityAttributePrefix);
 
         result.putAll(serializedNestedEntity);
 		

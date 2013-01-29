@@ -16,6 +16,8 @@ import java.util.*;
 import java.util.Map.Entry;
 import  org.springframework.data.simpledb.util.SimpleDBEntityUtil;
 
+import com.amazonaws.services.simpledb.model.Item;
+
 public class EntityWrapper<T, ID extends Serializable> {
 
 	/* entity metadata */
@@ -25,6 +27,8 @@ public class EntityWrapper<T, ID extends Serializable> {
     private List<AbstractField<T, ID>> wrappedFields = new ArrayList<>();
     
     private T item;
+    
+    private boolean isNew = false;
 
     public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation, T item) {
         this.entityInformation = entityInformation;
@@ -39,10 +43,22 @@ public class EntityWrapper<T, ID extends Serializable> {
         this.entityInformation = entityInformation;
         try {
             this.item = entityInformation.getJavaType().newInstance();
+            this.isNew = true;
+            
+//            for(final Field field: item.getClass().getDeclaredFields()) {
+//            	wrappedFields.add(FieldWrapperFactory.createFieldWrapper(field, this));
+//            }
         } catch (InstantiationException | IllegalAccessException e) {
             throw new MappingException("Could not instantiate object", e);
         }
 
+    }
+    
+    /**
+     * @return true if the {@link Item} instance was created through reflection
+     */
+    public boolean isNew() {
+    	return this.isNew;
     }
 
     public String getDomain() {
@@ -121,52 +137,6 @@ public class EntityWrapper<T, ID extends Serializable> {
         }
     }
 
-    public Map<String, List<String>> toAttributes() {
-        return toAttributes_refactored("");
-    }
-    
-    private Map<String, List<String>> toAttributes_refactored(final String fieldNamePrefix) {
-    	final Map<String, List<String>> result = new HashMap<>();
-    	
-    	for(final AbstractField<T, ID> wrappedField: wrappedFields) {
-    		result.putAll(wrappedField.serialize(fieldNamePrefix));
-    	}
-    	
-    	return result;
-    }
-
-    /**
-     * @param fieldNamePrefix the prefix the attribute names should be prefixed with
-     *
-     * @return a map of all serialized field name with the corresponding list of values (if the field is a collection of primitives)
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public Map<String, List<String>> toAttributes(final String fieldNamePrefix) {
-        final Map<String, List<String>> result = getSerializedPrimitiveAttributes(fieldNamePrefix);
-
-        for (final Field itemField : MetadataParser.getNestedDomainFields(item)) {
-            try {
-                itemField.setAccessible(Boolean.TRUE);
-                final Object nestedEntityInstance = itemField.get(item);
-
-                final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(nestedEntityInstance.getClass());
-                final EntityWrapper nestedEntity = new EntityWrapper(entityMetadata, nestedEntityInstance);
-
-                final String nestedEntityFieldName = itemField.getName();
-                final String nestedEntityAttributePrefix = fieldNamePrefix.isEmpty() ? nestedEntityFieldName : fieldNamePrefix + "." + nestedEntityFieldName;
-
-                /* recursive call */
-                final Map<String, List<String>> serializedNestedEntity = nestedEntity.toAttributes(nestedEntityAttributePrefix);
-
-                result.putAll(serializedNestedEntity);
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                throw new MappingException("Could not retrieve field value " + itemField.getName(), e);
-            }
-        }
-
-        return result;
-    }
-
     /**
      * @return a map of serialized field name with the corresponding list of values (if the field is a collection of primitives)
      */
@@ -213,5 +183,23 @@ public class EntityWrapper<T, ID extends Serializable> {
         }
 
         return result;
+    }
+    
+    /* ************************* refactored **************** */
+    public Map<String, List<String>> serialize() {
+        return serialize("");
+    }
+    public Map<String, List<String>> serialize(final String fieldNamePrefix) {
+    	final Map<String, List<String>> result = new HashMap<>();
+    	
+    	for(final AbstractField<T, ID> wrappedField: wrappedFields) {
+    		result.putAll(wrappedField.serialize(fieldNamePrefix));
+    	}
+    	
+    	return result;
+    }
+    
+    public void deserialize(Map<String, List<String>> attributes) {
+    	
     }
 }
