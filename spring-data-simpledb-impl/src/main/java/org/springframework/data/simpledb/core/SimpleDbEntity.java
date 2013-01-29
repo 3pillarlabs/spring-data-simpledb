@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.util.*;
 import java.util.Map.Entry;
+import  org.springframework.data.simpledb.util.SimpleDBEntityUtil;
 
 public class SimpleDbEntity<T, ID extends Serializable> {
 
@@ -165,7 +166,7 @@ public class SimpleDbEntity<T, ID extends Serializable> {
                 throw new MappingException("Could not retrieve field value " + itemField.getName(), e);
             }
 
-            result.put(itemField.getName(), fieldValues);
+            result.put(prefix.isEmpty() ? itemField.getName() : prefix + "." + itemField.getName(), fieldValues);
         }
 
         for (final Field primitiveCollectionField : MetadataParser.getPrimitiveCollectionFields(item)) {
@@ -187,7 +188,7 @@ public class SimpleDbEntity<T, ID extends Serializable> {
             }
 
 
-            result.put(prefix.isEmpty() ? itemField.getName() : prefix + "." + itemField.getName(), fieldValues);
+            result.put(prefix.isEmpty() ? primitiveCollectionField.getName() : prefix + "." + primitiveCollectionField.getName(), fieldValues);
         }
 
         return result;

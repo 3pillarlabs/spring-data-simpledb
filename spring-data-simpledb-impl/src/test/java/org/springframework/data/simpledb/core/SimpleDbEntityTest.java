@@ -58,7 +58,6 @@ public class SimpleDbEntityTest {
 
     @Test
     public void test_getSerializedPrimitiveAttributes() throws ParseException {
-<<<<<<< HEAD
     	final SampleEntity entity = new SampleEntity();
     	entity.setIntField(11);
     	entity.setLongField(123);
@@ -69,16 +68,6 @@ public class SimpleDbEntityTest {
     	entity.setBooleanField(Boolean.TRUE);
       entity.setStringField("string");
       entity.setDoubleWrapper(Double.valueOf("2323.32d"));
-=======
-        final SampleEntity entity = new SampleEntity();
-        entity.setIntField(11);
-        entity.setLongField(123);
-        entity.setShortField((short) -12);
-        entity.setFloatField(-0.01f);
-        entity.setDoubleField(1.2d);
-        entity.setByteField((byte) 1);
-        entity.setBooleanField(Boolean.TRUE);
->>>>>>> 5fbbeeadda9112a405a1b5b0dfd922977b3625c6
 
         SimpleDbEntity<SampleEntity, String> sdbEntity = new SimpleDbEntity<>(this.<SampleEntity>readEntityInformation(SampleEntity.class), entity);
 
@@ -116,7 +105,6 @@ public class SimpleDbEntityTest {
 
         /* test boolean field */
         List<String> booleanValues = attributes.get("booleanField");
-<<<<<<< HEAD
         assertTrue(entity.getBooleanField() == ((Boolean)SimpleDBAttributeConverter.toDomainFieldPrimitive(booleanValues.get(0), Boolean.class)).booleanValue());
 
         /* test String field */
@@ -126,8 +114,6 @@ public class SimpleDbEntityTest {
         /* test Double field */
         List<String> doubleWrapperValue = attributes.get("doubleWrapper");
         assertTrue(entity.getDoubleWrapper() == ((Double) SimpleDBAttributeConverter.toDomainFieldPrimitive(doubleWrapperValue.get(0), Double.class)).doubleValue());
-=======
-        assertTrue(entity.getBooleanField() == ((Boolean) SimpleDBAttributeConverter.toDomainFieldPrimitive(booleanValues.get(0), Boolean.class)).booleanValue());
     }
 
     /* ***************************** Test serilizing nested domain entities ******************* */
@@ -135,7 +121,6 @@ public class SimpleDbEntityTest {
     public void should_generate_attribute_keys_for_nested_domain_fields() {
         final AClass aDomain = new AClass();
         {
-            aDomain.integerField = 13;
             aDomain.nestedB = new BClass();
             {
                 aDomain.nestedB.floatField = 21f;
@@ -144,7 +129,6 @@ public class SimpleDbEntityTest {
                     aDomain.nestedB.nestedNestedC.doubleField = 14d;
                 }
             }
-            aDomain.integerField = new Integer(35);
         }
 
         SimpleDbEntity<AClass, String> sdbEntity = new SimpleDbEntity<>(this.<AClass>readEntityInformation(AClass.class), aDomain);
@@ -192,7 +176,6 @@ public class SimpleDbEntityTest {
         private String id;
         private int intField;
         private BClass nestedB;
-        private Integer integerField;
 
         static class BClass {
 
@@ -256,11 +239,7 @@ public class SimpleDbEntityTest {
             if (!Objects.equals(this.nestedB, other.nestedB)) {
                 return false;
             }
-            if (!Objects.equals(this.integerField, other.integerField)) {
-                return false;
-            }
             return true;
         }
->>>>>>> 5fbbeeadda9112a405a1b5b0dfd922977b3625c6
     }
 }
