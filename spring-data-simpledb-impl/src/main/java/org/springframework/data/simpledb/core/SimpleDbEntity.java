@@ -2,6 +2,7 @@ package org.springframework.data.simpledb.core;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 import org.springframework.data.simpledb.util.MetadataParser;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+import org.springframework.data.simpledb.util.SimpleDBEntityUtil;
 import org.springframework.util.Assert;
 
 public class SimpleDbEntity<T, ID extends Serializable> {
@@ -71,24 +73,10 @@ public class SimpleDbEntity<T, ID extends Serializable> {
 
     public void setAttributes(Map<String, List<String>> attributes) {
         try {
-        	for(final Entry<String, List<String>> entry: attributes.entrySet()) {
-        		final String key = entry.getKey();
-                final List<String> values = entry.getValue();
-                
-                Assert.notNull(values);
-                Assert.isTrue(values.size() == 1);
-                
-				if (isPrimitiveKey(key)) {
-                    final Field attributesField = item.getClass().getDeclaredField(key);
-                    {
-                        attributesField.setAccessible(true);
-                        attributesField.set(item, SimpleDBAttributeConverter.toDomainFieldPrimitive(values.get(0), attributesField.getType()));
-                    }
-                }
-        	}
-        	
+            setPrimitiveAttributes(attributes);
+
             //key is not primitive
-            final Map<String, Map<String, List<String>>> nestedAttributeValues = splitNestedAttributeValues(attributes);
+            final Map<String, Map<String, List<String>>> nestedAttributeValues = SimpleDBEntityUtil.splitNestedAttributeValues(attributes);
             if (nestedAttributeValues.size() > 0) {
                 for (final String key : nestedAttributeValues.keySet()) {
                     final Field attributesField = item.getClass().getDeclaredField(key);
@@ -108,32 +96,26 @@ public class SimpleDbEntity<T, ID extends Serializable> {
         }
     }
 
-    private boolean isPrimitiveKey(final String key) {
-        return !key.contains(".");
-    }
+    private void setPrimitiveAttributes(Map<String, List<String>> attributes) throws NoSuchFieldException, IllegalArgumentException, SecurityException, ParseException, IllegalAccessException {
+        for (final Entry<String, List<String>> entry : attributes.entrySet()) {
+            final String key = entry.getKey();
+            final List<String> values = entry.getValue();
 
-    private Map<String, Map<String, List<String>>> splitNestedAttributeValues(Map<String, List<String>> attributes) {
-        final Map<String, Map<String, List<String>>> nestedFieldAttributes = new HashMap<>();
-        for(final Entry<String, List<String>> entry: attributes.entrySet()) {
-        	final String key = entry.getKey();
-        	
-            if (key.contains(".")) {
-                Map<String, List<String>> nestedFieldValues = new HashMap<>();
-                int prefixIndex = key.indexOf('.');
-                final String nestedFieldName = key.substring(0, prefixIndex);
-                final String subField = key.substring(prefixIndex + 1);
+            Assert.notNull(values);
+            Assert.isTrue(values.size() == 1);
 
-                if (nestedFieldAttributes.containsKey(nestedFieldName)) {
-                    nestedFieldValues = nestedFieldAttributes.get(nestedFieldName);
+            if (SimpleDBEntityUtil.isPrimitiveKey(key)) {
+                final Field attributesField = item.getClass().getDeclaredField(key);
+                {
+                    attributesField.setAccessible(true);
+                    attributesField.set(item, SimpleDBAttributeConverter.toDomainFieldPrimitive(values.get(0), attributesField.getType()));
                 }
-
-                nestedFieldValues.put(subField, entry.getValue());
-
-                nestedFieldAttributes.put(nestedFieldName, nestedFieldValues);
             }
         }
-        
-        return nestedFieldAttributes;
+    }
+
+    public Map<String, List<String>> toAttributes() {
+        return toAttributes("");
     }
 
     /**
@@ -166,10 +148,6 @@ public class SimpleDbEntity<T, ID extends Serializable> {
         }
 
         return result;
-    }
-
-    public Map<String, List<String>> toAttributes() {
-        return toAttributes("");
     }
 
     /**
