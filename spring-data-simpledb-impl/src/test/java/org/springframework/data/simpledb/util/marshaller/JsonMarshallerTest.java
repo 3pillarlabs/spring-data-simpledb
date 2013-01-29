@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -23,7 +22,8 @@ public class JsonMarshallerTest {
     public void unmarshal_should_properly_unmarshal_a_json_string_into_the_target_class_instance() throws IOException {
 
         // Prepare
-        String userJsonString = new String(IOUtils.toByteArray(this.getClass().getClassLoader().getResourceAsStream("org/springframework/data/simpledb/util/marshaller/user.json")));
+        String userJsonString = new String(IOUtils.toByteArray(this.getClass().getClassLoader().getResourceAsStream(
+                "org/springframework/data/simpledb/util/marshaller/user.json")));
         assertNotNull(userJsonString);
 
         // Exercise
@@ -35,6 +35,25 @@ public class JsonMarshallerTest {
         assertEquals("Joe", expectedUser.getName().getFirst());
         assertEquals("Sixpack", expectedUser.getName().getLast());
         assertNotNull(expectedUser.getUserImage());
+    }
+
+    @Test
+    public void unmarshal_should_unmarshal_a_json_string_without_knowing_the_target_class_type() throws IOException {
+
+        // Prepare
+        String userJsonString = new String(IOUtils.toByteArray(this.getClass().getClassLoader().getResourceAsStream(
+                "org/springframework/data/simpledb/util/marshaller/user_with_classinfo.json")));
+        assertNotNull(userJsonString);
+
+        // Exercise
+        User returnedUser = (User) cut.unmarshal(userJsonString);
+
+        // Verify
+        assertNotNull(returnedUser);
+        assertEquals(User.Gender.MALE, returnedUser.getGender());
+        assertEquals("Joe", returnedUser.getName().getFirst());
+        assertEquals("Sixpack", returnedUser.getName().getLast());
+        assertNotNull(returnedUser.getUserImage());
     }
 
 }

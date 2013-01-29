@@ -17,6 +17,27 @@ import java.util.Map;
 
 public class JsonMarshaller implements Marshaller {
 
+    static class Wrapper {
+        private Object endpointAttribute;
+        private String endpointAttrClassName;
+
+        public Object getEndpointAttribute() {
+            return endpointAttribute;
+        }
+
+        public void setEndpointAttribute(Object endpointAttribute) {
+            this.endpointAttribute = endpointAttribute;
+        }
+
+        public String getEndpointAttrClassName() {
+            return endpointAttrClassName;
+        }
+
+        public void setEndpointAttrClassName(String endpointAttrClassName) {
+            this.endpointAttrClassName = endpointAttrClassName;
+        }
+    }
+
     private static final Logger log = LoggerFactory.getLogger(JsonMarshaller.class);
 
     private ObjectMapper mapper;
@@ -27,6 +48,20 @@ public class JsonMarshaller implements Marshaller {
         JsonUnknownPropertyHandler jsonUnknownPropertyHandler = new JsonUnknownPropertyHandler();
         mapper.getDeserializationConfig().addHandler(jsonUnknownPropertyHandler);
         mapper.registerModule(new MrBeanModule());
+    }
+
+    public Object unmarshal(String input) {
+        Wrapper unmarshalledWrapper = unmarshal(input, Wrapper.class);
+
+        String className = unmarshalledWrapper.getEndpointAttrClassName();
+        try {
+            Class clazz = Class.forName(className);
+            String marshalledAttributes = marshal(unmarshalledWrapper.getEndpointAttribute());
+            return unmarshal(marshalledAttributes, clazz);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+
     }
 
     @Override
@@ -45,25 +80,6 @@ public class JsonMarshaller implements Marshaller {
             if (clazz.equals(String.class)) {
                 return (T) input;
             }
-            throw new MappingException(e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-
-        return unmarshalledObject;
-    }
-
-    public <T> T unmarshal(String input, TypeReference<Map> typeReference) {
-
-        if (input == null) {
-            log.warn("Null input given to unmarshal, will return null.");
-            return null;
-        }
-
-        T unmarshalledObject;
-        try {
-            unmarshalledObject = mapper.readValue(input, typeReference);
-        } catch (JsonParseException e) {
             throw new MappingException(e.getMessage(), e);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
