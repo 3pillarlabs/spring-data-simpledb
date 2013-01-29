@@ -113,11 +113,14 @@ public final class MetadataParser {
     }
 
     public static List<Field> getSupportedFields(Object object) {
-       return getSupportedFields(object, FieldTypeIdentifier.PRIMITIVE);
+    	final List<Field> supportedFields = getSupportedFields(object, FieldTypeIdentifier.PRIMITIVE);
+    	supportedFields.addAll(getSupportedFields(object, FieldTypeIdentifier.CORE_TYPE));
+    	
+    	return supportedFields;
     }
 
     public static List<Field> getPrimitiveCollectionFields(Object object) {
-       return getSupportedFields(object, FieldTypeIdentifier.COLLECTION);
+       return getSupportedFields(object, FieldTypeIdentifier.PRIMITIVE_ARRAY);
     }
 
     private static List<Field> getSupportedFields(Object object, FieldTypeIdentifier typeIdentifier) {
@@ -127,7 +130,7 @@ public final class MetadataParser {
                if(field.getAnnotation(Attributes.class) == null
                     && field.getAnnotation(Transient.class) == null
                     && !(field.equals(MetadataParser.getIdField(object)))
-                    && typeIdentifier.isOfType(field.getType())) {
+                    && typeIdentifier.isOfType(field)) {
                 fieldList.add(field);
             }
         }
@@ -146,7 +149,7 @@ public final class MetadataParser {
     }
 
     public static boolean isNestedDomainField(Field field, Object object) {
-        return !(FieldTypeIdentifier.isPrimitiveOrCoreType(field.getType())
+        return !(FieldTypeIdentifier.PRIMITIVE.isOfType(field)
                 || Number.class.isAssignableFrom(field.getType())
                 || Collection.class.isAssignableFrom(field.getType())
                 || Boolean.class.isAssignableFrom(field.getType())
