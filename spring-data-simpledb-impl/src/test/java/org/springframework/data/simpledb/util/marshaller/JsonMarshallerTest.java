@@ -37,29 +37,6 @@ public class JsonMarshallerTest {
         assertNotNull(expectedUser.getUserImage());
     }
 
-    @Test
-    public void unmarshal_should_properly_unmarshal_a_json_string_representing_a_map_into_the_target_class_instance() throws IOException {
-
-        // Prepare
-        String userJsonString = new String(IOUtils.toByteArray(this.getClass().getClassLoader()
-                .getResourceAsStream("org/springframework/data/simpledb/util/marshaller/user_collection.json")));
-        assertNotNull(userJsonString);
-
-        // Exercise
-        Map<String, User> expectedUserMap = cut.unmarshal(userJsonString, Map.class);
-
-        // Verify
-        assertNotNull(expectedUserMap);
-        assertEquals(2, expectedUserMap.size());
-
-        User user1 = expectedUserMap.get("user1");
-        assertEquals("Joe", user1.getName().getFirst());
-
-        User user2 = expectedUserMap.get("user1");
-        assertEquals("user2", user2.getName().getFirst());
-    }
-
-
 }
 
 class User {
