@@ -13,10 +13,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Map;
 
-public class
-        JsonMarshaller implements Marshaller {
+public class JsonMarshaller implements Marshaller {
 
     private static final Logger log = LoggerFactory.getLogger(JsonMarshaller.class);
 
@@ -90,8 +88,7 @@ public class
             }
             String json = jsonOut.toString();
             return unmarshal(json, clazz);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
 
