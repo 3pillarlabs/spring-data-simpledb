@@ -5,6 +5,7 @@ import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.SelectResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 import java.io.Serializable;
@@ -28,7 +29,7 @@ public class DomainItemBuilder<T, ID extends Serializable> {
     }
 
     public T buildDomainItem(SimpleDbEntityInformation<T, ID> entityInformation, Item item) {
-        SimpleDbEntity entity = new SimpleDbEntity(entityInformation);
+        EntityWrapper entity = new EntityWrapper(entityInformation);
 
         entity.setId(item.getName());
         final Map<String, List<String>> attributes = convertSimpleDbAttributes(item.getAttributes());

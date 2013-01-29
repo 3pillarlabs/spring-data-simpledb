@@ -4,16 +4,16 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import org.springframework.data.simpledb.core.SimpleDbEntity;
+import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.util.Assert;
 
 public abstract class AbstractField<T, ID extends Serializable> {
 
 	/* field metadata */
 	private final Field field;
-	private final SimpleDbEntity<T, ID> parent;
+	private final EntityWrapper<T, ID> parent;
 	
-	protected AbstractField(final Field field, final SimpleDbEntity<T, ID> parent) {
+	protected AbstractField(final Field field, final EntityWrapper<T, ID> parent) {
 		Assert.notNull(field);
 		Assert.notNull(parent);
 		
@@ -42,7 +42,7 @@ public abstract class AbstractField<T, ID extends Serializable> {
 		
 	}
 	
-	protected SimpleDbEntity<T, ID> getParent() {
+	protected EntityWrapper<T, ID> getParent() {
 		return this.parent;
 	}
 	

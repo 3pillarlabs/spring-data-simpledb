@@ -5,11 +5,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.simpledb.core.SimpleDbEntity;
+import org.springframework.data.simpledb.core.entity.EntityWrapper;
 
 public class NestedEntityField<T, ID extends Serializable> extends AbstractField<T, ID> {
 
-	NestedEntityField(Field field, SimpleDbEntity<T, ID> parent) {
+	NestedEntityField(Field field, EntityWrapper<T, ID> parent) {
 		super(field, parent);
 	}
 
