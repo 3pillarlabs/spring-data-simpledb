@@ -3,11 +3,7 @@ package org.springframework.data.simpledb.util;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class SimpleDBAttributeConverter {
 

@@ -187,7 +187,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
             sdbEntity = new SimpleDbEntity(entityInformation, entity);
         } else {
             sdbEntity = new SimpleDbEntity(entityInformation);
-            sdbEntity.setAttributes(new LinkedHashMap<String, String>());
+            sdbEntity.setAttributes(new LinkedHashMap<String, List<String>>());
             sdbEntity.setId((String) id);
         }
 

@@ -1,6 +1,7 @@
 package org.springframework.data.simpledb.util;
 
 import org.springframework.util.Assert;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;

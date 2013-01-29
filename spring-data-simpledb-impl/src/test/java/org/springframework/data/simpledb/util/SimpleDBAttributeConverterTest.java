@@ -1,7 +1,7 @@
 package org.springframework.data.simpledb.util;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -9,8 +9,6 @@ import java.text.ParseException;
 import java.util.Date;
 
 import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
 
 public class SimpleDBAttributeConverterTest {
 

@@ -11,12 +11,12 @@ package org.springframework.data.simpledb.util;
  * Amazon Simple DB Java Library API Version: 2007-11-07 Generated: Fri Jan 18 01:13:17 PST 2008
  *
  */
+
 import org.apache.commons.codec.binary.Base64;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 
 /**
