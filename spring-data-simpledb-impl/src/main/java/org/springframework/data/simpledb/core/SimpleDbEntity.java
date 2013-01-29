@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
@@ -72,18 +71,22 @@ public class SimpleDbEntity<T, ID extends Serializable> {
 
     public void setAttributes(Map<String, List<String>> attributes) {
         try {
-            for (final String key : attributes.keySet()) {
-                final List<String> values = attributes.get(key);
+        	for(final Entry<String, List<String>> entry: attributes.entrySet()) {
+        		final String key = entry.getKey();
+                final List<String> values = entry.getValue();
+                
                 Assert.notNull(values);
                 Assert.isTrue(values.size() == 1);
-                if (isPrimitiveKey(key)) {
+                
+				if (isPrimitiveKey(key)) {
                     final Field attributesField = item.getClass().getDeclaredField(key);
                     {
                         attributesField.setAccessible(true);
                         attributesField.set(item, SimpleDBAttributeConverter.toDomainFieldPrimitive(values.get(0), attributesField.getType()));
                     }
                 }
-            }
+        	}
+        	
             //key is not primitive
             final Map<String, Map<String, List<String>>> nestedAttributeValues = splitNestedAttributeValues(attributes);
             if (nestedAttributeValues.size() > 0) {
@@ -111,8 +114,9 @@ public class SimpleDbEntity<T, ID extends Serializable> {
 
     private Map<String, Map<String, List<String>>> splitNestedAttributeValues(Map<String, List<String>> attributes) {
         final Map<String, Map<String, List<String>>> nestedFieldAttributes = new HashMap<>();
-
-        for (String key : attributes.keySet()) {
+        for(final Entry<String, List<String>> entry: attributes.entrySet()) {
+        	final String key = entry.getKey();
+        	
             if (key.contains(".")) {
                 Map<String, List<String>> nestedFieldValues = new HashMap<>();
                 int prefixIndex = key.indexOf('.');
@@ -123,11 +127,12 @@ public class SimpleDbEntity<T, ID extends Serializable> {
                     nestedFieldValues = nestedFieldAttributes.get(nestedFieldName);
                 }
 
-                nestedFieldValues.put(subField, attributes.get(key));
+                nestedFieldValues.put(subField, entry.getValue());
 
                 nestedFieldAttributes.put(nestedFieldName, nestedFieldValues);
             }
         }
+        
         return nestedFieldAttributes;
     }
 
