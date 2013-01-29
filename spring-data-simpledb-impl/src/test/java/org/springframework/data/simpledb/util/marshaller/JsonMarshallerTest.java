@@ -56,13 +56,35 @@ public class JsonMarshallerTest {
         assertNotNull(returnedUser.getUserImage());
     }
 
+    @Test
+    public void marshal_should_marshal_Object() throws IOException {
+
+        // Prepare
+        User newUser = new User();
+        newUser.setName(new User.Name());
+        newUser.getName().setFirst("Joe");
+        newUser.getName().setLast("Sixpack");
+        Object object = newUser;
+
+        // Exercise
+        String marshalledUser = cut.marshal(object);
+        User returnedUser = (User) cut.unmarshal(marshalledUser);
+
+        // Verify
+        assertNotNull(returnedUser);
+        assertEquals(newUser.getName().getFirst(), returnedUser.getName().getFirst());
+        assertEquals(newUser.getName().getLast(), returnedUser.getName().getLast());
+    }
+
 }
 
 class User {
-    public enum Gender {MALE, FEMALE}
+    public enum Gender {MALE}
 
     public static class Name {
-        private String _first, _last;
+        private String _first;
+
+        private String _last;
 
         public String getFirst() {
             return _first;
@@ -90,10 +112,6 @@ class User {
         return _name;
     }
 
-    public boolean isVerified() {
-        return _isVerified;
-    }
-
     public Gender getGender() {
         return _gender;
     }
@@ -106,15 +124,4 @@ class User {
         _name = n;
     }
 
-    public void setVerified(boolean b) {
-        _isVerified = b;
-    }
-
-    public void setGender(Gender g) {
-        _gender = g;
-    }
-
-    public void setUserImage(byte[] b) {
-        _userImage = b;
-    }
 }

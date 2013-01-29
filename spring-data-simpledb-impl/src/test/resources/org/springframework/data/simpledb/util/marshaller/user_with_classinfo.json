@@ -1,9 +1,9 @@
 {
-    "endpointAttribute" : {
+    "attributeContent" : {
             "name" : { "first" : "Joe", "last" : "Sixpack" },
             "gender" : "MALE",
             "verified" : false,
             "userImage" : "Rm9vYmFyIQ=="
         },
-    "endpointAttrClassName":"org.springframework.data.simpledb.util.marshaller.User"
+    "attributeClassName":"org.springframework.data.simpledb.util.marshaller.User"
 }

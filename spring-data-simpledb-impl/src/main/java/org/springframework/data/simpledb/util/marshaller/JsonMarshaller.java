@@ -4,36 +4,30 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.mrbean.MrBeanModule;
-import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mapping.model.MappingException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 public class JsonMarshaller implements Marshaller {
 
     static class Wrapper {
-        private Object endpointAttribute;
-        private String endpointAttrClassName;
+        private Object attributeContent;
+        private String attributeClassName;
 
-        public Object getEndpointAttribute() {
-            return endpointAttribute;
+        public Object getAttributeContent() {
+            return attributeContent;
         }
 
-        public void setEndpointAttribute(Object endpointAttribute) {
-            this.endpointAttribute = endpointAttribute;
+        public void setAttributeContent(Object attributeContent) {
+            this.attributeContent = attributeContent;
         }
 
-        public String getEndpointAttrClassName() {
-            return endpointAttrClassName;
+        public String getAttributeClassName() {
+            return attributeClassName;
         }
 
-        public void setEndpointAttrClassName(String endpointAttrClassName) {
-            this.endpointAttrClassName = endpointAttrClassName;
+        public void setAttributeClassName(String attributeClassName) {
+            this.attributeClassName = attributeClassName;
         }
     }
 
@@ -53,10 +47,10 @@ public class JsonMarshaller implements Marshaller {
     public Object unmarshal(String input) {
         Wrapper unmarshalledWrapper = unmarshal(input, Wrapper.class);
 
-        String className = unmarshalledWrapper.getEndpointAttrClassName();
+        String className = unmarshalledWrapper.getAttributeClassName();
         try {
             Class clazz = Class.forName(className);
-            String marshalledAttributes = marshal(unmarshalledWrapper.getEndpointAttribute());
+            String marshalledAttributes = directMarshal(unmarshalledWrapper.getAttributeContent());
             return unmarshal(marshalledAttributes, clazz);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -64,7 +58,6 @@ public class JsonMarshaller implements Marshaller {
 
     }
 
-    @Override
     public <T> T unmarshal(String input, Class<T> clazz) {
 
         if (input == null) {
@@ -88,50 +81,7 @@ public class JsonMarshaller implements Marshaller {
         return unmarshalledObject;
     }
 
-    @Override
-    public <T> T unmarshal(String input, TypeReference<T> typeReference) {
-
-        if (input == null) {
-            log.warn("Null input given to unmarshal, will return null.");
-            return null;
-        }
-
-        T unmarshalledObject;
-        try {
-            unmarshalledObject = mapper.<T>readValue(input, typeReference);
-        } catch (Exception e) {
-            throw new MappingException(e.getMessage(), e);
-        }
-
-        return unmarshalledObject;
-    }
-
-    @Override
-    public <T> T unmarshal(InputStream input, Class<T> clazz) {
-
-        if (input == null) {
-            log.warn("Null input given to unmarshal, will return null.");
-            return null;
-        }
-
-        BufferedReader jsonReader = new BufferedReader(new InputStreamReader(input));
-        StringBuilder jsonOut = new StringBuilder();
-        try {
-            String line = jsonReader.readLine();
-            while (line != null) {
-                jsonOut.append(line);
-                line = jsonReader.readLine();
-            }
-            String json = jsonOut.toString();
-            return unmarshal(json, clazz);
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-
-    }
-
-    @Override
-    public <T> String marshal(T input) {
+    public <T> String directMarshal(T input) {
 
         if (input == null) {
             log.warn("Null input given to marshal, will return null.");
@@ -146,6 +96,21 @@ public class JsonMarshaller implements Marshaller {
         }
 
         return marshalledObject;
+    }
+
+    @Override
+    public <T> String marshal(T input) {
+
+        if (input == null) {
+            log.warn("Null input given to marshal, will return null.");
+            return null;
+        }
+
+        Wrapper inputWrapper = new Wrapper();
+        inputWrapper.setAttributeClassName(input.getClass().getName());
+        inputWrapper.setAttributeContent(input);
+
+       return  directMarshal(inputWrapper);
     }
 
 }
