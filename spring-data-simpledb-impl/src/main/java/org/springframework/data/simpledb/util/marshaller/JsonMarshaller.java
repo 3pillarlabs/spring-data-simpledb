@@ -13,7 +13,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Map;
 
 public class JsonMarshaller implements Marshaller {
 
@@ -50,6 +49,7 @@ public class JsonMarshaller implements Marshaller {
         mapper.registerModule(new MrBeanModule());
     }
 
+    @Override
     public Object unmarshal(String input) {
         Wrapper unmarshalledWrapper = unmarshal(input, Wrapper.class);
 

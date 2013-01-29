@@ -9,6 +9,8 @@ import java.io.InputStream;
  */
 public interface Marshaller {
 
+    Object unmarshal(String input);
+
     /**
      * Populates an object from a string representation.
      *
