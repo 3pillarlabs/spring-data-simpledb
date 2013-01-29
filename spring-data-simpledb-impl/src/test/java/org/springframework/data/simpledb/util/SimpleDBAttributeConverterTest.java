@@ -212,14 +212,14 @@ public class SimpleDBAttributeConverterTest {
 
     @Test
     public void toSimpleDBAttributeValues_should_return_an_string_representation_of_concatenated_array_elements() throws ParseException {
-        final int[] someInts = {1, 2, 3, 4};
-        final String expectedValue = "1,2,3,4";
+        final int[] expectedIntArray = {1, 2, 3, 4};
+        final String simpleDBValue = "1,2,3,4";
 
-        Object returnedPrimitiveCol = SimpleDBAttributeConverter.toDomainFieldPrimitiveCollection(expectedValue, int.class);
+        Object returnedPrimitiveCol = SimpleDBAttributeConverter.toDomainFieldPrimitiveCollection(simpleDBValue, int.class);
         int arrayLength = Array.getLength(returnedPrimitiveCol);
 
         for (int idx = 0; idx < arrayLength; idx++) {
-            assertEquals(someInts[idx], Array.get(returnedPrimitiveCol, idx));
+            assertEquals(expectedIntArray[idx], Array.get(returnedPrimitiveCol, idx));
         }
     }
 

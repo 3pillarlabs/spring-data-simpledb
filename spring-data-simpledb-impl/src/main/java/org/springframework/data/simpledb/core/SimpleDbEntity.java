@@ -100,7 +100,7 @@ public class SimpleDbEntity <T, ID extends Serializable> {
     public Map<String, List<String>> getSerializedPrimitiveAttributes() {
         final Map<String, List<String>> result = new HashMap<>();
 
-        for (final Field itemField : MetadataParser.getPrimitiveHolders(item)) {
+        for (final Field itemField : MetadataParser.getSupportedFields(item)) {
             final List<String> fieldValues = new ArrayList<>();
 
             try {
@@ -113,22 +113,22 @@ public class SimpleDbEntity <T, ID extends Serializable> {
             result.put(itemField.getName(), fieldValues);
         }
 
-        for (final Field itemField : MetadataParser.getPrimitiveCollectionHolders(item)) {
+        for (final Field primitiveCollectionField : MetadataParser.getPrimitiveCollectionFields(item)) {
             final List<String> fieldValues = new ArrayList<>();
 
             try {
-                SimpleDBAttributeConverter.toSimpleDBAttributeValues(itemField.get(item));
+                SimpleDBAttributeConverter.toSimpleDBAttributeValues(primitiveCollectionField.get(item));
             } catch (IllegalAccessException e) {
                 throw new MappingException("Could not retrieve field values " + e);
             }
 
             try {
 
-                itemField.setAccessible(Boolean.TRUE);
-                itemField.get(item);
+                primitiveCollectionField.setAccessible(Boolean.TRUE);
+                primitiveCollectionField.get(item);
 
             } catch (Exception e) {
-                throw new MappingException("Could not retrieve field value " + itemField.getName(), e);
+                throw new MappingException("Could not retrieve field value " + primitiveCollectionField.getName(), e);
             }
 
 

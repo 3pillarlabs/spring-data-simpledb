@@ -112,29 +112,27 @@ public final class MetadataParser {
         return null;
     }
 
-    public static List<Field> getPrimitiveHolders(Object object) {
-        List<Field> fieldList = new ArrayList<>();
-            populateFieldCollection(object, fieldList, PrimitivesTypeHolder.PRIMITIVE);
-        return fieldList;
+    public static List<Field> getSupportedFields(Object object) {
+       return getSupportedFields(object, FieldTypeIdentifier.PRIMITIVE);
     }
 
-    public static List<Field> getPrimitiveCollectionHolders(Object object) {
-        List<Field> fieldList = new ArrayList<>();
-            populateFieldCollection(object, fieldList, PrimitivesTypeHolder.COLLECTION);
-        return fieldList;
+    public static List<Field> getPrimitiveCollectionFields(Object object) {
+       return getSupportedFields(object, FieldTypeIdentifier.COLLECTION);
     }
 
-    private static void populateFieldCollection(Object object, List<Field> fieldList, PrimitivesTypeHolder typeHolder) {
+    private static List<Field> getSupportedFields(Object object, FieldTypeIdentifier typeIdentifier) {
+        List<Field> fieldList = new ArrayList<>();
         for(Field field : object.getClass().getDeclaredFields()) {
 
                if(field.getAnnotation(Attributes.class) == null
                     && field.getAnnotation(Transient.class) == null
                     && !(field.equals(MetadataParser.getIdField(object)))
-                    && typeHolder.isOfType(field.getType())) {
+                    && typeIdentifier.isOfType(field.getType())) {
 
                 fieldList.add(field);
             }
         }
+        return fieldList;
     }
 
     private static String getDomainPrefix(Class clazz){

@@ -6,7 +6,6 @@ import org.springframework.data.annotation.Transient;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 import org.springframework.data.simpledb.annotation.Attributes;
 import org.springframework.data.simpledb.annotation.DomainPrefix;
@@ -72,8 +71,8 @@ public class MetadataParserTest {
 	}
 
 	@Test
-	public void getPrimitiveFields_should_return_list_of_primitives_bypassing_ID_Atrributes_and_Transient() throws Exception {
-		List<Field> returnedPrimitives = MetadataParser.getPrimitiveHolders(new SampleDeclaredPrimitives());
+	public void getPrimitiveFields_should_return_list_of_primitives_bypassing_ID_Attributes_and_Transient() throws Exception {
+		List<Field> returnedPrimitives = MetadataParser.getSupportedFields(new SampleDeclaredPrimitives());
 
 		assertTrue(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("intPrimitive")));
 		assertTrue(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("longPrimitive")));
@@ -87,42 +86,14 @@ public class MetadataParserTest {
 	
 	@Test
 	public void getPrimitiveFields_should_return_list_of_primitives_bypassing_ID_by_convention() throws Exception {
-		List<Field> returnedPrimitivesConvention = MetadataParser.getPrimitiveHolders(new SampleDeclaredPrimitivesConventionId());
+		List<Field> returnedPrimitivesConvention = MetadataParser.getSupportedFields(new SampleDeclaredPrimitivesConventionId());
 
 		assertFalse(returnedPrimitivesConvention.contains(SampleDeclaredPrimitivesConventionId.class.getDeclaredField("id"))) ;
 		assertTrue(returnedPrimitivesConvention.contains(SampleDeclaredPrimitivesConventionId.class.getDeclaredField("intPrimitive"))) ;
 	}
 
-    @Test public void getPrimitiveHolders_should_return_list_of_primitives_wrappers() throws Exception {
-        List<Field> returnedPrimitiveWrappers = MetadataParser.getPrimitiveHolders(new SamplePrimitivesWrapper());
-
-
-        assertFalse(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("id"))) ;
-
-        assertTrue(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("integerField"))) ;
-        assertTrue(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("byteField"))) ;
-        assertTrue(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("floatField"))) ;
-        assertTrue(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("doubleField"))) ;
-        assertTrue(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("longField"))) ;
-        assertTrue(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("dateField"))) ;
-        assertTrue(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("stringField"))) ;
-        assertTrue(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("charField"))) ;
-        assertTrue(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("boolField"))) ;
-    }
-
-    @Test public void isPrimitivesCollectionType_should_return_ObjectType() throws Exception {
-        List<Field> returnedPrimitiveCollections = MetadataParser.getPrimitiveCollectionHolders(new SamplePrimitivesCollection());
-
-        assertTrue(returnedPrimitiveCollections.contains(SamplePrimitivesCollection.class.getDeclaredField("intPrimitives"))) ;
-        assertTrue(returnedPrimitiveCollections.contains(SamplePrimitivesCollection.class.getDeclaredField("longPrimitives"))) ;
-        assertTrue(returnedPrimitiveCollections.contains(SamplePrimitivesCollection.class.getDeclaredField("doublePrimitives"))) ;
-        assertTrue(returnedPrimitiveCollections.contains(SamplePrimitivesCollection.class.getDeclaredField("booleanPrimitives"))) ;
-        assertTrue(returnedPrimitiveCollections.contains(SamplePrimitivesCollection.class.getDeclaredField("shortPrimitives"))) ;
-
-    }
-
 	@Test(expected = RuntimeException.class)
-	public void two_ids_from_entity_shold_fail_on_runtime() {
+	public void two_ids_from_entity_should_fail_on_runtime() {
 		MetadataParser.getIdField(new TwoIdsShouldFail());
 	}
 
@@ -139,28 +110,6 @@ public class MetadataParserTest {
 		@Attributes Map<String, String> someUsefullAttributes = new HashMap<>();
 	}
 
-    static class SamplePrimitivesWrapper {
-        private String id;
-        private Integer integerField;
-        private Double doubleField;
-        private Float floatField;
-        private Short shortField;
-        private Long longField;
-        private String stringField;
-        private Date dateField;
-        private Boolean boolField;
-        private Character charField;
-        private Byte byteField;
-    }
-
-    static class SamplePrimitivesCollection {
-        private String id;
-        private int[] intPrimitives;
-        private long[] longPrimitives;
-        private double[] doublePrimitives;
-        private boolean[] booleanPrimitives;
-        private short[] shortPrimitives;
-    }
 
     static class SampleDeclaredPrimitivesConventionId {
 		String id;
