@@ -141,7 +141,7 @@ public class EntityWrapper<T, ID extends Serializable> {
      * @return a map of all serialized field name with the corresponding list of values (if the field is a collection of primitives)
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private Map<String, List<String>> toAttributes(final String fieldNamePrefix) {
+    public Map<String, List<String>> toAttributes(final String fieldNamePrefix) {
         final Map<String, List<String>> result = getSerializedPrimitiveAttributes(fieldNamePrefix);
 
         for (final Field itemField : MetadataParser.getNestedDomainFields(item)) {
