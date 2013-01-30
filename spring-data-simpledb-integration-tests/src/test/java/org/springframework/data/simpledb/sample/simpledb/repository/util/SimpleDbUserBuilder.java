@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
+import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser.NestedBClass;
+import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser.NestedBClass.NestedCClass;
 
 public class SimpleDbUserBuilder {
 
@@ -21,13 +23,16 @@ public class SimpleDbUserBuilder {
             user.setStringField("tes_string$");
             user.setBooleanField(Boolean.TRUE);
             
-//            Map<String, String> attributes;
-//            user.setAtts(attributes = new HashMap<>());
-//            {
-//                attributes.put(itemName + "_Key1", itemName + "_Value1");
-//                attributes.put(itemName + "_Key2", itemName + "_Value2");
-//                attributes.put(itemName + "_Key3", itemName + "_Value3");
-//            }
+            final NestedCClass cClass = new NestedCClass();
+            {
+            	cClass.setDoubleField(0.001d);
+            }
+            final NestedBClass bClass = new NestedBClass();
+            {
+            	bClass.setIntField(11);
+            	bClass.setNestedNestedC(cClass);
+            }
+            user.setNestedB(bClass);
         }
         return user;
     }

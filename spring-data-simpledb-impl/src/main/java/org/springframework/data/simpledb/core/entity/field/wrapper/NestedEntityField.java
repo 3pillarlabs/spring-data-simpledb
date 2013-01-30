@@ -48,6 +48,12 @@ public class NestedEntityField<T, ID extends Serializable> extends AbstractField
 	}
 	
 	@Override
+	public void deserialize(Map<String, List<String>> values) {
+		/* recursive call */
+		wrappedNestedEntity.deserialize(values);
+	}
+	
+	@Override
 	public void createInstance() {
 		/* instantiation is handled by the EntityWrapper */
 		final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(getField().getType());

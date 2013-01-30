@@ -1,22 +1,19 @@
 package org.springframework.data.simpledb.core;
 
-import com.amazonaws.services.simpledb.model.Attribute;
-import com.amazonaws.services.simpledb.model.Item;
-import com.amazonaws.services.simpledb.model.SelectResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DomainItemBuilder<T, ID extends Serializable> {
+import org.springframework.data.simpledb.core.entity.EntityWrapper;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbOperationsImpl.class);
+import com.amazonaws.services.simpledb.model.Attribute;
+import com.amazonaws.services.simpledb.model.Item;
+import com.amazonaws.services.simpledb.model.SelectResult;
+
+public class DomainItemBuilder<T, ID extends Serializable> {
 
     public List<T> populateDomainItems(SimpleDbEntityInformation<T, ID> entityInformation, SelectResult selectResult) {
         final List<T> allItems = new ArrayList<>();
@@ -33,7 +30,7 @@ public class DomainItemBuilder<T, ID extends Serializable> {
 
         entity.setId(item.getName());
         final Map<String, List<String>> attributes = convertSimpleDbAttributes(item.getAttributes());
-        entity.setAttributes(attributes);
+        entity.deserialize(attributes);
 
         return (T) entity.getItem();
     }

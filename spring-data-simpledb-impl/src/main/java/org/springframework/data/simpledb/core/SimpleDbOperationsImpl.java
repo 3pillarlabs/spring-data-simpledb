@@ -39,7 +39,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         final PutAttributesRequest putRequest = new PutAttributesRequest();
         putRequest.setDomainName(entity.getDomain());
         putRequest.setItemName(entity.getItemName());
-        putRequest.setAttributes(toReplaceableAttributeList(entity.getSerializedPrimitiveAttributes(), false));
+        putRequest.setAttributes(toReplaceableAttributeList(entity.serialize(), false));
         
         sdb.putAttributes(putRequest);
         return entity.getItem();
@@ -50,7 +50,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         logOperation("Delete", entity);
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
         Assert.notNull(entity.getItemName(), "Item name should not be null");
-        sdb.deleteAttributes(new DeleteAttributesRequest(entity.getDomain(), entity.getItemName(), toAttributeList(entity.getSerializedPrimitiveAttributes())));
+        sdb.deleteAttributes(new DeleteAttributesRequest(entity.getDomain(), entity.getItemName(), toAttributeList(entity.serialize())));
     }
 
     @Override

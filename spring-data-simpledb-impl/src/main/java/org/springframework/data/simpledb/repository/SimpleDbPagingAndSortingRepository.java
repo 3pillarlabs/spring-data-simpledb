@@ -84,7 +84,7 @@ public interface SimpleDbPagingAndSortingRepository<T, ID extends Serializable> 
      * @param consistentRead true for consistent read from master node
      * @return the saved entity
      */
-    public <S extends T> S save(S entity, boolean consistentRead);
+    <S extends T> S save(S entity, boolean consistentRead);
 
     /**
      * Saves all given entities.
@@ -94,7 +94,7 @@ public interface SimpleDbPagingAndSortingRepository<T, ID extends Serializable> 
      * @param consistentRead true for consistent read from master node
      * @throws IllegalArgumentException in case the given entity is (@literal null}.
      */
-    public <S extends T> List<S> save(Iterable<S> entities, boolean consistentRead);
+    <S extends T> List<S> save(Iterable<S> entities, boolean consistentRead);
 
     /**
      * Deletes the entity with the given id.
@@ -103,7 +103,7 @@ public interface SimpleDbPagingAndSortingRepository<T, ID extends Serializable> 
      * @param consistentRead true for consistent read from master node
      * @throws IllegalArgumentException in case the given {@code id} is {@literal null}
      */
-    public void delete(ID id, boolean consistentRead);
+    void delete(ID id, boolean consistentRead);
 
     /**
      * Deletes a given entity.
@@ -111,7 +111,7 @@ public interface SimpleDbPagingAndSortingRepository<T, ID extends Serializable> 
      * @param entity
      * @throws IllegalArgumentException in case the given entity is (@literal null}.
      */
-    public void delete(T entity, boolean consistentRead);
+    void delete(T entity, boolean consistentRead);
 
     /**
      * Deletes the given entities.
@@ -119,10 +119,10 @@ public interface SimpleDbPagingAndSortingRepository<T, ID extends Serializable> 
      * @param entities
      * @throws IllegalArgumentException in case the given {@link Iterable} is (@literal null}.
      */
-    public void delete(Iterable<? extends T> entities, boolean consistentRead);
+    void delete(Iterable<? extends T> entities, boolean consistentRead);
 
     /**
      * Deletes all entities managed by the repository.
      */
-    public void deleteAll(boolean consistentRead);
+    void deleteAll(boolean consistentRead);
 }

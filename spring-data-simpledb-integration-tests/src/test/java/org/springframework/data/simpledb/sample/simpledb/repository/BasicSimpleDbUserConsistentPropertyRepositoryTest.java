@@ -1,18 +1,22 @@
 package org.springframework.data.simpledb.sample.simpledb.repository;
 
-import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
+import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.*;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-consistent-repository-context.xml")
@@ -28,16 +32,6 @@ public class BasicSimpleDbUserConsistentPropertyRepositoryTest {
         repository.deleteAll();
     }
 
-	private void assertMatchingAttributes(SimpleDbUser user, SimpleDbUser foundUser) {
-		assertEquals(user.getIntField(), foundUser.getIntField());
-        assertTrue(user.getFloatField() == foundUser.getFloatField());
-        assertTrue(user.getDoubleField() == foundUser.getDoubleField());
-        assertEquals(user.getLongField(), foundUser.getLongField());
-        assertEquals(user.getShortField(), foundUser.getShortField());
-        assertEquals(user.getByteField(), foundUser.getByteField());
-        assertEquals(user.getBooleanField(), foundUser.getBooleanField());
-	}
-    
     @Test
     public void save_should_persist_single_item() {
         String itemName = "FirstItem";
@@ -48,7 +42,7 @@ public class BasicSimpleDbUserConsistentPropertyRepositoryTest {
         SimpleDbUser foundUser = repository.findOne(user.getItemName());
 
         assertEquals(user.getItemName(), foundUser.getItemName());
-        assertMatchingAttributes(user, foundUser);
+        assertEquals(user, foundUser);
     }
 
     @Test
@@ -73,11 +67,11 @@ public class BasicSimpleDbUserConsistentPropertyRepositoryTest {
         SimpleDbUser foundUser = repository.findOne("SecondItem");
 
         assertNotNull(foundUser);
-        assertMatchingAttributes(user, foundUser);
+        assertEquals(user, foundUser);
 
         foundUser = repository.findOne("FirstItem");
         assertNotNull(foundUser);
-        assertMatchingAttributes(user, foundUser);
+        assertEquals(user, foundUser);
     }
 
     @Test
@@ -123,7 +117,7 @@ public class BasicSimpleDbUserConsistentPropertyRepositoryTest {
 
         assertNotNull(foundUser);
         assertEquals(user.getItemName(), foundUser.getItemName());
-        assertMatchingAttributes(user, foundUser);
+        assertEquals(user, foundUser);
     }
 
     @Test

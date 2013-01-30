@@ -24,5 +24,5 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Documented
 public @interface DomainPrefix {
-    public String value();
+    String value();
 }

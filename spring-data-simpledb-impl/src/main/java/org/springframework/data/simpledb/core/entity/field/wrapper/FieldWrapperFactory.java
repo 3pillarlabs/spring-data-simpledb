@@ -7,7 +7,7 @@ import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.core.entity.field.FieldType;
 import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
 
-public class FieldWrapperFactory {
+public final class FieldWrapperFactory {
 	
 	private FieldWrapperFactory() {
 		/* utility class */
