@@ -2,7 +2,6 @@ package org.springframework.data.simpledb.core.entity;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -93,10 +92,23 @@ public class EntityWrapper<T, ID extends Serializable> {
 
     public void setAttributes(Map<String, List<String>> attributes) {
         try {
-            setPrimitiveAttributes(attributes);
+            Map<String, List<String>> primitiveAttributeValues = AttributesKeySplitter.getPrimitiveAttributes(attributes);
 
-            //key is not primitive
+            for (final Entry<String, List<String>> entry : primitiveAttributeValues.entrySet()) {
+                final String primitiveAtribute = entry.getKey();
+                final List<String> values = entry.getValue();
+
+                Assert.notNull(values);
+                Assert.isTrue(values.size() == 1);
+
+                final Field attributesField = item.getClass().getDeclaredField(primitiveAtribute);
+                attributesField.setAccessible(true);
+
+                attributesField.set(item, SimpleDBAttributeConverter.toDomainFieldPrimitive(values.get(0), attributesField.getType()));
+            }
+
             final Map<String, Map<String, List<String>>> nestedAttributeValues = AttributesKeySplitter.splitNestedAttributeKeys(attributes);
+
             if (nestedAttributeValues.size() > 0) {
                 for (final String key : nestedAttributeValues.keySet()) {
                     final Field attributesField = item.getClass().getDeclaredField(key);
@@ -113,24 +125,6 @@ public class EntityWrapper<T, ID extends Serializable> {
             }
         } catch (Exception e) {
             throw new MappingException("Could not map attributes", e);
-        }
-    }
-
-    private void setPrimitiveAttributes(Map<String, List<String>> attributes) throws NoSuchFieldException, IllegalArgumentException, SecurityException, ParseException, IllegalAccessException {
-        for (final Entry<String, List<String>> entry : attributes.entrySet()) {
-            final String key = entry.getKey();
-            final List<String> values = entry.getValue();
-
-            Assert.notNull(values);
-            Assert.isTrue(values.size() == 1);
-
-            if (AttributesKeySplitter.isPrimitiveKey(key)) {
-                final Field attributesField = item.getClass().getDeclaredField(key);
-                {
-                    attributesField.setAccessible(true);
-                    attributesField.set(item, SimpleDBAttributeConverter.toDomainFieldPrimitive(values.get(0), attributesField.getType()));
-                }
-            }
         }
     }
 

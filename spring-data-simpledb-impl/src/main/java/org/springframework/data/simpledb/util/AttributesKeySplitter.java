@@ -53,7 +53,7 @@ public class AttributesKeySplitter {
     }
 
 
-    public static boolean isPrimitiveKey(final String key) {
+    private static boolean isPrimitiveKey(final String key) {
         return !key.contains(".");
     }
 
