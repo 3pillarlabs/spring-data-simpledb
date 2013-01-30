@@ -34,7 +34,9 @@ public abstract class AbstractField<T, ID extends Serializable> {
 	 * @return serialized value in string representation
 	 */
 	public abstract Map<String, List<String>> serialize(String prefix);
-	
+
+
+    //TODO should not modify parent state
 	public void deserialize(final Map<String, List<String>> attributes) {
 		/* you should not be here */
 		Assert.state(true, "You should not be here!");

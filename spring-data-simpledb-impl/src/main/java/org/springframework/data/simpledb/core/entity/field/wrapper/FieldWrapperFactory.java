@@ -28,7 +28,7 @@ public final class FieldWrapperFactory {
 			return createMapFieldWrapper(field, parent, isNewParent); 
 		}
 		
-		return createUnsupportedFieldWrapper(field, parent, isNewParent);
+		return createObjectFieldWrapper(field, parent, isNewParent);
 	}
 	
 	private static <T, ID extends Serializable> PrimitiveField<T, ID> createPrimitiveFieldWrapper(final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
@@ -55,8 +55,8 @@ public final class FieldWrapperFactory {
 		return new MapField<>(field, parent, isNewParent);
 	}
 	
-	private static <T, ID extends Serializable> UnsupportedField<T, ID> createUnsupportedFieldWrapper(final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
-		return new UnsupportedField<>(field, parent, isNewParent);
+	private static <T, ID extends Serializable> ObjectField<T, ID> createObjectFieldWrapper(final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
+		return new ObjectField<>(field, parent, isNewParent);
 	}
 
 }
