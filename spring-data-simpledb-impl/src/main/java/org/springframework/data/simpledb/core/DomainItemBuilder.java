@@ -33,7 +33,7 @@ public class DomainItemBuilder<T, ID extends Serializable> {
 
         entity.setId(item.getName());
         final Map<String, List<String>> attributes = convertSimpleDbAttributes(item.getAttributes());
-        entity.setAttributes(attributes);
+        entity.deserialize(attributes);
 
         return (T) entity.getItem();
     }
