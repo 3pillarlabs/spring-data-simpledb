@@ -6,13 +6,18 @@ import org.junit.Test;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
 public class SimpleDBAttributeConverterTest {
 
-	static class SampleEntity {
+    public static final String SOME_INTS_NAME = "someInts";
+
+    static class SampleEntity {
 		int intField;
 		float floatField;
 		double doubleField;
@@ -211,9 +216,9 @@ public class SimpleDBAttributeConverterTest {
     @Test
     public void toSimpleDBAttributeValues_should_return_an_string_representation_of_concatenated_array_elements() throws ParseException {
         final int[] expectedIntArray = {1, 2, 3, 4};
-        final String simpleDBValue = "1,2,3,4";
+        final List<String> simpleDBValues = Arrays.asList("1", "2", "3", "4");
 
-        Object returnedPrimitiveCol = SimpleDBAttributeConverter.toDomainFieldPrimitiveCollection(simpleDBValue, int.class);
+        Object returnedPrimitiveCol = SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(simpleDBValues, int.class);
         int arrayLength = Array.getLength(returnedPrimitiveCol);
 
         for (int idx = 0; idx < arrayLength; idx++) {
@@ -225,9 +230,9 @@ public class SimpleDBAttributeConverterTest {
     public void encode_decode_primitive_collections() throws ParseException {
         int[] someInts = {1, 2, 3, 4};
 
-        String paddedReturnedString = SimpleDBAttributeConverter.toSimpleDBAttributeValues(someInts);
+        Map<String, List<String>> returnedMappedAttributeValues = SimpleDBAttributeConverter.primitiveArraystoSimpleDBAttributeValues(SOME_INTS_NAME, someInts);
 
-        Object returnedPrimitiveCol = SimpleDBAttributeConverter.toDomainFieldPrimitiveCollection(paddedReturnedString, int.class);
+        Object returnedPrimitiveCol = SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(returnedMappedAttributeValues.get(SOME_INTS_NAME), int.class);
         int arrayLength = Array.getLength(returnedPrimitiveCol);
 
         for (int idx = 0; idx < arrayLength; idx++) {

@@ -1,6 +1,7 @@
 package org.springframework.data.simpledb.util;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
@@ -34,22 +35,18 @@ public class SimpleDBAttributeConverter {
         return padOrConvertIfRequired(fieldValue);
     }
 
-    public static String toSimpleDBAttributeValues(final Object primitiveCollectionFieldValues) {
-        final Map<String, List<String>> attributeValues = new HashMap<>();
-
-        final StringBuilder attributeValuesBuilder = new StringBuilder();
-        int primitiveCollLength = Array.getLength(primitiveCollectionFieldValues);
+    public static Map<String, List<String>> primitiveArraystoSimpleDBAttributeValues(String fieldName, final Object primitiveCollectionFieldValues) {
+        final Map<String, List<String>> attributeStructure = new HashMap<>();
+        final List<String> attributeValues = new ArrayList<>();
+        final int primitiveCollLength = Array.getLength(primitiveCollectionFieldValues);
 
         for (int idx = 0; idx < primitiveCollLength; idx++) {
             Object itemValue = Array.get(primitiveCollectionFieldValues, idx);
-            attributeValuesBuilder.append(padOrConvertIfRequired(itemValue));
-
-            if(idx < primitiveCollLength - 1) {
-                attributeValuesBuilder.append(",");
-            }
+            attributeValues.add(padOrConvertIfRequired(itemValue));
         }
+        attributeStructure.put(fieldName, attributeValues);
 
-        return attributeValuesBuilder.toString();
+        return attributeStructure;
     }
 
     /**
@@ -127,16 +124,23 @@ public class SimpleDBAttributeConverter {
         return val;
     }
 
-    public static Object toDomainFieldPrimitiveCollection(String value, Class<?> retType) throws ParseException {
-        List<String> splitedValues = StringUtil.splitStringByDelim(value, ",");
-        Object primitiveCollection = Array.newInstance(retType, splitedValues.size());
+    public static Object toDomainFieldPrimitiveArrays(List<String> fromSimpleDbAttValues, Class<?> retType) throws ParseException {
+        Object primitiveCollection = Array.newInstance(retType, fromSimpleDbAttValues.size());
+        int idx = 0;
 
-        for (int idx = 0; idx < splitedValues.size(); idx++) {
-            Array.set(primitiveCollection, idx, toDomainFieldPrimitive(splitedValues.get(idx), retType));
+        for (Iterator<String> iterator = fromSimpleDbAttValues.iterator(); iterator.hasNext(); idx++) {
+            Array.set(primitiveCollection, idx, toDomainFieldPrimitive(iterator.next(), retType));
         }
 
         return primitiveCollection;
     }
 
+    @SuppressWarnings("unchecked")
+    public static void toDomainFieldPrimitiveCollection(List<String> fromSimpleDbAttValues, Collection collection, Class<?> returnedType)
+    throws ParseException {
 
+        for(String each : fromSimpleDbAttValues) {
+            collection.add(toDomainFieldPrimitive(each, returnedType));
+        }
+    }
 }

@@ -2,13 +2,14 @@ package org.springframework.data.simpledb.core.entity.field.wrapper;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+import org.springframework.util.Assert;
 
 public class ArrayField<T, ID extends Serializable> extends InstantiableField<T, ID> {
 
@@ -21,21 +22,19 @@ public class ArrayField<T, ID extends Serializable> extends InstantiableField<T,
      **/
     @Override
     public Map<String, List<String>> serialize(String prefix) {
-        final Map<String, List<String>> result = new HashMap<>();
-
-        final List<String> fieldValues = new ArrayList<>();
-
-        fieldValues.add(SimpleDBAttributeConverter.toSimpleDBAttributeValues(this.getValue()));
-
-        result.put(prefix.isEmpty() ? getName() : prefix + "." + getName(), fieldValues);
-
-        return result;
+        String finalFieldName = prefix.isEmpty() ? super.getName() : prefix + "." + super.getName();
+        return SimpleDBAttributeConverter.primitiveArraystoSimpleDBAttributeValues(finalFieldName, this.getValue());
     }
 
     @Override
 	public void deserialize(List<String> value) {
-//        toDomainFieldPrimitiveCollection
+        Assert.notNull(value);
 
-	}
-
+        try {
+            Object returnedRepresentation = SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(value, getField().getType());
+            getField().set(getEntity(), returnedRepresentation);
+        } catch (IllegalAccessException | ParseException e) {
+            throw new MappingException("Could not read object", e);
+        }
+    }
 }
