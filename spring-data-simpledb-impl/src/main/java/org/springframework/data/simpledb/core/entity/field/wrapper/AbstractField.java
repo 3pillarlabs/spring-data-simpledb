@@ -39,12 +39,9 @@ public abstract class AbstractField<T, ID extends Serializable> {
 	public Field getField() {
 		return this.field;
 	}
-
-	/**
-	 * Create an instance of this field and set it on the parent overriding
-	 */
-	public void createInstance() {
-		
+	
+	public T getEntity() {
+		return this.parent.getItem();
 	}
 	
 	Object getValue() {

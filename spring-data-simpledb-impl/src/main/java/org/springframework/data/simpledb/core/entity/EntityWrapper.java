@@ -1,20 +1,26 @@
 package org.springframework.data.simpledb.core.entity;
 
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
+
 import org.springframework.data.mapping.model.MappingException;
+import org.springframework.data.simpledb.core.entity.field.FieldType;
+import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
 import org.springframework.data.simpledb.core.entity.field.wrapper.AbstractField;
 import org.springframework.data.simpledb.core.entity.field.wrapper.FieldWrapperFactory;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
+import org.springframework.data.simpledb.util.AttributesKeySplitter;
 import org.springframework.data.simpledb.util.MetadataParser;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 import org.springframework.util.Assert;
-
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.text.ParseException;
-import java.util.*;
-import java.util.Map.Entry;
-import  org.springframework.data.simpledb.util.AttributesKeySplitter;
 
 import com.amazonaws.services.simpledb.model.Item;
 
@@ -33,10 +39,9 @@ public class EntityWrapper<T, ID extends Serializable> {
     public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation, T item) {
         this.entityInformation = entityInformation;
         this.item = item;
+        this.isNew = false;
         
-        for(final Field field: item.getClass().getDeclaredFields()) {
-        	wrappedFields.add(FieldWrapperFactory.createFieldWrapper(field, this));
-        }
+        createFieldWrappers();
     }
 
     public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation) {
@@ -44,14 +49,20 @@ public class EntityWrapper<T, ID extends Serializable> {
         try {
             this.item = entityInformation.getJavaType().newInstance();
             this.isNew = true;
-            
-//            for(final Field field: item.getClass().getDeclaredFields()) {
-//            	wrappedFields.add(FieldWrapperFactory.createFieldWrapper(field, this));
-//            }
+
+            createFieldWrappers();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new MappingException("Could not instantiate object", e);
         }
 
+    }
+    
+    private void createFieldWrappers() {
+        for(final Field field: item.getClass().getDeclaredFields()) {
+        	if(! FieldTypeIdentifier.isOfType(field, FieldType.ID, FieldType.ATTRIBUTES)) {
+        		wrappedFields.add(FieldWrapperFactory.createFieldWrapper(field, this));
+        	}
+        }
     }
     
     /**

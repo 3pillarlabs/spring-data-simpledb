@@ -42,7 +42,7 @@ public enum FieldType {
 	CORE_TYPE {
 		@Override
 		boolean isOfType(Field field) {
-			return isOfType(field, SUPPORTED_CORE_TYPES);
+			return isOfType(field, SUPPORTED_CORE_TYPES) && ! isOfType(field, ID, ATTRIBUTES);
 		}
 	},
 
@@ -65,7 +65,7 @@ public enum FieldType {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-			return ! isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, COLLECTION, PRIMITIVE_ARRAY);
+			return ! isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, COLLECTION, PRIMITIVE_ARRAY, MAP);
 		}
 	},
 
@@ -74,6 +74,14 @@ public enum FieldType {
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
 			return Map.class.isAssignableFrom(field.getType());
+		}
+	},
+	
+	UNSUPPORTED {
+		@Override
+		boolean isOfType(Field field) {
+			Assert.notNull(field);
+			return ! isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, COLLECTION, PRIMITIVE_ARRAY, NESTED_ENTITY, MAP);
 		}
 	};
 

@@ -18,9 +18,10 @@ public class NestedEntityField<T, ID extends Serializable> extends AbstractField
 	NestedEntityField(Field field, EntityWrapper<T, ID> parent) {
 		super(field, parent);
 		
-		final Object nestedEntityInstance = getValue();
-        final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(nestedEntityInstance.getClass());
-        wrappedNestedEntity = new EntityWrapper(entityMetadata, nestedEntityInstance);
+        final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(getField().getType());
+        
+        /* recursive call */
+        wrappedNestedEntity = new EntityWrapper(entityMetadata);
 	}
 
 	@Override
