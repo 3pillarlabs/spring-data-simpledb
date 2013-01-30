@@ -35,6 +35,8 @@ public class SimpleDBAttributeConverter {
     }
 
     public static String toSimpleDBAttributeValues(final Object primitiveCollectionFieldValues) {
+        final Map<String, List<String>> attributeValues = new HashMap<>();
+
         final StringBuilder attributeValuesBuilder = new StringBuilder();
         int primitiveCollLength = Array.getLength(primitiveCollectionFieldValues);
 
@@ -48,6 +50,26 @@ public class SimpleDBAttributeConverter {
         }
 
         return attributeValuesBuilder.toString();
+    }
+
+    /**
+     * Convert the Collection Instance to a comma-separated-string-values to persist into SimpleDB
+     * @param coreTypeCollectionFieldValues
+     * @return
+     */
+    public static String coreTypesToSimpleDBAttributeValues(final Object coreTypeCollectionFieldValues) {
+        final StringBuilder coreTypesAttValuesBuilder = new StringBuilder();
+        int idx = 0;
+        final Collection<Object> coreCollection = (Collection<Object>) coreTypeCollectionFieldValues;
+
+        for(Iterator<Object> iterator = coreCollection.iterator(); iterator.hasNext(); idx++) {
+            coreTypesAttValuesBuilder.append(padOrConvertIfRequired(iterator.next()));
+
+            if(idx < coreCollection.size()) {
+                coreTypesAttValuesBuilder.append(",");
+            }
+        }
+        return coreTypesAttValuesBuilder.toString();
     }
 
     public static List<String> toSimpleDBAttribute(final Collection<?> fieldValues) {
@@ -115,4 +137,6 @@ public class SimpleDBAttributeConverter {
 
         return primitiveCollection;
     }
+
+
 }

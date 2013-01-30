@@ -16,6 +16,9 @@ public class ArrayField<T, ID extends Serializable> extends AbstractField<T, ID>
 		super(field, parent);
 	}
 
+    /**
+     * @return Map<AttributeName, List<AttributeValues>
+     **/
     @Override
     public Map<String, List<String>> serialize(String prefix) {
         final Map<String, List<String>> result = new HashMap<>();
@@ -31,6 +34,8 @@ public class ArrayField<T, ID extends Serializable> extends AbstractField<T, ID>
 
     @Override
 	public void deserialize(List<String> value) {
+//        toDomainFieldPrimitiveCollection
+
 	}
 
 }
