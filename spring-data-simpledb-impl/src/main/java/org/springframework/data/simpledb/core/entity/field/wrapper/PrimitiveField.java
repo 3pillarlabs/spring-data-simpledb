@@ -38,7 +38,8 @@ public class PrimitiveField<T, ID extends Serializable> extends AbstractField<T,
 		Assert.isTrue(value.size() == 1);
 		
 		try {
-			getField().set(getEntity(), SimpleDBAttributeConverter.toDomainFieldPrimitive(value.get(0), getField().getType()));
+			final Object convertedValue = SimpleDBAttributeConverter.toDomainFieldPrimitive(value.get(0), getField().getType());
+			getField().set(getEntity(), convertedValue);
 		} catch (IllegalArgumentException | IllegalAccessException | ParseException e) {
 			throw new MappingException("Could not map attributes", e);
 		}

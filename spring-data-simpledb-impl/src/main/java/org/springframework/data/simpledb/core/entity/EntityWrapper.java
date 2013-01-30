@@ -197,13 +197,16 @@ public class EntityWrapper<T, ID extends Serializable> {
     }
     
     public void deserialize(final Map<String, List<String>> attributes) {
+    	/* handle nested fields */
     	final Map<String, Map<String, List<String>>> nestedFields = AttributesKeySplitter.splitNestedAttributeKeys(attributes);
     	for(final Entry<String, Map<String, List<String>>> nestedField: nestedFields.entrySet()) {
-    		/* call deserialize field with Map<Strin, List<String>> */
+    		/* call deserialize field with Map<String, List<String>> */
     		final String fieldName = nestedField.getKey();
-    		wrappedFields.get(fieldName).deserialize(nestedField.getValue());
+    		final Map<String, List<String>> fieldAttributes = nestedField.getValue();
+			wrappedFields.get(fieldName).deserialize(fieldAttributes);
     	}
     	
+    	/* handle not nested fields */
     	for(final Entry<String, List<String>> simpleField: attributes.entrySet()) {
     		if(AttributesKeySplitter.isSimpleKey(simpleField.getKey())) {
     			/* call deserialize field with List<String> */
