@@ -108,7 +108,7 @@ public enum FieldType {
 		SUPPORTED_PRIMITIVE_ARRAYS.add(char[].class);
 	}
 	
-	private static boolean isOfType(final Field field, final Set<Class<?>> supportedTypes) {
+	static boolean isOfType(final Field field, final Set<Class<?>> supportedTypes) {
 		Assert.notNull(field);
 
 		final Class<?> type = field.getType();
@@ -122,7 +122,7 @@ public enum FieldType {
 		return false;
 	}
 	
-	private static boolean isOfType(final Field field, final FieldType... fieldTypes) {
+	static boolean isOfType(final Field field, final FieldType... fieldTypes) {
 		for(final FieldType fieldType: fieldTypes) {
 			if(fieldType.isOfType(field)) {
 				return true;
