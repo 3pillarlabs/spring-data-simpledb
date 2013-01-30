@@ -38,7 +38,8 @@ public abstract class AbstractField<T, ID extends Serializable> {
 
     //TODO should not modify parent state
 	public void deserialize(final Map<String, List<String>> attributes) {
-		throw new RuntimeException("Unsupported");
+		/* you should not be here */
+		Assert.state(true, "You should not be here!");
 	}
 	
 	/**

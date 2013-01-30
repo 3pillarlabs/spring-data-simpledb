@@ -1,6 +1,9 @@
 package org.springframework.data.simpledb.util;
 
+import org.springframework.util.Assert;
+
 import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
@@ -34,35 +37,41 @@ public class SimpleDBAttributeConverter {
         return padOrConvertIfRequired(fieldValue);
     }
 
-    public static String toSimpleDBAttributeValues(final Object primitiveCollectionFieldValues) {
-        final StringBuilder attributeValuesBuilder = new StringBuilder();
-        int primitiveCollLength = Array.getLength(primitiveCollectionFieldValues);
+    public static Map<String, List<String>> primitiveArraysToSimpleDBAttributeValues(String fieldName, final Object primitiveCollectionFieldValues) {
+        Assert.notNull(fieldName);
+        Assert.notNull(primitiveCollectionFieldValues);
+
+        final Map<String, List<String>> attributeStructure = new HashMap<>();
+        final List<String> attributeValues = new ArrayList<>();
+        final int primitiveCollLength = Array.getLength(primitiveCollectionFieldValues);
 
         for (int idx = 0; idx < primitiveCollLength; idx++) {
             Object itemValue = Array.get(primitiveCollectionFieldValues, idx);
-            attributeValuesBuilder.append(padOrConvertIfRequired(itemValue));
-
-            if(idx < primitiveCollLength - 1) {
-                attributeValuesBuilder.append(",");
-            }
+            attributeValues.add(padOrConvertIfRequired(itemValue));
         }
+        attributeStructure.put(fieldName, attributeValues);
 
-        return attributeValuesBuilder.toString();
+        return attributeStructure;
     }
 
-    public static List<String> toSimpleDBAttribute(final Collection<?> fieldValues) {
-        final List<String> result = new ArrayList<>();
+    /**
+     * Convert the Collection Instance to persist into SimpleDB
+     * @param coreTypeCollectionFieldValues
+     * @return a List corresponding to each attribute value persisted to SimpleDB
+     */
+    public static List<String> coreTypesCollectionToSimpleDBAttributeValues(final Object coreTypeCollectionFieldValues) {
+        Assert.notNull(coreTypeCollectionFieldValues);
 
-        if (fieldValues != null) {
+        List<String> returnedAttributeValues = new ArrayList<>();
+        final Collection<Object> coreCollection = (Collection<Object>) coreTypeCollectionFieldValues;
 
-            Object val = null;
-            for (final Iterator<?> it = fieldValues.iterator(); it.hasNext(); val = it.next()) {
-                result.add(toSimpleDBAttributeValue(val));
-            }
+        for(Iterator<Object> iterator = coreCollection.iterator(); iterator.hasNext(); ) {
+            returnedAttributeValues.add(padOrConvertIfRequired(iterator.next()));
         }
 
-        return result;
+        return returnedAttributeValues;
     }
+
 
     public static Object toDomainFieldPrimitive(String value, Class<?> retType) throws ParseException {
         Object val = null;
@@ -105,14 +114,23 @@ public class SimpleDBAttributeConverter {
         return val;
     }
 
-    public static Object toDomainFieldPrimitiveCollection(String value, Class<?> retType) throws ParseException {
-        List<String> splitedValues = StringUtil.splitStringByDelim(value, ",");
-        Object primitiveCollection = Array.newInstance(retType, splitedValues.size());
+    public static Object toDomainFieldPrimitiveArrays(List<String> fromSimpleDbAttValues, Class<?> retType) throws ParseException {
+        Object primitiveCollection = Array.newInstance(retType, fromSimpleDbAttValues.size());
+        int idx = 0;
 
-        for (int idx = 0; idx < splitedValues.size(); idx++) {
-            Array.set(primitiveCollection, idx, toDomainFieldPrimitive(splitedValues.get(idx), retType));
+        for (Iterator<String> iterator = fromSimpleDbAttValues.iterator(); iterator.hasNext(); idx++) {
+            Array.set(primitiveCollection, idx, toDomainFieldPrimitive(iterator.next(), retType));
         }
 
         return primitiveCollection;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void toDomainFieldPrimitiveCollection(List<String> fromSimpleDbAttValues, Collection collection, Class<?> returnedType)
+    throws ParseException {
+
+        for(String each : fromSimpleDbAttValues) {
+            collection.add(toDomainFieldPrimitive(each, returnedType));
+        }
     }
 }
