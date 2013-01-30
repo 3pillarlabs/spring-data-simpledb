@@ -22,8 +22,6 @@ import org.springframework.data.simpledb.util.MetadataParser;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 import org.springframework.util.Assert;
 
-import com.amazonaws.services.simpledb.model.Item;
-
 public class EntityWrapper<T, ID extends Serializable> {
 
 	/* entity metadata */
@@ -34,12 +32,9 @@ public class EntityWrapper<T, ID extends Serializable> {
     
     private T item;
     
-    private boolean isNew = false;
-
     public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation, T item) {
         this.entityInformation = entityInformation;
         this.item = item;
-        this.isNew = false;
         
         createFieldWrappers();
     }
@@ -48,7 +43,6 @@ public class EntityWrapper<T, ID extends Serializable> {
         this.entityInformation = entityInformation;
         try {
             this.item = entityInformation.getJavaType().newInstance();
-            this.isNew = true;
 
             createFieldWrappers();
         } catch (InstantiationException | IllegalAccessException e) {
@@ -63,13 +57,6 @@ public class EntityWrapper<T, ID extends Serializable> {
         		wrappedFields.add(FieldWrapperFactory.createFieldWrapper(field, this));
         	}
         }
-    }
-    
-    /**
-     * @return true if the {@link Item} instance was created through reflection
-     */
-    public boolean isNew() {
-    	return this.isNew;
     }
 
     public String getDomain() {
