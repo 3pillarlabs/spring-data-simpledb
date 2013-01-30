@@ -1,6 +1,7 @@
 package org.springframework.data.simpledb.core.entity.field.wrapper;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.util.List;
@@ -11,7 +12,7 @@ import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 import org.springframework.util.Assert;
 
-public class ArrayField<T, ID extends Serializable> extends InstantiableField<T, ID> {
+public class ArrayField<T, ID extends Serializable> extends AbstractField<T, ID> {
 
 	ArrayField(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
 		super(field, parent, isNewParent);
@@ -31,10 +32,18 @@ public class ArrayField<T, ID extends Serializable> extends InstantiableField<T,
         Assert.notNull(value);
 
         try {
-            Object returnedRepresentation = SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(value, getField().getType());
+            Class<?> fieldClazz = getField().getType();
+            Object returnedRepresentation = SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(value, fieldClazz.getComponentType());
             getField().set(getEntity(), returnedRepresentation);
         } catch (IllegalAccessException | ParseException e) {
             throw new MappingException("Could not read object", e);
         }
     }
+
+    /**
+     * Any primitive array needs a SIZE when creating the instance of array
+     * This information is known only at runtime
+     */
+    @Override
+    public void createInstance() { }
 }
