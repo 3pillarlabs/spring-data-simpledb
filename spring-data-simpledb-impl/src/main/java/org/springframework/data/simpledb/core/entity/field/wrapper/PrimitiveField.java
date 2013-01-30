@@ -12,8 +12,8 @@ import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 
 public class PrimitiveField<T, ID extends Serializable> extends AbstractField<T, ID> {
 
-	PrimitiveField(Field field, EntityWrapper<T, ID> parent) {
-		super(field, parent);
+	PrimitiveField(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
+		super(field, parent, isNewParent);
 	}
 
 	@Override
@@ -31,6 +31,11 @@ public class PrimitiveField<T, ID extends Serializable> extends AbstractField<T,
 
 	@Override
 	public void deserialize(List<String> value) {
+	}
+	
+	@Override
+	public void createInstance() {
+		/* do nothing */
 	}
 
 }

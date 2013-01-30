@@ -10,10 +10,10 @@ import java.util.Map;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 
-public class ArrayField<T, ID extends Serializable> extends AbstractField<T, ID> {
+public class ArrayField<T, ID extends Serializable> extends InstantiableField<T, ID> {
 
-	ArrayField(Field field, EntityWrapper<T, ID> parent) {
-		super(field, parent);
+	ArrayField(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
+		super(field, parent, isNewParent);
 	}
 
     /**

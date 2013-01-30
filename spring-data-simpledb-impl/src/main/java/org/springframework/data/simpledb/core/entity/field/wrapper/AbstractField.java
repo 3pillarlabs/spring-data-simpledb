@@ -15,7 +15,7 @@ public abstract class AbstractField<T, ID extends Serializable> {
 	private final Field field;
 	private final EntityWrapper<T, ID> parent;
 	
-	protected AbstractField(final Field field, final EntityWrapper<T, ID> parent) {
+	protected AbstractField(final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
 		Assert.notNull(field);
 		Assert.notNull(parent);
 		
@@ -23,6 +23,10 @@ public abstract class AbstractField<T, ID extends Serializable> {
 		this.parent = parent;
 		
 		this.field.setAccessible(Boolean.TRUE);
+		
+		if(isNewParent) {
+			createInstance();
+		}
 	}
 	
 	/**
@@ -36,15 +40,19 @@ public abstract class AbstractField<T, ID extends Serializable> {
 	 */
 	public abstract void deserialize(final List<String> value);
 	
+	/**
+	 * Template method.
+	 * 
+	 * Create an instance of the field and set it on the parent instance.
+	 */
+	public abstract void createInstance();
+	
 	public Field getField() {
 		return this.field;
 	}
-
-	/**
-	 * Create an instance of this field and set it on the parent overriding
-	 */
-	public void createInstance() {
-		
+	
+	public T getEntity() {
+		return this.parent.getItem();
 	}
 	
 	Object getValue() {
