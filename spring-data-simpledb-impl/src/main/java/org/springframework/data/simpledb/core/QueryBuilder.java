@@ -14,17 +14,16 @@ public class QueryBuilder<T, ID extends Serializable> {
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryBuilder.class);
 
     private SimpleDbEntityInformation<T, ID> entityInformation;
-    StringBuilder query = new StringBuilder();
-
+    private final StringBuilder query;
 
     public QueryBuilder(SimpleDbEntityInformation<T, ID> entityInformation) {
+    	query = new StringBuilder();
         this.entityInformation = entityInformation;
         query.append("select * from ").append(quote(entityInformation.getDomain()));
     }
 
     public QueryBuilder withCount() {
         //replace select statement
-        query = new StringBuilder();
         query.append("select count(*) from ").append(quote(entityInformation.getDomain()));
         return this;
     }

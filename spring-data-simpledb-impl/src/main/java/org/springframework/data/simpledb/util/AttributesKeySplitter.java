@@ -9,8 +9,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AttributesKeySplitter {
+public final class AttributesKeySplitter {
 
+	private AttributesKeySplitter() {
+		/* utility class */
+	}
+	
     public static Map<String, Map<String, List<String>>> splitNestedAttributeKeys(Map<String, List<String>> attributes) {
         final Map<String, Map<String, List<String>>> nestedFieldAttributes = new HashMap<>();
         for (final Map.Entry<String, List<String>> entry : attributes.entrySet()) {

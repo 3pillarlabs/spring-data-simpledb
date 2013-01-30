@@ -36,7 +36,8 @@ public abstract class AbstractField<T, ID extends Serializable> {
 	public abstract Map<String, List<String>> serialize(String prefix);
 	
 	public void deserialize(final Map<String, List<String>> attributes) {
-		throw new RuntimeException("Unsupported");
+		/* you should not be here */
+		Assert.state(true, "You should not be here!");
 	}
 	
 	/**
