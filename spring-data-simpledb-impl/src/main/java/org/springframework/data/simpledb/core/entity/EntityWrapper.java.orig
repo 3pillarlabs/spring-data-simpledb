@@ -2,7 +2,6 @@ package org.springframework.data.simpledb.core.entity;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -93,7 +92,7 @@ public class EntityWrapper<T, ID extends Serializable> {
 
     public void setAttributes(Map<String, List<String>> attributes) {
         try {
-            Map<String, List<String>> primitiveAttributeValues = AttributesKeySplitter.getSimpleAttributes(attributes);
+            Map<String, List<String>> primitiveAttributeValues = AttributesKeySplitter.getPrimitiveAttributes(attributes);
 
             for (final Entry<String, List<String>> entry : primitiveAttributeValues.entrySet()) {
                 final String primitiveAtribute = entry.getKey();
@@ -129,6 +128,7 @@ public class EntityWrapper<T, ID extends Serializable> {
         }
     }
 
+<<<<<<< HEAD
     private void setPrimitiveAttributes(Map<String, List<String>> attributes) throws NoSuchFieldException, IllegalArgumentException, SecurityException, ParseException, IllegalAccessException {
         for (final Entry<String, List<String>> entry : attributes.entrySet()) {
             final String key = entry.getKey();
@@ -147,6 +147,8 @@ public class EntityWrapper<T, ID extends Serializable> {
         }
     }
 
+=======
+>>>>>>> b31431b4e7d1dfe6565ce3cf8cad6a628b489f67
     /**
      * @return a map of serialized field name with the corresponding list of values (if the field is a collection of primitives)
      */

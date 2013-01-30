@@ -5,6 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -60,10 +62,7 @@ public class JsonMarshallerTest {
     public void marshal_should_marshal_Object() throws IOException {
 
         // Prepare
-        User newUser = new User();
-        newUser.setName(new User.Name());
-        newUser.getName().setFirst("Joe");
-        newUser.getName().setLast("Sixpack");
+        User newUser = createSampleUser();
         Object object = newUser;
 
         // Exercise
@@ -75,6 +74,33 @@ public class JsonMarshallerTest {
         assertEquals(newUser.getName().getFirst(), returnedUser.getName().getFirst());
         assertEquals(newUser.getName().getLast(), returnedUser.getName().getLast());
     }
+
+
+    @Test
+    public void should_marshal_unmarshal_maps_of_Strings(){
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("TestKey", "Test Value");
+
+        String marsahledMap = cut.marshal(map);
+
+        Map<String, String> unmarshaledMap = (Map<String, String>)cut.unmarshal(marsahledMap);
+
+        assertEquals(map.keySet(), unmarshaledMap.keySet());
+
+        String ret = unmarshaledMap.get("TestKey");
+        assertEquals("Test Value", ret);
+
+    }
+
+
+    private User createSampleUser() {
+        User newUser = new User();
+        newUser.setName(new User.Name());
+        newUser.getName().setFirst("Joe");
+        newUser.getName().setLast("Sixpack");
+        return newUser;
+    }
+
 
 }
 
