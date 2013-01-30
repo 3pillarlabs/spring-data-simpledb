@@ -35,6 +35,10 @@ public abstract class AbstractField<T, ID extends Serializable> {
 	 */
 	public abstract Map<String, List<String>> serialize(String prefix);
 	
+	public void deserialize(final Map<String, List<String>> values) {
+		throw new RuntimeException("Unsupported");
+	}
+	
 	/**
 	 * Convert and set the values on the parent instance 
 	 */

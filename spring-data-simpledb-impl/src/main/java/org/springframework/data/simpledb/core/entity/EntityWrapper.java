@@ -28,7 +28,7 @@ public class EntityWrapper<T, ID extends Serializable> {
     private SimpleDbEntityInformation<T, ?> entityInformation;
     
     /* field wrappers */
-    private List<AbstractField<T, ID>> wrappedFields = new ArrayList<>();
+    private Map<String, AbstractField<T, ID>> wrappedFields = new HashMap<>();
     
     private T item;
     
@@ -53,7 +53,7 @@ public class EntityWrapper<T, ID extends Serializable> {
     private void createFieldWrappers(final boolean isNew) {
         for(final Field field: item.getClass().getDeclaredFields()) {
         	if(! FieldTypeIdentifier.isOfType(field, FieldType.ID, FieldType.ATTRIBUTES)) {
-        		wrappedFields.add(FieldWrapperFactory.createFieldWrapper(field, this, isNew));
+        		wrappedFields.put(field.getName(), FieldWrapperFactory.createFieldWrapper(field, this, isNew));
         	}
         }
     }
@@ -124,7 +124,7 @@ public class EntityWrapper<T, ID extends Serializable> {
             Assert.notNull(values);
             Assert.isTrue(values.size() == 1);
 
-            if (AttributesKeySplitter.isPrimitiveKey(key)) {
+            if (AttributesKeySplitter.isSimpleKey(key)) {
                 final Field attributesField = item.getClass().getDeclaredField(key);
                 {
                     attributesField.setAccessible(true);
@@ -189,14 +189,27 @@ public class EntityWrapper<T, ID extends Serializable> {
     public Map<String, List<String>> serialize(final String fieldNamePrefix) {
     	final Map<String, List<String>> result = new HashMap<>();
     	
-    	for(final AbstractField<T, ID> wrappedField: wrappedFields) {
+    	for(final AbstractField<T, ID> wrappedField: wrappedFields.values()) {
     		result.putAll(wrappedField.serialize(fieldNamePrefix));
     	}
     	
     	return result;
     }
     
-    public void deserialize(Map<String, List<String>> attributes) {
+    public void deserialize(final Map<String, List<String>> attributes) {
+    	final Map<String, Map<String, List<String>>> nestedFields = AttributesKeySplitter.splitNestedAttributeKeys(attributes);
+    	for(final Entry<String, Map<String, List<String>>> nestedField: nestedFields.entrySet()) {
+    		/* call deserialize field with Map<Strin, List<String>> */
+    		final String fieldName = nestedField.getKey();
+    		wrappedFields.get(fieldName).deserialize(nestedField.getValue());
+    	}
     	
+    	for(final Entry<String, List<String>> simpleField: attributes.entrySet()) {
+    		if(AttributesKeySplitter.isSimpleKey(simpleField.getKey())) {
+    			/* call deserialize field with List<String> */
+        		final String fieldName = simpleField.getKey();
+        		wrappedFields.get(fieldName).deserialize(simpleField.getValue());
+    		}
+    	}
     }
 }

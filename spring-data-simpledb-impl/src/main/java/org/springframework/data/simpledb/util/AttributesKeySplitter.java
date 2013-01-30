@@ -4,16 +4,12 @@
  */
 package org.springframework.data.simpledb.util;
 
-import org.springframework.util.Assert;
-
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class AttributesKeySplitter {
-
 
     public static Map<String, Map<String, List<String>>> splitNestedAttributeKeys(Map<String, List<String>> attributes) {
         final Map<String, Map<String, List<String>>> nestedFieldAttributes = new HashMap<>();
@@ -38,12 +34,12 @@ public class AttributesKeySplitter {
         return nestedFieldAttributes;
     }
 
-    public static Map<String, List<String>> getPrimitiveAttributes(Map<String, List<String>> attributes) {
+    public static Map<String, List<String>> getSimpleAttributes(Map<String, List<String>> attributes) {
 
         Map<String, List<String>> primitiveAttributes = new LinkedHashMap<>();
 
         for (final Map.Entry<String, List<String>> entry : attributes.entrySet()) {
-            if (isPrimitiveKey(entry.getKey())) {
+            if (isSimpleKey(entry.getKey())) {
                 primitiveAttributes.put(entry.getKey(), entry.getValue());
             }
         }
@@ -53,7 +49,7 @@ public class AttributesKeySplitter {
     }
 
 
-    public static boolean isPrimitiveKey(final String key) {
+    public static boolean isSimpleKey(final String key) {
         return !key.contains(".");
     }
 
