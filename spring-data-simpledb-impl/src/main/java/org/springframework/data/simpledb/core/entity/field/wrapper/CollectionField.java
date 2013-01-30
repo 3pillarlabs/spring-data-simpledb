@@ -3,7 +3,6 @@ package org.springframework.data.simpledb.core.entity.field.wrapper;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.*;
 
@@ -24,7 +23,7 @@ public class CollectionField<T, ID extends Serializable> extends InstantiableFie
 
         final List<String> fieldValues = new ArrayList<>();
 
-        fieldValues.add(SimpleDBAttributeConverter.coreTypesToSimpleDBAttributeValues(this.getValue()));
+        fieldValues.addAll(SimpleDBAttributeConverter.coreTypesCollectionToSimpleDBAttributeValues(this.getValue()));
 
         result.put(prefix.isEmpty() ? getName() : prefix + "." + getName(), fieldValues);
 

@@ -23,7 +23,7 @@ public class ArrayField<T, ID extends Serializable> extends InstantiableField<T,
     @Override
     public Map<String, List<String>> serialize(String prefix) {
         String finalFieldName = prefix.isEmpty() ? super.getName() : prefix + "." + super.getName();
-        return SimpleDBAttributeConverter.primitiveArraystoSimpleDBAttributeValues(finalFieldName, this.getValue());
+        return SimpleDBAttributeConverter.primitiveArraysToSimpleDBAttributeValues(finalFieldName, this.getValue());
     }
 
     @Override

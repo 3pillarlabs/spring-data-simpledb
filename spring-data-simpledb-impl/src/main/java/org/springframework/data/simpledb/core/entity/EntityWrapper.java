@@ -157,7 +157,7 @@ public class EntityWrapper<T, ID extends Serializable> {
             final List<String> fieldValues = new ArrayList<>();
 
             try {
-                SimpleDBAttributeConverter.primitiveArraystoSimpleDBAttributeValues(primitiveCollectionField.getName(), primitiveCollectionField.get(item));
+                SimpleDBAttributeConverter.primitiveArraysToSimpleDBAttributeValues(primitiveCollectionField.getName(), primitiveCollectionField.get(item));
             } catch (IllegalAccessException e) {
                 throw new MappingException("Could not retrieve field values " + e);
             }

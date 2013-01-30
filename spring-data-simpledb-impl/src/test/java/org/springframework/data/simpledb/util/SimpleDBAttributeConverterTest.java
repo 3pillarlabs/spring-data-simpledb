@@ -6,10 +6,7 @@ import org.junit.Test;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -227,10 +224,10 @@ public class SimpleDBAttributeConverterTest {
     }
 
     @Test
-    public void encode_decode_primitive_collections() throws ParseException {
+    public void encode_decode_primitive_arrays() throws ParseException {
         int[] someInts = {1, 2, 3, 4};
 
-        Map<String, List<String>> returnedMappedAttributeValues = SimpleDBAttributeConverter.primitiveArraystoSimpleDBAttributeValues(SOME_INTS_NAME, someInts);
+        Map<String, List<String>> returnedMappedAttributeValues = SimpleDBAttributeConverter.primitiveArraysToSimpleDBAttributeValues(SOME_INTS_NAME, someInts);
 
         Object returnedPrimitiveCol = SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(returnedMappedAttributeValues.get(SOME_INTS_NAME), int.class);
         int arrayLength = Array.getLength(returnedPrimitiveCol);
@@ -238,6 +235,30 @@ public class SimpleDBAttributeConverterTest {
         for (int idx = 0; idx < arrayLength; idx++) {
             assertEquals(someInts[idx], Array.get(returnedPrimitiveCol, idx));
         }
+    }
+
+    @Test public void encode_decode_core_type() throws ParseException{
+        Object date = new Date(1);
+        String encodedDate = SimpleDBAttributeConverter.toSimpleDBAttributeValue(date);
+        Object decodedDate = SimpleDBAttributeConverter.toDomainFieldPrimitive(encodedDate, Date.class);
+
+        assertEquals(date, decodedDate);
+    }
+
+    @Test public void encode_decode_collections_of_core_types() throws ParseException {
+        /* ----------------- Encoding ------------------ */
+        List<String> input = new ArrayList<>(Arrays.asList("1", "2"));
+        Object simpleDBValue = input;
+
+        List<String> decodedAttributeValues = SimpleDBAttributeConverter.coreTypesCollectionToSimpleDBAttributeValues(simpleDBValue);
+        assertNotNull(decodedAttributeValues);
+        assertTrue(decodedAttributeValues.size() == 2);
+
+        /* ----------------- Decoding ------------------ */
+        Collection<String> processedCollection = new ArrayList<>(2);
+        SimpleDBAttributeConverter.toDomainFieldPrimitiveCollection(input, processedCollection, String.class);
+        assertTrue(processedCollection.size() == 2);
+        assertEquals(input, processedCollection);
     }
 
     private void encodeAndDecode(double x) {

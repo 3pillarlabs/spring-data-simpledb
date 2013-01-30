@@ -1,5 +1,7 @@
 package org.springframework.data.simpledb.util;
 
+import org.springframework.util.Assert;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -35,7 +37,10 @@ public class SimpleDBAttributeConverter {
         return padOrConvertIfRequired(fieldValue);
     }
 
-    public static Map<String, List<String>> primitiveArraystoSimpleDBAttributeValues(String fieldName, final Object primitiveCollectionFieldValues) {
+    public static Map<String, List<String>> primitiveArraysToSimpleDBAttributeValues(String fieldName, final Object primitiveCollectionFieldValues) {
+        Assert.notNull(fieldName);
+        Assert.notNull(primitiveCollectionFieldValues);
+
         final Map<String, List<String>> attributeStructure = new HashMap<>();
         final List<String> attributeValues = new ArrayList<>();
         final int primitiveCollLength = Array.getLength(primitiveCollectionFieldValues);
@@ -50,38 +55,23 @@ public class SimpleDBAttributeConverter {
     }
 
     /**
-     * Convert the Collection Instance to a comma-separated-string-values to persist into SimpleDB
+     * Convert the Collection Instance to persist into SimpleDB
      * @param coreTypeCollectionFieldValues
-     * @return
+     * @return a List corresponding to each attribute value persisted to SimpleDB
      */
-    public static String coreTypesToSimpleDBAttributeValues(final Object coreTypeCollectionFieldValues) {
-        final StringBuilder coreTypesAttValuesBuilder = new StringBuilder();
-        int idx = 0;
+    public static List<String> coreTypesCollectionToSimpleDBAttributeValues(final Object coreTypeCollectionFieldValues) {
+        Assert.notNull(coreTypeCollectionFieldValues);
+
+        List<String> returnedAttributeValues = new ArrayList<>();
         final Collection<Object> coreCollection = (Collection<Object>) coreTypeCollectionFieldValues;
 
-        for(Iterator<Object> iterator = coreCollection.iterator(); iterator.hasNext(); idx++) {
-            coreTypesAttValuesBuilder.append(padOrConvertIfRequired(iterator.next()));
-
-            if(idx < coreCollection.size()) {
-                coreTypesAttValuesBuilder.append(",");
-            }
-        }
-        return coreTypesAttValuesBuilder.toString();
-    }
-
-    public static List<String> toSimpleDBAttribute(final Collection<?> fieldValues) {
-        final List<String> result = new ArrayList<>();
-
-        if (fieldValues != null) {
-
-            Object val = null;
-            for (final Iterator<?> it = fieldValues.iterator(); it.hasNext(); val = it.next()) {
-                result.add(toSimpleDBAttributeValue(val));
-            }
+        for(Iterator<Object> iterator = coreCollection.iterator(); iterator.hasNext(); ) {
+            returnedAttributeValues.add(padOrConvertIfRequired(iterator.next()));
         }
 
-        return result;
+        return returnedAttributeValues;
     }
+
 
     public static Object toDomainFieldPrimitive(String value, Class<?> retType) throws ParseException {
         Object val = null;
