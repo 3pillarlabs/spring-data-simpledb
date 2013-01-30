@@ -10,8 +10,8 @@ import org.springframework.data.simpledb.core.entity.EntityWrapper;
 
 public class UnsupportedField<T, ID extends Serializable> extends AbstractField<T, ID> {
 
-	UnsupportedField(Field field, EntityWrapper<T, ID> parent) {
-		super(field, parent);
+	UnsupportedField(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
+		super(field, parent, isNewParent);
 	}
 
 	@Override
@@ -25,6 +25,11 @@ public class UnsupportedField<T, ID extends Serializable> extends AbstractField<
 
 	@Override
 	public void deserialize(List<String> value) {
+	}
+	
+	@Override
+	public void createInstance() {
+		/* do nothing */
 	}
 
 }

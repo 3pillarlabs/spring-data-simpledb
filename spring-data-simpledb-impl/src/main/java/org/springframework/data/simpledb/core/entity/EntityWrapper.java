@@ -36,7 +36,7 @@ public class EntityWrapper<T, ID extends Serializable> {
         this.entityInformation = entityInformation;
         this.item = item;
         
-        createFieldWrappers();
+        createFieldWrappers(false);
     }
 
     public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation) {
@@ -44,17 +44,16 @@ public class EntityWrapper<T, ID extends Serializable> {
         try {
             this.item = entityInformation.getJavaType().newInstance();
 
-            createFieldWrappers();
+            createFieldWrappers(true);
         } catch (InstantiationException | IllegalAccessException e) {
             throw new MappingException("Could not instantiate object", e);
         }
-
     }
     
-    private void createFieldWrappers() {
+    private void createFieldWrappers(final boolean isNew) {
         for(final Field field: item.getClass().getDeclaredFields()) {
         	if(! FieldTypeIdentifier.isOfType(field, FieldType.ID, FieldType.ATTRIBUTES)) {
-        		wrappedFields.add(FieldWrapperFactory.createFieldWrapper(field, this));
+        		wrappedFields.add(FieldWrapperFactory.createFieldWrapper(field, this, isNew));
         	}
         }
     }

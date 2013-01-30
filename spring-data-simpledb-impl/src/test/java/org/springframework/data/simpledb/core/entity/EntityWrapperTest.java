@@ -169,7 +169,7 @@ public class EntityWrapperTest {
 		final EntityWrapper<AClass, String> convertedEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class));
 		convertedEntity.setAttributes(attributes);
 
-//		assertTrue(aDomain.equals(convertedEntity.getItem()));
+		assertTrue(aDomain.equals(convertedEntity.getItem()));
 	}
 
 	@SuppressWarnings("unused")

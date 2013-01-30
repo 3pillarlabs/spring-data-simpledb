@@ -6,22 +6,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 
 public class NestedEntityField<T, ID extends Serializable> extends AbstractField<T, ID> {
 
-	private final EntityWrapper<T, ID> wrappedNestedEntity;
+	private EntityWrapper<T, ID> wrappedNestedEntity;
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	NestedEntityField(Field field, EntityWrapper<T, ID> parent) {
-		super(field, parent);
+	NestedEntityField(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
+		super(field, parent, isNewParent);
 		
         final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(getField().getType());
         
-        /* recursive call */
-        wrappedNestedEntity = new EntityWrapper(entityMetadata);
+        /* if it was already created in createNewInstance */
+        if(! isNewParent) {
+        	/* recursive call */
+        	wrappedNestedEntity = new EntityWrapper(entityMetadata, getValue());
+        }
 	}
 
 	@Override
@@ -41,6 +45,19 @@ public class NestedEntityField<T, ID extends Serializable> extends AbstractField
 
 	@Override
 	public void deserialize(List<String> value) {
+	}
+	
+	@Override
+	public void createInstance() {
+		/* instantiation is handled by the EntityWrapper */
+		final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(getField().getType());
+        wrappedNestedEntity = new EntityWrapper(entityMetadata);
+        
+        try {
+			getField().set(getEntity(), wrappedNestedEntity.getItem());
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			throw new MappingException("Could not instantiate object", e);
+		}
 	}
 
 }
