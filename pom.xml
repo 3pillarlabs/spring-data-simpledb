@@ -113,6 +113,24 @@
             <version>1.2.16</version>
         </dependency>
 
+        <!--JSON marshlling/unmarshalling-->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mrbean</artifactId>
+            <version>1.9.9</version>
+        </dependency>
+
+        <!--UTILITIES-->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.0.1</version>
+        </dependency>
 
     </dependencies>
 </project>

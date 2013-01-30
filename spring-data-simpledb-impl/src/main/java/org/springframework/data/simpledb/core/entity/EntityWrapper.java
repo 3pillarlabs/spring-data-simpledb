@@ -1,6 +1,8 @@
-package org.springframework.data.simpledb.core;
+package org.springframework.data.simpledb.core.entity;
 
 import org.springframework.data.mapping.model.MappingException;
+import org.springframework.data.simpledb.core.entity.field.wrapper.AbstractField;
+import org.springframework.data.simpledb.core.entity.field.wrapper.FieldWrapperFactory;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 import org.springframework.data.simpledb.util.MetadataParser;
@@ -12,26 +14,51 @@ import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.util.*;
 import java.util.Map.Entry;
-import  org.springframework.data.simpledb.util.SimpleDBEntityUtil;
+import  org.springframework.data.simpledb.util.AttributesKeySplitter;
 
-public class SimpleDbEntity<T, ID extends Serializable> {
+import com.amazonaws.services.simpledb.model.Item;
 
+public class EntityWrapper<T, ID extends Serializable> {
+
+	/* entity metadata */
     private SimpleDbEntityInformation<T, ?> entityInformation;
+    
+    /* field wrappers */
+    private List<AbstractField<T, ID>> wrappedFields = new ArrayList<>();
+    
     private T item;
+    
+    private boolean isNew = false;
 
-    public SimpleDbEntity(SimpleDbEntityInformation<T, ?> entityInformation, T item) {
+    public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation, T item) {
         this.entityInformation = entityInformation;
         this.item = item;
+        
+        for(final Field field: item.getClass().getDeclaredFields()) {
+        	wrappedFields.add(FieldWrapperFactory.createFieldWrapper(field, this));
+        }
     }
 
-    public SimpleDbEntity(SimpleDbEntityInformation<T, ?> entityInformation) {
+    public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation) {
         this.entityInformation = entityInformation;
         try {
             this.item = entityInformation.getJavaType().newInstance();
+            this.isNew = true;
+            
+//            for(final Field field: item.getClass().getDeclaredFields()) {
+//            	wrappedFields.add(FieldWrapperFactory.createFieldWrapper(field, this));
+//            }
         } catch (InstantiationException | IllegalAccessException e) {
             throw new MappingException("Could not instantiate object", e);
         }
 
+    }
+    
+    /**
+     * @return true if the {@link Item} instance was created through reflection
+     */
+    public boolean isNew() {
+    	return this.isNew;
     }
 
     public String getDomain() {
@@ -72,13 +99,13 @@ public class SimpleDbEntity<T, ID extends Serializable> {
             setPrimitiveAttributes(attributes);
 
             //key is not primitive
-            final Map<String, Map<String, List<String>>> nestedAttributeValues = SimpleDBEntityUtil.splitNestedAttributeValues(attributes);
+            final Map<String, Map<String, List<String>>> nestedAttributeValues = AttributesKeySplitter.splitNestedAttributeKeys(attributes);
             if (nestedAttributeValues.size() > 0) {
                 for (final String key : nestedAttributeValues.keySet()) {
                     final Field attributesField = item.getClass().getDeclaredField(key);
 
                     final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(attributesField.getType());
-                    final SimpleDbEntity nestedEntity = new SimpleDbEntity(entityMetadata);
+                    final EntityWrapper nestedEntity = new EntityWrapper(entityMetadata);
 
                     /* recursive call */
                     nestedEntity.setAttributes(nestedAttributeValues.get(key));
@@ -100,7 +127,7 @@ public class SimpleDbEntity<T, ID extends Serializable> {
             Assert.notNull(values);
             Assert.isTrue(values.size() == 1);
 
-            if (SimpleDBEntityUtil.isPrimitiveKey(key)) {
+            if (AttributesKeySplitter.isPrimitiveKey(key)) {
                 final Field attributesField = item.getClass().getDeclaredField(key);
                 {
                     attributesField.setAccessible(true);
@@ -108,42 +135,6 @@ public class SimpleDbEntity<T, ID extends Serializable> {
                 }
             }
         }
-    }
-
-    public Map<String, List<String>> toAttributes() {
-        return toAttributes("");
-    }
-
-    /**
-     * @param fieldNamePrefix the prefix the attribute names should be prefixed with
-     *
-     * @return a map of all serialized field name with the corresponding list of values (if the field is a collection of primitives)
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private Map<String, List<String>> toAttributes(final String fieldNamePrefix) {
-        final Map<String, List<String>> result = getSerializedPrimitiveAttributes(fieldNamePrefix);
-
-        for (final Field itemField : MetadataParser.getNestedDomainFields(item)) {
-            try {
-                itemField.setAccessible(Boolean.TRUE);
-                final Object nestedEntityInstance = itemField.get(item);
-
-                final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(nestedEntityInstance.getClass());
-                final SimpleDbEntity nestedEntity = new SimpleDbEntity(entityMetadata, nestedEntityInstance);
-
-                final String nestedEntityFieldName = itemField.getName();
-                final String nestedEntityAttributePrefix = fieldNamePrefix.isEmpty() ? nestedEntityFieldName : fieldNamePrefix + "." + nestedEntityFieldName;
-
-                /* recursive call */
-                final Map<String, List<String>> serializedNestedEntity = nestedEntity.toAttributes(nestedEntityAttributePrefix);
-
-                result.putAll(serializedNestedEntity);
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                throw new MappingException("Could not retrieve field value " + itemField.getName(), e);
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -192,5 +183,23 @@ public class SimpleDbEntity<T, ID extends Serializable> {
         }
 
         return result;
+    }
+    
+    /* ************************* refactored **************** */
+    public Map<String, List<String>> serialize() {
+        return serialize("");
+    }
+    public Map<String, List<String>> serialize(final String fieldNamePrefix) {
+    	final Map<String, List<String>> result = new HashMap<>();
+    	
+    	for(final AbstractField<T, ID> wrappedField: wrappedFields) {
+    		result.putAll(wrappedField.serialize(fieldNamePrefix));
+    	}
+    	
+    	return result;
+    }
+    
+    public void deserialize(Map<String, List<String>> attributes) {
+    	
     }
 }
