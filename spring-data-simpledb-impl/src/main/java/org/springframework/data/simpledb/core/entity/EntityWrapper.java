@@ -1,6 +1,8 @@
 package org.springframework.data.simpledb.core.entity;
 
 import org.springframework.data.mapping.model.MappingException;
+import org.springframework.data.simpledb.core.entity.field.FieldType;
+import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
 import org.springframework.data.simpledb.core.entity.field.wrapper.AbstractField;
 import org.springframework.data.simpledb.core.entity.field.wrapper.FieldWrapperFactory;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
@@ -129,6 +131,10 @@ public class EntityWrapper<T, ID extends Serializable> {
     	final Map<String, List<String>> result = new HashMap<>();
     	
     	for(final AbstractField<T, ID> wrappedField: wrappedFields) {
+         if(FieldTypeIdentifier.isOfType(wrappedField.getField(), FieldType.ID)) {
+             continue;
+         }
+
     		result.putAll(wrappedField.serialize(fieldNamePrefix));
     	}
     	
