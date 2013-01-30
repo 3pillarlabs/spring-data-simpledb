@@ -37,7 +37,7 @@ public class FieldTypeIdentifier {
 			return FieldType.NESTED_ENTITY;
 		}
 		
-		return FieldType.UNSUPPORTED;
+		return FieldType.OBJECT;
 	}
 
 }

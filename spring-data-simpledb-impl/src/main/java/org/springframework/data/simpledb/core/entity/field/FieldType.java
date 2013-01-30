@@ -61,29 +61,31 @@ public enum FieldType {
 		}
 	},
 
+    MAP {
+        @Override
+        boolean isOfType(Field field) {
+            Assert.notNull(field);
+            return Map.class.isAssignableFrom(field.getType());
+        }
+    },
+
+    OBJECT {
+        @Override
+        boolean isOfType(Field field) {
+            Assert.notNull(field);
+            return field.getType().equals(Object.class);
+        }
+    },
+
 	NESTED_ENTITY {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-			return ! isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, COLLECTION, PRIMITIVE_ARRAY, MAP);
-		}
-	},
-
-	MAP {
-		@Override
-		boolean isOfType(Field field) {
-			Assert.notNull(field);
-			return Map.class.isAssignableFrom(field.getType());
-		}
-	},
-	
-	UNSUPPORTED {
-		@Override
-		boolean isOfType(Field field) {
-			Assert.notNull(field);
-			return ! isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, COLLECTION, PRIMITIVE_ARRAY, NESTED_ENTITY, MAP);
+			return ! isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, COLLECTION, PRIMITIVE_ARRAY, MAP, OBJECT);
 		}
 	};
+
+
 
 	abstract boolean isOfType(Field field);
 	

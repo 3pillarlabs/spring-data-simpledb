@@ -34,7 +34,9 @@ public abstract class AbstractField<T, ID extends Serializable> {
 	 * @return serialized value in string representation
 	 */
 	public abstract Map<String, List<String>> serialize(String prefix);
-	
+
+
+    //TODO should not modify parent state
 	public void deserialize(final Map<String, List<String>> attributes) {
 		throw new RuntimeException("Unsupported");
 	}
