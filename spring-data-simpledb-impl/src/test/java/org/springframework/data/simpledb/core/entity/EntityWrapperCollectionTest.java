@@ -71,10 +71,10 @@ public class EntityWrapperCollectionTest {
 
 
 
-    @Test public void test_serialize_deserialize_core_types() {
+    @Test public void deserialize_should_return_serialized_core_types() {
         SampleCoreType coreType = new SampleCoreType();
         coreType.str = "simpleDB";
-        coreType.date = new Date(1);
+        //coreType.date = new Date(1);
 
         /* ----------------------- Serialize Representation ------------------------ */
         EntityWrapper<SampleCoreType, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreType>readEntityInformation(SampleCoreType.class), coreType);
@@ -88,7 +88,7 @@ public class EntityWrapperCollectionTest {
 
     }
 
-    @Test public void test_serialize_deserialize_primitives_array() {
+    @Test public void deserialize_should_return_serialized_primitives_array() {
         SamplePrimitivesArray primitivesArray = new SamplePrimitivesArray();
         primitivesArray.longPrimitives = new long[]{1L, 2L, 3L};
 

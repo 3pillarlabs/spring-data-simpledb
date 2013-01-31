@@ -43,4 +43,10 @@ public class CoreField<T, ID extends Serializable> extends InstantiableField<T, 
             throw new MappingException("Could not map attributes", e);
         }
     }
+
+    /**
+     * This information is known only at runtime
+     */
+    @Override
+    public void createInstance() { }
 }
