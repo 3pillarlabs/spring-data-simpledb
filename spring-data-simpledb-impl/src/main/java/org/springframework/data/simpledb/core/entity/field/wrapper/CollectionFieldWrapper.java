@@ -10,39 +10,31 @@ import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 
-public class CollectionField<T, ID extends Serializable> extends InstantiableField<T, ID> {
+public class CollectionFieldWrapper<T, ID extends Serializable> extends SimpleAbstractFieldWrapper<T, ID> {
 
-	CollectionField(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
+	public CollectionFieldWrapper(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
 		super(field, parent, isNewParent);
 	}
 
 
     @Override
-    public Map<String, List<String>> serialize(String prefix) {
-        final Map<String, List<String>> result = new HashMap<>();
+    public List<String> serializeValue() {
 
-        final List<String> fieldValues = new ArrayList<>();
+        return SimpleDBAttributeConverter.coreTypesCollectionToSimpleDBAttributeValues(this.getFieldValue());
 
-        fieldValues.addAll(SimpleDBAttributeConverter.coreTypesCollectionToSimpleDBAttributeValues(this.getValue()));
-
-        result.put(prefix.isEmpty() ? getName() : prefix + "." + getName(), fieldValues);
-
-        return result;
     }
 
-
     @Override
-    public void deserialize(List<String> value) {
-
+    public Object deserializeValue(List<String> value) {
         ParameterizedType parameterizedType = (ParameterizedType) getField().getGenericType();
         Class returnTypeClazz = (Class) parameterizedType.getActualTypeArguments()[0];
-        Collection collection = (Collection<?>) getValue();
+        Collection collection = (Collection<?>) getFieldValue();
 
         try {
             SimpleDBAttributeConverter.toDomainFieldPrimitiveCollection(value, collection, returnTypeClazz);
+            return collection;
         } catch (ParseException e) {
             throw new MappingException("Cannot parse Object!");
         }
     }
-
 }

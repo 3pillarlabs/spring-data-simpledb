@@ -12,8 +12,6 @@ import static org.junit.Assert.*;
 
 public class SimpleDBAttributeConverterTest {
 
-    public static final String SOME_INTS_NAME = "someInts";
-
     static class SampleEntity {
 		int intField;
 		float floatField;
@@ -227,9 +225,9 @@ public class SimpleDBAttributeConverterTest {
     public void encode_decode_primitive_arrays() throws ParseException {
         int[] someInts = {1, 2, 3, 4};
 
-        Map<String, List<String>> returnedMappedAttributeValues = SimpleDBAttributeConverter.primitiveArraysToSimpleDBAttributeValues(SOME_INTS_NAME, someInts);
+       List<String> returnedMappedAttributeValues = SimpleDBAttributeConverter.primitiveArraysToSimpleDBAttributeValues(someInts);
 
-        Object returnedPrimitiveCol = SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(returnedMappedAttributeValues.get(SOME_INTS_NAME), int.class);
+        Object returnedPrimitiveCol = SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(returnedMappedAttributeValues, int.class);
         int arrayLength = Array.getLength(returnedPrimitiveCol);
 
         for (int idx = 0; idx < arrayLength; idx++) {

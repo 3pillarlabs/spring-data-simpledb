@@ -37,11 +37,9 @@ public class SimpleDBAttributeConverter {
         return padOrConvertIfRequired(fieldValue);
     }
 
-    public static Map<String, List<String>> primitiveArraysToSimpleDBAttributeValues(String fieldName, final Object primitiveCollectionFieldValues) {
-        Assert.notNull(fieldName);
+    public static List<String> primitiveArraysToSimpleDBAttributeValues(final Object primitiveCollectionFieldValues) {
         Assert.notNull(primitiveCollectionFieldValues);
 
-        final Map<String, List<String>> attributeStructure = new HashMap<>();
         final List<String> attributeValues = new ArrayList<>();
         final int primitiveCollLength = Array.getLength(primitiveCollectionFieldValues);
 
@@ -49,9 +47,8 @@ public class SimpleDBAttributeConverter {
             Object itemValue = Array.get(primitiveCollectionFieldValues, idx);
             attributeValues.add(padOrConvertIfRequired(itemValue));
         }
-        attributeStructure.put(fieldName, attributeValues);
 
-        return attributeStructure;
+        return attributeValues;
     }
 
     /**
