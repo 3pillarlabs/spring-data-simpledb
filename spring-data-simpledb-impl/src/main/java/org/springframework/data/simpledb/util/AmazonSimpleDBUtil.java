@@ -23,7 +23,7 @@ import java.util.Date;
  * Provides collection of static functions for conversion of various values into strings that may be compared lexicographically.
  *
  */
-public class AmazonSimpleDBUtil {
+public final class AmazonSimpleDBUtil {
 
     /**
      * static value hardcoding date format used for conversation of Date into String
@@ -31,11 +31,16 @@ public class AmazonSimpleDBUtil {
     private static String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     public static final int LONG_DIGITS = 20;
 
+    private AmazonSimpleDBUtil() {
+    	/* utility class */
+    }
+    
     public static String encodeRealNumberRange(BigDecimal number, int maxNumDigits, BigDecimal offsetValue) {
         BigDecimal offsetNumber = number.add(offsetValue);
         String longString = offsetNumber.toString();
         int numZeroes = maxNumDigits - longString.length();
-        StringBuilder strBuffer = new StringBuilder(numZeroes + longString.length());
+        StringBuilder strBuffer = new StringBuilder(numZeroes);
+        strBuffer.append(longString.length());
         for (int i = 0; i < numZeroes; i++) {
             strBuffer.insert(i, '0');
         }
@@ -52,7 +57,8 @@ public class AmazonSimpleDBUtil {
         String longString = offsetNumber.toString();
         int numBeforeDecimal = longString.length();
         int numZeroes = maxDigitsLeft + maxDigitsRight - numBeforeDecimal;
-        StringBuilder strBuffer = new StringBuilder(numZeroes + longString.length());
+        StringBuilder strBuffer = new StringBuilder(numZeroes);
+        strBuffer.append(longString.length());
         for (int i = 0; i < numZeroes; i++) {
             strBuffer.insert(i, '0');
         }
