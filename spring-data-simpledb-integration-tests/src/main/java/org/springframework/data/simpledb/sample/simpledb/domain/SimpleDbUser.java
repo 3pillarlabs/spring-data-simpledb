@@ -1,227 +1,142 @@
 package org.springframework.data.simpledb.sample.simpledb.domain;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.simpledb.annotation.Attributes;
-
-import java.util.Map;
 
 /**
  * TODO: extend with other types to be tested as other type handlers are implemented.
- * Also update equals! 
+ * Also update equals!
+ * One sample for each supported type. Each particular instance and other tests should be included as Regular Junit Tests
  */
 public class SimpleDbUser {
 
     @Id
     private String itemName;
 
-    private int intField;
-    private float floatField;
-    private double doubleField;
-    private short shortField;
-    private boolean booleanField;
-    private long longField;
-    private byte byteField;
-    private String stringField;
-    
-    private NestedBClass nestedB;
+    private float primitiveField;
 
-    @Attributes
-    private Map<String, String> atts;
+    private String coreField;
+
+    private NestedEntity nestedEntity;
+
+    private Object objectField;
 
     /**
      * Check only on field values (skip the ID)
      */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		
-		if (obj == null) {
-			return false;
-		}
-		
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		
-		SimpleDbUser other = (SimpleDbUser) obj;
-		if (booleanField != other.booleanField) {
-			return false;
-		}
-		if (byteField != other.byteField) {
-			return false;
-		}
-		if (Double.doubleToLongBits(doubleField) != Double.doubleToLongBits(other.doubleField)) {
-			return false;
-		}
-		if (Float.floatToIntBits(floatField) != Float.floatToIntBits(other.floatField)) {
-			return false;
-		}
-		if (intField != other.intField) {
-			return false;
-		}
-		if (longField != other.longField) {
-			return false;
-		}
-		if (nestedB == null) {
-			if (other.nestedB != null) {
-				return false;
-			}
-		} else if (!nestedB.equals(other.nestedB)) {
-			return false;
-		}
-		if (shortField != other.shortField) {
-			return false;
-		}
-		
-		return true;
-	}
-	
-	public void setItemName(String itemName) {
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null) {
+            return false;
+        }
+
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        SimpleDbUser other = (SimpleDbUser) obj;
+        if (Float.floatToIntBits(primitiveField) != Float.floatToIntBits(other.primitiveField)) {
+            return false;
+        }
+        if (nestedEntity == null) {
+            if (other.nestedEntity != null) {
+                return false;
+            }
+        } else if (!nestedEntity.equals(other.nestedEntity)) {
+            return false;
+        }
+
+        if (objectField == null) {
+            if (other.objectField != null) {
+                return false;
+            }
+        } else if (!objectField.equals(other.objectField)) {
+            return false;
+        }
+
+
+        return true;
+    }
+
+    public void setItemName(String itemName) {
         this.itemName = itemName;
     }
+
     public String getItemName() {
-		return itemName;
-	}
+        return itemName;
+    }
 
-    public int getIntField() {
-		return intField;
-	}
-	public void setIntField(int intField) {
-		this.intField = intField;
-	}
-	
-	public float getFloatField() {
-		return floatField;
-	}
-	public void setFloatField(float floatField) {
-		this.floatField = floatField;
-	}
-	
-	public double getDoubleField() {
-		return doubleField;
-	}
-	public void setDoubleField(double doubleField) {
-		this.doubleField = doubleField;
-	}
-	
-	public short getShortField() {
-		return shortField;
-	}
-	public void setShortField(short shortField) {
-		this.shortField = shortField;
-	}
-	
-	public boolean getBooleanField() {
-		return booleanField;
-	}
-	public void setBooleanField(boolean booleanField) {
-		this.booleanField = booleanField;
-	}
-	
-	public long getLongField() {
-		return longField;
-	}
-	public void setLongField(long longField) {
-		this.longField = longField;
-	}
-	
-	public byte getByteField() {
-		return byteField;
-	}
-	public void setByteField(byte byteField) {
-		this.byteField = byteField;
-	}
-	
-	public String getStringField() {
-		return stringField;
-	}
-	public void setStringField(String stringField) {
-		this.stringField = stringField;
-	}
-	
-	public NestedBClass getNestedB() {
-		return nestedB;
-	}
-	public void setNestedB(NestedBClass nestedB) {
-		this.nestedB = nestedB;
-	}
-	
-	public static class NestedBClass {
-		
-		private int intField;
-		private NestedCClass nestedNestedC;
-		
-		public NestedCClass getNestedNestedC() {
-			return nestedNestedC;
-		}
-		public void setNestedNestedC(NestedCClass nestedNestedC) {
-			this.nestedNestedC = nestedNestedC;
-		}
-		
-		public int getIntField() {
-			return intField;
-		}
-		public void setIntField(int intField) {
-			this.intField = intField;
-		}
-		
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-			NestedBClass other = (NestedBClass) obj;
-			if (intField != other.intField) {
-				return false;
-			}
-			if (nestedNestedC == null) {
-				if (other.nestedNestedC != null) {
-					return false;
-				}
-			} else if (!nestedNestedC.equals(other.nestedNestedC)) {
-				return false;
-			}
-			
-			return true;
-		}
 
-		public static class NestedCClass {
-			private double doubleField;
-			
-			public double getDoubleField() {
-				return doubleField;
-			}
-			public void setDoubleField(double doubleField) {
-				this.doubleField = doubleField;
-			}
+    public float getPrimitiveField() {
+        return primitiveField;
+    }
 
-			@Override
-			public boolean equals(Object obj) {
-				if (this == obj) {
-					return true;
-				}
-				if (obj == null) {
-					return false;
-				}
-				if (getClass() != obj.getClass()) {
-					return false;
-				}
-				NestedCClass other = (NestedCClass) obj;
-				if (Double.doubleToLongBits(doubleField) != Double.doubleToLongBits(other.doubleField)) {
-					return false;
-				}
-				
-				return true;
-			}
-			
-		}
-	}
+    public void setPrimitiveField(float primitiveField) {
+        this.primitiveField = primitiveField;
+    }
+
+    public String getCoreField() {
+        return coreField;
+    }
+
+    public void setCoreField(String coreField) {
+        this.coreField = coreField;
+    }
+
+    public NestedEntity getNestedEntity() {
+        return nestedEntity;
+    }
+
+    public void setNestedEntity(NestedEntity nestedEntity) {
+        this.nestedEntity = nestedEntity;
+    }
+
+
+    public Object getObjectField() {
+        return objectField;
+    }
+
+    public void setObjectField(Object objectField) {
+        this.objectField = objectField;
+    }
+
+    public static class NestedEntity {
+
+        private int nestedPrimitiveField;
+
+        public int getNestedPrimitiveField() {
+            return nestedPrimitiveField;
+        }
+
+        public void setNestedPrimitiveField(int nestedPrimitiveField) {
+            this.nestedPrimitiveField = nestedPrimitiveField;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            NestedEntity other = (NestedEntity) obj;
+            if (nestedPrimitiveField != other.nestedPrimitiveField) {
+                return false;
+            }
+
+            return true;
+        }
+
+
+
+
+    }
+
 }
