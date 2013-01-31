@@ -45,6 +45,9 @@ public class CollectionField<T, ID extends Serializable> extends InstantiableFie
         }
     }
 
+    @Override
+    public void createInstance() { }
+
     /**
      * Not known at compile-time, need the Instance Type of the Collection
      * If the reference Type is of Type Interface the instantiation is done when de-serializing the SimpleDB
@@ -53,15 +56,6 @@ public class CollectionField<T, ID extends Serializable> extends InstantiableFie
      * 2. if Type is-a interface -> make a new instance of concrete default type
      * 3. if Type is-a concrete class -> create an instance of it
      */
-    @Override
-    public void createInstance() {
-//        try {
-//            getField().set(getEntity(), getInstanceOfCollectionBasedOn(super.getField()));
-//        } catch (IllegalAccessException | InstantiationException exception) {
-//            throw new MappingException("Cannot access Object for instantiation! Probably not a Collection Type!");
-//        }
-    }
-
     private Collection<?> getInstanceOfCollectionBasedOn(Field field) throws IllegalAccessException, InstantiationException {
         Collection<?> createdCollectionInstance = null;
         Class<?> fieldClass = field.getType();

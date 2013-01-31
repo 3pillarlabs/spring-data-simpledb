@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 public class CollectionWrapperTest {
 
     @Test
-    public void test_serialize_deserialize_collections_of_core_types() {
+    public void serialize_deserialize_collections_of_core_types() {
         SampleCoreCollection sampleCollection = new SampleCoreCollection();
         sampleCollection.setOfIntegers = new HashSet<>(Arrays.asList(Integer.valueOf(20)));
 
