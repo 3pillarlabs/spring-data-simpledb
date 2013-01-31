@@ -117,6 +117,7 @@ public class EntityWrapper<T, ID extends Serializable> {
     		if(AttributesKeySplitter.isSimpleKey(simpleField.getKey())) {
     			/* call deserialize field with List<String> */
         		final String fieldName = simpleField.getKey();
+
         		wrappedFields.get(fieldName).deserialize(simpleField.getValue());
     		}
     	}
