@@ -91,7 +91,8 @@ public class EntityWrapper<T, ID extends Serializable> {
     }
     public Map<String, List<String>> serialize(final String fieldNamePrefix) {
     	final Map<String, List<String>> result = new HashMap<>();
-    	
+
+      // Serialization should go ONLY for NON-NULL Attribute Values
     	for(final AbstractField<T, ID> wrappedField: wrappedFields.values()) {
            if(wrappedField.getValue() != null) {
     	      	result.putAll(wrappedField.serialize(fieldNamePrefix));
