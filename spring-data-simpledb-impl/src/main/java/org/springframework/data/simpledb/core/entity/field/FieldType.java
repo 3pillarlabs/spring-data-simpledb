@@ -42,7 +42,7 @@ public enum FieldType {
 	CORE_TYPE {
 		@Override
 		boolean isOfType(Field field) {
-			return isOfType(field, SUPPORTED_CORE_TYPES);
+			return isOfType(field, SUPPORTED_CORE_TYPES) && ! isOfType(field, ID, ATTRIBUTES);
 		}
 	},
 
@@ -61,21 +61,31 @@ public enum FieldType {
 		}
 	},
 
+    MAP {
+        @Override
+        boolean isOfType(Field field) {
+            Assert.notNull(field);
+            return Map.class.isAssignableFrom(field.getType());
+        }
+    },
+
+    OBJECT {
+        @Override
+        boolean isOfType(Field field) {
+            Assert.notNull(field);
+            return field.getType().equals(Object.class);
+        }
+    },
+
 	NESTED_ENTITY {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-			return ! isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, COLLECTION, PRIMITIVE_ARRAY);
-		}
-	},
-
-	MAP {
-		@Override
-		boolean isOfType(Field field) {
-			Assert.notNull(field);
-			return Map.class.isAssignableFrom(field.getType());
+			return ! isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, COLLECTION, PRIMITIVE_ARRAY, MAP, OBJECT);
 		}
 	};
+
+
 
 	abstract boolean isOfType(Field field);
 	
@@ -100,7 +110,7 @@ public enum FieldType {
 		SUPPORTED_PRIMITIVE_ARRAYS.add(char[].class);
 	}
 	
-	private static boolean isOfType(final Field field, final Set<Class<?>> supportedTypes) {
+	static boolean isOfType(final Field field, final Set<Class<?>> supportedTypes) {
 		Assert.notNull(field);
 
 		final Class<?> type = field.getType();
@@ -114,7 +124,7 @@ public enum FieldType {
 		return false;
 	}
 	
-	private static boolean isOfType(final Field field, final FieldType... fieldTypes) {
+	static boolean isOfType(final Field field, final FieldType... fieldTypes) {
 		for(final FieldType fieldType: fieldTypes) {
 			if(fieldType.isOfType(field)) {
 				return true;

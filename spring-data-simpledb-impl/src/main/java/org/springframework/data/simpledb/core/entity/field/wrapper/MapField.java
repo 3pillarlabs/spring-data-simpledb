@@ -8,10 +8,10 @@ import java.util.Map;
 
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 
-public class MapField<T, ID extends Serializable> extends AbstractField<T, ID> {
+public class MapField<T, ID extends Serializable> extends InstantiableField<T, ID> {
 
-	MapField(Field field, EntityWrapper<T, ID> parent) {
-		super(field, parent);
+	MapField(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
+		super(field, parent, isNewParent);
 	}
 
 	@Override

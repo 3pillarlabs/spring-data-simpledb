@@ -1,9 +1,9 @@
 package org.springframework.data.simpledb.sample.simpledb.repository.util;
 
+import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 
 public class SimpleDbUserBuilder {
 
@@ -12,22 +12,19 @@ public class SimpleDbUserBuilder {
         {
             user.setItemName(itemName);
             
-            user.setIntField(11);
-            user.setFloatField(0.01f);
-            user.setDoubleField(-0.003d);
-            user.setLongField(Long.MAX_VALUE);
-            user.setShortField((short) -2);
-            user.setByteField((byte) 1);
-            user.setStringField("tes_string$");
-            user.setBooleanField(Boolean.TRUE);
-            
-//            Map<String, String> attributes;
-//            user.setAtts(attributes = new HashMap<>());
-//            {
-//                attributes.put(itemName + "_Key1", itemName + "_Value1");
-//                attributes.put(itemName + "_Key2", itemName + "_Value2");
-//                attributes.put(itemName + "_Key3", itemName + "_Value3");
-//            }
+            user.setPrimitiveField(0.01f);
+
+            user.setCoreField("tes_string$");
+
+            final SimpleDbUser.NestedEntity nestedEntity = new SimpleDbUser.NestedEntity();
+            {
+            	nestedEntity.setNestedPrimitiveField(11);
+            }
+
+            user.setNestedEntity(nestedEntity);
+
+
+            user.setObjectField("JSON");
         }
         return user;
     }

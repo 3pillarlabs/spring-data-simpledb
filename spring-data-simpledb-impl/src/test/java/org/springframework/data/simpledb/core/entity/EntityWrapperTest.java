@@ -1,6 +1,11 @@
 package org.springframework.data.simpledb.core.entity;
 
-import java.lang.reflect.Array;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -11,14 +16,11 @@ import org.junit.Test;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.simpledb.core.SampleEntity;
 import org.springframework.data.simpledb.core.domain.SimpleDbSampleEntity;
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.core.entity.EntityWrapperTest.AClass.BClass;
 import org.springframework.data.simpledb.core.entity.EntityWrapperTest.AClass.BClass.CClass;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
-
-import static org.junit.Assert.*;
 
 public class EntityWrapperTest {
 
@@ -163,23 +165,22 @@ public class EntityWrapperTest {
 		EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomain);
 		final Map<String, List<String>> attributes = sdbEntity.serialize();
 
-
 		/* convert back */
 		final EntityWrapper<AClass, String> convertedEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class));
-		convertedEntity.setAttributes(attributes);
+		convertedEntity.deserialize(attributes);
 
 		assertTrue(aDomain.equals(convertedEntity.getItem()));
 	}
 
 	@SuppressWarnings("unused")
-	static class AClass {
+	public static class AClass {
 
 		@Id
 		private String id;
 		private int intField;
 		private BClass nestedB;
 
-		static class BClass {
+		public static class BClass {
 
 			private float floatField;
 			private CClass nestedNestedC;
@@ -202,7 +203,7 @@ public class EntityWrapperTest {
 				return true;
 			}
 
-			static class CClass {
+			public static class CClass {
 
 				private double doubleField;
 

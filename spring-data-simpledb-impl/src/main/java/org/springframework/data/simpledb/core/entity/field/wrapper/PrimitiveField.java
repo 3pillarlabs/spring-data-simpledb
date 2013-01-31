@@ -2,18 +2,21 @@ package org.springframework.data.simpledb.core.entity.field.wrapper;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+import org.springframework.util.Assert;
 
 public class PrimitiveField<T, ID extends Serializable> extends AbstractField<T, ID> {
 
-	PrimitiveField(Field field, EntityWrapper<T, ID> parent) {
-		super(field, parent);
+	PrimitiveField(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
+		super(field, parent, isNewParent);
 	}
 
 	@Override
@@ -31,6 +34,20 @@ public class PrimitiveField<T, ID extends Serializable> extends AbstractField<T,
 
 	@Override
 	public void deserialize(List<String> value) {
+		Assert.notNull(value);
+		Assert.isTrue(value.size() == 1);
+		
+		try {
+			final Object convertedValue = SimpleDBAttributeConverter.toDomainFieldPrimitive(value.get(0), getField().getType());
+			getField().set(getEntity(), convertedValue);
+		} catch (IllegalArgumentException | IllegalAccessException | ParseException e) {
+			throw new MappingException("Could not map attributes", e);
+		}
+	}
+	
+	@Override
+	public void createInstance() {
+		/* do nothing */
 	}
 
 }
