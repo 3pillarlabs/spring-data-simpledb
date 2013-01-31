@@ -20,6 +20,28 @@ public class SimpleDbUser {
 
     private Object objectField;
 
+
+
+    /**
+     * Auto-generated
+     */
+    @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((coreField == null) ? 0 : coreField.hashCode());
+		result = prime * result
+				+ ((itemName == null) ? 0 : itemName.hashCode());
+		result = prime * result
+				+ ((nestedEntity == null) ? 0 : nestedEntity.hashCode());
+		result = prime * result
+				+ ((objectField == null) ? 0 : objectField.hashCode());
+		result = prime * result + Float.floatToIntBits(primitiveField);
+		
+		return result;
+	}
+
     /**
      * Check only on field values (skip the ID)
      */
@@ -61,7 +83,7 @@ public class SimpleDbUser {
         return true;
     }
 
-    public void setItemName(String itemName) {
+	public void setItemName(String itemName) {
         this.itemName = itemName;
     }
 
@@ -115,6 +137,17 @@ public class SimpleDbUser {
             this.nestedPrimitiveField = nestedPrimitiveField;
         }
 
+        /**
+         * Auto-generated
+         */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + nestedPrimitiveField;
+			return result;
+		}
+
         @Override
         public boolean equals(Object obj) {
             if (this == obj) {
@@ -133,9 +166,6 @@ public class SimpleDbUser {
 
             return true;
         }
-
-
-
 
     }
 
