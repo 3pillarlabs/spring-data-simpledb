@@ -14,6 +14,7 @@ public class SimpleDBAttributeConverter {
     public static final BigDecimal OFFSET_VALUE = new BigDecimal(Long.MIN_VALUE).negate();
 
     private static String padOrConvertIfRequired(Object ob) {
+
         if (ob instanceof Integer || ob instanceof Long || ob instanceof Short || ob instanceof Byte) {
             // then pad
             return AmazonSimpleDBUtil.encodeRealNumberRange(new BigDecimal(ob.toString()), AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE);

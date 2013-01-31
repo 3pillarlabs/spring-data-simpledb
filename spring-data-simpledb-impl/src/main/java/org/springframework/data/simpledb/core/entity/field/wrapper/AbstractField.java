@@ -62,7 +62,7 @@ public abstract class AbstractField<T, ID extends Serializable> {
 		return this.parent.getItem();
 	}
 	
-	Object getValue() {
+	public Object getValue() {
 		try {
 			return this.field.get(parent.getItem());
 		} catch (IllegalArgumentException | IllegalAccessException e) {
@@ -70,7 +70,7 @@ public abstract class AbstractField<T, ID extends Serializable> {
 		}
 	}
 	
-	String getName() {
+	public String getName() {
 		return field.getName();
 	}
 	
