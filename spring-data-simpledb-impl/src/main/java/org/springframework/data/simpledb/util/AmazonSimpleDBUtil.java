@@ -39,8 +39,7 @@ public final class AmazonSimpleDBUtil {
         BigDecimal offsetNumber = number.add(offsetValue);
         String longString = offsetNumber.toString();
         int numZeroes = maxNumDigits - longString.length();
-        StringBuilder strBuffer = new StringBuilder(numZeroes);
-        strBuffer.append(longString.length());
+        StringBuilder strBuffer = new StringBuilder(numZeroes + longString.length());
         for (int i = 0; i < numZeroes; i++) {
             strBuffer.insert(i, '0');
         }
@@ -57,8 +56,7 @@ public final class AmazonSimpleDBUtil {
         String longString = offsetNumber.toString();
         int numBeforeDecimal = longString.length();
         int numZeroes = maxDigitsLeft + maxDigitsRight - numBeforeDecimal;
-        StringBuilder strBuffer = new StringBuilder(numZeroes);
-        strBuffer.append(longString.length());
+        StringBuilder strBuffer = new StringBuilder(numZeroes + longString.length());
         for (int i = 0; i < numZeroes; i++) {
             strBuffer.insert(i, '0');
         }
