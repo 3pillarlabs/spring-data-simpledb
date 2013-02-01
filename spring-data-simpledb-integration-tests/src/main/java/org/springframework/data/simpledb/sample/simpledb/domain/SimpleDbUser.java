@@ -2,6 +2,9 @@ package org.springframework.data.simpledb.sample.simpledb.domain;
 
 import org.springframework.data.annotation.Id;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * TODO: extend with other types to be tested as other type handlers are implemented.
  * Also update equals!
@@ -20,67 +23,42 @@ public class SimpleDbUser {
 
     private Object objectField;
 
+    private List<Integer> coreTypeList;
 
+    private long[] primitiveArrayField;
 
-    /**
-     * Auto-generated
-     */
     @Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((coreField == null) ? 0 : coreField.hashCode());
-		result = prime * result
-				+ ((itemName == null) ? 0 : itemName.hashCode());
-		result = prime * result
-				+ ((nestedEntity == null) ? 0 : nestedEntity.hashCode());
-		result = prime * result
-				+ ((objectField == null) ? 0 : objectField.hashCode());
-		result = prime * result + Float.floatToIntBits(primitiveField);
-		
-		return result;
-	}
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SimpleDbUser)) return false;
+
+        SimpleDbUser that = (SimpleDbUser) o;
+
+        if (Float.compare(that.primitiveField, primitiveField) != 0) return false;
+        if (coreField != null ? !coreField.equals(that.coreField) : that.coreField != null) return false;
+        if (coreTypeList != null ? !coreTypeList.equals(that.coreTypeList) : that.coreTypeList != null) return false;
+        if (!Arrays.equals(primitiveArrayField, that.primitiveArrayField)) return false;
+        if (nestedEntity != null ? !nestedEntity.equals(that.nestedEntity) : that.nestedEntity != null) return false;
+        if (objectField != null ? !objectField.equals(that.objectField) : that.objectField != null) return false;
+
+        return true;
+    }
 
     /**
      * Check only on field values (skip the ID)
      */
+
+
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-
-        if (obj == null) {
-            return false;
-        }
-
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-
-        SimpleDbUser other = (SimpleDbUser) obj;
-        if (Float.floatToIntBits(primitiveField) != Float.floatToIntBits(other.primitiveField)) {
-            return false;
-        }
-        if (nestedEntity == null) {
-            if (other.nestedEntity != null) {
-                return false;
-            }
-        } else if (!nestedEntity.equals(other.nestedEntity)) {
-            return false;
-        }
-
-        if (objectField == null) {
-            if (other.objectField != null) {
-                return false;
-            }
-        } else if (!objectField.equals(other.objectField)) {
-            return false;
-        }
-
-
-        return true;
+    public int hashCode() {
+        int result = itemName != null ? itemName.hashCode() : 0;
+        result = 31 * result + (primitiveField != +0.0f ? Float.floatToIntBits(primitiveField) : 0);
+        result = 31 * result + (coreField != null ? coreField.hashCode() : 0);
+        result = 31 * result + (nestedEntity != null ? nestedEntity.hashCode() : 0);
+        result = 31 * result + (objectField != null ? objectField.hashCode() : 0);
+        result = 31 * result + (coreTypeList != null ? coreTypeList.hashCode() : 0);
+        result = 31 * result + (primitiveArrayField != null ? Arrays.hashCode(primitiveArrayField) : 0);
+        return result;
     }
 
 	public void setItemName(String itemName) {
@@ -125,6 +103,22 @@ public class SimpleDbUser {
         this.objectField = objectField;
     }
 
+    public List<Integer> getCoreTypeList() {
+        return coreTypeList;
+    }
+
+    public long[] getPrimitiveArrayField() {
+        return primitiveArrayField;
+    }
+
+    public void setCoreTypeList(List<Integer> coreTypeList) {
+        this.coreTypeList = coreTypeList;
+    }
+
+    public void setPrimitiveArrayField(long[] primitiveArrayField) {
+        this.primitiveArrayField = primitiveArrayField;
+    }
+
     public static class NestedEntity {
 
         private int nestedPrimitiveField;
@@ -166,7 +160,6 @@ public class SimpleDbUser {
 
             return true;
         }
-
     }
 
 }

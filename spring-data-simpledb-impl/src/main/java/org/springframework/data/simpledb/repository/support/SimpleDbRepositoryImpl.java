@@ -176,22 +176,15 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
     public void delete(ID id, boolean consistentRead) {
         Assert.notNull(id, "The given id must not be null!");
 
-
-        EntityWrapper sdbEntity = null;
         if (consistentRead) {
             T entity = findOne(id, consistentRead);
 
             if (entity == null) {
                 throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!", entityInformation.getJavaType(), id));
             }
-            sdbEntity = new EntityWrapper(entityInformation, entity);
-        } else {
-            sdbEntity = new EntityWrapper(entityInformation);
-            sdbEntity.deserialize(new LinkedHashMap<String, List<String>>());
-            sdbEntity.setId((String) id);
         }
 
-        operations.deleteItem(sdbEntity);
+        operations.deleteItem(entityInformation.getDomain(), (String)id);
     }
 
     @Override

@@ -13,7 +13,7 @@ public interface SimpleDbOperations<T, ID extends Serializable> {
 
     T updateItem(EntityWrapper<T, ID> entity);
 
-    void deleteItem(EntityWrapper<T, ID> sdbEntity);
+    void deleteItem(String domainName, String itemName);
 
     T readItem(SimpleDbEntityInformation<T, ID> entityInformation, ID id, boolean consistentRead);
 

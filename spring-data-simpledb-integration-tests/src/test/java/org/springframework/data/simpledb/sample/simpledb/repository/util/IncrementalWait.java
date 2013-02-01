@@ -2,7 +2,6 @@ package org.springframework.data.simpledb.sample.simpledb.repository.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 
 public abstract class IncrementalWait<T> {
 
@@ -12,38 +11,38 @@ public abstract class IncrementalWait<T> {
     public static final int MAX_RETRIES = 50;
     public static final int INCREEMENT_WAIT_MILLIS = 500;
 
-    public T execute(){
+    public T execute() {
         return null;
     }
 
-    public boolean condition(T t){
-         return true;
+    public boolean condition(T t) {
+        return true;
     }
 
-    public boolean condition(){
+    public boolean condition() {
         return false;
     }
 
-    public void untilResponseNull(){
-          T ret = execute();
-          int retries = 0;
-          while (ret != null && retries < MAX_RETRIES){
-              ret = execute();
-              retries++;
-              try {
-                  Thread.currentThread().sleep(INCREEMENT_WAIT_MILLIS);
-              } catch (InterruptedException e) {
-                  e.printStackTrace();
-              }
-          }
-          LOGGER.debug("Retries: {}", retries);
-      }
+    public void untilResponseNull() {
+        T ret = execute();
+        int retries = 0;
+        while (ret != null && retries < MAX_RETRIES) {
+            ret = execute();
+            retries++;
+            try {
+                Thread.currentThread().sleep(INCREEMENT_WAIT_MILLIS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        LOGGER.debug("Retries: {}", retries);
+    }
 
 
-    public void untilResponseNotNull(){
+    public void untilResponseNotNull() {
         T ret = null;
         int retries = 0;
-        while (ret == null && retries < MAX_RETRIES){
+        while (ret == null && retries < MAX_RETRIES) {
             ret = execute();
             retries++;
             try {
@@ -54,10 +53,10 @@ public abstract class IncrementalWait<T> {
         }
     }
 
-    public void untilResponseSatisfiesCondition(){
+    public void untilResponseSatisfiesCondition() {
         T ret = null;
         int retries = 0;
-        while ((ret == null || !condition(ret)) && retries < MAX_RETRIES){
+        while ((ret == null || !condition(ret)) && retries < MAX_RETRIES) {
             ret = execute();
             retries++;
             try {
@@ -68,9 +67,9 @@ public abstract class IncrementalWait<T> {
         }
     }
 
-    public void untilCondition(){
+    public void untilCondition() {
         int retries = 0;
-        while (condition() && retries < MAX_RETRIES){
+        while (condition() && retries < MAX_RETRIES) {
             retries++;
             try {
                 Thread.currentThread().sleep(INCREEMENT_WAIT_MILLIS);
@@ -79,9 +78,6 @@ public abstract class IncrementalWait<T> {
             }
         }
     }
-
-
-
 
 
 }

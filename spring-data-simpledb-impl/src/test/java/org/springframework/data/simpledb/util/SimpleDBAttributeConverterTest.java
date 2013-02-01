@@ -12,8 +12,6 @@ import static org.junit.Assert.*;
 
 public class SimpleDBAttributeConverterTest {
 
-    public static final String SOME_INTS_NAME = "someInts";
-
     static class SampleEntity {
 		int intField;
 		float floatField;
@@ -43,7 +41,7 @@ public class SimpleDBAttributeConverterTest {
 	}
 	
 	private String toDomainFieldPrimitive(String value, Class<?> clazz) throws ParseException {
-		return SimpleDBAttributeConverter.toDomainFieldPrimitive(value, clazz).toString();
+		return SimpleDBAttributeConverter.toFieldOfType(value, clazz).toString();
 	}
 
 	private String toSimpleDBAttributeValue(SampleEntity domainEntity, String fieldName) throws IllegalAccessException, NoSuchFieldException {
@@ -227,9 +225,9 @@ public class SimpleDBAttributeConverterTest {
     public void encode_decode_primitive_arrays() throws ParseException {
         int[] someInts = {1, 2, 3, 4};
 
-        Map<String, List<String>> returnedMappedAttributeValues = SimpleDBAttributeConverter.primitiveArraysToSimpleDBAttributeValues(SOME_INTS_NAME, someInts);
+       List<String> returnedMappedAttributeValues = SimpleDBAttributeConverter.primitiveArraysToSimpleDBAttributeValues(someInts);
 
-        Object returnedPrimitiveCol = SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(returnedMappedAttributeValues.get(SOME_INTS_NAME), int.class);
+        Object returnedPrimitiveCol = SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(returnedMappedAttributeValues, int.class);
         int arrayLength = Array.getLength(returnedPrimitiveCol);
 
         for (int idx = 0; idx < arrayLength; idx++) {
@@ -240,7 +238,7 @@ public class SimpleDBAttributeConverterTest {
     @Test public void encode_decode_core_type() throws ParseException{
         Object date = new Date(1);
         String encodedDate = SimpleDBAttributeConverter.toSimpleDBAttributeValue(date);
-        Object decodedDate = SimpleDBAttributeConverter.toDomainFieldPrimitive(encodedDate, Date.class);
+        Object decodedDate = SimpleDBAttributeConverter.toFieldOfType(encodedDate, Date.class);
 
         assertEquals(date, decodedDate);
     }

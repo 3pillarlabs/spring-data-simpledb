@@ -3,6 +3,7 @@ package org.springframework.data.simpledb.sample.simpledb.repository.util;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SimpleDbUserBuilder {
@@ -15,6 +16,10 @@ public class SimpleDbUserBuilder {
             user.setPrimitiveField(0.01f);
 
             user.setCoreField("tes_string$");
+
+            user.setCoreTypeList(Arrays.asList(Integer.valueOf(123)));
+
+            user.setPrimitiveArrayField(new long[]{1234L});
 
             final SimpleDbUser.NestedEntity nestedEntity = new SimpleDbUser.NestedEntity();
             {

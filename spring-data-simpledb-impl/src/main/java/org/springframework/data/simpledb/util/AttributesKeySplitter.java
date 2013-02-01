@@ -38,7 +38,7 @@ public final class AttributesKeySplitter {
         return nestedFieldAttributes;
     }
 
-    public static Map<String, List<String>> getSimpleAttributes(Map<String, List<String>> attributes) {
+    public static Map<String, List<String>> splitSimpleAttributesKeys(Map<String, List<String>> attributes) {
 
         Map<String, List<String>> primitiveAttributes = new LinkedHashMap<>();
 
@@ -53,7 +53,7 @@ public final class AttributesKeySplitter {
     }
 
 
-    public static boolean isSimpleKey(final String key) {
+    private static boolean isSimpleKey(final String key) {
         return !key.contains(".");
     }
 
