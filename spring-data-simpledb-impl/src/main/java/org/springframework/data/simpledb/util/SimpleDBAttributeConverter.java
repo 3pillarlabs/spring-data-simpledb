@@ -8,11 +8,15 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
 
-public class SimpleDBAttributeConverter {
+public final class SimpleDBAttributeConverter {
 
     public static final int LONG_DIGITS = 20;
     public static final BigDecimal OFFSET_VALUE = new BigDecimal(Long.MIN_VALUE).negate();
 
+    private SimpleDBAttributeConverter() {
+    	/* utility class */
+    }
+    
     private static String padOrConvertIfRequired(Object ob) {
 
         if (ob instanceof Integer || ob instanceof Long || ob instanceof Short || ob instanceof Byte) {
