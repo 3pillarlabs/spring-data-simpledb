@@ -11,9 +11,9 @@ import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 import org.springframework.util.Assert;
 
-public class PrimitiveFieldWrapper<T, ID extends Serializable> extends SimpleAbstractFieldWrapper<T, ID> {
+public class PrimitiveSimpleFieldWrapper<T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T, ID> {
 
-	public PrimitiveFieldWrapper(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
+	public PrimitiveSimpleFieldWrapper(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
 		super(field, parent, isNewParent);
 	}
 
@@ -28,9 +28,6 @@ public class PrimitiveFieldWrapper<T, ID extends Serializable> extends SimpleAbs
 
     @Override
     public Object deserializeValue(List<String> value) {
-        Assert.notNull(value);
-        Assert.isTrue(value.size() == 1);
-
         try {
             return SimpleDBAttributeConverter.toDomainFieldPrimitive(value.get(0), getField().getType());
         } catch (IllegalArgumentException | ParseException e) {

@@ -10,9 +10,9 @@ import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.util.marshaller.JsonMarshaller;
 import org.springframework.util.Assert;
 
-public class ObjectFieldWrapper<T, ID extends Serializable> extends SimpleAbstractFieldWrapper<T, ID> {
+public class ObjectSimpleFieldWrapper<T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T, ID> {
 
-    public ObjectFieldWrapper(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
+    public ObjectSimpleFieldWrapper(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
         super(field, parent, isNewParent);
     }
 
@@ -32,7 +32,6 @@ public class ObjectFieldWrapper<T, ID extends Serializable> extends SimpleAbstra
 
     @Override
     public Object deserializeValue(List<String> value) {
-        Assert.notNull(value);
         Assert.isTrue(value.size()<=1);
 
         try {

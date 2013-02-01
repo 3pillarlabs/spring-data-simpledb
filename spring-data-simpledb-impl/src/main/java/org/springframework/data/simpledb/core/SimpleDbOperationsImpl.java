@@ -46,11 +46,11 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     }
 
     @Override
-    public void deleteItem(EntityWrapper entity) {
-        logOperation("Delete", entity);
-        Assert.notNull(entity.getDomain(), "Domain name should not be null");
-        Assert.notNull(entity.getItemName(), "Item name should not be null");
-        sdb.deleteAttributes(new DeleteAttributesRequest(entity.getDomain(), entity.getItemName(), toAttributeList(entity.serialize())));
+    public void deleteItem(String domainName, String itemName) {
+        LOGGER.info("Delete Domain\"{}\" ItemName \"{}\"\"", domainName, itemName);
+        Assert.notNull(domainName, "Domain name should not be null");
+        Assert.notNull(itemName, "Item name should not be null");
+        sdb.deleteAttributes(new DeleteAttributesRequest(domainName, itemName));
     }
 
     @Override

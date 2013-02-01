@@ -82,7 +82,6 @@ public class EntityWrapper<T, ID extends Serializable> {
         }
     }
 
-    /* ************************* refactored **************** */
     public Map<String, List<String>> serialize() {
         return serialize("");
     }
@@ -107,7 +106,7 @@ public class EntityWrapper<T, ID extends Serializable> {
             AbstractFieldWrapper<T, ID> fieldWrapper = getWrapper(fieldName);
 
             Object convertedValue = fieldWrapper.deserialize(fieldAttributes);
-            fieldWrapper.applyValue(getItem(), convertedValue);
+            fieldWrapper.setFieldValue(convertedValue);
         }
     	
         final Map<String, List<String>> simpleFields = AttributesKeySplitter.splitSimpleAttributesKeys(attributes);
@@ -120,7 +119,7 @@ public class EntityWrapper<T, ID extends Serializable> {
             fieldAttributes.put(fieldName, simpleField.getValue());
 
             Object convertedValue = fieldWrapper.deserialize(fieldAttributes);
-            fieldWrapper.applyValue(getItem(), convertedValue);
+            fieldWrapper.setFieldValue(convertedValue);
         }
 
         return getItem();

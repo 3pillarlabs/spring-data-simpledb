@@ -36,9 +36,9 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 	public abstract Object deserialize(final Map<String, List<String>> attributes);
 	
 
-    public void applyValue(T parentEntity, Object value){
+    public void setFieldValue(Object value){
         try {
-            getField().set(parentEntity, value);
+            getField().set(parentWrapper.getItem(), value);
         } catch (IllegalArgumentException | IllegalAccessException e) {
             throw new MappingException("Could not map attributes", e);
         }

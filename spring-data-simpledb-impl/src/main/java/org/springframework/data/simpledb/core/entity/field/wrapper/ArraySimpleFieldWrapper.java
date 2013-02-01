@@ -10,9 +10,9 @@ import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 import org.springframework.util.Assert;
 
-public class ArrayFieldWrapper<T, ID extends Serializable> extends SimpleAbstractFieldWrapper<T, ID> {
+public class ArraySimpleFieldWrapper<T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T, ID> {
 
-	public ArrayFieldWrapper(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
+	public ArraySimpleFieldWrapper(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
 		super(field, parent, isNewParent);
 	}
 
@@ -24,8 +24,6 @@ public class ArrayFieldWrapper<T, ID extends Serializable> extends SimpleAbstrac
 
     @Override
     public Object deserializeValue(List<String> value) {
-        Assert.notNull(value);
-
         try {
             return SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(value, getField().getType());
         } catch (ParseException e) {

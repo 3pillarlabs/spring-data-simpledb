@@ -9,9 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class SimpleAbstractFieldWrapper<T, ID extends Serializable> extends AbstractFieldWrapper<T, ID> {
+public abstract class AbstractSimpleFieldWrapper<T, ID extends Serializable> extends AbstractFieldWrapper<T, ID> {
 
-    protected SimpleAbstractFieldWrapper(Field field, EntityWrapper<T, ID> parentWrapper, boolean isNewParent) {
+    protected AbstractSimpleFieldWrapper(Field field, EntityWrapper<T, ID> parentWrapper, boolean isNewParent) {
         super(field, parentWrapper, isNewParent);
     }
 
@@ -30,7 +30,9 @@ public abstract class SimpleAbstractFieldWrapper<T, ID extends Serializable> ext
     @Override
     public final Object deserialize(final Map<String, List<String>> attributes) {
         Assert.isTrue(attributes.size() == 1);
-        return deserializeValue(attributes.values().iterator().next());
+        List<String> attributeValue = attributes.values().iterator().next();
+        Assert.notNull(attributeValue);
+        return deserializeValue(attributeValue);
     }
 
     public abstract Object deserializeValue(final List<String> value);
