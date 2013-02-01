@@ -31,7 +31,8 @@ public class CollectionSimpleFieldWrapper<T, ID extends Serializable> extends Ab
             ParameterizedType parameterizedType = (ParameterizedType) getField().getGenericType();
             Class returnTypeClazz = (Class) parameterizedType.getActualTypeArguments()[0];
             Collection collection = (Collection<?>) getInstanceOfCollectionBasedOn(getField());
-            return SimpleDBAttributeConverter.toDomainFieldPrimitiveCollection(value, collection, returnTypeClazz);
+            SimpleDBAttributeConverter.toDomainFieldPrimitiveCollection(value, collection, returnTypeClazz);
+            return collection;
             
         } catch (IllegalAccessException | InstantiationException | ParseException e) {
             throw new MappingException("Cannot parse Object for instantiation!");

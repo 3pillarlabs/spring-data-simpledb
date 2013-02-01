@@ -90,7 +90,7 @@ public class EntityWrapper<T, ID extends Serializable> {
         final Map<String, List<String>> result = new HashMap<>();
 
         for (final AbstractFieldWrapper<T, ID> wrappedField : wrappedFields.values()) {
-            if(wrappedField.getValue() != null) {
+            if(wrappedField.getFieldValue() != null) {
                 result.putAll(wrappedField.serialize(fieldNamePrefix));
             }
         }

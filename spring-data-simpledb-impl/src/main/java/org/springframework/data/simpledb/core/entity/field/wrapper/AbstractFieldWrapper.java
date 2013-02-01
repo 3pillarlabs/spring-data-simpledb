@@ -36,16 +36,7 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 	public abstract Object deserialize(final Map<String, List<String>> attributes);
 	
 
-    public void setFieldValue(Object value){
-        try {
-            getField().set(parentWrapper.getItem(), value);
-        } catch (IllegalArgumentException | IllegalAccessException e) {
-            throw new MappingException("Could not map attributes", e);
-        }
 
-    }
-
-	
 	/**
 	 * Template method.
 	 * 
@@ -56,19 +47,30 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 	public Field getField() {
 		return this.field;
 	}
-	
+
+    public void setFieldValue(Object value){
+        try {
+            getField().set(parentWrapper.getItem(), value);
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            throw new MappingException("Could not map attributes", e);
+        }
+
+    }
+
+    public Object getFieldValue() {
+        try {
+            return this.field.get(parentWrapper.getItem());
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            throw new MappingException("Could not retrieve field value " + this.field.getName(), e);
+        }
+    }
+
+
 	public T getParentEntity() {
 		return this.parentWrapper.getItem();
 	}
 	
-	Object getFieldValue() {
-		try {
-			return this.field.get(parentWrapper.getItem());
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			throw new MappingException("Could not retrieve field value " + this.field.getName(), e);
-		}
-	}
-	
+
 	String getFieldName() {
 		return field.getName();
 	}

@@ -25,7 +25,9 @@ public class ArraySimpleFieldWrapper<T, ID extends Serializable> extends Abstrac
     @Override
     public Object deserializeValue(List<String> value) {
         try {
-            return SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(value, getField().getType());
+            Class<?> fieldClazz = getField().getType();
+            return SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(value, fieldClazz.getComponentType());
+
         } catch (ParseException e) {
             throw new MappingException("Could not read object", e);
         }
