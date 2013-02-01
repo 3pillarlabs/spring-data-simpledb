@@ -1,6 +1,7 @@
 package org.springframework.data.simpledb.core.entity;
 
 import org.junit.Test;
+import org.springframework.data.simpledb.core.entity.util.AttributeUtil;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 
@@ -55,21 +56,10 @@ public class CollectionWrapperTest {
 
         assertTrue(attributes.size() == 4);
 
-        for(String attributeName : this.<SampleCoreCollection>getAttributeNamesThroughReflection(SampleCoreCollection.class)) {
+        for(String attributeName : AttributeUtil.<SampleCoreCollection>getAttributeNamesThroughReflection(SampleCoreCollection.class)) {
             assertTrue(attributes.containsKey(attributeName));
         }
 
-    }
-
-    /* ----- Utility method to fetch AttributeNames of declared Properties from Parameter Class ------ */
-    private <T> List<String> getAttributeNamesThroughReflection(Class<T> entityClazz) {
-        List<String> attributeNames = new ArrayList<>();
-
-        for(Field eachDeclaredField : Arrays.asList(entityClazz.getDeclaredFields())) {
-            attributeNames.add(eachDeclaredField.getName());
-        }
-
-        return attributeNames;
     }
 
     private <E> SimpleDbEntityInformation<E, String> readEntityInformation(Class<E> clazz) {

@@ -2,6 +2,7 @@ package org.springframework.data.simpledb.core.entity;
 
 import org.junit.Test;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.simpledb.core.entity.util.AttributeUtil;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 
@@ -60,23 +61,11 @@ public class PrimitiveArrayWrapperTest {
 
         assertTrue(attributes.size() == 1);
 
-        for(String attributeName : this.<SamplePrimitivesArray>getAttributeNamesThroughReflection(SamplePrimitivesArray.class)) {
+        for(String attributeName : AttributeUtil.<SamplePrimitivesArray>getAttributeNamesThroughReflection(SamplePrimitivesArray.class)) {
             assertTrue(attributes.containsKey(attributeName));
         }
 
     }
-
-    /* ----- Utility method to fetch AttributeNames of declared Properties from Parameter Class ------ */
-    private <T> List<String> getAttributeNamesThroughReflection(Class<T> entityClazz) {
-        List<String> attributeNames = new ArrayList<>();
-
-        for(Field eachDeclaredField : Arrays.asList(entityClazz.getDeclaredFields())) {
-            attributeNames.add(eachDeclaredField.getName());
-        }
-
-        return attributeNames;
-    }
-
 
 
     private <E> SimpleDbEntityInformation<E, String> readEntityInformation(Class<E> clazz) {

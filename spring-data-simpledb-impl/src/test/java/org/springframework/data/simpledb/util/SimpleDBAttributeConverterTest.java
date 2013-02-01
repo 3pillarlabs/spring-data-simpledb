@@ -41,7 +41,7 @@ public class SimpleDBAttributeConverterTest {
 	}
 	
 	private String toDomainFieldPrimitive(String value, Class<?> clazz) throws ParseException {
-		return SimpleDBAttributeConverter.toDomainFieldPrimitive(value, clazz).toString();
+		return SimpleDBAttributeConverter.toFieldOfType(value, clazz).toString();
 	}
 
 	private String toSimpleDBAttributeValue(SampleEntity domainEntity, String fieldName) throws IllegalAccessException, NoSuchFieldException {
@@ -238,7 +238,7 @@ public class SimpleDBAttributeConverterTest {
     @Test public void encode_decode_core_type() throws ParseException{
         Object date = new Date(1);
         String encodedDate = SimpleDBAttributeConverter.toSimpleDBAttributeValue(date);
-        Object decodedDate = SimpleDBAttributeConverter.toDomainFieldPrimitive(encodedDate, Date.class);
+        Object decodedDate = SimpleDBAttributeConverter.toFieldOfType(encodedDate, Date.class);
 
         assertEquals(date, decodedDate);
     }

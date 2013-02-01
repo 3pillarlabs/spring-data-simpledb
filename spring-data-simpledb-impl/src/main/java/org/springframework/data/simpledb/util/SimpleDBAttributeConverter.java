@@ -3,7 +3,6 @@ package org.springframework.data.simpledb.util;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
@@ -75,7 +74,7 @@ public final class SimpleDBAttributeConverter {
     }
 
 
-    public static Object toDomainFieldPrimitive(String value, Class<?> retType) throws ParseException {
+    public static Object toFieldOfType(String value, Class<?> retType) throws ParseException {
         Object val = null;
 
         if (Integer.class.isAssignableFrom(retType) || retType == int.class) {
@@ -121,7 +120,7 @@ public final class SimpleDBAttributeConverter {
         int idx = 0;
 
         for (Iterator<String> iterator = fromSimpleDbAttValues.iterator(); iterator.hasNext(); idx++) {
-            Array.set(primitiveCollection, idx, toDomainFieldPrimitive(iterator.next(), retType));
+            Array.set(primitiveCollection, idx, toFieldOfType(iterator.next(), retType));
         }
 
         return primitiveCollection;
@@ -132,7 +131,7 @@ public final class SimpleDBAttributeConverter {
     throws ParseException {
 
         for(String each : fromSimpleDbAttValues) {
-            collection.add(toDomainFieldPrimitive(each, returnedType));
+            collection.add(toFieldOfType(each, returnedType));
         }
     }
 }

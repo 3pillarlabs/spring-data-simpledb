@@ -31,7 +31,7 @@ public class CoreSimpleFieldWrapper<T, ID extends Serializable> extends Abstract
         Assert.isTrue(value.size() == 1);
 
         try {
-            return SimpleDBAttributeConverter.toDomainFieldPrimitive(value.get(0), getField().getType());
+            return SimpleDBAttributeConverter.toFieldOfType(value.get(0), getField().getType());
         } catch (IllegalArgumentException | ParseException e) {
             throw new MappingException("Could not map attributes", e);
         }

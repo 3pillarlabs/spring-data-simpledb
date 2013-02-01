@@ -9,7 +9,6 @@ import java.util.List;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
-import org.springframework.util.Assert;
 
 public class PrimitiveSimpleFieldWrapper<T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T, ID> {
 
@@ -29,7 +28,7 @@ public class PrimitiveSimpleFieldWrapper<T, ID extends Serializable> extends Abs
     @Override
     public Object deserializeValue(List<String> value) {
         try {
-            return SimpleDBAttributeConverter.toDomainFieldPrimitive(value.get(0), getField().getType());
+            return SimpleDBAttributeConverter.toFieldOfType(value.get(0), getField().getType());
         } catch (IllegalArgumentException | ParseException e) {
             throw new MappingException("Could not map attributes", e);
         }
