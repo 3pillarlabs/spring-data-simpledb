@@ -36,4 +36,10 @@ public class CoreSimpleFieldWrapper<T, ID extends Serializable> extends Abstract
             throw new MappingException("Could not map attributes", e);
         }
     }
+
+    /**
+     * This information is known only at runtime
+     */
+    @Override
+    public void createInstance() { }
 }

@@ -41,21 +41,14 @@ public class ObjectFieldWrapperTest {
 
 
     @Test
-    public void should_serialize_null_Object_fields_as_attribute_keys() {
+    public void should_not_serialize_null_Object_fields_as_attribute_keys() {
 
         AClass aDomainObject = new AClass();
 
         EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
         final Map<String, List<String>> attributes = sdbEntity.serialize();
 
-        assertEquals(1, attributes.size());
-        String key = attributes.keySet().iterator().next();
-        assertEquals("object", key);
-
-        List<String> serializedValue = attributes.get(key);
-        assertTrue("No serialized JSON string here", serializedValue.isEmpty());
-
-
+        assertEquals(0, attributes.size());
     }
 
 
