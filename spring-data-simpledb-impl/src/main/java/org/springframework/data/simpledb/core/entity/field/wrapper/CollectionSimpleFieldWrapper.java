@@ -1,14 +1,15 @@
 package org.springframework.data.simpledb.core.entity.field.wrapper;
 
+import org.springframework.data.simpledb.core.entity.EntityWrapper;
+import org.springframework.data.simpledb.util.marshaller.JsonMarshaller;
+import org.springframework.util.Assert;
+
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.text.ParseException;
-import java.util.*;
-
-import org.springframework.data.mapping.model.MappingException;
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
-import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class CollectionSimpleFieldWrapper<T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T, ID> {
 
@@ -20,55 +21,35 @@ public class CollectionSimpleFieldWrapper<T, ID extends Serializable> extends Ab
     @Override
     public List<String> serializeValue() {
 
-        return SimpleDBAttributeConverter.coreTypesCollectionToSimpleDBAttributeValues(this.getFieldValue());
+        final List<String> fieldValues = new ArrayList<>();
+
+
+        if(getFieldValue() != null) {
+            String fieldMarshaled2JSON = new JsonMarshaller().marshal(getFieldValue());
+            fieldValues.add(fieldMarshaled2JSON);
+        }
+
+        return fieldValues;
 
     }
 
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object deserializeValue(List<String> value) {
-        try {
+        Assert.isTrue(value.size() <= 1);
+
+
+        Collection jsonCollection = null;
+        if (value.size() > 0) {
             ParameterizedType parameterizedType = (ParameterizedType) getField().getGenericType();
-            Class returnTypeClazz = (Class) parameterizedType.getActualTypeArguments()[0];
-            Collection collection = (Collection<?>) getInstanceOfCollectionBasedOn(getField());
-            SimpleDBAttributeConverter.toDomainFieldPrimitiveCollection(value, collection, returnTypeClazz);
-            return collection;
-            
-        } catch (IllegalAccessException | InstantiationException | ParseException e) {
-            throw new MappingException("Cannot parse Object for instantiation!");
+            Class genericTypeClass = (Class) parameterizedType.getActualTypeArguments()[0];
+            Class colectionClass = (Class) parameterizedType.getRawType();
+
+            String fieldValue = value.get(0);
+            jsonCollection = (Collection<?>) new JsonMarshaller().unmarshalCollection(fieldValue, colectionClass, genericTypeClass);
         }
-    }
-
-    /**
-     * Not known at compile-time, need the Instance Type of the Collection
-     * If the reference Type is of Type Interface the instantiation is done when de-serializing the SimpleDB
-     * representation
-     * 1. get type of collection to be de-serialized
-     * 2. if Type is-a interface -> make a new instance of concrete default type
-     * 3. if Type is-a concrete class -> create an instance of it
-     */
-    private Collection<?> getInstanceOfCollectionBasedOn(Field field) throws IllegalAccessException, InstantiationException {
-        Collection<?> createdCollectionInstance = null;
-        Class<?> fieldClass = field.getType();
-
-        if(field.getType().isInterface()) { // default implementation is given
-            if(fieldClass.isAssignableFrom(List.class)) {
-                createdCollectionInstance = new ArrayList<>();
-
-            } else if(fieldClass.isAssignableFrom(Set.class)) {
-                createdCollectionInstance = new HashSet<>();
-
-            } else if(fieldClass.isAssignableFrom(Collection.class)) {
-                createdCollectionInstance = new ArrayList<>();
-            }
-
-        } else { // class is a concrete class
-            ParameterizedType parameterizedType = (ParameterizedType) getField().getGenericType();
-            Class returnTypeClazz = (Class) parameterizedType.getRawType();
-            createdCollectionInstance = (Collection<?>) returnTypeClazz.newInstance();
-        }
-
-        return createdCollectionInstance;
+        return jsonCollection;
     }
 
 }

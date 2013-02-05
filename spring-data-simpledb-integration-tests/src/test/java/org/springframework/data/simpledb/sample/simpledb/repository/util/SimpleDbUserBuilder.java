@@ -17,7 +17,7 @@ public class SimpleDbUserBuilder {
 
             user.setCoreField("tes_string$");
 
-            user.setCoreTypeList(Arrays.asList(Integer.valueOf(123)));
+            user.setCoreTypeList(Arrays.asList(Integer.valueOf(123), Integer.valueOf(23)));
 
             user.setPrimitiveArrayField(new long[]{1234L});
 

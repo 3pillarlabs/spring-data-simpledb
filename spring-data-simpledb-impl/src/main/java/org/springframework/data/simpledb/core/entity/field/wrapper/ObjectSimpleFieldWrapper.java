@@ -1,14 +1,14 @@
 package org.springframework.data.simpledb.core.entity.field.wrapper;
 
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.util.marshaller.JsonMarshaller;
 import org.springframework.util.Assert;
+
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ObjectSimpleFieldWrapper<T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T, ID> {
 
@@ -22,7 +22,7 @@ public class ObjectSimpleFieldWrapper<T, ID extends Serializable> extends Abstra
 
 
         if(getFieldValue() != null) {
-            String fieldMarshaled2JSON = new JsonMarshaller().marshal(getFieldValue());
+            String fieldMarshaled2JSON = new JsonMarshaller().marshalWrapperObject(getFieldValue());
 
             fieldValues.add(fieldMarshaled2JSON);
         }
@@ -36,7 +36,7 @@ public class ObjectSimpleFieldWrapper<T, ID extends Serializable> extends Abstra
 
         try {
             if(value.size()>0) {
-                return new JsonMarshaller().unmarshal(value.get(0));
+                return new JsonMarshaller().unmarshalWrapperObject(value.get(0));
             }
         } catch (IllegalArgumentException e) {
             throw new MappingException("Could not map attributes", e);

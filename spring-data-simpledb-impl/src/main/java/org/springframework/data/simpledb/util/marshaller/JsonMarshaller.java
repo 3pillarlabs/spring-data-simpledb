@@ -7,6 +7,10 @@ import org.codehaus.jackson.mrbean.MrBeanModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mapping.model.MappingException;
+import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.util.Collection;
 
 public class JsonMarshaller implements Marshaller {
 
@@ -33,84 +37,72 @@ public class JsonMarshaller implements Marshaller {
 
     private static final Logger log = LoggerFactory.getLogger(JsonMarshaller.class);
 
-    private ObjectMapper mapper;
+    private ObjectMapper jsonMapper;
 
     public JsonMarshaller() {
         JsonFactory factory = new JsonFactory();
-        mapper = new ObjectMapper(factory);
+        jsonMapper = new ObjectMapper(factory);
         JsonUnknownPropertyHandler jsonUnknownPropertyHandler = new JsonUnknownPropertyHandler();
-        mapper.getDeserializationConfig().addHandler(jsonUnknownPropertyHandler);
-        mapper.registerModule(new MrBeanModule());
+        jsonMapper.getDeserializationConfig().addHandler(jsonUnknownPropertyHandler);
+        jsonMapper.registerModule(new MrBeanModule());
     }
 
     @Override
-    public Object unmarshal(String input) {
+    public Object unmarshalWrapperObject(String input) {
         Wrapper unmarshalledWrapper = unmarshal(input, Wrapper.class);
 
         String className = unmarshalledWrapper.getAttributeClassName();
         try {
-            Class clazz = Class.forName(className);
-            String marshalledAttributes = directMarshal(unmarshalledWrapper.getAttributeContent());
-            return unmarshal(marshalledAttributes, clazz);
+            Class objectClass = Class.forName(className);
+            String marshalledAttributes = marshal(unmarshalledWrapper.getAttributeContent());
+            return unmarshal(marshalledAttributes, objectClass);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-
     }
 
-    public <T> T unmarshal(String input, Class<T> clazz) {
+    public <T> T unmarshal(String jsonString, Class<T> objectClass) {
+        Assert.notNull(jsonString);
 
-        if (input == null) {
-            log.warn("Null input given to unmarshal, will return null.");
-            return null;
-        }
-
-        T unmarshalledObject;
         try {
-            unmarshalledObject = mapper.readValue(input, clazz);
+            return (T) jsonMapper.readValue(jsonString, objectClass);
         } catch (JsonParseException e) {
-            //in case of error, if the required class is string, just return the original input
-            if (clazz.equals(String.class)) {
-                return (T) input;
+            //in case of error, if the required class is string, just return the original jsonString
+            if (objectClass.equals(String.class)) {
+                return (T) jsonString;
             }
             throw new MappingException(e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new MappingException("Could not unmarshal object: " + jsonString, e);
         }
-
-        return unmarshalledObject;
     }
 
-    public <T> String directMarshal(T input) {
-
-        if (input == null) {
-            log.warn("Null input given to marshal, will return null.");
-            return null;
-        }
-
-        String marshalledObject;
+    public <T extends Collection> T unmarshalCollection(String jsonString, Class<T> collectionType, Class<?> genericType) {
+        Assert.notNull(jsonString);
         try {
-            marshalledObject = mapper.writeValueAsString(input);
-        } catch (Exception e) {
-            throw new MappingException(e.getMessage(), e);
+            return (T) jsonMapper.readValue(jsonString, jsonMapper.getTypeFactory().constructCollectionType(collectionType, genericType));
+        } catch (IOException e) {
+            throw new MappingException("Could not unmarshalWrapperObject collection: " + jsonString, e);
         }
-
-        return marshalledObject;
     }
 
-    @Override
-    public <T> String marshal(T input) {
-
-        if (input == null) {
-            log.warn("Null input given to marshal, will return null.");
-            return null;
-        }
-
+    public <T> String marshalWrapperObject(T input) {
         Wrapper inputWrapper = new Wrapper();
         inputWrapper.setAttributeClassName(input.getClass().getName());
         inputWrapper.setAttributeContent(input);
 
-       return  directMarshal(inputWrapper);
+       return  marshal(inputWrapper);
+    }
+
+
+    @Override
+    public <T> String marshal(T input) {
+        Assert.notNull(input);
+        try {
+            return jsonMapper.writeValueAsString(input);
+        } catch (Exception e) {
+            throw new MappingException(e.getMessage(), e);
+        }
     }
 
 }

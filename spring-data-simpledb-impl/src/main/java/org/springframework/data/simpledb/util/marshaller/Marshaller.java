@@ -5,7 +5,7 @@ package org.springframework.data.simpledb.util.marshaller;
  */
 public interface Marshaller {
 
-    Object unmarshal(String input);
+    Object unmarshalWrapperObject(String input);
 
     <T> String marshal(T input);
 
