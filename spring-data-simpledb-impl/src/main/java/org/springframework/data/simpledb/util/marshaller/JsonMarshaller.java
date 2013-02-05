@@ -68,16 +68,16 @@ public class JsonMarshaller implements Marshaller {
             return null;
         }
 
-        //in case of error, if the required class is string, just return the original input
-        if(clazz.equals(String.class)) {
-            return (T) input;
-        }
-
         T unmarshalledObject;
         try {
             unmarshalledObject = mapper.readValue(input, clazz);
         } catch (IOException e) {
-            throw new MappingException("Exception occured while unmarshalling Object from SimpleDB!", e);
+            //in case of error, if the required class is string, just return the original input
+            if(clazz.equals(String.class)) {
+                return (T) input;
+            }
+
+            throw new MappingException("Exception occurred while unmarshalling Object from SimpleDB!", e);
         }
 
         return unmarshalledObject;
