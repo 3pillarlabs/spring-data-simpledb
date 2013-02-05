@@ -2,11 +2,14 @@ package org.springframework.data.simpledb.util.marshaller;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.mrbean.MrBeanModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mapping.model.MappingException;
+
+import java.io.IOException;
 
 public class JsonMarshaller implements Marshaller {
 
@@ -65,17 +68,16 @@ public class JsonMarshaller implements Marshaller {
             return null;
         }
 
+        //in case of error, if the required class is string, just return the original input
+        if(clazz.equals(String.class)) {
+            return (T) input;
+        }
+
         T unmarshalledObject;
         try {
             unmarshalledObject = mapper.readValue(input, clazz);
-        } catch (JsonParseException e) {
-            //in case of error, if the required class is string, just return the original input
-            if (clazz.equals(String.class)) {
-                return (T) input;
-            }
-            throw new MappingException(e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new MappingException("Exception occured while unmarshalling Object from SimpleDB!", e);
         }
 
         return unmarshalledObject;

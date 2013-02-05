@@ -18,7 +18,7 @@ public final class SimpleDBAttributeConverter {
     
     private static String padOrConvertIfRequired(Object ob) {
 
-        if (ob instanceof Integer || ob instanceof Long || ob instanceof Short || ob instanceof Byte) {
+        if (ob instanceof Number && !(ob instanceof Float || ob instanceof Double)) {
             // then pad
             return AmazonSimpleDBUtil.encodeRealNumberRange(new BigDecimal(ob.toString()), AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE);
         } else if ((ob instanceof Double && !((Double) ob).isInfinite() && !((Double) ob).isNaN()) || (ob instanceof Float && !((Float) ob).isInfinite() && !((Float) ob).isNaN())) {
