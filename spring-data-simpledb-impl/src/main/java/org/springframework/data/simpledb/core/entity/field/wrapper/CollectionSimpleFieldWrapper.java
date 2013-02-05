@@ -35,7 +35,7 @@ public class CollectionSimpleFieldWrapper<T, ID extends Serializable> extends Ab
             return collection;
             
         } catch (IllegalAccessException | InstantiationException | ParseException e) {
-            throw new MappingException("Cannot parse Object for instantiation!");
+            throw new MappingException("Cannot parse Object for instantiation!", e);
         }
     }
 

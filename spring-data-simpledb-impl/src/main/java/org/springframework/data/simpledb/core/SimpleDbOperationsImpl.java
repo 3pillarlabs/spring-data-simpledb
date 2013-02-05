@@ -101,6 +101,8 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         return result;
     }
 
+    // TODO: remove this method if unused in later release
+    @SuppressWarnings("unused")
     private List<Attribute> toAttributeList(Map<String, List<String>> attributes) {
         final List<Attribute> result = new ArrayList<>();
         

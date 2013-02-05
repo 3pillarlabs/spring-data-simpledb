@@ -53,7 +53,7 @@ public class JsonMarshaller implements Marshaller {
             String marshalledAttributes = directMarshal(unmarshalledWrapper.getAttributeContent());
             return unmarshal(marshalledAttributes, clazz);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new MappingException(e.getMessage(), e);
         }
 
     }
