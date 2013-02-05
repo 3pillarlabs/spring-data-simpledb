@@ -29,17 +29,17 @@ public class SimpleDbUser {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SimpleDbUser)) return false;
+        if (this == o) { return true; }
+        if (!(o instanceof SimpleDbUser)) { return false; }
 
         SimpleDbUser that = (SimpleDbUser) o;
 
-        if (Float.compare(that.primitiveField, primitiveField) != 0) return false;
-        if (coreField != null ? !coreField.equals(that.coreField) : that.coreField != null) return false;
-        if (coreTypeList != null ? !coreTypeList.equals(that.coreTypeList) : that.coreTypeList != null) return false;
-        if (!Arrays.equals(primitiveArrayField, that.primitiveArrayField)) return false;
-        if (nestedEntity != null ? !nestedEntity.equals(that.nestedEntity) : that.nestedEntity != null) return false;
-        if (objectField != null ? !objectField.equals(that.objectField) : that.objectField != null) return false;
+        if (Float.compare(that.primitiveField, primitiveField) != 0) { return false; }
+        if (coreField != null ? !coreField.equals(that.coreField) : that.coreField != null) { return false; }
+        if (coreTypeList != null ? !coreTypeList.equals(that.coreTypeList) : that.coreTypeList != null) { return false; }
+        if (!Arrays.equals(primitiveArrayField, that.primitiveArrayField)) { return false; }
+        if (nestedEntity != null ? !nestedEntity.equals(that.nestedEntity) : that.nestedEntity != null) { return false; }
+        if (objectField != null ? !objectField.equals(that.objectField) : that.objectField != null) { return false; }
 
         return true;
     }
@@ -108,7 +108,7 @@ public class SimpleDbUser {
     }
 
     public long[] getPrimitiveArrayField() {
-        return primitiveArrayField;
+        return primitiveArrayField.clone();
     }
 
     public void setCoreTypeList(List<Integer> coreTypeList) {
@@ -116,7 +116,7 @@ public class SimpleDbUser {
     }
 
     public void setPrimitiveArrayField(long[] primitiveArrayField) {
-        this.primitiveArrayField = primitiveArrayField;
+        this.primitiveArrayField = primitiveArrayField.clone();
     }
 
     public static class NestedEntity {

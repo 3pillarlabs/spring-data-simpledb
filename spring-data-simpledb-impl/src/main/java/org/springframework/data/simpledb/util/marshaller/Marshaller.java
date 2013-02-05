@@ -5,8 +5,8 @@ package org.springframework.data.simpledb.util.marshaller;
  */
 public interface Marshaller {
 
-    Object unmarshalWrapperObject(String input);
+    Object unmarshallWrapperObject(String input);
 
-    <T> String marshal(T input);
+    <T> String marshall(T input);
 
 }

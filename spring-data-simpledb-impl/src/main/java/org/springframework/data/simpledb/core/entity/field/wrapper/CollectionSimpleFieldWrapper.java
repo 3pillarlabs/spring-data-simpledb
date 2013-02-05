@@ -25,7 +25,7 @@ public class CollectionSimpleFieldWrapper<T, ID extends Serializable> extends Ab
 
 
         if(getFieldValue() != null) {
-            String fieldMarshaled2JSON = new JsonMarshaller().marshal(getFieldValue());
+            String fieldMarshaled2JSON = new JsonMarshaller().marshall(getFieldValue());
             fieldValues.add(fieldMarshaled2JSON);
         }
 
@@ -47,7 +47,7 @@ public class CollectionSimpleFieldWrapper<T, ID extends Serializable> extends Ab
             Class colectionClass = (Class) parameterizedType.getRawType();
 
             String fieldValue = value.get(0);
-            jsonCollection = (Collection<?>) new JsonMarshaller().unmarshalCollection(fieldValue, colectionClass, genericTypeClass);
+            jsonCollection = (Collection<?>) new JsonMarshaller().unmarshallCollection(fieldValue, colectionClass, genericTypeClass);
         }
         return jsonCollection;
     }

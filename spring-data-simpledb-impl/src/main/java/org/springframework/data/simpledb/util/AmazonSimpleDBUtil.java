@@ -36,10 +36,11 @@ public final class AmazonSimpleDBUtil {
     }
     
     public static String encodeRealNumberRange(BigDecimal number, int maxNumDigits, BigDecimal offsetValue) {
-        BigDecimal offsetNumber = number.add(offsetValue);
-        String longString = offsetNumber.toString();
-        int numZeroes = maxNumDigits - longString.length();
-        StringBuilder strBuffer = new StringBuilder(numZeroes + longString.length());
+        final BigDecimal offsetNumber = number.add(offsetValue);
+        final String longString = offsetNumber.toString();
+        final int numZeroes = maxNumDigits - longString.length();
+        final int paddedSize = numZeroes + longString.length();
+        final StringBuilder strBuffer = new StringBuilder(paddedSize);
         for (int i = 0; i < numZeroes; i++) {
             strBuffer.insert(i, '0');
         }
@@ -51,12 +52,13 @@ public final class AmazonSimpleDBUtil {
         BigDecimal shiftMultiplier = new BigDecimal(Math.pow(10, maxDigitsRight));
         BigDecimal shiftedNumber = number.multiply(shiftMultiplier);
         shiftedNumber = shiftedNumber.setScale(0, BigDecimal.ROUND_HALF_UP);
-        BigDecimal shiftedOffset = offsetValue.multiply(shiftMultiplier);
-        BigDecimal offsetNumber = shiftedNumber.add(shiftedOffset);
+        final BigDecimal shiftedOffset = offsetValue.multiply(shiftMultiplier);
+        final BigDecimal offsetNumber = shiftedNumber.add(shiftedOffset);
         String longString = offsetNumber.toString();
-        int numBeforeDecimal = longString.length();
-        int numZeroes = maxDigitsLeft + maxDigitsRight - numBeforeDecimal;
-        StringBuilder strBuffer = new StringBuilder(numZeroes + longString.length());
+        final int numBeforeDecimal = longString.length();
+        final int numZeroes = maxDigitsLeft + maxDigitsRight - numBeforeDecimal;
+        final int paddedSize = numZeroes + longString.length();
+        final StringBuilder strBuffer = new StringBuilder(paddedSize);
         for (int i = 0; i < numZeroes; i++) {
             strBuffer.insert(i, '0');
         }

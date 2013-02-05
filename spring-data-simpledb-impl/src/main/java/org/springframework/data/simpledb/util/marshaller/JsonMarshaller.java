@@ -1,7 +1,6 @@
 package org.springframework.data.simpledb.util.marshaller;
 
 import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.mrbean.MrBeanModule;
 import org.slf4j.Logger;
@@ -48,55 +47,57 @@ public class JsonMarshaller implements Marshaller {
     }
 
     @Override
-    public Object unmarshalWrapperObject(String input) {
-        Wrapper unmarshalledWrapper = unmarshal(input, Wrapper.class);
+    public Object unmarshallWrapperObject(String input) {
+        Wrapper unmarshalledWrapper = unmarshall(input, Wrapper.class);
 
         String className = unmarshalledWrapper.getAttributeClassName();
         try {
             Class objectClass = Class.forName(className);
-            String marshalledAttributes = marshal(unmarshalledWrapper.getAttributeContent());
-            return unmarshal(marshalledAttributes, objectClass);
+            String marshalledAttributes = marshall(unmarshalledWrapper.getAttributeContent());
+            return unmarshall(marshalledAttributes, objectClass);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new MappingException(e.getMessage(), e);
         }
     }
 
-    public <T> T unmarshal(String jsonString, Class<T> objectClass) {
+    public <T> T unmarshall(String jsonString, Class<T> objectClass) {
         Assert.notNull(jsonString);
 
+        T unmarshalledObject;
         try {
-            return (T) jsonMapper.readValue(jsonString, objectClass);
-        } catch (JsonParseException e) {
-            //in case of error, if the required class is string, just return the original jsonString
-            if (objectClass.equals(String.class)) {
+            unmarshalledObject = jsonMapper.readValue(jsonString, objectClass);
+        } catch (IOException e) {
+            //in case of error, if the required class is string, just return the original input
+            if(objectClass.equals(String.class)) {
                 return (T) jsonString;
             }
-            throw new MappingException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new MappingException("Could not unmarshal object: " + jsonString, e);
+
+            throw new MappingException("Exception occurred while unmarshalling Object from SimpleDB!", e);
         }
+
+        return unmarshalledObject;
     }
 
-    public <T extends Collection> T unmarshalCollection(String jsonString, Class<T> collectionType, Class<?> genericType) {
+    public <T extends Collection> T unmarshallCollection(String jsonString, Class<T> collectionType, Class<?> genericType) {
         Assert.notNull(jsonString);
         try {
             return (T) jsonMapper.readValue(jsonString, jsonMapper.getTypeFactory().constructCollectionType(collectionType, genericType));
         } catch (IOException e) {
-            throw new MappingException("Could not unmarshalWrapperObject collection: " + jsonString, e);
+            throw new MappingException("Could not unmarshallWrapperObject collection: " + jsonString, e);
         }
     }
 
-    public <T> String marshalWrapperObject(T input) {
+    public <T> String marshallWrapperObject(T input) {
         Wrapper inputWrapper = new Wrapper();
         inputWrapper.setAttributeClassName(input.getClass().getName());
         inputWrapper.setAttributeContent(input);
 
-       return  marshal(inputWrapper);
+       return  marshall(inputWrapper);
     }
 
 
     @Override
-    public <T> String marshal(T input) {
+    public <T> String marshall(T input) {
         Assert.notNull(input);
         try {
             return jsonMapper.writeValueAsString(input);
