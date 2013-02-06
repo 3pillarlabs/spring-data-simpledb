@@ -8,6 +8,7 @@ import org.springframework.data.simpledb.core.SimpleDbConfig;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.core.SimpleDbOperationsImpl;
 import org.springframework.data.simpledb.core.domain.DomainManager;
+import org.springframework.data.simpledb.query.SimpleDbQueryLookupStrategy;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 
@@ -68,7 +69,7 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
      */
     @Override
     protected QueryLookupStrategy getQueryLookupStrategy(QueryLookupStrategy.Key key) {
-        return null;
+        return SimpleDbQueryLookupStrategy.create(simpledbOperations, key);
     }
 
     /*

@@ -111,13 +111,77 @@ public class MetadataParserTest {
 		private boolean booleanPrimitive;
 
 		@Attributes Map<String, String> someUsefullAttributes = new HashMap<>();
-	}
+
+       public int getShouldBeTransient() {
+           return shouldBeTransient;
+       }
+
+       public void setShouldBeTransient(int shouldBeTransient) {
+           this.shouldBeTransient = shouldBeTransient;
+       }
+
+       public int getIdField() {
+           return idField;
+       }
+
+       public void setIdField(int idField) {
+           this.idField = idField;
+       }
+
+       public int getIntPrimitive() {
+           return intPrimitive;
+       }
+
+       public void setIntPrimitive(int intPrimitive) {
+           this.intPrimitive = intPrimitive;
+       }
+
+       public long getLongPrimitive() {
+           return longPrimitive;
+       }
+
+       public void setLongPrimitive(long longPrimitive) {
+           this.longPrimitive = longPrimitive;
+       }
+
+       public double getDoublePrimitive() {
+           return doublePrimitive;
+       }
+
+       public void setDoublePrimitive(double doublePrimitive) {
+           this.doublePrimitive = doublePrimitive;
+       }
+
+       public boolean isBooleanPrimitive() {
+           return booleanPrimitive;
+       }
+
+       public void setBooleanPrimitive(boolean booleanPrimitive) {
+           this.booleanPrimitive = booleanPrimitive;
+       }
+
+       public Map<String, String> getSomeUsefullAttributes() {
+           return someUsefullAttributes;
+       }
+
+       public void setSomeUsefullAttributes(Map<String, String> someUsefullAttributes) {
+           this.someUsefullAttributes = someUsefullAttributes;
+       }
+   }
 
 
     static class SampleDeclaredPrimitivesConventionId {
 		String id;
 		int intPrimitive;
-	}
+
+        public int getIntPrimitive() {
+            return intPrimitive;
+        }
+
+        public void setIntPrimitive(int intPrimitive) {
+            this.intPrimitive = intPrimitive;
+        }
+    }
 
 	static class TwoIdsShouldFail {
 		String id;

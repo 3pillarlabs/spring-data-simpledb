@@ -59,6 +59,94 @@ public class MetadataParserFieldDefinitionTest {
         private Boolean boolField;
         private Character charField;
         private Byte byteField;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public Integer getIntegerField() {
+            return integerField;
+        }
+
+        public void setIntegerField(Integer integerField) {
+            this.integerField = integerField;
+        }
+
+        public Double getDoubleField() {
+            return doubleField;
+        }
+
+        public void setDoubleField(Double doubleField) {
+            this.doubleField = doubleField;
+        }
+
+        public Float getFloatField() {
+            return floatField;
+        }
+
+        public void setFloatField(Float floatField) {
+            this.floatField = floatField;
+        }
+
+        public Short getShortField() {
+            return shortField;
+        }
+
+        public void setShortField(Short shortField) {
+            this.shortField = shortField;
+        }
+
+        public Long getLongField() {
+            return longField;
+        }
+
+        public void setLongField(Long longField) {
+            this.longField = longField;
+        }
+
+        public String getStringField() {
+            return stringField;
+        }
+
+        public void setStringField(String stringField) {
+            this.stringField = stringField;
+        }
+
+        public Date getDateField() {
+            return dateField;
+        }
+
+        public void setDateField(Date dateField) {
+            this.dateField = dateField;
+        }
+
+        public Boolean getBoolField() {
+            return boolField;
+        }
+
+        public void setBoolField(Boolean boolField) {
+            this.boolField = boolField;
+        }
+
+        public Character getCharField() {
+            return charField;
+        }
+
+        public void setCharField(Character charField) {
+            this.charField = charField;
+        }
+
+        public Byte getByteField() {
+            return byteField;
+        }
+
+        public void setByteField(Byte byteField) {
+            this.byteField = byteField;
+        }
     }
 
     static class SamplePrimitivesCollection {
@@ -68,6 +156,54 @@ public class MetadataParserFieldDefinitionTest {
         private double[] doublePrimitives;
         private boolean[] booleanPrimitives;
         private short[] shortPrimitives;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public int[] getIntPrimitives() {
+            return intPrimitives;
+        }
+
+        public void setIntPrimitives(int[] intPrimitives) {
+            this.intPrimitives = intPrimitives;
+        }
+
+        public long[] getLongPrimitives() {
+            return longPrimitives;
+        }
+
+        public void setLongPrimitives(long[] longPrimitives) {
+            this.longPrimitives = longPrimitives;
+        }
+
+        public double[] getDoublePrimitives() {
+            return doublePrimitives;
+        }
+
+        public void setDoublePrimitives(double[] doublePrimitives) {
+            this.doublePrimitives = doublePrimitives;
+        }
+
+        public boolean[] getBooleanPrimitives() {
+            return booleanPrimitives;
+        }
+
+        public void setBooleanPrimitives(boolean[] booleanPrimitives) {
+            this.booleanPrimitives = booleanPrimitives;
+        }
+
+        public short[] getShortPrimitives() {
+            return shortPrimitives;
+        }
+
+        public void setShortPrimitives(short[] shortPrimitives) {
+            this.shortPrimitives = shortPrimitives;
+        }
     }
 
 
