@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
+import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
 import org.springframework.util.Assert;
 
 public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
@@ -48,6 +49,10 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 		return this.field;
 	}
 
+    /**
+     * TODO: cclaudiu
+     * This Mutator should modify the state of the property through its correspondent Field setter method
+     */
     public void setFieldValue(Object value){
         try {
             getField().set(parentWrapper.getItem(), value);
@@ -57,8 +62,13 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 
     }
 
+    /**
+     * TODO: cclaudiu
+     * This Accesor method should read the field through its correspondent Field accessor-method
+     */
     public Object getFieldValue() {
         try {
+//            Method readMethod = FieldTypeIdentifier.retrieveGetterFrom(parentWrapper.getItem(), field);
             return this.field.get(parentWrapper.getItem());
         } catch (IllegalArgumentException | IllegalAccessException e) {
             throw new MappingException("Could not retrieve field value " + this.field.getName(), e);

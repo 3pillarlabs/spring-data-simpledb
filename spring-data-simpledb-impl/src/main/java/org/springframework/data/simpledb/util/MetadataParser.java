@@ -126,7 +126,9 @@ public final class MetadataParser {
         List<Field> fieldList = new ArrayList<>();
         for(Field field : object.getClass().getDeclaredFields()) {
 
-               if(field.getAnnotation(Attributes.class) == null
+            // Filter declared fields in this entity bean while serialization
+               if( FieldTypeIdentifier.hasDeclaredGetterAndSetter(field, object.getClass())
+                    && field.getAnnotation(Attributes.class) == null
                     && field.getAnnotation(Transient.class) == null
                     && !(field.equals(MetadataParser.getIdField(object)))
                     && FieldTypeIdentifier.isOfType(field, fieldTypes)) {

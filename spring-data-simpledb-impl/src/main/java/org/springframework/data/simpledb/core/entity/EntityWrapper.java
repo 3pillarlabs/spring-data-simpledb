@@ -1,7 +1,10 @@
 package org.springframework.data.simpledb.core.entity;
 
+import java.beans.ParameterDescriptor;
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -43,7 +46,8 @@ public class EntityWrapper<T, ID extends Serializable> {
 
     private void createFieldWrappers(final boolean isNew) {
         for (final Field field : item.getClass().getDeclaredFields()) {
-            if (!FieldTypeIdentifier.isOfType(field, FieldType.ID, FieldType.ATTRIBUTES)) {
+
+              if(!FieldTypeIdentifier.isOfType(field, FieldType.ID, FieldType.ATTRIBUTES)) {
                 wrappedFields.put(field.getName(), FieldWrapperFactory.createFieldWrapper(field, this, isNew));
             }
         }
