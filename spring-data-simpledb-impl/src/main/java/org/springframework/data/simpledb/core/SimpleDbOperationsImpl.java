@@ -2,19 +2,17 @@ package org.springframework.data.simpledb.core;
 
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.model.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.springframework.util.Assert;
 
 /**
  *

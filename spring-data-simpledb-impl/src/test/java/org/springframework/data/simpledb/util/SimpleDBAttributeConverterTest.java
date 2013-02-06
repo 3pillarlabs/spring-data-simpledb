@@ -243,22 +243,6 @@ public class SimpleDBAttributeConverterTest {
         assertEquals(date, decodedDate);
     }
 
-    @Test public void encode_decode_collections_of_core_types() throws ParseException {
-        /* ----------------- Encoding ------------------ */
-        List<String> input = new ArrayList<>(Arrays.asList("1", "2"));
-        Object simpleDBValue = input;
-
-        List<String> decodedAttributeValues = SimpleDBAttributeConverter.coreTypesCollectionToSimpleDBAttributeValues(simpleDBValue);
-        assertNotNull(decodedAttributeValues);
-        assertTrue(decodedAttributeValues.size() == 2);
-
-        /* ----------------- Decoding ------------------ */
-        Collection<String> processedCollection = new ArrayList<>(2);
-        SimpleDBAttributeConverter.toDomainFieldPrimitiveCollection(input, processedCollection, String.class);
-        assertTrue(processedCollection.size() == 2);
-        assertEquals(input, processedCollection);
-    }
-
     private void encodeAndDecode(double x) {
         encodeAndDecode(new BigDecimal(x));
     }

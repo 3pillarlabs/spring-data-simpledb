@@ -5,17 +5,18 @@ import org.springframework.data.simpledb.core.entity.util.AttributeUtil;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class CollectionWrapperTest {
 
     @Test
-    public void serialize_deserialize_collections_of_core_types() {
+    public void serialize_deserialize_sets_of_core_types() {
         SampleCoreCollection sampleCollection = new SampleCoreCollection();
-        sampleCollection.setOfIntegers = new HashSet<>(Arrays.asList(Integer.valueOf(20)));
+        sampleCollection.setOfIntegers = new HashSet<>(Arrays.asList(Integer.valueOf(20), Integer.valueOf(12)));
+        sampleCollection.hashSetOfFloats = new HashSet<>(Arrays.asList(Float.valueOf(23f), Float.valueOf(32f)));
 
         EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
         final Map<String, List<String>> attributes = sdbEntity.serialize();
@@ -25,6 +26,55 @@ public class CollectionWrapperTest {
         convertedEntity.deserialize(attributes);
 
         assertTrue(sampleCollection.equals(convertedEntity.getItem()));
+
+    }
+
+    @Test
+    public void serialize_deserialize_lists_of_core_types() {
+        SampleCoreCollection sampleCollection = new SampleCoreCollection();
+        sampleCollection.listOfBytes = new ArrayList<>(Arrays.asList(Byte.valueOf("123"), Byte.valueOf("23")));
+
+
+        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
+        final Map<String, List<String>> attributes = sdbEntity.serialize();
+
+        /* convert back */
+        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
+        convertedEntity.deserialize(attributes);
+
+        assertTrue(sampleCollection.equals(convertedEntity.getItem()));
+
+    }
+
+    @Test
+    public void serialize_deserialize_collection_instantiated_as_arrayList_of_core_types() {
+        SampleCoreCollection sampleCollection = new SampleCoreCollection();
+        sampleCollection.collectionOfLongs = new ArrayList<>(Arrays.asList(Long.valueOf("123"), Long.valueOf("23")));
+
+        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
+        final Map<String, List<String>> attributes = sdbEntity.serialize();
+
+        /* convert back */
+        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
+        convertedEntity.deserialize(attributes);
+
+        assertTrue(sampleCollection.equals(convertedEntity.getItem()));
+
+    }
+
+    @Test
+    public void serialize_deserialize_should_fail_if__collection_instantiated_as_hashSet_of_core_types() {
+        SampleCoreCollection sampleCollection = new SampleCoreCollection();
+        sampleCollection.collectionOfLongs = new HashSet<>(Arrays.asList(Long.valueOf("123"), Long.valueOf("23")));
+
+        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
+        final Map<String, List<String>> attributes = sdbEntity.serialize();
+
+        /* convert back */
+        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
+        convertedEntity.deserialize(attributes);
+
+        assertFalse(sampleCollection.equals(convertedEntity.getItem()));
 
     }
 

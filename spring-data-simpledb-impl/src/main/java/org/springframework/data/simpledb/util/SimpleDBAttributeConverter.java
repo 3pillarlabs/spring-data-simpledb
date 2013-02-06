@@ -55,24 +55,6 @@ public final class SimpleDBAttributeConverter {
         return attributeValues;
     }
 
-    /**
-     * Convert the Collection Instance to persist into SimpleDB
-     * @param coreTypeCollectionFieldValues
-     * @return a List corresponding to each attribute value persisted to SimpleDB
-     */
-    public static List<String> coreTypesCollectionToSimpleDBAttributeValues(final Object coreTypeCollectionFieldValues) {
-        Assert.notNull(coreTypeCollectionFieldValues);
-
-        List<String> returnedAttributeValues = new ArrayList<>();
-        final Collection<Object> coreCollection = (Collection<Object>) coreTypeCollectionFieldValues;
-
-        for(Iterator<Object> iterator = coreCollection.iterator(); iterator.hasNext(); ) {
-            returnedAttributeValues.add(padOrConvertIfRequired(iterator.next()));
-        }
-
-        return returnedAttributeValues;
-    }
-
 
     public static Object toFieldOfType(String value, Class<?> retType) throws ParseException {
         Object val = null;
@@ -124,14 +106,5 @@ public final class SimpleDBAttributeConverter {
         }
 
         return primitiveCollection;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static void toDomainFieldPrimitiveCollection(List<String> fromSimpleDbAttValues, Collection collection, Class<?> returnedType)
-    throws ParseException {
-
-        for(String each : fromSimpleDbAttValues) {
-            collection.add(toFieldOfType(each, returnedType));
-        }
     }
 }

@@ -29,7 +29,7 @@ public class JsonMarshallerTest {
         assertNotNull(userJsonString);
 
         // Exercise
-        User expectedUser = cut.unmarshal(userJsonString, User.class);
+        User expectedUser = cut.unmarshall(userJsonString, User.class);
 
         // Verify
         assertNotNull(expectedUser);
@@ -48,7 +48,7 @@ public class JsonMarshallerTest {
         assertNotNull(userJsonString);
 
         // Exercise
-        User returnedUser = (User) cut.unmarshal(userJsonString);
+        User returnedUser = (User) cut.unmarshallWrapperObject(userJsonString);
 
         // Verify
         assertNotNull(returnedUser);
@@ -66,8 +66,8 @@ public class JsonMarshallerTest {
         Object object = newUser;
 
         // Exercise
-        String marshalledUser = cut.marshal(object);
-        User returnedUser = (User) cut.unmarshal(marshalledUser);
+        String marshalledUser = cut.marshallWrapperObject(object);
+        User returnedUser = (User) cut.unmarshallWrapperObject(marshalledUser);
 
         // Verify
         assertNotNull(returnedUser);
@@ -81,9 +81,9 @@ public class JsonMarshallerTest {
         Map<String, String> map = new LinkedHashMap<>();
         map.put("TestKey", "Test Value");
 
-        String marsahledMap = cut.marshal(map);
+        String marsahledMap = cut.marshallWrapperObject(map);
 
-        Map<String, String> unmarshaledMap = (Map<String, String>)cut.unmarshal(marsahledMap);
+        Map<String, String> unmarshaledMap = (Map<String, String>)cut.unmarshallWrapperObject(marsahledMap);
 
         assertEquals(map.keySet(), unmarshaledMap.keySet());
 

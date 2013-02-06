@@ -34,12 +34,13 @@ Setup Spring Data SimpleDB repository support:
         <simpledb:property name="accessID" value="$AWS_ACCESS_ID" />
         <simpledb:property name="secretKey" value="$AWS_SECRET_KEY"/>
         <simpledb:property name="domainManagementPolicy" value="$DOMAIN_MANAGEMENT_POLICY"/>
+        <simpledb:property name="consistentRead" value="$CONSISTENT_READ_VALUE"/>
     </simpledb:config>
 
 </beans>
 ```
 
-You must use the _config_ tag in order to customize the _$AWS_ACCESS_ID_ and _$AWS_SECRET_KEY_ credentials for access to your Amazon SimpleDB instance.  The *$DOMAIN_MANAGEMENT_POLICY* specifies how to handle the domains you have; possible values are:
+You must use the _config_ tag in order to customize the _$AWS_ACCESS_ID_ and _$AWS_SECRET_KEY_ credentials for access to your Amazon SimpleDB instance.  "$CONSISTENT_READ_VALUE if true ensures consistency. If do not want consistency on all operations only on some then make sure your repository extends SimpleDbPagingAndSortingRepository. In this case the consistentRead property must not be declared or set to false. The *$DOMAIN_MANAGEMENT_POLICY* specifies how to handle the domains you have; possible values are:
 
 * *DROP_CREATE*		-  When a repository instance is created. The corresponding amazon simple db domain will be dropped and recreated; recommended for testing purposes.
 * *UPDATE*	        -  When a repository instance is created. The corresponding amazon simple db domain will be created only if it's not already existing.
