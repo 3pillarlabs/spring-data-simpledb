@@ -1,5 +1,6 @@
 package org.springframework.data.simpledb.core.entity;
 
+
 import org.junit.Test;
 import org.springframework.data.simpledb.core.entity.util.AttributeUtil;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
@@ -7,7 +8,6 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 
 import java.util.*;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class CollectionWrapperTest {
@@ -33,7 +33,6 @@ public class CollectionWrapperTest {
     public void serialize_deserialize_lists_of_core_types() {
         SampleCoreCollection sampleCollection = new SampleCoreCollection();
         sampleCollection.listOfBytes = new ArrayList<>(Arrays.asList(Byte.valueOf("123"), Byte.valueOf("23")));
-
 
         EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
         final Map<String, List<String>> attributes = sdbEntity.serialize();
@@ -63,22 +62,7 @@ public class CollectionWrapperTest {
     }
 
     @Test
-    public void serialize_deserialize_should_fail_if__collection_instantiated_as_hashSet_of_core_types() {
-        SampleCoreCollection sampleCollection = new SampleCoreCollection();
-        sampleCollection.collectionOfLongs = new HashSet<>(Arrays.asList(Long.valueOf("123"), Long.valueOf("23")));
-
-        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
-
-        /* convert back */
-        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
-        convertedEntity.deserialize(attributes);
-
-        assertFalse(sampleCollection.equals(convertedEntity.getItem()));
-
-    }
-
-    @Test public void deserialize_should_return_null_for_not_instantiated_collections() {
+    public void deserialize_should_return_null_for_not_instantiated_collections() {
         SampleCoreCollection sampleCollection = new SampleCoreCollection();
 
         EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
@@ -122,6 +106,7 @@ public class CollectionWrapperTest {
         private HashSet<Float> hashSetOfFloats;
         private List<Byte> listOfBytes;
         private Collection<Long> collectionOfLongs;
+
 
         @Override
         public boolean equals(Object o) {

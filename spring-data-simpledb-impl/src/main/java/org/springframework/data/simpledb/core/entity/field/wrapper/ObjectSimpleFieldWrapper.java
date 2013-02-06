@@ -22,7 +22,7 @@ public class ObjectSimpleFieldWrapper<T, ID extends Serializable> extends Abstra
 
 
         if(getFieldValue() != null) {
-            String fieldMarshaled2JSON = new JsonMarshaller().marshallWrapperObject(getFieldValue());
+            String fieldMarshaled2JSON = JsonMarshaller.getInstance().marshall(getFieldValue());
 
             fieldValues.add(fieldMarshaled2JSON);
         }
@@ -36,7 +36,7 @@ public class ObjectSimpleFieldWrapper<T, ID extends Serializable> extends Abstra
 
         try {
             if(value.size()>0) {
-                return new JsonMarshaller().unmarshallWrapperObject(value.get(0));
+                return JsonMarshaller.getInstance().unmarshallWrapperObject(value.get(0));
             }
         } catch (IllegalArgumentException e) {
             throw new MappingException("Could not map attributes", e);

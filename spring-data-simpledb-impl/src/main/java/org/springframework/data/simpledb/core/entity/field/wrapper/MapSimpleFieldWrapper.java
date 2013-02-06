@@ -27,7 +27,7 @@ public class MapSimpleFieldWrapper<T, ID extends Serializable> extends AbstractS
             Class keyTypeClass = (Class) parameterizedType.getActualTypeArguments()[0];
             Class genericTypeClass = (Class) parameterizedType.getActualTypeArguments()[1];
 
-            String fieldMarshaled2JSON = new JsonMarshaller().marshallWrapperObject(getFieldValue(), genericTypeClass.getName(), keyTypeClass.getName());
+            String fieldMarshaled2JSON = JsonMarshaller.getInstance().marshall(getFieldValue(), genericTypeClass.getName(), keyTypeClass.getName());
             fieldValues.add(fieldMarshaled2JSON);
         }
 
@@ -43,7 +43,7 @@ public class MapSimpleFieldWrapper<T, ID extends Serializable> extends AbstractS
         if (value.size() > 0) {
 
             String fieldValue = value.get(0);
-            jsonCollection = (Map<?,?>) new JsonMarshaller().unmarshallWrapperMap(fieldValue);
+            jsonCollection = (Map<?,?>) JsonMarshaller.getInstance().unmarshallWrapperMap(fieldValue);
         }
         return jsonCollection;
     }

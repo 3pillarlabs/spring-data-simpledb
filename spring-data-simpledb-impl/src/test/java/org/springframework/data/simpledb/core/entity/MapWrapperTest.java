@@ -18,8 +18,8 @@ public class MapWrapperTest {
     @Test
     public void serialize_deserialize_map_of_core_types() {
         SampleCoreMap simpleMap = new SampleCoreMap();
-        simpleMap.mapodStrings = new HashMap<>();
-        simpleMap.mapodStrings.put("first", "firstValue");
+        simpleMap.mapOfStrings = new HashMap<>();
+        simpleMap.mapOfStrings.put("first", "firstValue");
 
 
         EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
@@ -34,7 +34,7 @@ public class MapWrapperTest {
     }
 
 
-    @Test public void deserialize_should_return_null_for_not_instantiated_collections() {
+    @Test public void deserialize_should_return_null_for_not_instantiated_maps() {
         SampleCoreMap simpleMap = new SampleCoreMap();
 
         EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
@@ -51,8 +51,8 @@ public class MapWrapperTest {
     @Test
     public void serialize_should_return_attribute_name_key() {
         SampleCoreMap simpleMap = new SampleCoreMap();
-        simpleMap.mapodStrings = new HashMap<>();
-        simpleMap.mapodStrings.put("first", "firstValue");
+        simpleMap.mapOfStrings = new HashMap<>();
+        simpleMap.mapOfStrings.put("first", "firstValue");
 
         /* ----------------------- Serialize Representation ------------------------ */
         EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
@@ -72,7 +72,7 @@ public class MapWrapperTest {
 
 
     static class SampleCoreMap {
-        private Map<String, String> mapodStrings;
+        private Map<String, String> mapOfStrings;
 
         @Override
         public boolean equals(Object o) {
@@ -81,7 +81,7 @@ public class MapWrapperTest {
 
             SampleCoreMap that = (SampleCoreMap) o;
 
-            if (mapodStrings != null ? !mapodStrings.equals(that.mapodStrings) : that.mapodStrings != null)
+            if (mapOfStrings != null ? !mapOfStrings.equals(that.mapOfStrings) : that.mapOfStrings != null)
                 return false;
 
             return true;
@@ -89,7 +89,7 @@ public class MapWrapperTest {
 
         @Override
         public int hashCode() {
-            return mapodStrings != null ? mapodStrings.hashCode() : 0;
+            return mapOfStrings != null ? mapOfStrings.hashCode() : 0;
         }
     }
 }
