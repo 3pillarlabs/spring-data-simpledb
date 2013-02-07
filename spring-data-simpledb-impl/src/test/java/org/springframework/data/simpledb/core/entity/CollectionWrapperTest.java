@@ -2,6 +2,7 @@ package org.springframework.data.simpledb.core.entity;
 
 
 import org.junit.Test;
+import org.springframework.data.simpledb.core.SampleEntity;
 import org.springframework.data.simpledb.core.entity.util.AttributeUtil;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
@@ -33,6 +34,26 @@ public class CollectionWrapperTest {
     public void serialize_deserialize_lists_of_core_types() {
         SampleCoreCollection sampleCollection = new SampleCoreCollection();
         sampleCollection.listOfBytes = new ArrayList<>(Arrays.asList(Byte.valueOf("123"), Byte.valueOf("23")));
+
+        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
+        final Map<String, List<String>> attributes = sdbEntity.serialize();
+
+        /* convert back */
+        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
+        convertedEntity.deserialize(attributes);
+
+        assertTrue(sampleCollection.equals(convertedEntity.getItem()));
+
+    }
+
+    @Test
+    public void serialize_deserialize_lists_of_Objects() {
+        SampleCoreCollection sampleCollection = new SampleCoreCollection();
+        sampleCollection.listOfObjects = new ArrayList<>();
+        SampleEntity sampleEntity = new SampleEntity();
+        sampleEntity.setBooleanField(true);
+        sampleEntity.setLongField(10l);
+        sampleCollection.listOfObjects.add(sampleEntity);
 
         EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
         final Map<String, List<String>> attributes = sdbEntity.serialize();
@@ -83,12 +104,13 @@ public class CollectionWrapperTest {
         collection.hashSetOfFloats = new HashSet<>();
         collection.listOfBytes = new ArrayList<>();
         collection.setOfIntegers = new HashSet<>();
+        collection.listOfObjects = new ArrayList<>();
 
         /* ----------------------- Serialize Representation ------------------------ */
         EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), collection);
         final Map<String, List<String>> attributes = sdbEntity.serialize();
 
-        assertTrue(attributes.size() == 4);
+        assertTrue(attributes.size() == 5);
 
         for(String attributeName : AttributeUtil.<SampleCoreCollection>getAttributeNamesThroughReflection(SampleCoreCollection.class)) {
             assertTrue(attributes.containsKey(attributeName));
@@ -100,18 +122,17 @@ public class CollectionWrapperTest {
         return (SimpleDbEntityInformation<E, String>) SimpleDbEntityInformationSupport.<E>getMetadata(clazz);
     }
 
-
     static class SampleCoreCollection {
         private Set<Integer> setOfIntegers;
         private HashSet<Float> hashSetOfFloats;
         private List<Byte> listOfBytes;
         private Collection<Long> collectionOfLongs;
-
+        private List<SampleEntity> listOfObjects;
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof SampleCoreCollection)) return false;
+            if (o == null || getClass() != o.getClass()) return false;
 
             SampleCoreCollection that = (SampleCoreCollection) o;
 
@@ -122,6 +143,7 @@ public class CollectionWrapperTest {
             if (listOfBytes != null ? !listOfBytes.equals(that.listOfBytes) : that.listOfBytes != null) return false;
             if (setOfIntegers != null ? !setOfIntegers.equals(that.setOfIntegers) : that.setOfIntegers != null)
                 return false;
+            if (listOfObjects != null ? !listOfObjects.equals(that.listOfObjects) : that.listOfObjects != null) return false;
 
             return true;
         }
@@ -132,6 +154,7 @@ public class CollectionWrapperTest {
             result = 31 * result + (hashSetOfFloats != null ? hashSetOfFloats.hashCode() : 0);
             result = 31 * result + (listOfBytes != null ? listOfBytes.hashCode() : 0);
             result = 31 * result + (collectionOfLongs != null ? collectionOfLongs.hashCode() : 0);
+            result = 31 * result + (listOfObjects != null ? listOfObjects.hashCode() : 0);
             return result;
         }
     }
