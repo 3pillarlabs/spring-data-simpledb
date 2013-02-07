@@ -17,7 +17,7 @@ public class JsonMarshallerTest {
 
     @Before
     public void setUp() {
-        cut = new JsonMarshaller();
+        cut = JsonMarshaller.getInstance();
     }
 
     @Test
@@ -66,7 +66,7 @@ public class JsonMarshallerTest {
         Object object = newUser;
 
         // Exercise
-        String marshalledUser = cut.marshallWrapperObject(object);
+        String marshalledUser = cut.marshall(object);
         User returnedUser = (User) cut.unmarshallWrapperObject(marshalledUser);
 
         // Verify
@@ -81,7 +81,7 @@ public class JsonMarshallerTest {
         Map<String, String> map = new LinkedHashMap<>();
         map.put("TestKey", "Test Value");
 
-        String marsahledMap = cut.marshallWrapperObject(map);
+        String marsahledMap = cut.marshall(map);
 
         Map<String, String> unmarshaledMap = (Map<String, String>)cut.unmarshallWrapperObject(marsahledMap);
 
