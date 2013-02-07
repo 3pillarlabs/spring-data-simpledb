@@ -71,8 +71,16 @@ public class MapWrapperTest {
     }
 
 
-    static class SampleCoreMap {
+    public static class SampleCoreMap {
         private Map<String, String> mapOfStrings;
+
+        public Map<String, String> getMapOfStrings() {
+            return mapOfStrings;
+        }
+
+        public void setMapOfStrings(Map<String, String> mapOfStrings) {
+            this.mapOfStrings = mapOfStrings;
+        }
 
         @Override
         public boolean equals(Object o) {
