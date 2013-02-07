@@ -33,12 +33,12 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         logOperation("Update", entity);
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
         entity.generateIdIfNotSet();
-        
+
         final PutAttributesRequest putRequest = new PutAttributesRequest();
         putRequest.setDomainName(entity.getDomain());
         putRequest.setItemName(entity.getItemName());
         putRequest.setAttributes(toReplaceableAttributeList(entity.serialize(), false));
-        
+
         sdb.putAttributes(putRequest);
         return entity.getItem();
     }
@@ -59,13 +59,18 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
             ids.add(id);
         }
         List<T> results = find(entityInformation, new QueryBuilder(entityInformation).with(ids), consistentRead);
-        return results.size()==1?results.get(0):null;
+        return results.size() == 1 ? results.get(0) : null;
     }
 
     @Override
     public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, QueryBuilder queryBuilder, boolean consistentRead) {
+        return find(entityInformation, queryBuilder.toString(), consistentRead);
+    }
+
+    @Override
+    public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, String query, boolean consistentRead) {
         LOGGER.info("Find All Domain \"{}\"\" isConsistent=\"{}\"\"", entityInformation.getDomain(), consistentRead);
-        final SelectResult selectResult = sdb.select(new SelectRequest(queryBuilder.toString(), consistentRead));
+        final SelectResult selectResult = sdb.select(new SelectRequest(query, consistentRead));
         return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
     }
 
@@ -87,13 +92,13 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     private List<ReplaceableAttribute> toReplaceableAttributeList(Map<String, List<String>> attributes, boolean replace) {
         final List<ReplaceableAttribute> result = new ArrayList<>();
-        
+
         final Map<String, List<String>> attrs = attributes;
-        
-        for(final Entry<String, List<String>> entry: attrs.entrySet()) {
-        	for(final String attributeValue: entry.getValue()) {
-        		result.add(new ReplaceableAttribute(entry.getKey(), attributeValue, replace));
-        	}
+
+        for (final Entry<String, List<String>> entry : attrs.entrySet()) {
+            for (final String attributeValue : entry.getValue()) {
+                result.add(new ReplaceableAttribute(entry.getKey(), attributeValue, replace));
+            }
         }
 
         return result;
@@ -103,12 +108,12 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     @SuppressWarnings("unused")
     private List<Attribute> toAttributeList(Map<String, List<String>> attributes) {
         final List<Attribute> result = new ArrayList<>();
-        
-        final Map<String, List<String>> attrs = attributes; 
-        for(final Entry<String, List<String>> entry: attrs.entrySet()) {
-        	for(final String attributeValue: entry.getValue()) {
-        		result.add(new Attribute(entry.getKey(), attributeValue));
-        	}
+
+        final Map<String, List<String>> attrs = attributes;
+        for (final Entry<String, List<String>> entry : attrs.entrySet()) {
+            for (final String attributeValue : entry.getValue()) {
+                result.add(new Attribute(entry.getKey(), attributeValue));
+            }
         }
 
         return result;

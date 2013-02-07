@@ -26,7 +26,7 @@ public class SimpleDbQueryLookupStrategy {
      */
     private static class AnnotationBasedQueryLookupStrategy implements QueryLookupStrategy {
 
-        private SimpleDbOperations<?, Serializable> simpleDbOperations;
+        private final SimpleDbOperations<?, Serializable> simpleDbOperations;
 
         public AnnotationBasedQueryLookupStrategy(SimpleDbOperations<?, Serializable> simpleDbOperations) {
             this.simpleDbOperations = simpleDbOperations;
@@ -35,7 +35,7 @@ public class SimpleDbQueryLookupStrategy {
         @Override
         public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, NamedQueries namedQueries) {
             SimpleDbQueryMethod queryMethod = new SimpleDbQueryMethod(method, metadata);
-            RepositoryQuery query = SimpleDbQuery.fromQueryAnnotation(queryMethod, simpleDbOperations);
+            RepositoryQuery query = SimpleDbRepositoryQuery.fromQueryAnnotation(queryMethod, simpleDbOperations);
 
             if (null != query) {
                 return query;
