@@ -73,8 +73,16 @@ public class PrimitiveArrayWrapperTest {
     }
 
 
-    static class SamplePrimitivesArray {
+    public static class SamplePrimitivesArray {
         private long[] longPrimitives;
+
+        public long[] getLongPrimitives() {
+            return longPrimitives;
+        }
+
+        public void setLongPrimitives(long[] longPrimitives) {
+            this.longPrimitives = longPrimitives;
+        }
 
         @Override
         public boolean equals(Object o) {

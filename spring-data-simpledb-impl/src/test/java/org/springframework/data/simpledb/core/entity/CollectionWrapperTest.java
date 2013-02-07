@@ -117,11 +117,43 @@ public class CollectionWrapperTest {
     }
 
 
-    static class SampleCoreCollection {
+    public static class SampleCoreCollection {
         private Set<Integer> setOfIntegers;
         private HashSet<Float> hashSetOfFloats;
         private List<Byte> listOfBytes;
         private Collection<Long> collectionOfLongs;
+
+        public Set<Integer> getSetOfIntegers() {
+            return setOfIntegers;
+        }
+
+        public void setSetOfIntegers(Set<Integer> setOfIntegers) {
+            this.setOfIntegers = setOfIntegers;
+        }
+
+        public HashSet<Float> getHashSetOfFloats() {
+            return hashSetOfFloats;
+        }
+
+        public void setHashSetOfFloats(HashSet<Float> hashSetOfFloats) {
+            this.hashSetOfFloats = hashSetOfFloats;
+        }
+
+        public List<Byte> getListOfBytes() {
+            return listOfBytes;
+        }
+
+        public void setListOfBytes(List<Byte> listOfBytes) {
+            this.listOfBytes = listOfBytes;
+        }
+
+        public Collection<Long> getCollectionOfLongs() {
+            return collectionOfLongs;
+        }
+
+        public void setCollectionOfLongs(Collection<Long> collectionOfLongs) {
+            this.collectionOfLongs = collectionOfLongs;
+        }
 
         @Override
         public boolean equals(Object o) {

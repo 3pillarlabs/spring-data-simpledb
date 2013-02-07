@@ -15,6 +15,7 @@ import org.springframework.data.simpledb.core.entity.field.wrapper.AbstractField
 import org.springframework.data.simpledb.core.entity.field.FieldWrapperFactory;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.util.AttributesKeySplitter;
+import org.springframework.data.simpledb.util.MetadataParser;
 
 public class EntityWrapper<T, ID extends Serializable> {
 
@@ -45,8 +46,7 @@ public class EntityWrapper<T, ID extends Serializable> {
     }
 
     private void createFieldWrappers(final boolean isNew) {
-        for (final Field field : item.getClass().getDeclaredFields()) {
-
+        for (final Field field : MetadataParser.getSupportedFields(item)) {
               if(!FieldTypeIdentifier.isOfType(field, FieldType.ID, FieldType.ATTRIBUTES)) {
                 wrappedFields.put(field.getName(), FieldWrapperFactory.createFieldWrapper(field, this, isNew));
             }

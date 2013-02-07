@@ -9,7 +9,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class FieldTypeIdentifierTest {
+public class GetterAndSetterTest {
 
     @Test public void hasDeclaredGetterAndSetter_should_retrieve_only_fields_with_declared_getters_and_setters() {
 

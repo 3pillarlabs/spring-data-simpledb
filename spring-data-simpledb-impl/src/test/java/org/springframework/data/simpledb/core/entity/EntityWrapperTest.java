@@ -1,10 +1,13 @@
 package org.springframework.data.simpledb.core.entity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.simpledb.core.domain.SimpleDbSampleEntity;
+import org.springframework.data.simpledb.core.entity.EntityWrapperTest.AClass.BClass;
+import org.springframework.data.simpledb.core.entity.EntityWrapperTest.AClass.BClass.CClass;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
+import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 
 import java.text.ParseException;
 import java.util.List;
@@ -12,15 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import org.junit.Test;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.simpledb.core.SampleEntity;
-import org.springframework.data.simpledb.core.domain.SimpleDbSampleEntity;
-import org.springframework.data.simpledb.core.entity.EntityWrapperTest.AClass.BClass;
-import org.springframework.data.simpledb.core.entity.EntityWrapperTest.AClass.BClass.CClass;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
-import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+import static org.junit.Assert.*;
 
 public class EntityWrapperTest {
 
@@ -179,13 +174,62 @@ public class EntityWrapperTest {
 		private String id;
 		private int intField;
 		private BClass nestedB;
+      private Long longField;
 
-		public static class BClass {
+       public BClass getNestedB() {
+           return nestedB;
+       }
+
+       public void setNestedB(BClass nestedB) {
+           this.nestedB = nestedB;
+       }
+
+       public String getId() {
+           return id;
+       }
+
+       public void setId(String id) {
+           this.id = id;
+       }
+
+       public int getIntField() {
+           return intField;
+       }
+
+       public void setIntField(int intField) {
+           this.intField = intField;
+       }
+
+       private Long getLongField() {
+           return longField;
+       }
+
+       public void setLongField(Long longField) {
+           this.longField = longField;
+       }
+
+       public static class BClass {
 
 			private float floatField;
 			private CClass nestedNestedC;
 
-			@Override
+           public CClass getNestedNestedC() {
+               return nestedNestedC;
+           }
+
+           public void setNestedNestedC(CClass nestedNestedC) {
+               this.nestedNestedC = nestedNestedC;
+           }
+
+           public float getFloatField() {
+               return floatField;
+           }
+
+           public void setFloatField(float floatField) {
+               this.floatField = floatField;
+           }
+
+           @Override
 			public boolean equals(Object obj) {
 				if (obj == null) {
 					return false;
@@ -207,7 +251,15 @@ public class EntityWrapperTest {
 
 				private double doubleField;
 
-				@Override
+             public double getDoubleField() {
+                 return doubleField;
+             }
+
+             public void setDoubleField(double doubleField) {
+                 this.doubleField = doubleField;
+             }
+
+             @Override
 				public boolean equals(Object obj) {
 					if (obj == null) {
 						return false;
@@ -238,11 +290,92 @@ public class EntityWrapperTest {
 			}
 			if (this.intField != other.intField) {
 				return false;
-			}
+          }
+         if (this.longField != other.longField) {
+              return false;
+          }
 			if (!Objects.equals(this.nestedB, other.nestedB)) {
 				return false;
 			}
 			return true;
 		}
 	}
+
+    public static class SampleEntity {
+        private int intField;
+        private float floatField;
+        private double doubleField;
+        private short shortField;
+        private long longField;
+        private byte byteField;
+        private boolean booleanField;
+        private String stringField;
+        private Double doubleWrapper;
+
+        public int getIntField() {
+            return intField;
+        }
+        public void setIntField(int intField) {
+            this.intField = intField;
+        }
+
+        public float getFloatField() {
+            return floatField;
+        }
+        public void setFloatField(float floatField) {
+            this.floatField = floatField;
+        }
+
+        public double getDoubleField() {
+            return doubleField;
+        }
+        public void setDoubleField(double doubleField) {
+            this.doubleField = doubleField;
+        }
+
+        public short getShortField() {
+            return shortField;
+        }
+        public void setShortField(short shortField) {
+            this.shortField = shortField;
+        }
+
+        public long getLongField() {
+            return longField;
+        }
+        public void setLongField(long longField) {
+            this.longField = longField;
+        }
+
+        public byte getByteField() {
+            return byteField;
+        }
+        public void setByteField(byte byteField) {
+            this.byteField = byteField;
+        }
+
+        public boolean getBooleanField() {
+            return booleanField;
+        }
+        public void setBooleanField(boolean booleanField) {
+            this.booleanField = booleanField;
+        }
+
+        public String getStringField() {
+            return stringField;
+        }
+
+        public void setStringField(String stringField) {
+            this.stringField = stringField;
+        }
+
+        public Double getDoubleWrapper() {
+            return doubleWrapper;
+        }
+
+        public void setDoubleWrapper(Double doubleWrapper) {
+            this.doubleWrapper = doubleWrapper;
+        }
+    }
+
 }

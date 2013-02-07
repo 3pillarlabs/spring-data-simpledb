@@ -115,7 +115,13 @@ public final class MetadataParser {
     }
 
     public static List<Field> getSupportedFields(Object object) {
-    	return getSupportedFields(object, FieldType.PRIMITIVE, FieldType.CORE_TYPE);
+    	return getSupportedFields(object, FieldType.PRIMITIVE,
+                                        FieldType.CORE_TYPE,
+                                        FieldType.NESTED_ENTITY,
+                                        FieldType.COLLECTION,
+                                        FieldType.PRIMITIVE_ARRAY,
+                                        FieldType.MAP,
+                                        FieldType.OBJECT);
     }
 
     public static List<Field> getPrimitiveCollectionFields(Object object) {
