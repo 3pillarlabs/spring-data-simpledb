@@ -6,23 +6,26 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.springframework.util.Assert;
 
 /**
- * @author cclaudiu
+ * TODO: inject ` on parameters and match named params order
  *
  */
-public class QueryBindingParameters {
-    private static final String BIND_QUERY = "SELECT * FROM customer_all where customer_id =  ? and email_id = ? and id=?";
-    private static final String NAMED_PARAMS_QUERY = "SELECT * FROM customer_all where customer_id =  :customer_id";
+public class QueryParametersBinder {
 
-    private static String doProcess(String query, Object... params) {
+    public static String bindParameters(String query, String... params) {
+        if(params.length==0) {
+            return query;
+        }
+        
         final Pattern pattern = Pattern.compile("(\\?|\\:\\w+)");
         final StringBuilder builder = new StringBuilder();
 
         final List<String> divided = Arrays.asList(query.split(pattern.toString()));
         int idx = 0;
 
-        assert divided.size() != params.length : "Number of Method-binded-parameters must match Query-Binded-Parameters";
+        Assert.isTrue(divided.size() == params.length, "Number of Method-binded-parameters must match Query-Binded-Parameters");
 
         try {
             for(Iterator<String> iterator = divided.iterator(); iterator.hasNext(); ++idx) {
@@ -33,11 +36,5 @@ public class QueryBindingParameters {
         }
 
         return builder.toString();
-    }
-
-    public static void main(String[] args) {
-        System.out.println(doProcess(BIND_QUERY, "cclaudiu", "cosar", "java"));
-
-        System.out.println(doProcess(NAMED_PARAMS_QUERY, "cosar"));
     }
 }
