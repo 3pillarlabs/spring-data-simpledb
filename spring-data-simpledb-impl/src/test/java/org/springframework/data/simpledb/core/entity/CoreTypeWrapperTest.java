@@ -79,6 +79,30 @@ public class CoreTypeWrapperTest {
         private Date dateField;
         private Long longField;
 
+        public String getStrField() {
+            return strField;
+        }
+
+        public void setStrField(String strField) {
+            this.strField = strField;
+        }
+
+        public Date getDateField() {
+            return dateField;
+        }
+
+        public void setDateField(Date dateField) {
+            this.dateField = dateField;
+        }
+
+        public Long getLongField() {
+            return longField;
+        }
+
+        public void setLongField(Long longField) {
+            this.longField = longField;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;

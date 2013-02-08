@@ -16,7 +16,7 @@ public class ObjectFieldWrapperTest {
 
 
     public static class AClass {
-        Object object = null;
+        private Object object = null;
 
         public Object getObject() {
             return object;

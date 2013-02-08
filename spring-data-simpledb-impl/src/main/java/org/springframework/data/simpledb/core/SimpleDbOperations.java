@@ -20,4 +20,6 @@ public interface SimpleDbOperations<T, ID extends Serializable> {
     long count(SimpleDbEntityInformation<T, ?> entityInformation, boolean consistentRead);
 
     List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, QueryBuilder queryBuilder, boolean consistentRead);
+
+    List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, String query, boolean consistentRead);
 }

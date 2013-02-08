@@ -15,38 +15,36 @@ import java.io.Serializable;
  * for the existence of an {@link org.springframework.data.simpledb.annotation.Query} annotation and provides implementations
  * based on query method information.
  */
-public class SimpleDbQuery implements RepositoryQuery {
+public class SimpleDbRepositoryQuery implements RepositoryQuery {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbQuery.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbRepositoryQuery.class);
 
-    private SimpleDbQueryMethod method;
-    private SimpleDbOperations<?, Serializable> simpledbOperations;
-    private String queryString;
+    private final SimpleDbQueryMethod method;
+    private final SimpleDbOperations<?, Serializable> simpledbOperations;
 
-    public SimpleDbQuery(SimpleDbQueryMethod method, SimpleDbOperations<?, Serializable> simpledbOperations, String queryString) {
-
+    public SimpleDbRepositoryQuery(SimpleDbQueryMethod method, SimpleDbOperations<?, Serializable> simpledbOperations) {
         this.method = method;
         this.simpledbOperations = simpledbOperations;
-        this.queryString = queryString;
     }
 
 
     @Override
     public Object execute(Object[] parameters) {
-
         return getExecution().execute(this, parameters);
     }
 
     @Override
     public QueryMethod getQueryMethod() {
-        //Not needed for now, for core framework: for isModifyingQuery(), getNamedQueryName
-        return null;
+        return method;
+    }
+
+    public String getAnnotatedQuery() {
+        return method.getAnnotatedQuery();
     }
 
     protected SimpleDbQueryExecution getExecution() {
-
-        if (method.isCollectionQuery()) {
-            return new CollectionExecution();
+       if (method.isCollectionQuery()) {
+            return new CollectionExecution(simpledbOperations);
         } else if (method.isPageQuery()) {
             throw new IllegalArgumentException("Not implemented");
         } else if (method.isModifyingQuery()) {
@@ -56,7 +54,6 @@ public class SimpleDbQuery implements RepositoryQuery {
             throw new IllegalArgumentException("Not implemented");
         }
     }
-
 
     /**
      * Creates a {@link RepositoryQuery} from the given {@link org.springframework.data.repository.query.QueryMethod} that
@@ -69,11 +66,6 @@ public class SimpleDbQuery implements RepositoryQuery {
 
         LOGGER.debug("Looking up query for method {}", queryMethod.getName());
 
-        String query = queryMethod.getAnnotatedQuery();
-
-        return query == null ? null : new SimpleDbQuery(queryMethod, simpleDbOperations, query);
+        return queryMethod.getAnnotatedQuery() == null ? null : new SimpleDbRepositoryQuery(queryMethod, simpleDbOperations);
     }
-
-
-
 }

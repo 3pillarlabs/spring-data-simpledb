@@ -37,7 +37,7 @@ import java.util.List;
 public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements PagingAndSortingRepository<T, ID>, SimpleDbPagingAndSortingRepository<T, ID> {
 
     private final SimpleDbEntityInformation<T, ID> entityInformation;
-    private SimpleDbOperations<T, ID> operations;
+    private final SimpleDbOperations<T, ID> operations;
     private final boolean consistentRead;
 
     public SimpleDbRepositoryImpl(SimpleDbEntityInformation<T, ID> entityInformation, SimpleDbOperations<T, ID> simpledbOperations) {

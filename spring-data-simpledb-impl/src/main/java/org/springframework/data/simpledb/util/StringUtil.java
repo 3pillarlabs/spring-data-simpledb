@@ -43,4 +43,14 @@ public final class StringUtil {
     public static List<String> splitStringByDelim(String actual, String deliminator) {
         return Arrays.asList(actual.split(deliminator));
     }
+
+    public static String[] toStringArray(Object[] values) {
+        String[] queryParams = new String[values.length];
+        for (int i = 0; i < queryParams.length; i++) {
+            if (values[i] instanceof String) {
+                queryParams[i] = (String) values[i];
+            }
+        }
+        return queryParams;
+    }
 }
