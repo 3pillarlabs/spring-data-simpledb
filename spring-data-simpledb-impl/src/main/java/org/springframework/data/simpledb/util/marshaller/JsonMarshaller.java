@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * Marshall and unmarshall objects, collections and map field wrappers
  */
-public class JsonMarshaller {
+public final class JsonMarshaller {
 
     private static JsonMarshaller instance;
     private ObjectMapper jsonMapper;
