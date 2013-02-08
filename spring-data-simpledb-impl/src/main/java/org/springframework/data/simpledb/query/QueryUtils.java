@@ -1,12 +1,9 @@
 package org.springframework.data.simpledb.query;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
-import org.springframework.data.simpledb.util.StringUtil;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.Iterator;
