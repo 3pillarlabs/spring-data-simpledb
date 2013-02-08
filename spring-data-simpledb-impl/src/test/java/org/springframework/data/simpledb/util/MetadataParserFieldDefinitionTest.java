@@ -1,15 +1,13 @@
 package org.springframework.data.simpledb.util;
 
 import org.junit.Test;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.simpledb.annotation.Attributes;
-import org.springframework.data.simpledb.annotation.DomainPrefix;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MetadataParserFieldDefinitionTest {
 
@@ -33,19 +31,6 @@ public class MetadataParserFieldDefinitionTest {
         assertTrue(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("charField"))) ;
         assertTrue(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("boolField"))) ;
     }
-
-    @Test
-    public void getPrimitiveCollectionFields_should_return_ObjectType() throws Exception {
-        List<Field> returnedPrimitiveCollections = MetadataParser.getPrimitiveCollectionFields(new SamplePrimitivesCollection());
-
-        assertTrue(returnedPrimitiveCollections.contains(SamplePrimitivesCollection.class.getDeclaredField("intPrimitives"))) ;
-        assertTrue(returnedPrimitiveCollections.contains(SamplePrimitivesCollection.class.getDeclaredField("longPrimitives"))) ;
-        assertTrue(returnedPrimitiveCollections.contains(SamplePrimitivesCollection.class.getDeclaredField("doublePrimitives"))) ;
-        assertTrue(returnedPrimitiveCollections.contains(SamplePrimitivesCollection.class.getDeclaredField("booleanPrimitives"))) ;
-        assertTrue(returnedPrimitiveCollections.contains(SamplePrimitivesCollection.class.getDeclaredField("shortPrimitives"))) ;
-
-    }
-
 
     static class SamplePrimitivesWrapper {
         private String id;

@@ -2,10 +2,8 @@ package org.springframework.data.simpledb.core.entity.field;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.mapping.model.MappingException;
 
 import java.beans.IntrospectionException;
-import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -17,8 +15,13 @@ public class FieldTypeIdentifier {
 	protected FieldTypeIdentifier() {
 		/* utility class */
 	}
-	
-	public static boolean isOfType(final Field field, final FieldType... fieldTypes) {
+
+
+    public static boolean isSerializableField(Field field){
+        return isOfType(field, FieldType.getSerializableFieldTypes());
+    }
+
+    public static boolean isOfType(final Field field, FieldType... fieldTypes) {
 		for(final FieldType fieldType: fieldTypes) {
 			if(fieldType.isOfType(field)) {
 				return true;

@@ -115,33 +115,32 @@ public final class MetadataParser {
     }
 
     public static List<Field> getSupportedFields(Object object) {
-    	return getSupportedFields(object, FieldType.PRIMITIVE,
-                                        FieldType.CORE_TYPE,
-                                        FieldType.NESTED_ENTITY,
-                                        FieldType.COLLECTION,
-                                        FieldType.PRIMITIVE_ARRAY,
-                                        FieldType.MAP,
-                                        FieldType.OBJECT);
-    }
+        List<Field> supportedFields = new ArrayList<>();
 
-    public static List<Field> getPrimitiveCollectionFields(Object object) {
-    	return getSupportedFields(object, FieldType.PRIMITIVE_ARRAY);
-    }
+        for (Field field : object.getClass().getDeclaredFields()) {
 
-    private static List<Field> getSupportedFields(Object object, FieldType... fieldTypes) {
-        List<Field> fieldList = new ArrayList<>();
-        for(Field field : object.getClass().getDeclaredFields()) {
+            if (isSerializableFieldForObject(object, field)) {
 
-            // Filter declared fields in this entity bean while serialization
-               if( FieldTypeIdentifier.hasDeclaredGetterAndSetter(field, object.getClass())
-                    && field.getAnnotation(Attributes.class) == null
-                    && field.getAnnotation(Transient.class) == null
-                    && !(field.equals(MetadataParser.getIdField(object)))
-                    && FieldTypeIdentifier.isOfType(field, fieldTypes)) {
-                fieldList.add(field);
+                supportedFields.add(field);
             }
         }
-        return fieldList;
+        return supportedFields;
+    }
+
+    private static boolean isSerializableFieldForObject(Object object, Field field) {
+        return FieldTypeIdentifier.hasDeclaredGetterAndSetter(field, object.getClass())
+                && FieldTypeIdentifier.isSerializableField(field)
+                && !hasUnsupportedAnnotations(field)
+                && !isIdForObject(field, object);
+    }
+
+
+    private static boolean hasUnsupportedAnnotations(Field field) {
+        return (field.getAnnotation(Attributes.class) != null) || (field.getAnnotation(Transient.class) != null);
+    }
+
+    private static boolean isIdForObject(Field field, Object object) {
+        return field.equals(MetadataParser.getIdField(object));
     }
 
     public static List<Field> getNestedDomainFields(Object object) {
