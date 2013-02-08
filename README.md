@@ -116,6 +116,7 @@ public class BasicSimpleDbUserRepositoryTest {
 ```
 
 ## Know Limitations ##
+When serializing fields of type List, Set or Map, a json object is created and is stored in database. This json object also contains information about the serialized field. Serializing/deserializing an object of type Map<Object, Object> is not supported by jackson, so no field of this type will correctly be serialized/deserialized. JSON object data structure is a map, a collection of name/value pairs, where the element names must be strings. Thus, though it's reasonable to perceive and bind to the JSON objects as a map, the map keys must be strings.
 
 ### Primitive field conversions ###
 The current version supports converting all primitive types but *Character*. More that that, *Float.MIN_VALUE* and *Double.MIN_VALUE* cannot be converted accurately.
