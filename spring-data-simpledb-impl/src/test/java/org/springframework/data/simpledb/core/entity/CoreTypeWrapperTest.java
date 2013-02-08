@@ -74,7 +74,7 @@ public class CoreTypeWrapperTest {
         return (SimpleDbEntityInformation<E, String>) SimpleDbEntityInformationSupport.<E>getMetadata(clazz);
     }
 
-    static class SampleCoreType {
+    public static class SampleCoreType {
         private String strField;
         private Date dateField;
         private Long longField;

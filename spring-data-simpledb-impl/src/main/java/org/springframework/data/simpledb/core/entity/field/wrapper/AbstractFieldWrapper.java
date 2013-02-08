@@ -2,6 +2,8 @@ package org.springframework.data.simpledb.core.entity.field.wrapper;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,29 +52,36 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 	}
 
     /**
-     * TODO: cclaudiu
      * This Mutator should modify the state of the property through its correspondent Field setter method
      */
-    public void setFieldValue(Object value){
+    public void setFieldValue(Object fieldValue){
         try {
-            getField().set(parentWrapper.getItem(), value);
-        } catch (IllegalArgumentException | IllegalAccessException e) {
-            throw new MappingException("Could not map attributes", e);
+            final Method setterMethod = FieldTypeIdentifier.retrieveSetterFrom(parentWrapper.getItem().getClass(), field);
+
+            Assert.notNull(setterMethod, "No Setter Found for corresponding Field=" + field.getName());
+
+            setterMethod.invoke(parentWrapper.getItem(), fieldValue);
+        } catch (InvocationTargetException | IllegalArgumentException | IllegalAccessException e) {
+            throw new MappingException("Exception occurred while trying to set value=" + fieldValue + " on Field=" + field.getName(), e);
         }
 
     }
 
     /**
-     * TODO: cclaudiu
-     * This Accesor method should read the field through its correspondent Field accessor-method
+     * This Accessor method should read the field through its correspondent Field accessor-method
      */
     public Object getFieldValue() {
+        Object fieldValue = null;
+        Method getterMethod = FieldTypeIdentifier.retrieveGetterFrom(parentWrapper.getItem().getClass(), field);
+
+        Assert.notNull(getterMethod, "No Getter Found for corresponding Field=" + field.getName());
+
         try {
-//            Method readMethod = FieldTypeIdentifier.retrieveGetterFrom(parentWrapper.getItem(), field);
-            return this.field.get(parentWrapper.getItem());
-        } catch (IllegalArgumentException | IllegalAccessException e) {
-            throw new MappingException("Could not retrieve field value " + this.field.getName(), e);
+            fieldValue = getterMethod.invoke(parentWrapper.getItem());
+        } catch (InvocationTargetException | IllegalArgumentException | IllegalAccessException e) {
+            throw new MappingException("Could not retrieve field value for Field=" + this.field.getName(), e);
         }
+        return fieldValue;
     }
 
 

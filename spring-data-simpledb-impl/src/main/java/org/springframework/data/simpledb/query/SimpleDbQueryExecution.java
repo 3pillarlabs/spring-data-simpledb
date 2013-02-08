@@ -5,7 +5,6 @@ import org.springframework.data.simpledb.core.SimpleDbConfig;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbMetamodelEntityInformation;
-import org.springframework.data.simpledb.util.QueryParametersBinder;
 import org.springframework.data.simpledb.util.StringUtil;
 import org.springframework.util.Assert;
 
@@ -41,9 +40,13 @@ public abstract class SimpleDbQueryExecution {
         @Override
         protected Object doExecute(SimpleDbRepositoryQuery repositoryQuery, Object[] values) {
             final Class<?> domainClass = repositoryQuery.getQueryMethod().getReturnedObjectType();
+
             SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
-            String queryWithFilledParameters = QueryParametersBinder.bindParameters(repositoryQuery.getAnnotatedQuery(), StringUtil.toStringArray(values));
+
+            String queryWithFilledParameters = QueryUtils.bindQueryParameters(repositoryQuery, StringUtil.toStringArray(values));
+
             final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
+
             return simpledbOperations.find(entityInformation, queryWithFilledParameters, consistentRead);
         }
     }
