@@ -15,9 +15,10 @@ import java.util.regex.Pattern;
 
 public final class QueryUtils {
 
-    public static final String AND = " AND ";
-    public static final String WHERE = " WHERE ";
-    public static final String BIND_PARAMETER_REGEX = "(\\?)";
+    private static final String AND = " and ";
+    private static final String WHERE = " where ";
+    private static final String BIND_PARAMETER_REGEX = "(\\?)";
+    private static final String SINGLE_QUOTE = "'";
 
     private QueryUtils() {}
 
@@ -48,7 +49,7 @@ public final class QueryUtils {
     }
 
     public static boolean hasBindParameter(String query) {
-        final Pattern regexPattern = Pattern.compile("\\?");
+        final Pattern regexPattern = Pattern.compile(BIND_PARAMETER_REGEX);
         final Matcher matcher = regexPattern.matcher(query);
         return matcher.find();
     }
@@ -59,8 +60,10 @@ public final class QueryUtils {
 
         final List<String> splittedQueryBasedOnWhere = splitQueryBasedOnPattern(rawQuery, WHERE);
 
-        Assert.notNull(splittedQueryBasedOnWhere);
-        Assert.isTrue(splittedQueryBasedOnWhere.size() == 2);
+        // ---- maybe the query is not annotated with named parameters at all --- //
+        if(splittedQueryBasedOnWhere == null || splittedQueryBasedOnWhere.size() < 2) {
+            return rawQuery;
+        }
 
         final String formattedWhereCondition = buildQueryConditionsWithParameters(splittedQueryBasedOnWhere.get(1), parameters, values);
         splittedQueryBasedOnWhere.set(1, formattedWhereCondition);
@@ -69,12 +72,12 @@ public final class QueryUtils {
     }
 
     public static final List<String> splitQueryBasedOnPattern(String query, String patternToSplit) {
-        final Pattern pattern = Pattern.compile(patternToSplit.toUpperCase());
+        final Pattern pattern = Pattern.compile(patternToSplit, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(query);
         List<String> querySplitted = null;
 
         if(matcher.find()) {
-            querySplitted = Arrays.asList(query.toUpperCase().split(pattern.toString()));
+            querySplitted = Arrays.asList(query.split(pattern.toString()));
         }
 
         return querySplitted;
@@ -82,7 +85,6 @@ public final class QueryUtils {
 
     public static final String buildQueryConditionsWithParameters(String queryAfterWhere, Parameters params, String... values) {
         final StringBuilder conditionBuilder = new StringBuilder();
-        List<String> splittedConditionals = splitQueryBasedOnPattern(queryAfterWhere, AND);
         int position = 0;
 
         for (Iterator<Parameter> paramIterator = params.iterator(); paramIterator.hasNext(); ++position) {
@@ -95,12 +97,18 @@ public final class QueryUtils {
                 conditionBuilder.append(AND);
             }
 
-            for (String eachConditional : splittedConditionals) {
-                if (!eachConditional.contains(eachParameter.getName().toUpperCase())) {
-                    continue;
-                }
+            List<String> splittedConditionals = splitQueryBasedOnPattern(queryAfterWhere, AND);
 
-                formattedCondition = StringUtils.replace(eachConditional, eachParameter.getPlaceholder().toUpperCase(), "`" + values[eachParameter.getIndex()] + "`");
+            if(splittedConditionals == null) {
+                formattedCondition = StringUtils.replace(queryAfterWhere, eachParameter.getPlaceholder(), SINGLE_QUOTE + values[eachParameter.getIndex()] + SINGLE_QUOTE);
+            } else {
+                for (String eachConditional : splittedConditionals) {
+                    if (!eachConditional.contains(eachParameter.getName())) {
+                        continue;
+                    }
+
+                    formattedCondition = StringUtils.replace(eachConditional, eachParameter.getPlaceholder(), SINGLE_QUOTE + values[eachParameter.getIndex()] + SINGLE_QUOTE);
+                }
             }
 
             conditionBuilder.append(formattedCondition);
@@ -135,7 +143,7 @@ public final class QueryUtils {
 
         try {
             for(Iterator<String> iterator = divided.iterator(); iterator.hasNext(); ++idx) {
-                builder.append(iterator.next()).append("`").append(values[idx]).append("`");
+                builder.append(iterator.next()).append(SINGLE_QUOTE).append(values[idx]).append(SINGLE_QUOTE);
             }
 
         } catch(RuntimeException exception) {

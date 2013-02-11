@@ -20,11 +20,11 @@ import static org.junit.Assert.assertThat;
 
 public class QueryBindingParametersTest {
 
-    private static final String BIND_QUERY = "SELECT * FROM customer_all where customer_id = ? and email_id = ? and id = ?";
+    private static final String BIND_QUERY = "select * from customer_all WHERE customer_id = ? and email_id = ? and id = ?";
 
     @Test
     public void replaceBindParameters_should_construct_correct_query_from_bind_parameters() {
-        String expectedQuery = "SELECT * FROM customer_all where customer_id = 'first' and email_id = 'second' and id = 'third'";
+        String expectedQuery = "select * from customer_all WHERE customer_id = 'first' and email_id = 'second' and id = 'third'";
         String resultedQuery = QueryUtils.bindIndexPositionParameters(BIND_QUERY, "first", "second", "third");
 
         assertThat(resultedQuery, is(expectedQuery));
@@ -36,10 +36,22 @@ public class QueryBindingParametersTest {
         QueryUtils.bindIndexPositionParameters(BIND_QUERY, "first", "second", "third", "forth");
     }
 
-    @Test public void bindNamedParameters_should_return_a_formatted_query_back_to_caller() throws NoSuchMethodException {
-        final String expectedQuery = "SELECT * FROM SPRING_DATA WHERE TYPE = 'spring-type' AND NAME = 'spring-name'";
+    @Test
+    public void bindNamedParameters_should_only_with_WHERE_clause() throws NoSuchMethodException {
+        final String expectedQuery = "select * from spring_data where type = 'spring-type'";
 
-        FooRepositoryQuery repoQuery = new FooRepositoryQuery();
+        FooRepositoryQuery repoQuery = new FooRepositoryQuery("fetchDataWithWhereOnly", String.class);
+        String resultedQuery = QueryUtils.bindNamedParameters(repoQuery, "spring-type");
+
+        assertThat(resultedQuery, is(expectedQuery));
+    }
+
+
+    @Test
+    public void bindNamedParameters_should_return_a_formatted_query_back_to_caller() throws NoSuchMethodException {
+        final String expectedQuery = "select * from spring_data where type = 'spring-type' and name = 'spring-name'";
+
+        FooRepositoryQuery repoQuery = new FooRepositoryQuery("fetchDataWIthWhereAndAnd", String.class, String.class);
         String resultedQuery = QueryUtils.bindNamedParameters(repoQuery, "spring-type", "spring-name");
 
         assertThat(resultedQuery, is(expectedQuery));
@@ -48,29 +60,41 @@ public class QueryBindingParametersTest {
     // ------------------- SimpleDB Query Repositories which Mock the current Implementation --------------------- //
     public interface FooRepository extends Repository {
 
-        @Query("SELECT * FROM spring_data WHERE name = :name AND type = :type")
-        void fetchData(@Param(value="type") String dataType, @Param(value="name") String dataName);
+        @Query("select * from spring_data where name = :name and type = :type")
+        public void fetchDataWIthWhereAndAnd(@Param(value="type") String dataType, @Param(value="name") String dataName);
+
+        @Query("select * from spring_data where type = :type")
+        public void fetchDataWithWhereOnly(@Param(value="type") String dataType);
 
     }
 
     public static class FooRepositoryQuery extends SimpleDbRepositoryQuery {
-        Method fetchDataMethod = null;
-        RepositoryMetadata metadata = null;
+        private final static RepositoryMetadata metadata = new DefaultRepositoryMetadata(FooRepository.class);
+        private final Method customSelectMethod;
 
-        public FooRepositoryQuery() {
-            this(null, null);
+        public FooRepositoryQuery(String methodName, Class<?>... parameterTypes) {
+            this(getSimpleDbQueryMethod(methodName, parameterTypes), null, methodName, parameterTypes);
 
+        }
+
+        public FooRepositoryQuery(SimpleDbQueryMethod method, SimpleDbOperations<?, Serializable> simpledbOperations, String methodName, Class<?>... parameterTypes) {
+            super(method, simpledbOperations);
+
+            this.customSelectMethod = getMethod(methodName, parameterTypes);
+        }
+
+        private static SimpleDbQueryMethod getSimpleDbQueryMethod(String methodName, Class<?>... parameterTypes) {
+            return new SimpleDbQueryMethod(getMethod(methodName, parameterTypes), metadata);
+        }
+
+        private static Method getMethod(String methodName, Class<?>... parameterTypes) {
+            Method method = null;
             try {
-                fetchDataMethod = FooRepository.class.getDeclaredMethod("fetchData", String.class, String.class);
+                method = FooRepository.class.getDeclaredMethod(methodName, parameterTypes);
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             }
-
-            metadata = new DefaultRepositoryMetadata(FooRepository.class);
-        }
-
-        public FooRepositoryQuery(SimpleDbQueryMethod method, SimpleDbOperations<?, Serializable> simpledbOperations) {
-            super(method, simpledbOperations);
+            return method;
         }
 
         @Override
@@ -81,12 +105,12 @@ public class QueryBindingParametersTest {
         @Override
         public QueryMethod getQueryMethod() {
             RepositoryMetadata metadata = new DefaultRepositoryMetadata(FooRepository.class);
-            return new QueryMethod(fetchDataMethod, metadata);
+            return new QueryMethod(customSelectMethod, metadata);
         }
 
         @Override
         public String getAnnotatedQuery() {
-            return new SimpleDbQueryMethod(fetchDataMethod, metadata).getAnnotatedQuery();
+            return new SimpleDbQueryMethod(customSelectMethod, metadata).getAnnotatedQuery();
         }
     }
 }
