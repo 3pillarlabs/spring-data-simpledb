@@ -23,7 +23,7 @@ Setup Spring Data SimpleDB repository support:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:simpledb="http://www.springframework.org/schema/data/simpledb"
+    xmlns:simpledb="http://www.springframework.org/schema/data/simpledb"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     https://raw.github.com/ThreePillarGlobal/spring-data-simpledb/dev/spring-data-simpledb-impl/src/main/resources/META-INF/spring-simpledb.xsd?login=cmester&amp;token=0e3a2a9b21a0daa3044b09c3ecdd59d4">
@@ -41,42 +41,44 @@ Setup Spring Data SimpleDB repository support:
 </beans>
 ```
 
-For SimpleDB specific configurations,  the _config_ tag must be used.
+For SimpleDB specific configurations,  the __config__ tag must be used.
+
 The following can be configured here:
 
-*SimpleDB access credentials* via _accessID_ and _secretKey_ tags.
+**SimpleDB access credentials** via __accessID__ and __secretKey__ tags.
 
-*SimpleDB domain prefixes* via _domainPrefix_ tag.
+**SimpleDB domain prefixes** via __domainPrefix__ tag.
+
 If a value is specified here each SimpleDB domain name created by the application will be prefixed with this value.
+
 Ex:
 <simpledb:property name="domainPrefix" value="testDB"/>
 Persisted class has Name "UserJob"
 
 The generated SimpleDB domain will be testDB.userJob
 
-*SimpleDB Domain management policies* via _$DOMAIN_MANAGEMENT_POLICY_ tag.
+**SimpleDB Domain management policies** via __domainManagementPolicy__ tag.
 
 If a value is specified here, at application startup Amazon SimpleDB domains are created/updated accordingly.
 $DOMAIN_MANAGEMENT_POLICY possible values:
 
-** *DROP_CREATE*	-  Amazon simple db domains will be dropped and recreated at startup; recommended for testing purposes.
-** *UPDATE*	        -  Amazon simple db domains will be created only if they are not already existing.
-** *NONE*            -  This option implies that all domains are created in simple db manually.
+* **DROP_CREATE**	-  Amazon simple db domains will be dropped and recreated at startup; recommended for testing purposes.
+* **UPDATE**	        -  Amazon simple db domains will be created only if they are not already existing.
+* **NONE**            -  This option implies that all domains are created in simple db manually.
 
-_Default value_: *UPDATE*
+_Default value_: **UPDATE**
 
-*SimpleDB default read behaviour*
+**SimpleDB default read behaviour**
 
 If a value is specified here, the default read operations performed to SimpleDB will be performed accordingly.
 $CONSISTENT_READ_VALUE possible values:
 
- ** *true* - All operations in CRUDRepository or PaginatingAndSortingRepository will be made *with* consistent reads.
- ** *false* - All operations in CRUDRepository or PaginatingAndSortingRepository will be made *without* consistent reads.
+ * **true** - All operations in CRUDRepository or PaginatingAndSortingRepository will be made *with* consistent reads.
+ * **false** - All operations in CRUDRepository or PaginatingAndSortingRepository will be made *without* consistent reads.
 
-If some operations need consistent reads and inconsistent reads at the same time  $CONSISTENT_READ_VALUE should not be declared or set to false,
-and repository classes should extend SimpleDbPagingAndSortingRepository.
-This repository has an additional parameter _readConsistent_ on each repository method.
+If some operations need consistent reads and inconsistent reads at the same time, $CONSISTENT_READ_VALUE should not be declared or set to false, and repository classes should extend SimpleDbPagingAndSortingRepository.
 
+This repository has an additional parameter __readConsistent__ on each repository method.
 
 Next, create and entity to model your domain:
 
@@ -98,8 +100,9 @@ public class SimpleDBUser {
 ```
 
 
-To specify the attribute holding the SimpleDB *itemName* you can either annotate one of the class attributes with the standard *org.springframework.data.annotation.Id* annotation, or you can simply define an *id* field as part of your domain class.
-In addition to that, any attribute needs to have _getter_ and _setter_ in order to be persisted.
+To specify the attribute holding the SimpleDB **itemName** you can either annotate one of the class attributes with the standard **org.springframework.data.annotation.Id** annotation, or you can simply define an **id** field as part of your domain class.
+
+In addition to that, any attribute needs to have __getter__ and __setter__ in order to be persisted.
 If a domain field does not contain getter and/or setter it will **not** be persisted into simpleDB.
 
 Create a repository interface:
@@ -132,6 +135,7 @@ public class BasicSimpleDbUserRepositoryTest {
 ```
 
 ## Known Limitations ##
+
 When serializing fields of type List, Set or Map, a json object is created and is stored in database.
 This json object contains the actual values and also class information about the serialized field.
 Serializing/deserializing an object of type Map<Object, Object> is not supported by jackson, so no field of this type will correctly be serialized/deserialized.
@@ -140,4 +144,7 @@ From the reasons mentioned about Map<String, Object>, Map<Integer, Object> are *
 
 
 ### Primitive field conversions ###
+
 The current version supports converting all primitive types but *Character*. More that that, *Float.MIN_VALUE* and *Double.MIN_VALUE* cannot be converted accurately.
+
+DEV_NOTES: Please use http://dillinger.io/ when editing this file
