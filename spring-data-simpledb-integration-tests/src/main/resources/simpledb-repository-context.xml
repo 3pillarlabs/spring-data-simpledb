@@ -5,7 +5,8 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
-		http://www.springframework.org/schema/data/simpledb https://raw.github.com/ThreePillarGlobal/spring-data-simpledb/dev/spring-data-simpledb-impl/src/main/resources/META-INF/spring-simpledb.xsd?login=cmester&amp;token=09d23a215953a601e5698b5dbfde6f99">
+		http://www.springframework.org/schema/data/simpledb
+        https://raw.github.com/ThreePillarGlobal/spring-data-simpledb/dev/spring-data-simpledb-impl/src/main/resources/META-INF/spring-simpledb.xsd?login=cmester&amp;token=0e3a2a9b21a0daa3044b09c3ecdd59d4">
 
 
     <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />

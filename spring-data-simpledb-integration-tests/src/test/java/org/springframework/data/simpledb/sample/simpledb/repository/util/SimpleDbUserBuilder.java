@@ -4,6 +4,7 @@ import org.springframework.data.simpledb.sample.simpledb.domain.JSONCompatibleCl
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,9 +19,7 @@ public class SimpleDbUserBuilder {
 
             user.setCoreField("tes_string$");
 
-            List<Integer> list = new ArrayList<>();
-            list.add(Integer.valueOf(123));
-            list.add(Integer.valueOf(23));
+            List<Integer> list = Arrays.asList(Integer.valueOf(123), Integer.valueOf(23));
             user.setCoreTypeList(list);
 
             user.setPrimitiveArrayField(new long[]{1234L});
