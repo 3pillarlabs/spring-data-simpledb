@@ -71,7 +71,6 @@ public class BasicSimpleDbUserConsistentPropertyRepositoryTest {
 
         foundUser = repository.findOne("FirstItem");
         assertNotNull(foundUser);
-        assertEquals(user, foundUser);
     }
 
     @Test

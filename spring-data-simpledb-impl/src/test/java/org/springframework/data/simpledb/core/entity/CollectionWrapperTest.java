@@ -15,8 +15,8 @@ public class CollectionWrapperTest {
     @Test
     public void serialize_deserialize_sets_of_core_types() {
         SampleCoreCollection sampleCollection = new SampleCoreCollection();
-        sampleCollection.setOfIntegers = new HashSet<>(Arrays.asList(Integer.valueOf(20), Integer.valueOf(12)));
-        sampleCollection.hashSetOfFloats = new HashSet<>(Arrays.asList(Float.valueOf(23f), Float.valueOf(32f)));
+        sampleCollection.setSetOfIntegers( new HashSet<>(Arrays.asList(Integer.valueOf(20), Integer.valueOf(12))));
+        sampleCollection.setHashSetOfFloats(new HashSet<>(Arrays.asList(Float.valueOf(23f), Float.valueOf(32f))));
 
         EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
         final Map<String, List<String>> attributes = sdbEntity.serialize();
@@ -32,7 +32,26 @@ public class CollectionWrapperTest {
     @Test
     public void serialize_deserialize_lists_of_core_types() {
         SampleCoreCollection sampleCollection = new SampleCoreCollection();
-        sampleCollection.listOfBytes = new ArrayList<>(Arrays.asList(Byte.valueOf("123"), Byte.valueOf("23")));
+        sampleCollection.setListOfBytes(new ArrayList<>(Arrays.asList(Byte.valueOf("123"), Byte.valueOf("23"))));
+
+        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
+        final Map<String, List<String>> attributes = sdbEntity.serialize();
+
+        /* convert back */
+        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
+        convertedEntity.deserialize(attributes);
+
+        assertTrue(sampleCollection.equals(convertedEntity.getItem()));
+
+    }
+
+    @Test
+    public void serialize_deserialize_lists_of_Objects() {
+        SampleCoreCollection sampleCollection = new SampleCoreCollection();
+        sampleCollection.setListOfObjects(new ArrayList<User>());
+        User user = new User();
+        user.setName("Simple");
+        sampleCollection.getListOfObjects().add(user);
 
         EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
         final Map<String, List<String>> attributes = sdbEntity.serialize();
@@ -48,7 +67,7 @@ public class CollectionWrapperTest {
     @Test
     public void serialize_deserialize_collection_instantiated_as_arrayList_of_core_types() {
         SampleCoreCollection sampleCollection = new SampleCoreCollection();
-        sampleCollection.collectionOfLongs = new ArrayList<>(Arrays.asList(Long.valueOf("123"), Long.valueOf("23")));
+        sampleCollection.setCollectionOfLongs(new ArrayList<>(Arrays.asList(Long.valueOf("123"), Long.valueOf("23"))));
 
         EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
         final Map<String, List<String>> attributes = sdbEntity.serialize();
@@ -79,16 +98,17 @@ public class CollectionWrapperTest {
     @Test
     public void serialize_should_return_attribute_name_key() {
         SampleCoreCollection collection = new SampleCoreCollection();
-        collection.collectionOfLongs = new LinkedHashSet<>();
-        collection.hashSetOfFloats = new HashSet<>();
-        collection.listOfBytes = new ArrayList<>();
-        collection.setOfIntegers = new HashSet<>();
+        collection.setCollectionOfLongs(new LinkedHashSet<Long>());
+        collection.setHashSetOfFloats(new HashSet<Float>());
+        collection.setListOfBytes(new ArrayList<Byte>());
+        collection.setListOfObjects(new ArrayList<User>());
+        collection.setSetOfIntegers(new HashSet<Integer>());
 
         /* ----------------------- Serialize Representation ------------------------ */
         EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), collection);
         final Map<String, List<String>> attributes = sdbEntity.serialize();
 
-        assertTrue(attributes.size() == 4);
+        assertTrue(attributes.size() == 5);
 
         for(String attributeName : AttributeUtil.<SampleCoreCollection>getAttributeNamesThroughReflection(SampleCoreCollection.class)) {
             assertTrue(attributes.containsKey(attributeName));
@@ -101,11 +121,13 @@ public class CollectionWrapperTest {
     }
 
 
+
     public static class SampleCoreCollection {
         private Set<Integer> setOfIntegers;
         private HashSet<Float> hashSetOfFloats;
         private List<Byte> listOfBytes;
         private Collection<Long> collectionOfLongs;
+        private List<User> listOfObjects;
 
         public Set<Integer> getSetOfIntegers() {
             return setOfIntegers;
@@ -135,14 +157,22 @@ public class CollectionWrapperTest {
             return collectionOfLongs;
         }
 
-        public void setCollectionOfLongs(Collection<Long> collectionOfLongs) {
+        public <T extends Collection<Long>> void setCollectionOfLongs(T collectionOfLongs) {
             this.collectionOfLongs = collectionOfLongs;
+        }
+
+        public List<User> getListOfObjects() {
+            return listOfObjects;
+        }
+
+        public void setListOfObjects(List<User> listOfObjects) {
+            this.listOfObjects = listOfObjects;
         }
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof SampleCoreCollection)) return false;
+            if (o == null || getClass() != o.getClass()) return false;
 
             SampleCoreCollection that = (SampleCoreCollection) o;
 
@@ -153,6 +183,7 @@ public class CollectionWrapperTest {
             if (listOfBytes != null ? !listOfBytes.equals(that.listOfBytes) : that.listOfBytes != null) return false;
             if (setOfIntegers != null ? !setOfIntegers.equals(that.setOfIntegers) : that.setOfIntegers != null)
                 return false;
+            if (listOfObjects != null ? !listOfObjects.equals(that.listOfObjects) : that.listOfObjects != null) return false;
 
             return true;
         }
@@ -163,7 +194,37 @@ public class CollectionWrapperTest {
             result = 31 * result + (hashSetOfFloats != null ? hashSetOfFloats.hashCode() : 0);
             result = 31 * result + (listOfBytes != null ? listOfBytes.hashCode() : 0);
             result = 31 * result + (collectionOfLongs != null ? collectionOfLongs.hashCode() : 0);
+            result = 31 * result + (listOfObjects != null ? listOfObjects.hashCode() : 0);
             return result;
+        }
+    }
+
+    public static class User {
+        public String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof User)) return false;
+
+            User user = (User) o;
+
+            if (name != null ? !name.equals(user.name) : user.name != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return name != null ? name.hashCode() : 0;
         }
     }
 }

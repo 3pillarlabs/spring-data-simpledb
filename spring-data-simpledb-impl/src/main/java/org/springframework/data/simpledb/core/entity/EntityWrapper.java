@@ -1,21 +1,18 @@
 package org.springframework.data.simpledb.core.entity;
 
-import java.beans.ParameterDescriptor;
-import java.beans.PropertyDescriptor;
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.Map.Entry;
-
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.entity.field.FieldType;
 import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
-import org.springframework.data.simpledb.core.entity.field.wrapper.AbstractFieldWrapper;
 import org.springframework.data.simpledb.core.entity.field.FieldWrapperFactory;
+import org.springframework.data.simpledb.core.entity.field.wrapper.AbstractFieldWrapper;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.util.AttributesKeySplitter;
 import org.springframework.data.simpledb.util.MetadataParser;
+
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class EntityWrapper<T, ID extends Serializable> {
 

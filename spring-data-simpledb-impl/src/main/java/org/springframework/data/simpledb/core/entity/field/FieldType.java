@@ -1,15 +1,11 @@
 package org.springframework.data.simpledb.core.entity.field;
 
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.simpledb.annotation.Attributes;
 import org.springframework.util.Assert;
+
+import java.lang.reflect.Field;
+import java.util.*;
 
 public enum FieldType {
 
@@ -109,6 +105,18 @@ public enum FieldType {
 		SUPPORTED_PRIMITIVE_ARRAYS.add(double[].class);
 		SUPPORTED_PRIMITIVE_ARRAYS.add(char[].class);
 	}
+
+
+    public static FieldType[] getSerializableFieldTypes(){
+        return new FieldType[]{
+                FieldType.PRIMITIVE,
+                FieldType.CORE_TYPE,
+                FieldType.NESTED_ENTITY,
+                FieldType.COLLECTION,
+                FieldType.PRIMITIVE_ARRAY,
+                FieldType.MAP,
+                FieldType.OBJECT};
+    }
 	
 	static boolean isOfType(final Field field, final Set<Class<?>> supportedTypes) {
 		Assert.notNull(field);

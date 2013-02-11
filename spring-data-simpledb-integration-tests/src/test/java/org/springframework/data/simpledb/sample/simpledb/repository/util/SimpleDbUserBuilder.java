@@ -1,8 +1,11 @@
 package org.springframework.data.simpledb.sample.simpledb.repository.util;
 
+import org.springframework.data.simpledb.sample.simpledb.domain.JSONCompatibleClass;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class SimpleDbUserBuilder {
@@ -16,9 +19,7 @@ public class SimpleDbUserBuilder {
 
             user.setCoreField("tes_string$");
 
-            List<Integer> list = new ArrayList<>();
-            list.add(Integer.valueOf(123));
-            list.add(Integer.valueOf(23));
+            List<Integer> list = Arrays.asList(Integer.valueOf(123), Integer.valueOf(23));
             user.setCoreTypeList(list);
 
             user.setPrimitiveArrayField(new long[]{1234L});
@@ -31,9 +32,22 @@ public class SimpleDbUserBuilder {
             user.setNestedEntity(nestedEntity);
 
 
-            user.setObjectField("JSON");
+            List<String> sampleJSONList = new LinkedList<>();
+            sampleJSONList.add("JSON");
+
+            user.setObjectField(sampleJSONList);
+
+            user.setObjectList( buildListOfObjects());
         }
         return user;
+    }
+
+    private static ArrayList<JSONCompatibleClass> buildListOfObjects() {
+        ArrayList<JSONCompatibleClass> listOfObjects = new ArrayList<JSONCompatibleClass>();
+        JSONCompatibleClass sampleElement = new JSONCompatibleClass();
+        sampleElement.setName("SAMPLE");
+        listOfObjects.add(sampleElement);
+        return listOfObjects;
     }
 
     public static List<SimpleDbUser> createListOfItems(int length) {

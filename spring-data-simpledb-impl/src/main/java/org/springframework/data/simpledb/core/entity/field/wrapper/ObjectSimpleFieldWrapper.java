@@ -36,7 +36,7 @@ public class ObjectSimpleFieldWrapper<T, ID extends Serializable> extends Abstra
 
         try {
             if(value.size()>0) {
-                return JsonMarshaller.getInstance().unmarshallWrapperObject(value.get(0));
+                return JsonMarshaller.getInstance().unmarshall(value.get(0), getField().getType());
             }
         } catch (IllegalArgumentException e) {
             throw new MappingException("Could not map attributes", e);

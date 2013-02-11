@@ -25,43 +25,11 @@ public class SimpleDbUser {
 
     private List<Integer> coreTypeList;
 
+    private List<JSONCompatibleClass> objectList;
+
     private long[] primitiveArrayField;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (!(o instanceof SimpleDbUser)) { return false; }
-
-        SimpleDbUser that = (SimpleDbUser) o;
-
-        if (Float.compare(that.primitiveField, primitiveField) != 0) { return false; }
-        if (coreField != null ? !coreField.equals(that.coreField) : that.coreField != null) { return false; }
-        if (coreTypeList != null ? !coreTypeList.equals(that.coreTypeList) : that.coreTypeList != null) { return false; }
-        if (!Arrays.equals(primitiveArrayField, that.primitiveArrayField)) { return false; }
-        if (nestedEntity != null ? !nestedEntity.equals(that.nestedEntity) : that.nestedEntity != null) { return false; }
-        if (objectField != null ? !objectField.equals(that.objectField) : that.objectField != null) { return false; }
-
-        return true;
-    }
-
-    /**
-     * Check only on field values (skip the ID)
-     */
-
-
-    @Override
-    public int hashCode() {
-        int result = itemName != null ? itemName.hashCode() : 0;
-        result = 31 * result + (primitiveField != +0.0f ? Float.floatToIntBits(primitiveField) : 0);
-        result = 31 * result + (coreField != null ? coreField.hashCode() : 0);
-        result = 31 * result + (nestedEntity != null ? nestedEntity.hashCode() : 0);
-        result = 31 * result + (objectField != null ? objectField.hashCode() : 0);
-        result = 31 * result + (coreTypeList != null ? coreTypeList.hashCode() : 0);
-        result = 31 * result + (primitiveArrayField != null ? Arrays.hashCode(primitiveArrayField) : 0);
-        return result;
-    }
-
-	public void setItemName(String itemName) {
+    public void setItemName(String itemName) {
         this.itemName = itemName;
     }
 
@@ -119,6 +87,14 @@ public class SimpleDbUser {
         this.primitiveArrayField = primitiveArrayField.clone();
     }
 
+    public List<JSONCompatibleClass> getObjectList() {
+        return objectList;
+    }
+
+    public void setObjectList(List<JSONCompatibleClass> objectList) {
+        this.objectList = objectList;
+    }
+
     public static class NestedEntity {
 
         private int nestedPrimitiveField;
@@ -160,6 +136,39 @@ public class SimpleDbUser {
 
             return true;
         }
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SimpleDbUser)) return false;
+
+        SimpleDbUser that = (SimpleDbUser) o;
+
+        if (Float.compare(that.primitiveField, primitiveField) != 0) return false;
+        if (coreField != null ? !coreField.equals(that.coreField) : that.coreField != null) return false;
+        if (coreTypeList != null ? !coreTypeList.equals(that.coreTypeList) : that.coreTypeList != null) return false;
+        if (itemName != null ? !itemName.equals(that.itemName) : that.itemName != null) return false;
+        if (nestedEntity != null ? !nestedEntity.equals(that.nestedEntity) : that.nestedEntity != null) return false;
+        if (objectField != null ? !objectField.equals(that.objectField) : that.objectField != null) return false;
+        if (objectList != null ? !objectList.equals(that.objectList) : that.objectList != null) return false;
+        if (!Arrays.equals(primitiveArrayField, that.primitiveArrayField)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = itemName != null ? itemName.hashCode() : 0;
+        result = 31 * result + (primitiveField != +0.0f ? Float.floatToIntBits(primitiveField) : 0);
+        result = 31 * result + (coreField != null ? coreField.hashCode() : 0);
+        result = 31 * result + (nestedEntity != null ? nestedEntity.hashCode() : 0);
+        result = 31 * result + (objectField != null ? objectField.hashCode() : 0);
+        result = 31 * result + (coreTypeList != null ? coreTypeList.hashCode() : 0);
+        result = 31 * result + (objectList != null ? objectList.hashCode() : 0);
+        result = 31 * result + (primitiveArrayField != null ? Arrays.hashCode(primitiveArrayField) : 0);
+        return result;
     }
 
 }

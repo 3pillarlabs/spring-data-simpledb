@@ -1,9 +1,0 @@
-{
-    "attributeContent" : {
-            "name" : { "first" : "Joe", "last" : "Sixpack" },
-            "gender" : "MALE",
-            "verified" : false,
-            "userImage" : "Rm9vYmFyIQ=="
-        },
-    "attributeClassName":"org.springframework.data.simpledb.util.marshaller.User"
-}
