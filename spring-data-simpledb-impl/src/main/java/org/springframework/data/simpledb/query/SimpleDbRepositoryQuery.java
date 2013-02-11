@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
-import org.springframework.data.simpledb.query.SimpleDbQueryExecution.CollectionExecution;
 
 import java.io.Serializable;
 
@@ -49,10 +48,11 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
             throw new IllegalArgumentException("Not implemented");
         } else if (method.isModifyingQuery()) {
             throw new IllegalArgumentException("Not implemented");
+        } else if (method.isQueryForEntity()){
+            return new SingleEntityResultExecution(simpledbOperations);
         } else {
-            //single result
-            throw new IllegalArgumentException("Not implemented");
-        }
+           return new SimpleResultExecution(simpledbOperations);
+       }
     }
 
     /**

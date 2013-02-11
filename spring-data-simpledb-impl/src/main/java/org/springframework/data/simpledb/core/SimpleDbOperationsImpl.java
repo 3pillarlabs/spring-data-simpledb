@@ -68,7 +68,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     }
 
     @Override
-    public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, String query, boolean consistentRead) {
+     public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, String query, boolean consistentRead) {
         LOGGER.info("Find All Domain \"{}\"\" isConsistent=\"{}\"\"", entityInformation.getDomain(), consistentRead);
         final SelectResult selectResult = sdb.select(new SelectRequest(query, consistentRead));
         return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
@@ -77,7 +77,13 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     @Override
     public long count(SimpleDbEntityInformation entityInformation, boolean consistentRead) {
         LOGGER.info("Count items from domain \"{}\"\" isConsistent=\"{}\"\"", entityInformation.getDomain(), consistentRead);
-        final SelectResult selectResult = sdb.select(new SelectRequest(new QueryBuilder(entityInformation).withCount().toString(), consistentRead));
+        return count(new QueryBuilder(entityInformation).withCount().toString(), consistentRead);
+    }
+
+    @Override
+    public long count(String query, boolean consistentRead){
+        LOGGER.info("Count items for query "+query);
+        final SelectResult selectResult = sdb.select(new SelectRequest(query, consistentRead));
         for (Item item : selectResult.getItems()) {
             if (item.getName().equals("Domain")) {
                 for (Attribute attribute : item.getAttributes()) {
