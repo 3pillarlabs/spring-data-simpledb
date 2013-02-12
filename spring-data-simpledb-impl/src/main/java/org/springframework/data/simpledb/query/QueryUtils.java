@@ -21,22 +21,25 @@ public final class QueryUtils {
 
     private QueryUtils() {}
 
-    public static String bindQueryParameters(SimpleDbRepositoryQuery query, String... values) {
+    public static String bindQueryParameters(SimpleDbRepositoryQuery query, String... parameterValues) {
         final String rawQuery = query.getAnnotatedQuery();
-        String returnedQuery = null;
+        String completedQuery = null;
+
+        validateBindParameters(query, parameterValues);
 
         if(hasNamedParameter(query)) {
-            returnedQuery = bindNamedParameters(query, values);
+            completedQuery = bindNamedParameters(query, parameterValues);
 
         } else if(hasBindParameter(rawQuery)) {
-            returnedQuery = bindIndexPositionParameters(rawQuery, values);
+            completedQuery = bindIndexPositionParameters(rawQuery, parameterValues);
 
         } else {
-            returnedQuery = rawQuery;
+            completedQuery = rawQuery;
         }
 
-        return returnedQuery;
+        return completedQuery;
     }
+
 
     public static boolean hasNamedParameter(SimpleDbRepositoryQuery query) {
         for(Parameter param : query.getQueryMethod().getParameters()) {
@@ -53,66 +56,33 @@ public final class QueryUtils {
         return matcher.find();
     }
 
-    public static final String bindNamedParameters(SimpleDbRepositoryQuery query, String... values) {
+    public static final String bindNamedParameters(SimpleDbRepositoryQuery query, String... parameterValues) {
         final Parameters parameters = query.getQueryMethod().getParameters();
         final String rawQuery = query.getAnnotatedQuery();
 
-        return buildQueryConditionsWithParameters(rawQuery, parameters, values);
+        return buildQueryConditionsWithParameters(rawQuery, parameters, parameterValues);
     }
 
-    public static final String buildQueryConditionsWithParameters(String queryAfterWhere, Parameters params, String... values) {
+    public static final String buildQueryConditionsWithParameters(String rawQuery, Parameters params, String... parameterValues) {
 
-        final StringBuilder queryBuilder = new StringBuilder();
-        StringBuilder buffer = new StringBuilder();
+        Map<String, String> parameterPlaceholderValues = buildPlaceholderValues(params, parameterValues);
 
-        Map<String, Integer> parameters = buildParameters(params);
-
-        for(int idx = 0; idx < queryAfterWhere.length(); ++idx) {
-
-            if(queryAfterWhere.charAt(idx) == ':') {
-                try {
-                    for(int i = queryAfterWhere.indexOf(queryAfterWhere.charAt(idx), idx); queryAfterWhere.charAt(i) != ' '; ++i) {
-                        buffer.append(queryAfterWhere.charAt(i));
-                    }
-                } catch(StringIndexOutOfBoundsException stringOOBound) {
-                      // Query String is ended
-                }
-            }
-
-            if(parameters.containsKey(buffer.toString())) {
-
-                queryBuilder.append(SINGLE_QUOTE + values[parameters.get(buffer.toString())] + SINGLE_QUOTE + " ");
-                // bypass holders
-                idx += buffer.toString().length();
-
-                // reset buffer for the next Token Named Parameter if exists
-                buffer = new StringBuilder();
-            } else {
-                queryBuilder.append(queryAfterWhere.charAt(idx));
-            }
-        }
-
-
-        return queryBuilder.toString();
+        return replaceParameterHolders(rawQuery, parameterPlaceholderValues);
     }
 
 
     public static String bindIndexPositionParameters(String queryString, String... values) {
 
-        if(values.length==0) {
-            return queryString;
-        }
-
         final Pattern pattern = Pattern.compile(BIND_PARAMETER_REGEX);
         final StringBuilder builder = new StringBuilder();
 
-        final List<String> divided = Arrays.asList(queryString.split(pattern.toString()));
+        final List<String> dividedQuery = Arrays.asList(queryString.split(pattern.toString()));
         int idx = 0;
 
-        Assert.isTrue(divided.size() == values.length, "Number of binding parameters in method must match number of query binding parameters");
+        Assert.isTrue(dividedQuery.size() == values.length, "Number of binding parameters in method must match number of query binding parameters");
 
         try {
-            for(Iterator<String> iterator = divided.iterator(); iterator.hasNext(); ++idx) {
+            for(Iterator<String> iterator = dividedQuery.iterator(); iterator.hasNext(); ++idx) {
                 builder.append(iterator.next()).append(SINGLE_QUOTE).append(values[idx]).append(SINGLE_QUOTE);
             }
 
@@ -123,13 +93,58 @@ public final class QueryUtils {
         return builder.toString();
     }
 
-    private static Map<String, Integer> buildParameters(Parameters parameters) {
-        Map<String, Integer> map = new LinkedHashMap<>();
+    private static String replaceParameterHolders(String rawQuery, Map<String, String> parameterPlaceholderValues) {
+        final StringBuilder completedQueryBuilder = new StringBuilder();
+
+        for(int idx = 0; idx < rawQuery.length(); ++idx) {
+            String parameterPlaceholder = null;
+
+            if(rawQuery.charAt(idx) == ':') {
+                parameterPlaceholder = readUntilChar(rawQuery, idx, ' ');
+            }
+
+            if(parameterPlaceholderValues.containsKey(parameterPlaceholder)) {
+
+                completedQueryBuilder.append(SINGLE_QUOTE + parameterPlaceholderValues.get(parameterPlaceholder) + SINGLE_QUOTE + " ");
+                idx += parameterPlaceholder.length();
+
+            } else {
+                completedQueryBuilder.append(rawQuery.charAt(idx));
+            }
+        }
+
+        return completedQueryBuilder.toString();
+    }
+
+    private static Map<String, String> buildPlaceholderValues(Parameters parameters, String... parameterValues) {
+        Map<String, String> map = new LinkedHashMap<>();
+
         for(Iterator<Parameter> iterator = parameters.iterator(); iterator.hasNext(); ) {
             Parameter eachParameter = iterator.next();
-            map.put(eachParameter.getPlaceholder(), Integer.valueOf(eachParameter.getIndex()));
+            map.put(eachParameter.getPlaceholder(), parameterValues[eachParameter.getIndex()]);
         }
         return map;
+    }
+
+    private static String readUntilChar(String rawQuery, int idx, char endChar) {
+        StringBuilder buffer = new StringBuilder();
+
+        try {
+            for(int i = rawQuery.indexOf(rawQuery.charAt(idx), idx); i <= rawQuery.length() && rawQuery.charAt(i) != endChar; ++i) {
+                buffer.append(rawQuery.charAt(i));
+            }
+        } catch(StringIndexOutOfBoundsException stringOOBound) {
+            // Query String is ended
+        }
+        return buffer.toString();
+    }
+
+    private static void validateBindParameters(SimpleDbRepositoryQuery query, String... parameterValues) {
+        int numOfParameters = query.getQueryMethod().getParameters().getNumberOfParameters();
+
+        if(numOfParameters != parameterValues.length) {
+            throw new MappingException("Wrong Number of Parameters to bind in Query! Parameter Values size=" + parameterValues.length + ", Method Bind Parameters size=" + numOfParameters);
+        }
     }
 
 }

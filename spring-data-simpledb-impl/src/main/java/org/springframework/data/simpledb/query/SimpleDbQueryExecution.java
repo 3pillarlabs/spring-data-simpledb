@@ -38,12 +38,12 @@ public abstract class SimpleDbQueryExecution {
         }
 
         @Override
-        protected Object doExecute(SimpleDbRepositoryQuery repositoryQuery, Object[] values) {
+        protected Object doExecute(SimpleDbRepositoryQuery repositoryQuery, Object[] parameterValues) {
             final Class<?> domainClass = repositoryQuery.getQueryMethod().getReturnedObjectType();
 
             SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
 
-            String queryWithFilledParameters = QueryUtils.bindQueryParameters(repositoryQuery, StringUtil.toStringArray(values));
+            String queryWithFilledParameters = QueryUtils.bindQueryParameters(repositoryQuery, StringUtil.toStringArray(parameterValues));
 
             final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
 
