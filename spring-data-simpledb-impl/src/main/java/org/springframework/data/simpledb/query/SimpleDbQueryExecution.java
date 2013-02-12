@@ -32,7 +32,7 @@ public abstract class SimpleDbQueryExecution {
     protected abstract Object doExecute(SimpleDbRepositoryQuery query, Object[] values);
 
 
-    public static class CountExecution extends SimpleDbQueryExecution {
+    static class CountExecution extends SimpleDbQueryExecution {
 
         public CountExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
             super(simpleDbOperations);
@@ -46,7 +46,7 @@ public abstract class SimpleDbQueryExecution {
         }
     }
 
-    public static class CollectionExecution extends SimpleDbQueryExecution {
+    static class CollectionExecution extends SimpleDbQueryExecution {
 
         public CollectionExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
             super(simpleDbOperations);
@@ -62,9 +62,22 @@ public abstract class SimpleDbQueryExecution {
         }
     }
 
-    static class SingleEntityResultExecution extends SimpleDbQueryExecution {
+    static class PartialCollectionExecution extends CollectionExecution {
 
-        public SingleEntityResultExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
+        public PartialCollectionExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
+            super(simpleDbOperations);
+        }
+
+        @Override
+        protected Object doExecute(SimpleDbRepositoryQuery query, Object[] values) {
+            //TODO
+            return super.doExecute(query, values);
+        }
+    }
+
+    static class SingleResultExecution extends SimpleDbQueryExecution {
+
+        public SingleResultExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
             super(simpleDbOperations);
         }
 
@@ -76,6 +89,19 @@ public abstract class SimpleDbQueryExecution {
             final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
             List<?> returnList = simpledbOperations.find(entityInformation, queryWithFilledParameters, consistentRead);
             return returnList.size() > 0 ? returnList.get(0) : null;
+        }
+    }
+
+    static class PartialSingleResultExecution extends SingleResultExecution {
+
+        public PartialSingleResultExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
+            super(simpleDbOperations);
+        }
+
+        @Override
+        protected Object doExecute(SimpleDbRepositoryQuery repositoryQuery, Object[] values) {
+            //TODO
+            return super.doExecute(repositoryQuery, values);
         }
     }
 }

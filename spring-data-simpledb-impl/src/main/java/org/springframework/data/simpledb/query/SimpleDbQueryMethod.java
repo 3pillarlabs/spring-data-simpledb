@@ -89,13 +89,4 @@ public class SimpleDbQueryMethod extends QueryMethod {
 
         return type.cast(value);
     }
-
-
-
-
-
-
-
-
-
 }

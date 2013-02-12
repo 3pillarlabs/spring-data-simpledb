@@ -52,4 +52,44 @@ public class AnnotatedQueryTest {
     }
 
     //TODO select with parameters
+
+    @Test
+    public void partialPrimitiveFieldSelect_should_return_a_single_primitive_field() {
+        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
+        repository.save(testUsers);
+
+        float result = repository.partialPrimitiveFieldSelect("Item_0");
+        assertNotNull(result);
+        //TODO assertEquals(0.01, result, 0.001);
+    }
+
+    @Test
+    public void partialPrimitiveListSelect_should_return_a_list_of_primitives() {
+        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
+        repository.save(testUsers);
+
+        List<Float> result = repository.partialPrimitiveListSelect();
+        assertNotNull(result);
+        //TODO assertEquals(0.01, result, 0.001);
+    }
+
+    @Test
+    public void partialCoreFieldSelect_should_return_a_core_object_field() {
+        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
+        repository.save(testUsers);
+
+        String result = repository.partialCoreFieldSelect();
+        assertNotNull(result);
+        //TODO assertEquals("tes_string$", result);
+    }
+
+    @Test
+    public void partialCoreListSelect_should_return_a_list_of_core_object_fields() {
+        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
+        repository.save(testUsers);
+
+        List<String> result = repository.partialCoreListSelect();
+        assertNotNull(result);
+        //TODO assertEquals("tes_string$", result);
+    }
 }
