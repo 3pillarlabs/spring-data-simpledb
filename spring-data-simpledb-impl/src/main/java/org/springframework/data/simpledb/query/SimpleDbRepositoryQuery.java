@@ -42,7 +42,7 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
     }
 
     protected SimpleDbQueryExecution getExecution() {
-        //TODO this is shit and needs fixing
+        //TODO refactor
         String query = method.getAnnotatedQuery();
         if (query.toLowerCase().contains("count(")) {
             return new CountExecution(simpledbOperations);
