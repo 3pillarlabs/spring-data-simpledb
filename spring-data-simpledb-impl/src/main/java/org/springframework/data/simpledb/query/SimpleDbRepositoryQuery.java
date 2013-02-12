@@ -9,6 +9,7 @@ import org.springframework.data.simpledb.query.SimpleDbQueryExecution.Collection
 import org.springframework.data.simpledb.query.SimpleDbQueryExecution.CountExecution;
 
 import java.io.Serializable;
+import org.springframework.data.simpledb.query.SimpleDbQueryExecution.PartialCollectionExecution;
 import org.springframework.data.simpledb.query.SimpleDbQueryExecution.SingleResultExecution;
 
 /**
@@ -42,20 +43,24 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
 
     protected SimpleDbQueryExecution getExecution() {
         //TODO this is shit and needs fixing
-        if (method.isCollectionQuery()) {
-            return new CollectionExecution(simpledbOperations);
+        String query = method.getAnnotatedQuery();
+        if (query.toLowerCase().contains("count(")) {
+            return new CountExecution(simpledbOperations);
+        } else if (method.isCollectionQuery()) {
+            if(query.contains("*")) {
+                return new CollectionExecution(simpledbOperations);
+            } else {
+                return new PartialCollectionExecution(simpledbOperations);
+            }
+        } else if (method.isQueryForEntity()) {
+            return new SingleResultExecution(simpledbOperations);
         } else if (method.isPageQuery()) {
             throw new IllegalArgumentException("Not implemented");
         } else if (method.isModifyingQuery()) {
             throw new IllegalArgumentException("Not implemented");
-        } else if (method.getAnnotatedQuery().toLowerCase().contains("count(")) {
-            return new CountExecution(simpledbOperations);
-        } else if (method.isQueryForEntity()) {
-            return new SingleResultExecution(simpledbOperations);
         } else {
             throw new IllegalArgumentException("Provided query not recognized by simpleDB: " + method.getAnnotatedQuery());
         }
-        //TODO isPageQuery?
     }
 
     /**
