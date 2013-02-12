@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
+import org.springframework.data.simpledb.query.SimpleDbQueryExecution.CollectionExecution;
+import org.springframework.data.simpledb.query.SimpleDbQueryExecution.CountExecution;
+import org.springframework.data.simpledb.query.SimpleDbQueryExecution.SingleEntityResultExecution;
 
 import java.io.Serializable;
 

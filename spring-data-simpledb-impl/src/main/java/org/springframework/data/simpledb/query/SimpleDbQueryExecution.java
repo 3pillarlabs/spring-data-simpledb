@@ -31,7 +31,8 @@ public abstract class SimpleDbQueryExecution {
 
     protected abstract Object doExecute(SimpleDbRepositoryQuery query, Object[] values);
 
-    static class CountExecution extends SimpleDbQueryExecution {
+
+    public static class CountExecution extends SimpleDbQueryExecution {
 
         public CountExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
             super(simpleDbOperations);
@@ -45,7 +46,7 @@ public abstract class SimpleDbQueryExecution {
         }
     }
 
-    static class CollectionExecution extends SimpleDbQueryExecution {
+    public static class CollectionExecution extends SimpleDbQueryExecution {
 
         public CollectionExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
             super(simpleDbOperations);
