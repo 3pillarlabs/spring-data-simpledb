@@ -38,7 +38,7 @@ public class QueryBindingParametersTest {
 
     @Test
     public void bindNamedParameters_should_only_with_WHERE_clause() throws NoSuchMethodException {
-        final String expectedQuery = "select * from spring_data where type = 'spring-type'";
+        final String expectedQuery = "select * from spring_data where type = 'spring-type' ";
 
         FooRepositoryQuery repoQuery = new FooRepositoryQuery("fetchDataWithWhereOnly", String.class);
         String resultedQuery = QueryUtils.bindNamedParameters(repoQuery, "spring-type");
@@ -49,10 +49,10 @@ public class QueryBindingParametersTest {
 
     @Test
     public void bindNamedParameters_should_return_a_formatted_query_back_to_caller() throws NoSuchMethodException {
-        final String expectedQuery = "select * from spring_data where type = 'spring-type' and name = 'spring-name'";
+        final String expectedQuery = "select * from spring_data where name = 'spring-name' and type = 'spring-type' or location = 'Timisoara' ";
 
-        FooRepositoryQuery repoQuery = new FooRepositoryQuery("fetchDataWIthWhereAndAnd", String.class, String.class);
-        String resultedQuery = QueryUtils.bindNamedParameters(repoQuery, "spring-type", "spring-name");
+        FooRepositoryQuery repoQuery = new FooRepositoryQuery("fetchDataWIthWhereAndAnd", String.class, String.class, String.class);
+        String resultedQuery = QueryUtils.bindNamedParameters(repoQuery, "spring-type", "spring-name", "Timisoara");
 
         assertThat(resultedQuery, is(expectedQuery));
     }
@@ -60,8 +60,8 @@ public class QueryBindingParametersTest {
     // ------------------- SimpleDB Query Repositories which Mock the current Implementation --------------------- //
     public interface FooRepository extends Repository {
 
-        @Query("select * from spring_data where name = :name and type = :type")
-        public void fetchDataWIthWhereAndAnd(@Param(value="type") String dataType, @Param(value="name") String dataName);
+        @Query("select * from spring_data where name = :name and type = :type or location = :location")
+        public void fetchDataWIthWhereAndAnd(@Param(value="type") String dataType, @Param(value="name") String dataName, @Param(value = "location") String location);
 
         @Query("select * from spring_data where type = :type")
         public void fetchDataWithWhereOnly(@Param(value="type") String dataType);

@@ -3,20 +3,19 @@ package org.springframework.data.simpledb.query;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
-import org.springframework.data.simpledb.util.StringUtil;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @author cclaudiu
+ *
+ */
+
 public final class QueryUtils {
 
-    private static final String AND = " and ";
-    private static final String WHERE = " where ";
     private static final String BIND_PARAMETER_REGEX = "(\\?)";
     private static final String SINGLE_QUOTE = "'";
 
@@ -58,70 +57,41 @@ public final class QueryUtils {
         final Parameters parameters = query.getQueryMethod().getParameters();
         final String rawQuery = query.getAnnotatedQuery();
 
-        final List<String> splittedQueryBasedOnWhere = splitQueryBasedOnPattern(rawQuery, WHERE);
-
-        // ---- maybe the query is not annotated with named parameters at all --- //
-        if(splittedQueryBasedOnWhere == null || splittedQueryBasedOnWhere.size() < 2) {
-            return rawQuery;
-        }
-
-        final String formattedWhereCondition = buildQueryConditionsWithParameters(splittedQueryBasedOnWhere.get(1), parameters, values);
-        splittedQueryBasedOnWhere.set(1, formattedWhereCondition);
-
-        return joinQuery(splittedQueryBasedOnWhere);
-    }
-
-    public static final List<String> splitQueryBasedOnPattern(String query, String patternToSplit) {
-        final Pattern pattern = Pattern.compile(patternToSplit, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(query);
-        List<String> querySplitted = null;
-
-        if(matcher.find()) {
-            querySplitted = Arrays.asList(query.split(pattern.toString()));
-        }
-
-        return querySplitted;
+        return buildQueryConditionsWithParameters(rawQuery, parameters, values);
     }
 
     public static final String buildQueryConditionsWithParameters(String queryAfterWhere, Parameters params, String... values) {
-        final StringBuilder conditionBuilder = new StringBuilder();
-        int position = 0;
 
-        for (Iterator<Parameter> paramIterator = params.iterator(); paramIterator.hasNext(); ++position) {
-            final Parameter eachParameter = paramIterator.next();
-            String formattedCondition = null;
+        final StringBuilder queryBuilder = new StringBuilder();
+        StringBuilder buffer = new StringBuilder();
 
-            if(position == 0) {
-                conditionBuilder.append(WHERE);
-            } else {
-                conditionBuilder.append(AND);
-            }
+        Map<String, Integer> parameters = buildParameters(params);
 
-            List<String> splittedConditionals = splitQueryBasedOnPattern(queryAfterWhere, AND);
+        for(int idx = 0; idx < queryAfterWhere.length(); ++idx) {
 
-            if(splittedConditionals == null) {
-                formattedCondition = StringUtils.replace(queryAfterWhere, eachParameter.getPlaceholder(), SINGLE_QUOTE + values[eachParameter.getIndex()] + SINGLE_QUOTE);
-            } else {
-                for (String eachConditional : splittedConditionals) {
-                    if (!eachConditional.contains(eachParameter.getName())) {
-                        continue;
+            if(queryAfterWhere.charAt(idx) == ':') {
+                try {
+                    for(int i = queryAfterWhere.indexOf(queryAfterWhere.charAt(idx), idx); queryAfterWhere.charAt(i) != ' '; ++i) {
+                        buffer.append(queryAfterWhere.charAt(i));
                     }
-
-                    formattedCondition = StringUtils.replace(eachConditional, eachParameter.getPlaceholder(), SINGLE_QUOTE + values[eachParameter.getIndex()] + SINGLE_QUOTE);
+                } catch(StringIndexOutOfBoundsException stringOOBound) {
+                      // Query String is ended
                 }
             }
 
-            conditionBuilder.append(formattedCondition);
+            if(parameters.containsKey(buffer.toString())) {
+
+                queryBuilder.append(SINGLE_QUOTE + values[parameters.get(buffer.toString())] + SINGLE_QUOTE + " ");
+                // bypass holders
+                idx += buffer.toString().length();
+
+                // reset buffer for the next Token Named Parameter if exists
+                buffer = new StringBuilder();
+            } else {
+                queryBuilder.append(queryAfterWhere.charAt(idx));
+            }
         }
 
-        return conditionBuilder.toString();
-    }
-
-    private static String joinQuery(List<String> queryParts) {
-        final StringBuilder queryBuilder = new StringBuilder();
-        for(Iterator<String> iterator = queryParts.iterator(); iterator.hasNext(); ) {
-            queryBuilder.append(iterator.next());
-        }
 
         return queryBuilder.toString();
     }
@@ -152,4 +122,14 @@ public final class QueryUtils {
 
         return builder.toString();
     }
+
+    private static Map<String, Integer> buildParameters(Parameters parameters) {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        for(Iterator<Parameter> iterator = parameters.iterator(); iterator.hasNext(); ) {
+            Parameter eachParameter = iterator.next();
+            map.put(eachParameter.getPlaceholder(), Integer.valueOf(eachParameter.getIndex()));
+        }
+        return map;
+    }
+
 }
