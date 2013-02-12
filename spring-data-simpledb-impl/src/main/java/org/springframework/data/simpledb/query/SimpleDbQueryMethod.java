@@ -89,4 +89,10 @@ public class SimpleDbQueryMethod extends QueryMethod {
 
         return type.cast(value);
     }
+
+
+    @Override
+    public Class<?> getDomainClass() {
+        return super.getDomainClass();
+    }
 }

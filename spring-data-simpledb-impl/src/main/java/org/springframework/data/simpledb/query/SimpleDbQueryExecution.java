@@ -40,6 +40,9 @@ public abstract class SimpleDbQueryExecution {
 
         @Override
         protected Object doExecute(SimpleDbRepositoryQuery repositoryQuery, Object[] values) {
+            boolean isLongClass = repositoryQuery.getQueryMethod().getReturnedObjectType().isAssignableFrom(Long.class);
+            boolean islongClass = repositoryQuery.getQueryMethod().getReturnedObjectType().isAssignableFrom(long.class);
+            Assert.isTrue(isLongClass || islongClass, "Method declared in repository should return type long or Long");
             String queryWithFilledParameters = QueryParametersBinder.bindParameters(repositoryQuery.getAnnotatedQuery(), StringUtil.toStringArray(values));
             final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
             return simpledbOperations.count(queryWithFilledParameters, consistentRead);
@@ -54,7 +57,10 @@ public abstract class SimpleDbQueryExecution {
 
         @Override
         protected Object doExecute(SimpleDbRepositoryQuery repositoryQuery, Object[] values) {
-            final Class<?> domainClass = repositoryQuery.getQueryMethod().getReturnedObjectType();
+            final Class<?> returnedClass = repositoryQuery.getQueryMethod().getReturnedObjectType();
+            final Class<?> domainClass = ((SimpleDbQueryMethod)repositoryQuery.getQueryMethod()).getDomainClass();
+            Assert.isAssignable(domainClass, returnedClass);
+
             SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
             String queryWithFilledParameters = QueryParametersBinder.bindParameters(repositoryQuery.getAnnotatedQuery(), StringUtil.toStringArray(values));
             final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
@@ -62,16 +68,21 @@ public abstract class SimpleDbQueryExecution {
         }
     }
 
-    static class PartialCollectionExecution extends CollectionExecution {
+    static class PartialCollectionExecution extends SimpleDbQueryExecution {
 
         public PartialCollectionExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
             super(simpleDbOperations);
         }
 
         @Override
-        protected Object doExecute(SimpleDbRepositoryQuery query, Object[] values) {
-            //TODO
-            return super.doExecute(query, values);
+        protected Object doExecute(SimpleDbRepositoryQuery repositoryQuery, Object[] values) {
+            final Class<?> domainClass = ((SimpleDbQueryMethod)repositoryQuery.getQueryMethod()).getDomainClass();
+            SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
+            String queryWithFilledParameters = QueryParametersBinder.bindParameters(repositoryQuery.getAnnotatedQuery(), StringUtil.toStringArray(values));
+            final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
+            //TODO serialize to which is expected
+            List<?> returnList = simpledbOperations.find(entityInformation, queryWithFilledParameters, consistentRead);
+            return null;
         }
     }
 
@@ -83,12 +94,13 @@ public abstract class SimpleDbQueryExecution {
 
         @Override
         protected Object doExecute(SimpleDbRepositoryQuery repositoryQuery, Object[] values) {
-            final Class<?> domainClass = repositoryQuery.getQueryMethod().getReturnedObjectType();
+            final Class<?> domainClass = ((SimpleDbQueryMethod)repositoryQuery.getQueryMethod()).getDomainClass();
             SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
             String queryWithFilledParameters = QueryParametersBinder.bindParameters(repositoryQuery.getAnnotatedQuery(), StringUtil.toStringArray(values));
             final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
             List<?> returnList = simpledbOperations.find(entityInformation, queryWithFilledParameters, consistentRead);
-            return returnList.size() > 0 ? returnList.get(0) : null;
+            Assert.isTrue(returnList.size()==1, "Select statement doesn't return only one entity :"+repositoryQuery.getAnnotatedQuery());
+            return returnList.get(0);
         }
     }
 
@@ -100,8 +112,13 @@ public abstract class SimpleDbQueryExecution {
 
         @Override
         protected Object doExecute(SimpleDbRepositoryQuery repositoryQuery, Object[] values) {
-            //TODO
-            return super.doExecute(repositoryQuery, values);
+            final Class<?> domainClass = ((SimpleDbQueryMethod)repositoryQuery.getQueryMethod()).getDomainClass();
+            SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
+            String queryWithFilledParameters = QueryParametersBinder.bindParameters(repositoryQuery.getAnnotatedQuery(), StringUtil.toStringArray(values));
+            final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
+            List<?> returnList = simpledbOperations.find(entityInformation, queryWithFilledParameters, consistentRead);
+            //TODO serialize to which is expected
+            return null;
         }
     }
 }

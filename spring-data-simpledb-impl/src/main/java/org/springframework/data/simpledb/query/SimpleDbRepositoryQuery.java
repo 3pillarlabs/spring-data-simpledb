@@ -7,12 +7,9 @@ import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.query.SimpleDbQueryExecution.CollectionExecution;
 import org.springframework.data.simpledb.query.SimpleDbQueryExecution.CountExecution;
-import org.springframework.data.simpledb.query.SimpleDbQueryExecution.SingleResultExecution;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
-import org.springframework.data.simpledb.query.SimpleDbQueryExecution.PartialCollectionExecution;
-import org.springframework.data.simpledb.query.SimpleDbQueryExecution.PartialSingleResultExecution;
+import org.springframework.data.simpledb.query.SimpleDbQueryExecution.SingleResultExecution;
 
 /**
  * {@link RepositoryQuery} implementation that inspects a {@link SimpleDbQueryMethod} for the existence of an {@link org.springframework.data.simpledb.annotation.Query} annotation and provides
@@ -44,22 +41,17 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
     }
 
     protected SimpleDbQueryExecution getExecution() {
-        String query = method.getAnnotatedQuery();
-        if (query.toLowerCase().contains("count(")) {
+        //TODO this is shit and needs fixing
+        if (method.isCollectionQuery()) {
+            return new CollectionExecution(simpledbOperations);
+        } else if (method.isPageQuery()) {
+            throw new IllegalArgumentException("Not implemented");
+        } else if (method.isModifyingQuery()) {
+            throw new IllegalArgumentException("Not implemented");
+        } else if (method.getAnnotatedQuery().toLowerCase().contains("count(")) {
             return new CountExecution(simpledbOperations);
-        } else if (method.isCollectionQuery()) {
-            method.isQueryForEntity();
-            if (query.contains("*")) {
-                return new CollectionExecution(simpledbOperations);
-            } else {
-                return new PartialCollectionExecution(simpledbOperations);
-            }
-        } else if (true) {
-            if (query.contains("*")) {
-                return new SingleResultExecution(simpledbOperations);
-            } else {
-                return new PartialSingleResultExecution(simpledbOperations);
-            }
+        } else if (method.isQueryForEntity()) {
+            return new SingleResultExecution(simpledbOperations);
         } else {
             throw new IllegalArgumentException("Provided query not recognized by simpleDB: " + method.getAnnotatedQuery());
         }
