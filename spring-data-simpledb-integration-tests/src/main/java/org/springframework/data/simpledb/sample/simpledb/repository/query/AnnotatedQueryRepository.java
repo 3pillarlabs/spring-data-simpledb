@@ -11,9 +11,6 @@ public interface AnnotatedQueryRepository extends PagingAndSortingRepository<Sim
     @Query(value = "select * from `testDB.simpleDbUser`")
     public List<SimpleDbUser> customSelectAll();
 
-    @Query(value = "select count(*) from `testDB.simpleDbUser`")
-    public long customCount();
-
-    @Query(value = "select * from `testDB.simpleDbUser` where itemName()='Item_0'")
-    public SimpleDbUser customSelectOneUser();
+    @Query(value = "select * from `testDB.simpleDbUser`")
+    public List<String> customSelectAllWrongReturnType();
 }

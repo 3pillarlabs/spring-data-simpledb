@@ -31,25 +31,18 @@ public class AnnotatedQueryTest {
     }
 
     @Test
-    public void customCount_should_return_the_number_of_users() {
+    public void customSelectAllWrongReturnType_should_fail_wrong_returned_collection_generic_type() {
         List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
         repository.save(testUsers);
 
-        long result = repository.customCount();
-        assertNotNull(result);
-        System.out.println(result);
-        assertEquals(testUsers.size(),result);
+        try{
+            List<String> result = repository.customSelectAllWrongReturnType();
+        }catch (IllegalArgumentException e){
+            System.out.println(e.getMessage());
+            assertTrue(e.getMessage().contains("is not assignable"));
+            return;
+        }
+        fail();
     }
-
-    @Test
-    public void customSelectOneUser_should_return_first_users() {
-        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
-        repository.save(testUsers);
-
-        SimpleDbUser result = repository.customSelectOneUser();
-        assertNotNull(result);
-        assertEquals(testUsers.get(0),result);
-    }
-
     //TODO select with parameters
 }

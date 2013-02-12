@@ -51,10 +51,10 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
             throw new IllegalArgumentException("Not implemented");
         } else if (method.isModifyingQuery()) {
             throw new IllegalArgumentException("Not implemented");
-        } else if (method.isQueryForEntity()){
-            return new SingleEntityResultExecution(simpledbOperations);
         } else if (method.getAnnotatedQuery().toLowerCase().contains("count(")){
            return new CountExecution(simpledbOperations);
+        } else if (method.isQueryForEntity()){
+            return new SingleEntityResultExecution(simpledbOperations);
         } else {
            throw new IllegalArgumentException("Provided query not recognized by simpleDB: " + method.getAnnotatedQuery() );
        }
