@@ -91,6 +91,7 @@ public class SimpleDbQueryMethod extends QueryMethod {
     }
 
 
+    @Override
     public Class<?> getDomainClass() {
         return super.getDomainClass();
     }

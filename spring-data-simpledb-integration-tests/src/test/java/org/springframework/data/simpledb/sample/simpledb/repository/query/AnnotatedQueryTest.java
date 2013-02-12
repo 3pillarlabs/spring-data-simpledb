@@ -8,10 +8,7 @@ import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
-
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-consistent-repository-context.xml")
@@ -27,7 +24,7 @@ public class AnnotatedQueryTest {
 
         List<SimpleDbUser> result = repository.customSelectAll();
         assertNotNull(result);
-        assertEquals(testUsers,result);
+        assertEquals(testUsers, result);
     }
 
     @Test
@@ -35,14 +32,13 @@ public class AnnotatedQueryTest {
         List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
         repository.save(testUsers);
 
-        try{
+        try {
             List<String> result = repository.customSelectAllWrongReturnType();
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
             assertTrue(e.getMessage().contains("is not assignable"));
             return;
         }
         fail();
     }
-    //TODO select with parameters
 }
