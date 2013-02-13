@@ -37,7 +37,7 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         return method;
     }
 
-    public String getAnnotatedQuery() {
+    protected String getAnnotatedQuery() {
         return method.getAnnotatedQuery();
     }
 
