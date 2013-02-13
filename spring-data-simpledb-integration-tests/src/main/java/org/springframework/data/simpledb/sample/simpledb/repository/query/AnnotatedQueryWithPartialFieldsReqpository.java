@@ -9,14 +9,14 @@ import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 public interface AnnotatedQueryWithPartialFieldsReqpository extends PagingAndSortingRepository<SimpleDbUser, String> {
 
     @Query(value = "select primitiveField from `testDB.simpleDbUser` where itemName()=:itemname")
-    public float partialPrimitiveFieldSelect(@Param("itemname") String itemName);
+    public List<List<Object>> selectSinglePartialField(@Param("itemname") String itemName);
+
+    @Query(value = "select primitiveField,coreField from `testDB.simpleDbUser` where itemName()=:itemname")
+    public List<List<Object>> selectMultiplePartialField(@Param("itemname") String itemName);
 
     @Query(value = "select primitiveField from `testDB.simpleDbUser`")
-    public List<Float> partialPrimitiveListSelect();
+    public List<List<Object>> selectSinglePartialFieldList();
 
-    @Query(value = "select coreField from `testDB.simpleDbUser` where itemName()='Item_0'")
-    public String partialCoreFieldSelect();
-
-    @Query(value = "select coreField from `testDB.simpleDbUser`")
-    public List<String> partialCoreListSelect();
+    @Query(value = "select primitiveField,coreField from `testDB.simpleDbUser`")
+    public List<List<Object>> selectMultiplePartialFieldList();
 }
