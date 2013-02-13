@@ -61,7 +61,9 @@ public abstract class SimpleDbQueryExecution {
 
         @Override
         protected Object doExecute(SimpleDbRepositoryQuery repositoryQuery, Object[] parameterValues) {
-            final Class<?> domainClass = repositoryQuery.getQueryMethod().getReturnedObjectType();
+            final Class<?> returnedClass = repositoryQuery.getQueryMethod().getReturnedObjectType();
+            final Class<?> domainClass = ((SimpleDbQueryMethod)repositoryQuery.getQueryMethod()).getDomainClass();
+            Assert.isAssignable(domainClass, returnedClass);
 
             SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
 

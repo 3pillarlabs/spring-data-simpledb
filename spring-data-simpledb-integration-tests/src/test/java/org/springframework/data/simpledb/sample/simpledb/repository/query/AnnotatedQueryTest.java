@@ -44,19 +44,9 @@ public class AnnotatedQueryTest {
         assertEquals(testUsers, result);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void customSelectAllWrongReturnType_should_fail_wrong_returned_collection_generic_type() {
-        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
-        repository.save(testUsers);
-
-        try {
-            List<String> result = repository.customSelectAllWrongReturnType();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-            assertTrue(e.getMessage().contains("is not assignable"));
-            return;
-        }
-        fail();
+        List<String> result = repository.customSelectAllWrongReturnType();
     }
 
 
