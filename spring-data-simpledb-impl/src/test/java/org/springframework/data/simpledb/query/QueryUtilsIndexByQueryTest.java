@@ -1,5 +1,6 @@
 package org.springframework.data.simpledb.query;
 
+import org.springframework.data.simpledb.util.QueryUtils;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

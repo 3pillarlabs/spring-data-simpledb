@@ -1,6 +1,8 @@
 package org.springframework.data.simpledb.query;
 
-import java.io.Serializable;
+import java.beans.IntrospectionException;
+import org.springframework.data.simpledb.util.QueryUtils;
+import java.beans.PropertyDescriptor;
 import org.springframework.data.simpledb.core.SimpleDbConfig;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
@@ -9,12 +11,12 @@ import org.springframework.data.simpledb.util.StringUtil;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.springframework.data.simpledb.util.MetadataParser;
+import org.springframework.data.mapping.model.MappingException;
+import org.springframework.data.simpledb.util.ReflectionUtils;
 
 /**
  * Set of classes to contain query execution strategies. Depending (mostly) on the return type of a {@link org.springframework.data.repository.query.QueryMethod}
@@ -91,24 +93,21 @@ public abstract class SimpleDbQueryExecution {
             SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
             String queryWithFilledParameters = QueryUtils.bindQueryParameters(repositoryQuery, StringUtil.toStringArray(values));
             final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
-            //TODO serialize to which is expected
+
             List<?> returnList = getSimpledbOperations().find(entityInformation, queryWithFilledParameters, consistentRead);
 
-            if (returnList.size() > 0) {
+            List<String> requestedQueryFieldNames = QueryUtils.getQueryPartialFieldNames(queryWithFilledParameters);
+            return toListBasedRepresentation(returnList, requestedQueryFieldNames);
+        }
+
+        private Object toListBasedRepresentation(List<?> entityList, List<String> requestedQueryFieldNames) throws MappingException {
+            if (entityList.size() > 0) {
                 List<List<Object>> rows = new ArrayList<>();
-                for (int i = 0; i < returnList.size(); i++) {
-                    Object obj = returnList.get(0);
+                for (Object entity : entityList) {
                     List<Object> cols = new ArrayList<>();
-                    List<Field> fields = MetadataParser.getSupportedFields(obj);
-                    for(Field field: fields) { //the fields as columns
-                        try {
-                            Object value = field.get(field.getName());
-                            if(value!=null) {
-                                cols.add(value);
-                            }
-                        } catch (IllegalArgumentException | IllegalAccessException ex) {
-                            ex.printStackTrace();
-                        }
+                    for (String fieldName : requestedQueryFieldNames) {
+                        Object value = ReflectionUtils.callGetter(entity, fieldName);
+                        cols.add(value);
                     }
                     rows.add(cols);
                 }
@@ -116,7 +115,16 @@ public abstract class SimpleDbQueryExecution {
             } else {
                 return null;
             }
+        }
 
+        private Object getFieldValue(Object obj, String fieldName) {
+            try {
+                Method method = new PropertyDescriptor(fieldName, obj.getClass()).getReadMethod();
+                return method.invoke(obj);
+
+            } catch (IntrospectionException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                throw new MappingException("Could not retrieve field value for Field=" + fieldName, e);
+            }
         }
     }
 

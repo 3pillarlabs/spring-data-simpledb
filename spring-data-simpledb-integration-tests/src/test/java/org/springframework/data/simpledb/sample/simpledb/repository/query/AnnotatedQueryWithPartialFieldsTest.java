@@ -1,8 +1,7 @@
 package org.springframework.data.simpledb.sample.simpledb.repository.query;
 
 import java.util.List;
-import static org.junit.Assert.assertNotNull;
-import org.junit.Ignore;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,36 +18,34 @@ public class AnnotatedQueryWithPartialFieldsTest {
     AnnotatedQueryWithPartialFieldsReqpository repository;
 
     @Test
-    @Ignore
     public void selectSinglePartialField_should_return_a_single_column_in_a_single_row() {
-        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
-        repository.save(testUsers);
+        SimpleDbUser testUser = SimpleDbUserBuilder.createUserWithSampleAttributes("Item_0");
+        repository.save(testUser);
 
-        List<List<Object>> result = repository.selectSinglePartialField("Item_0");
+        List<List<Object>> result = repository.selectCoreFieldByItemName(testUser.getItemName());
         assertNotNull(result);
-        //TODO
+        assertEquals(testUser.getCoreField(), result.get(0).get(0));
     }
 
     @Test
-    @Ignore
     public void selectMultiplePartialField_should_return_a_multiple_columns_in_a_single_row() {
-        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
-        repository.save(testUsers);
+        SimpleDbUser testUser = SimpleDbUserBuilder.createUserWithSampleAttributes("Item_0");
+        repository.save(testUser);
 
-        List<List<Object>> result = repository.selectMultiplePartialField("Item_0");
+        List<List<Object>> result = repository.selectPrimitiveField_CoreFieldByItemName(testUser.getItemName());
         assertNotNull(result);
-        //TODO
+        assertEquals(testUser.getPrimitiveField(), result.get(0).get(0));
+        assertEquals(testUser.getCoreField(), result.get(0).get(1));
     }
 
     @Test
-    @Ignore
     public void selectSinglePartialFieldList_should_return_a_single_column_with_multiple_rows() {
         List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
         repository.save(testUsers);
 
-        List<List<Object>> result = repository.selectSinglePartialFieldList();
+        List<List<Object>> result = repository.selectCoreFields();
         assertNotNull(result);
-        //TODO
+        assertEquals(testUsers.get(2).getCoreField(), result.get(2).get(0));
     }
 
     @Test
@@ -56,8 +53,9 @@ public class AnnotatedQueryWithPartialFieldsTest {
         List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
         repository.save(testUsers);
 
-        List<List<Object>> result = repository.selectMultiplePartialFieldList();
+        List<List<Object>> result = repository.selectPrimitiveFields_CoreFields();
         assertNotNull(result);
-        //TODO
+        assertEquals(testUsers.get(2).getPrimitiveField(), result.get(2).get(0));
+        assertEquals(testUsers.get(2).getCoreField(), result.get(2).get(1));
     }
 }

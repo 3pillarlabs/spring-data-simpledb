@@ -37,7 +37,7 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         return method;
     }
 
-    protected String getAnnotatedQuery() {
+    public String getAnnotatedQuery() {
         return method.getAnnotatedQuery();
     }
 
@@ -47,7 +47,7 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         if (query.toLowerCase().contains("count(")) {
             return new CountExecution(simpledbOperations);
         } else if (method.isCollectionQuery()) {
-            if(query.contains("*")) {
+            if (query.contains("*")) {
                 return new CollectionExecution(simpledbOperations);
             } else {
                 return new PartialCollectionExecution(simpledbOperations);
