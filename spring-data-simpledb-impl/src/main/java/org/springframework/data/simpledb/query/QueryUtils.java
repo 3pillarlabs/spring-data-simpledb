@@ -25,7 +25,7 @@ public final class QueryUtils {
         final String rawQuery = query.getAnnotatedQuery();
         String completedQuery = null;
 
-        validateBindParameters(query, parameterValues);
+        validateBindParameters(query.getQueryMethod().getParameters(), parameterValues);
 
         if(hasNamedParameter(query)) {
             completedQuery = bindNamedParameters(query, parameterValues);
@@ -113,7 +113,7 @@ public final class QueryUtils {
             }
         }
 
-        return completedQueryBuilder.toString();
+        return completedQueryBuilder.toString().trim();
     }
 
     private static Map<String, String> buildPlaceholderValues(Parameters parameters, String... parameterValues) {
@@ -139,8 +139,8 @@ public final class QueryUtils {
         return buffer.toString();
     }
 
-    private static void validateBindParameters(SimpleDbRepositoryQuery query, String... parameterValues) {
-        int numOfParameters = query.getQueryMethod().getParameters().getNumberOfParameters();
+    static void validateBindParameters(Parameters parameters, String... parameterValues) {
+        int numOfParameters = parameters.getNumberOfParameters();
 
         if(numOfParameters != parameterValues.length) {
             throw new MappingException("Wrong Number of Parameters to bind in Query! Parameter Values size=" + parameterValues.length + ", Method Bind Parameters size=" + numOfParameters);
