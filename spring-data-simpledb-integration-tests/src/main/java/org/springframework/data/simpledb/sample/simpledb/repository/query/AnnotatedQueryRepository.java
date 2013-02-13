@@ -19,4 +19,7 @@ public interface AnnotatedQueryRepository extends PagingAndSortingRepository<Sim
     @Query("select * from `testDB.simpleDbUser` where coreField = ? and primitiveField = ?")
     List<SimpleDbUser> customSelectWithIndexedParams(String coreField, String primitiveField);
 
+    @Query(value = "select * from `testDB.simpleDbUser`")
+    List<String> customSelectAllWrongReturnType();
+
 }

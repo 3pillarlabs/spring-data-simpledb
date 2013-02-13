@@ -1,24 +1,24 @@
 package org.springframework.data.simpledb.query;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.query.SimpleDbQueryExecution.CollectionExecution;
+import org.springframework.data.simpledb.query.SimpleDbQueryExecution.CountExecution;
 
 import java.io.Serializable;
+import org.springframework.data.simpledb.query.SimpleDbQueryExecution.PartialCollectionExecution;
+import org.springframework.data.simpledb.query.SimpleDbQueryExecution.SingleResultExecution;
 
 /**
- * {@link RepositoryQuery} implementation that inspects a {@link SimpleDbQueryMethod}
- * for the existence of an {@link org.springframework.data.simpledb.annotation.Query} annotation and provides implementations
- * based on query method information.
+ * {@link RepositoryQuery} implementation that inspects a {@link SimpleDbQueryMethod} for the existence of an {@link org.springframework.data.simpledb.annotation.Query} annotation and provides
+ * implementations based on query method information.
  */
 public class SimpleDbRepositoryQuery implements RepositoryQuery {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbRepositoryQuery.class);
-
     private final SimpleDbQueryMethod method;
     private final SimpleDbOperations<?, Serializable> simpledbOperations;
 
@@ -26,7 +26,6 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         this.method = method;
         this.simpledbOperations = simpledbOperations;
     }
-
 
     @Override
     public Object execute(Object[] parameters) {
@@ -43,21 +42,30 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
     }
 
     protected SimpleDbQueryExecution getExecution() {
-       if (method.isCollectionQuery()) {
-            return new CollectionExecution(simpledbOperations);
+        //TODO refactor
+        String query = method.getAnnotatedQuery();
+        if (query.toLowerCase().contains("count(")) {
+            return new CountExecution(simpledbOperations);
+        } else if (method.isCollectionQuery()) {
+            if(query.contains("*")) {
+                return new CollectionExecution(simpledbOperations);
+            } else {
+                return new PartialCollectionExecution(simpledbOperations);
+            }
+        } else if (method.isQueryForEntity()) {
+            return new SingleResultExecution(simpledbOperations);
         } else if (method.isPageQuery()) {
             throw new IllegalArgumentException("Not implemented");
         } else if (method.isModifyingQuery()) {
             throw new IllegalArgumentException("Not implemented");
         } else {
-            //single result
-            throw new IllegalArgumentException("Not implemented");
+            throw new IllegalArgumentException("Provided query not recognized by simpleDB: " + method.getAnnotatedQuery());
         }
     }
 
     /**
-     * Creates a {@link RepositoryQuery} from the given {@link org.springframework.data.repository.query.QueryMethod} that
-     * is potentially annotated with {@link org.springframework.data.simpledb.annotation.Query}.
+     * Creates a {@link RepositoryQuery} from the given {@link org.springframework.data.repository.query.QueryMethod} that is potentially annotated with
+     * {@link org.springframework.data.simpledb.annotation.Query}.
      *
      * @param queryMethod
      * @return the {@link RepositoryQuery} derived from the annotation or {@code null} if no annotation found.

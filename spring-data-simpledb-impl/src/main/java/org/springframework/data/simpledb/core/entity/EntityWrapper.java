@@ -17,10 +17,10 @@ import java.util.Map.Entry;
 public class EntityWrapper<T, ID extends Serializable> {
 
     /* entity metadata */
-    private SimpleDbEntityInformation<T, ?> entityInformation;
+    private final SimpleDbEntityInformation<T, ?> entityInformation;
 
     /* field wrappers */
-    private Map<String, AbstractFieldWrapper<T, ID>> wrappedFields = new HashMap<>();
+    private final Map<String, AbstractFieldWrapper<T, ID>> wrappedFields = new HashMap<>();
 
     private T item;
 
@@ -111,7 +111,7 @@ public class EntityWrapper<T, ID extends Serializable> {
             Object convertedValue = fieldWrapper.deserialize(fieldAttributes);
             fieldWrapper.setFieldValue(convertedValue);
         }
-    	
+
         final Map<String, List<String>> simpleFields = AttributesKeySplitter.splitSimpleAttributesKeys(attributes);
         for (final Entry<String, List<String>> simpleField : simpleFields.entrySet()) {
             final String fieldName = simpleField.getKey();

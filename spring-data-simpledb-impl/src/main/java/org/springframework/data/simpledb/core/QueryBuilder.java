@@ -13,7 +13,7 @@ public class QueryBuilder<T, ID extends Serializable> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryBuilder.class);
 
-    private SimpleDbEntityInformation<T, ID> entityInformation;
+    private final SimpleDbEntityInformation<T, ID> entityInformation;
     private StringBuilder query;
 
     public QueryBuilder(SimpleDbEntityInformation<T, ID> entityInformation) {
@@ -24,7 +24,7 @@ public class QueryBuilder<T, ID extends Serializable> {
 
     public QueryBuilder withCount() {
     	query = new StringBuilder();
-    	
+
         //replace select statement
         query.append("select count(*) from ").append(quote(entityInformation.getDomain()));
         return this;
