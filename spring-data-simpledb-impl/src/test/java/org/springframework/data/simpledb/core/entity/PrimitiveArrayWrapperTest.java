@@ -1,5 +1,7 @@
 package org.springframework.data.simpledb.core.entity;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.junit.Test;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.simpledb.core.entity.util.AttributeUtil;
@@ -86,21 +88,12 @@ public class PrimitiveArrayWrapperTest {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof SamplePrimitivesArray)) return false;
-
-            SamplePrimitivesArray that = (SamplePrimitivesArray) o;
-
-            if (!Arrays.equals(longPrimitives, that.longPrimitives)) return false;
-
-            return true;
+            return EqualsBuilder.reflectionEquals(this, o);
         }
 
         @Override
         public int hashCode() {
-            int result = 0;
-            result = 31 * result + Arrays.hashCode(longPrimitives);
-            return result;
+            return HashCodeBuilder.reflectionHashCode(this);
         }
     }
 }
