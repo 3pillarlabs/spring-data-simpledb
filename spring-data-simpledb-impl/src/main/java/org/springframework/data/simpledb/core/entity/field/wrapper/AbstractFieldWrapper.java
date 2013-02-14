@@ -8,9 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.amazonaws.services.s3.internal.RestUtils;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
+import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.Assert;
 
 public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
@@ -35,10 +37,7 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 
 	public abstract Map<String, List<String>> serialize(String prefix);
 
-
 	public abstract Object deserialize(final Map<String, List<String>> attributes);
-	
-
 
 	/**
 	 * Template method.
@@ -56,7 +55,7 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
      */
     public void setFieldValue(Object fieldValue){
         try {
-            final Method setterMethod = FieldTypeIdentifier.retrieveSetterFrom(parentWrapper.getItem().getClass(), field);
+            final Method setterMethod = ReflectionUtils.retrieveSetterFrom(parentWrapper.getItem().getClass(), field);
 
             Assert.notNull(setterMethod, "No Setter Found for corresponding Field=" + field.getName());
 
@@ -72,7 +71,7 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
      */
     public Object getFieldValue() {
         Object fieldValue = null;
-        Method getterMethod = FieldTypeIdentifier.retrieveGetterFrom(parentWrapper.getItem().getClass(), field);
+        Method getterMethod = ReflectionUtils.retrieveGetterFrom(parentWrapper.getItem().getClass(), field);
 
         Assert.notNull(getterMethod, "No Getter Found for corresponding Field=" + field.getName());
 

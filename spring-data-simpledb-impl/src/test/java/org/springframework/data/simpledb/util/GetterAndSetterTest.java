@@ -24,7 +24,7 @@ public class GetterAndSetterTest {
         Field supportedField = declaredFieldsWithAccessorsAndMutators.get(0);
 
         assertThat(supportedField.getName(), is("withGetterAndSetter"));
-        assertThat(FieldTypeIdentifier.hasDeclaredGetterAndSetter(supportedField, SampleBean.class), is(true));
+        assertThat(ReflectionUtils.hasDeclaredGetterAndSetter(supportedField, SampleBean.class), is(true));
     }
 
 
