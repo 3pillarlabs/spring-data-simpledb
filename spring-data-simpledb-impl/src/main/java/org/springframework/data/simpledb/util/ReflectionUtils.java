@@ -16,16 +16,25 @@ public final class ReflectionUtils {
     private static final Logger LOG = LoggerFactory.getLogger(ReflectionUtils.class);
 
     private ReflectionUtils() {
-        //utiliy class
+        //utility class
     }
 
     public static Object callGetter(Object obj, String fieldName) {
         try {
-            Method getterMethod = new PropertyDescriptor(fieldName, obj.getClass()).getReadMethod();
-            Assert.notNull(getterMethod, "No Getter Found for corresponding field " + fieldName + " in class:  " + obj.getClass());
+            Method getterMethod = retrieveGetterFrom(obj.getClass(), fieldName);
             return getterMethod.invoke(obj);
 
-        } catch (IntrospectionException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            throw new MappingException("Could not call getter for field " + fieldName + " in class:  " + obj.getClass(), e);
+        }
+    }
+
+    public static void callSetter(Object obj, String fieldName, Object fieldValue) {
+        try {
+            Method setterMethod = retrieveSetterFrom(obj.getClass(), fieldName);
+            setterMethod.invoke(obj, fieldValue);
+
+        } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             throw new MappingException("Could not call getter for field " + fieldName + " in class:  " + obj.getClass(), e);
         }
     }
@@ -37,8 +46,8 @@ public final class ReflectionUtils {
     public static <T> boolean hasDeclaredGetterAndSetter(final Field field, Class<T> entityClazz) {
         boolean hasDeclaredAccessorsMutators = true;
 
-        Method getter = retrieveGetterFrom(entityClazz, field);
-        Method setter = retrieveSetterFrom(entityClazz, field);
+        Method getter = retrieveGetterFrom(entityClazz, field.getName());
+        Method setter = retrieveSetterFrom(entityClazz, field.getName());
 
         if(getter == null || setter == null) {
             hasDeclaredAccessorsMutators = false;
@@ -47,27 +56,27 @@ public final class ReflectionUtils {
         return hasDeclaredAccessorsMutators;
     }
 
-    public static <T> Method retrieveGetterFrom(final Class<T> entityClazz, final Field field) {
+    private static <T> Method retrieveGetterFrom(final Class<T> entityClazz, final String fieldName) {
         Method getterMethod;
         try {
-            final PropertyDescriptor descriptor = new PropertyDescriptor(field.getName(), entityClazz);
+            final PropertyDescriptor descriptor = new PropertyDescriptor(fieldName, entityClazz);
             getterMethod = descriptor.getReadMethod();
         } catch (IntrospectionException e) {
             getterMethod = null;
-            LOG.debug("Field {} has not declared getter method", field.getName(), e);
+            LOG.debug("Field {} has not declared getter method", fieldName, e);
         }
         return getterMethod;
     }
 
-    public static <T> Method retrieveSetterFrom(final Class<T> entityClazz, final Field field) {
+    private static <T> Method retrieveSetterFrom(final Class<T> entityClazz, final String fieldName) {
         Method setterMethod;
 
         try {
-            final PropertyDescriptor descriptor = new PropertyDescriptor(field.getName(), entityClazz);
+            final PropertyDescriptor descriptor = new PropertyDescriptor(fieldName, entityClazz);
             setterMethod = descriptor.getWriteMethod();
         } catch (IntrospectionException e) {
             setterMethod = null;
-            LOG.debug("Field {} has not declared setter method", field.getName(), e);
+            LOG.debug("Field {} has not declared setter method", fieldName, e);
         }
         return setterMethod;
     }

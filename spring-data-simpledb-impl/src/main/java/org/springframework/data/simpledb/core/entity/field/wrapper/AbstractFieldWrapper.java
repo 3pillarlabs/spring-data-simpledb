@@ -51,36 +51,17 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 	}
 
     /**
-     * This Mutator should modify the state of the property through its correspondent Field setter method
+     * Sets value via setter
      */
     public void setFieldValue(Object fieldValue){
-        try {
-            final Method setterMethod = ReflectionUtils.retrieveSetterFrom(parentWrapper.getItem().getClass(), field);
-
-            Assert.notNull(setterMethod, "No Setter Found for corresponding Field=" + field.getName());
-
-            setterMethod.invoke(parentWrapper.getItem(), fieldValue);
-        } catch (InvocationTargetException | IllegalArgumentException | IllegalAccessException e) {
-            throw new MappingException("Exception occurred while trying to set value=" + fieldValue + " on Field=" + field.getName(), e);
-        }
-
+        ReflectionUtils.callSetter(parentWrapper.getItem(), field.getName(), fieldValue);
     }
 
     /**
-     * This Accessor method should read the field through its correspondent Field accessor-method
+     * Retrieves value via getter
      */
     public Object getFieldValue() {
-        Object fieldValue = null;
-        Method getterMethod = ReflectionUtils.retrieveGetterFrom(parentWrapper.getItem().getClass(), field);
-
-        Assert.notNull(getterMethod, "No Getter Found for corresponding Field=" + field.getName());
-
-        try {
-            fieldValue = getterMethod.invoke(parentWrapper.getItem());
-        } catch (InvocationTargetException | IllegalArgumentException | IllegalAccessException e) {
-            throw new MappingException("Could not retrieve field value for Field=" + this.field.getName(), e);
-        }
-        return fieldValue;
+        return ReflectionUtils.callGetter(parentWrapper.getItem(), field.getName());
     }
 
 
