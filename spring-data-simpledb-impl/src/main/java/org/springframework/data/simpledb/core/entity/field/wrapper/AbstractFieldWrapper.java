@@ -2,13 +2,17 @@ package org.springframework.data.simpledb.core.entity.field.wrapper;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.amazonaws.services.s3.internal.RestUtils;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
+import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.Assert;
 
 public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
@@ -33,10 +37,7 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 
 	public abstract Map<String, List<String>> serialize(String prefix);
 
-
 	public abstract Object deserialize(final Map<String, List<String>> attributes);
-	
-
 
 	/**
 	 * Template method.
@@ -50,29 +51,36 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 	}
 
     /**
-     * TODO: cclaudiu
      * This Mutator should modify the state of the property through its correspondent Field setter method
      */
-    public void setFieldValue(Object value){
+    public void setFieldValue(Object fieldValue){
         try {
-            getField().set(parentWrapper.getItem(), value);
-        } catch (IllegalArgumentException | IllegalAccessException e) {
-            throw new MappingException("Could not map attributes", e);
+            final Method setterMethod = ReflectionUtils.retrieveSetterFrom(parentWrapper.getItem().getClass(), field);
+
+            Assert.notNull(setterMethod, "No Setter Found for corresponding Field=" + field.getName());
+
+            setterMethod.invoke(parentWrapper.getItem(), fieldValue);
+        } catch (InvocationTargetException | IllegalArgumentException | IllegalAccessException e) {
+            throw new MappingException("Exception occurred while trying to set value=" + fieldValue + " on Field=" + field.getName(), e);
         }
 
     }
 
     /**
-     * TODO: cclaudiu
-     * This Accesor method should read the field through its correspondent Field accessor-method
+     * This Accessor method should read the field through its correspondent Field accessor-method
      */
     public Object getFieldValue() {
+        Object fieldValue = null;
+        Method getterMethod = ReflectionUtils.retrieveGetterFrom(parentWrapper.getItem().getClass(), field);
+
+        Assert.notNull(getterMethod, "No Getter Found for corresponding Field=" + field.getName());
+
         try {
-//            Method readMethod = FieldTypeIdentifier.retrieveGetterFrom(parentWrapper.getItem(), field);
-            return this.field.get(parentWrapper.getItem());
-        } catch (IllegalArgumentException | IllegalAccessException e) {
-            throw new MappingException("Could not retrieve field value " + this.field.getName(), e);
+            fieldValue = getterMethod.invoke(parentWrapper.getItem());
+        } catch (InvocationTargetException | IllegalArgumentException | IllegalAccessException e) {
+            throw new MappingException("Could not retrieve field value for Field=" + this.field.getName(), e);
         }
+        return fieldValue;
     }
 
 

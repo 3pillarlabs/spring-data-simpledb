@@ -1,8 +1,7 @@
 package org.springframework.data.simpledb.sample.simpledb.repository.query;
 
 import java.util.List;
-import static org.junit.Assert.assertNotNull;
-import org.junit.Ignore;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,49 +12,50 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-consistent-repository-context.xml")
-@Ignore
 public class AnnotatedQueryWithPartialFieldsTest {
 
     @Autowired
     AnnotatedQueryWithPartialFieldsReqpository repository;
 
     @Test
-    public void partialPrimitiveFieldSelect_should_return_a_single_primitive_field() {
-        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
-        repository.save(testUsers);
+    public void selectSinglePartialField_should_return_a_single_column_in_a_single_row() {
+        SimpleDbUser testUser = SimpleDbUserBuilder.createUserWithSampleAttributes("Item_0");
+        repository.save(testUser);
 
-        float result = repository.partialPrimitiveFieldSelect("Item_0");
+        List<List<Object>> result = repository.selectCoreFieldByItemName(testUser.getItemName());
         assertNotNull(result);
-        //TODO assertEquals(0.01, result, 0.001);
+        assertEquals(testUser.getCoreField(), result.get(0).get(0));
     }
 
     @Test
-    public void partialPrimitiveListSelect_should_return_a_list_of_primitives() {
-        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
-        repository.save(testUsers);
+    public void selectMultiplePartialField_should_return_a_multiple_columns_in_a_single_row() {
+        SimpleDbUser testUser = SimpleDbUserBuilder.createUserWithSampleAttributes("Item_0");
+        repository.save(testUser);
 
-        List<Float> result = repository.partialPrimitiveListSelect();
+        List<List<Object>> result = repository.selectPrimitiveField_CoreFieldByItemName(testUser.getItemName());
         assertNotNull(result);
-        //TODO assertEquals(0.01, result, 0.001);
+        assertEquals(testUser.getPrimitiveField(), result.get(0).get(0));
+        assertEquals(testUser.getCoreField(), result.get(0).get(1));
     }
 
     @Test
-    public void partialCoreFieldSelect_should_return_a_core_object_field() {
+    public void selectSinglePartialFieldList_should_return_a_single_column_with_multiple_rows() {
         List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
         repository.save(testUsers);
 
-        String result = repository.partialCoreFieldSelect();
+        List<List<Object>> result = repository.selectCoreFields();
         assertNotNull(result);
-        //TODO assertEquals("tes_string$", result);
+        assertEquals(testUsers.get(2).getCoreField(), result.get(2).get(0));
     }
 
     @Test
-    public void partialCoreListSelect_should_return_a_list_of_core_object_fields() {
+    public void selectMultiplePartialFieldList_should_return_multiple_columns_with_multiple_rows() {
         List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
         repository.save(testUsers);
 
-        List<String> result = repository.partialCoreListSelect();
+        List<List<Object>> result = repository.selectPrimitiveFields_CoreFields();
         assertNotNull(result);
-        //TODO assertEquals("tes_string$", result);
+        assertEquals(testUsers.get(2).getPrimitiveField(), result.get(2).get(0));
+        assertEquals(testUsers.get(2).getCoreField(), result.get(2).get(1));
     }
 }
