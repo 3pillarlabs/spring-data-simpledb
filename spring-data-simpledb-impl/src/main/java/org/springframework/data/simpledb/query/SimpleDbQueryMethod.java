@@ -11,6 +11,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 
 /**
  * SimpleDB specific extension of {@link org.springframework.data.repository.query.QueryMethod}. <br/>
@@ -94,5 +95,13 @@ public class SimpleDbQueryMethod extends QueryMethod {
     @Override
     public Class<?> getDomainClass() {
         return super.getDomainClass();
+    }
+
+    public Class<?> getReturnType(){
+        return method.getReturnType();
+    }
+
+    public ParameterizedType getGenericReturnType(){
+        return (ParameterizedType)method.getGenericReturnType();
     }
 }
