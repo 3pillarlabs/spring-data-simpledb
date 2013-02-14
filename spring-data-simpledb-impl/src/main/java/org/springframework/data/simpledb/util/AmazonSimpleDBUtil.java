@@ -13,6 +13,7 @@ package org.springframework.data.simpledb.util;
  */
 
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.data.mapping.model.MappingException;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -30,11 +31,56 @@ public final class AmazonSimpleDBUtil {
      */
     private static String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     public static final int LONG_DIGITS = 20;
+    public static final BigDecimal OFFSET_VALUE = new BigDecimal(Long.MIN_VALUE).negate();
+
 
     private AmazonSimpleDBUtil() {
     	/* utility class */
     }
-    
+
+
+    /**
+     * Unsed to encode an Integer {@link Number}.
+     */
+    public static String encodeAsIntegerNumber(Object ob) {
+        BigDecimal  integerBigDecimal = AmazonSimpleDBUtil.tryToStoreAsIntegerBigDecimal(ob);
+        if(integerBigDecimal != null){
+            return AmazonSimpleDBUtil.encodeRealNumberRange(integerBigDecimal, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE);
+        }
+
+        return null;
+    }
+
+
+    public static BigDecimal decodeIntegerNumber(String value){
+        return AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE);
+    }
+
+    /**
+     * Unsed to encode a Not Integer {@link Number}.
+     */
+    public static String encodeAsRealNumber(Object ob) {
+        if(AmazonSimpleDBUtil.isNaN(ob) || AmazonSimpleDBUtil.isInfinite(ob)){
+            throw new MappingException("Could not serialize NaN or Infinity values");
+        }
+
+
+        BigDecimal realBigDecimal = AmazonSimpleDBUtil.tryToStoreAsRealBigDecimal(ob);
+        if(realBigDecimal != null){
+            return AmazonSimpleDBUtil.encodeRealNumberRange(realBigDecimal, AmazonSimpleDBUtil.LONG_DIGITS, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE);
+        }
+
+        return null;
+    }
+
+    public static BigDecimal decodeRealNumber(String value){
+        if(value.matches(".*Infinity|NaN")){
+            throw new MappingException("Could not serialize NaN or Infinity values");
+        }
+        return AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE);
+    }
+
+
     public static String encodeRealNumberRange(BigDecimal number, int maxNumDigits, BigDecimal offsetValue) {
         final BigDecimal offsetNumber = number.add(offsetValue);
         final String longString = offsetNumber.toString();
@@ -70,6 +116,7 @@ public final class AmazonSimpleDBUtil {
         BigDecimal offsetNumber = new BigDecimal(value);
         return (offsetNumber.subtract(offsetValue));
     }
+
 
     public static BigDecimal decodeRealNumberRange(String value, int maxDigitsRight, BigDecimal offsetValue) {
         BigDecimal offsetNumber = new BigDecimal(value);
@@ -123,4 +170,50 @@ public final class AmazonSimpleDBUtil {
         return Base64.decodeBase64(value.getBytes());
 
     }
+
+
+    private static BigDecimal tryToStoreAsRealBigDecimal(Object ob){
+        BigDecimal bigDecimal = null;
+        if(canBeStoredAsRealBigDecimal(ob)){
+            bigDecimal =  new BigDecimal(ob.toString());
+        }  else if (ob instanceof BigDecimal){
+            bigDecimal = (BigDecimal) ob;
+        }
+
+        return bigDecimal;
+    }
+
+    private static BigDecimal tryToStoreAsIntegerBigDecimal(Object ob){
+        BigDecimal bigDecimal = null;
+        if(canBeStoredAsIntegerBigDecimal(ob)){
+            bigDecimal =  new BigDecimal(ob.toString());
+        }
+
+        return bigDecimal;
+    }
+
+    private static boolean canBeStoredAsRealBigDecimal(Object ob){
+        if(isNaN(ob) || isInfinite(ob)){
+            return false;
+        }
+
+        return ob instanceof Double || ob instanceof Float;
+    }
+
+
+    private static boolean canBeStoredAsIntegerBigDecimal(Object ob){
+        return ob instanceof Number && !(ob instanceof Float || ob instanceof Double);
+    }
+
+
+    public static boolean isNaN(Object ob) {
+        return (ob instanceof Double  && ((Double) ob).isNaN()) ||
+                (ob instanceof Float  && ((Float) ob).isNaN());
+    }
+
+    public static boolean isInfinite(Object ob) {
+        return (ob instanceof Double  && ((Double) ob).isInfinite()) ||
+                (ob instanceof Float  && ((Float) ob).isInfinite());
+    }
+
 }

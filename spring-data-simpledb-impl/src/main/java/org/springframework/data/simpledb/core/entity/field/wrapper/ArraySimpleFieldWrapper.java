@@ -8,7 +8,6 @@ import java.util.List;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
-import org.springframework.util.Assert;
 
 public class ArraySimpleFieldWrapper<T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T, ID> {
 
@@ -19,14 +18,14 @@ public class ArraySimpleFieldWrapper<T, ID extends Serializable> extends Abstrac
 
     @Override
     public List<String> serializeValue() {
-        return SimpleDBAttributeConverter.primitiveArraysToSimpleDBAttributeValues(this.getFieldValue());
+        return SimpleDBAttributeConverter.encodePrimitiveArray(this.getFieldValue());
     }
 
     @Override
     public Object deserializeValue(List<String> value) {
         try {
             Class<?> fieldClazz = getField().getType();
-            return SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(value, fieldClazz.getComponentType());
+            return SimpleDBAttributeConverter.decodeToPrimitiveArray(value, fieldClazz.getComponentType());
 
         } catch (ParseException e) {
             throw new MappingException("Could not read object", e);

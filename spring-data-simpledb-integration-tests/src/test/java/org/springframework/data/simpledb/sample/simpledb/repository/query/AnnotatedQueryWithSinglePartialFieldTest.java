@@ -27,101 +27,101 @@ public class AnnotatedQueryWithSinglePartialFieldTest {
 
     @Test
     public void partialPrimitiveFieldSelect_should_return_a_single_primitive_field() {
-        List<SimpleDbDifferentFieldTypes> testUsers = SimpleDbDifferentFiledTypesBuilder.createListOfItems(1);
-        repository.save(testUsers);
+        SimpleDbDifferentFieldTypes differentFieldsTypeEntity = SimpleDbDifferentFiledTypesBuilder.createUserWithSampleAttributes("Item_0");
+        repository.save(differentFieldsTypeEntity);
 
         float result = repository.partialPrimitiveFieldSelect();
         assertNotNull(result);
-        assertThat(result, is(testUsers.get(0).getPrimitiveField()));
+        assertThat(result, is(differentFieldsTypeEntity.getPrimitiveField()));
     }
 
     @Test
     @Ignore
     public void partialNestedEntitySelect_should_return_a_single_object_field() {
-        List<SimpleDbDifferentFieldTypes> testUsers = SimpleDbDifferentFiledTypesBuilder.createListOfItems(3);
-        repository.save(testUsers);
+        SimpleDbDifferentFieldTypes differentFieldsTypeEntity = SimpleDbDifferentFiledTypesBuilder.createUserWithSampleAttributes("Item_0");
+        repository.save(differentFieldsTypeEntity);
 
         JSONCompatibleClass result = repository.partialNestedEntitySelect();
         assertNotNull(result);
-        assertEquals(testUsers.get(0).getJsonCompatibleClass(), result);
+        assertEquals(differentFieldsTypeEntity.getJsonCompatibleClass(), result);
     }
 
     @Test
     @Ignore
     public void partialObjectListSelect_should_return_a_single_object_field() {
-        List<SimpleDbDifferentFieldTypes> testUsers = SimpleDbDifferentFiledTypesBuilder.createListOfItems(3);
-        repository.save(testUsers);
+        SimpleDbDifferentFieldTypes differentFieldsTypeEntity = SimpleDbDifferentFiledTypesBuilder.createUserWithSampleAttributes("Item_0");
+        repository.save(differentFieldsTypeEntity);
 
         List<JSONCompatibleClass> result = repository.partialObjectListSelect();
         assertNotNull(result);
-        assertEquals(testUsers.get(0).getJsonCompatibleClass(), result);
+        assertEquals(differentFieldsTypeEntity.getJsonCompatibleClass(), result);
     }
 
     @Test
     public void partialPrimitiveListSelect_should_return_a_list_of_primitives() {
-        List<SimpleDbDifferentFieldTypes> testUsers = SimpleDbDifferentFiledTypesBuilder.createListOfItems(3);
-        repository.save(testUsers);
+        List<SimpleDbDifferentFieldTypes> differentFieldsTypeEntity = SimpleDbDifferentFiledTypesBuilder.createListOfItems(3);
+        repository.save(differentFieldsTypeEntity);
 
         List<Float> result = repository.partialPrimitiveListSelect();
         assertNotNull(result);
-        for(SimpleDbDifferentFieldTypes simpleUser : testUsers){
+        for(SimpleDbDifferentFieldTypes simpleUser : differentFieldsTypeEntity){
             assertTrue(result.indexOf(simpleUser.getPrimitiveField()) != -1);
         }
     }
 
     @Test
     public void partialCoreTypeListSelectSelect_should_return_a_list_of_primitives() {
-        List<SimpleDbDifferentFieldTypes> testUsers = SimpleDbDifferentFiledTypesBuilder.createListOfItems(3);
-        repository.save(testUsers);
+        SimpleDbDifferentFieldTypes differentFieldsTypeEntity = SimpleDbDifferentFiledTypesBuilder.createUserWithSampleAttributes("Item_0");
+        repository.save(differentFieldsTypeEntity);
 
         List<Integer> result = repository.partialCoreTypeListSelect();
         assertNotNull(result);
-        assertEquals(testUsers.get(0).getCoreTypeList(), result);
+        assertEquals(differentFieldsTypeEntity.getCoreTypeList(), result);
     }
 
     @Test
     public void partialCoreSetSelect_should_return_a_set_of_primitives() {
-        List<SimpleDbDifferentFieldTypes> testUsers = SimpleDbDifferentFiledTypesBuilder.createListOfItems(3);
-        repository.save(testUsers);
+        SimpleDbDifferentFieldTypes differentFieldsTypeEntity = SimpleDbDifferentFiledTypesBuilder.createUserWithSampleAttributes("Item_0");
+        repository.save(differentFieldsTypeEntity);
 
         Set<String> result = repository.partialCoreSetSelect();
         assertNotNull(result);
-        assertEquals(testUsers.get(0).getCoreTypeSet(), result);
+        assertEquals(differentFieldsTypeEntity.getCoreTypeSet(), result);
     }
 
 
     @Test
-    public void partialPrimitiveSetSelect_should_return_a_list_of_primitives() {
-        List<SimpleDbDifferentFieldTypes> testUsers = SimpleDbDifferentFiledTypesBuilder.createListOfItems(3);
-        repository.save(testUsers);
+    public void partialPrimitiveSetSelect_should_return_a_set_of_primitives() {
+        List<SimpleDbDifferentFieldTypes> differentFieldsTypeEntity = SimpleDbDifferentFiledTypesBuilder.createListOfItems(3);
+        repository.save(differentFieldsTypeEntity);
 
         Set<Float> result = repository.partialPrimitiveSetSelect();
         assertNotNull(result);
-        for(SimpleDbDifferentFieldTypes simpleUser : testUsers){
+        for(SimpleDbDifferentFieldTypes simpleUser : differentFieldsTypeEntity){
             assertTrue(result.contains(simpleUser.getPrimitiveField()));
         }
     }
 
     @Test
-    public void partialCoreMapSelect_should_return_a_list_of_primitives() {
-        List<SimpleDbDifferentFieldTypes> testUsers = SimpleDbDifferentFiledTypesBuilder.createListOfItems(3);
-        repository.save(testUsers);
+    public void partialCoreMapSelect_should_return_a_map_of_primitives() {
+        SimpleDbDifferentFieldTypes differentFieldsTypeEntity = SimpleDbDifferentFiledTypesBuilder.createUserWithSampleAttributes("Item_0");
+        repository.save(differentFieldsTypeEntity);
 
         Map<String, String> result = repository.partialCoreMapSelect();
         assertNotNull(result);
-        assertEquals(testUsers.get(0).getCoreTypeMap(), result);
+        assertEquals(differentFieldsTypeEntity.getCoreTypeMap(), result);
     }
 
 
     @Test
     @Ignore
     public void partialListOfListField_should_return_a_list_of_core_object_fields() {
-        List<SimpleDbDifferentFieldTypes> testUsers = SimpleDbDifferentFiledTypesBuilder.createListOfItems(3);
-        repository.save(testUsers);
+        List<SimpleDbDifferentFieldTypes> differentFieldsTypeEntity = SimpleDbDifferentFiledTypesBuilder.createListOfItems(3);
+        repository.save(differentFieldsTypeEntity);
 
         List<List<Integer>> result = repository.partialListOfCoreTypeListSelect();
         assertNotNull(result);
-        for(SimpleDbDifferentFieldTypes simpleUser : testUsers){
+        for(SimpleDbDifferentFieldTypes simpleUser : differentFieldsTypeEntity){
             assertTrue(result.contains(simpleUser.getCoreTypeList()));
         }
     }

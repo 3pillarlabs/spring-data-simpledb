@@ -1,10 +1,7 @@
 package org.springframework.data.simpledb.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class StringUtil {
 
@@ -55,16 +52,5 @@ public final class StringUtil {
             }
         }
         return queryParams;
-    }
-
-    public static List<String> getAttributesInQuerry(String query){
-        final Pattern betweenSelectAndFrom = Pattern.compile("select(?:\\s+)(.+?)(?:\\s+from)", Pattern.CASE_INSENSITIVE);
-        final Matcher matcher = betweenSelectAndFrom.matcher(query);
-        if (matcher.find()) {
-            String attribute = matcher.group(1);
-            //attribute.replaceAll(" ", "");
-            return attribute.contains(",") ? Arrays.asList(attribute.split(",")) : Arrays.asList(attribute);
-        }
-        return new ArrayList<String>();
     }
 }

@@ -1,5 +1,6 @@
 package org.springframework.data.simpledb.util;
 
+import org.springframework.data.mapping.model.MappingException;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Array;
@@ -9,25 +10,24 @@ import java.util.*;
 
 public final class SimpleDBAttributeConverter {
 
-    public static final int LONG_DIGITS = 20;
-    public static final BigDecimal OFFSET_VALUE = new BigDecimal(Long.MIN_VALUE).negate();
 
     private SimpleDBAttributeConverter() {
     	/* utility class */
     }
-    
-    private static String padOrConvertIfRequired(Object ob) {
 
-        if (ob instanceof Number && !(ob instanceof Float || ob instanceof Double)) {
-            // then pad
-            return AmazonSimpleDBUtil.encodeRealNumberRange(new BigDecimal(ob.toString()), AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE);
-        } else if ((ob instanceof Double && !((Double) ob).isInfinite() && !((Double) ob).isNaN()) || (ob instanceof Float && !((Float) ob).isInfinite() && !((Float) ob).isNaN())) {
-            // then pad
-            return AmazonSimpleDBUtil.encodeRealNumberRange(new BigDecimal(ob.toString()), AmazonSimpleDBUtil.LONG_DIGITS, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE);
-        } else if (ob instanceof BigDecimal) {
-            // then pad
-            return AmazonSimpleDBUtil.encodeRealNumberRange((BigDecimal) ob, AmazonSimpleDBUtil.LONG_DIGITS, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE);
-        } else if (ob instanceof Date) {
+    public static String encode(Object ob) {
+        String integerNumberEncoding = AmazonSimpleDBUtil.encodeAsIntegerNumber(ob);
+
+        if(integerNumberEncoding!=null){
+            return integerNumberEncoding;
+        }
+
+        String realNumberEncoding = AmazonSimpleDBUtil.encodeAsRealNumber(ob);
+        if(realNumberEncoding != null){
+            return  realNumberEncoding;
+        }
+
+        if (ob instanceof Date) {
             Date d = (Date) ob;
             return AmazonSimpleDBUtil.encodeDate(d);
         } else if (ob instanceof byte[]) {
@@ -37,11 +37,7 @@ public final class SimpleDBAttributeConverter {
         return ob.toString();
     }
 
-    public static String toSimpleDBAttributeValue(final Object fieldValue) {
-        return padOrConvertIfRequired(fieldValue);
-    }
-
-    public static List<String> primitiveArraysToSimpleDBAttributeValues(final Object primitiveCollectionFieldValues) {
+    public static List<String> encodePrimitiveArray(final Object primitiveCollectionFieldValues) {
         Assert.notNull(primitiveCollectionFieldValues);
 
         final List<String> attributeValues = new ArrayList<>();
@@ -49,41 +45,32 @@ public final class SimpleDBAttributeConverter {
 
         for (int idx = 0; idx < primitiveCollLength; idx++) {
             Object itemValue = Array.get(primitiveCollectionFieldValues, idx);
-            attributeValues.add(padOrConvertIfRequired(itemValue));
+            attributeValues.add(encode(itemValue));
         }
 
         return attributeValues;
     }
 
 
-    public static Object toFieldOfType(String value, Class<?> retType) throws ParseException {
+    public static Object decodeToFieldOfType(String value, Class<?> retType) throws ParseException {
         Object val = null;
 
+
         if (Integer.class.isAssignableFrom(retType) || retType == int.class) {
-            val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).intValue();
+            val = AmazonSimpleDBUtil.decodeIntegerNumber(value).intValue();
         } else if (Long.class.isAssignableFrom(retType) || retType == long.class) {
-            val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).longValue();
+            val = AmazonSimpleDBUtil.decodeIntegerNumber(value).longValue();
         }
         if (Short.class.isAssignableFrom(retType) || retType == short.class) {
-            val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).shortValue();
+            val = AmazonSimpleDBUtil.decodeIntegerNumber(value).shortValue();
         } else if (Byte.class.isAssignableFrom(retType) || retType == byte.class) {
-            val = AmazonSimpleDBUtil.decodeRealNumberRange(value, OFFSET_VALUE).byteValue();
+            val = AmazonSimpleDBUtil.decodeIntegerNumber(value).byteValue();
         } else if (Float.class.isAssignableFrom(retType) || retType == float.class) {
-            // Ignore NaN and Infinity
-            if (!value.matches(".*Infinity|NaN")) {
-                val = AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE).floatValue();
-            } else {
-                val = Float.NaN;
-            }
+            val = AmazonSimpleDBUtil.decodeRealNumber(value).floatValue();
         } else if (Double.class.isAssignableFrom(retType) || retType == double.class) {
-            // Ignore NaN and Infinity
-            if (!value.matches(".*Infinity|NaN")) {
-                val = AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE).doubleValue();
-            } else {
-                val = Double.NaN;
-            }
+            val = AmazonSimpleDBUtil.decodeRealNumber(value).doubleValue();
         } else if (BigDecimal.class.isAssignableFrom(retType)) {
-            val = AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE);
+            val = AmazonSimpleDBUtil.decodeRealNumber(value);
         } else if (byte[].class.isAssignableFrom(retType)) {
             val = AmazonSimpleDBUtil.decodeByteArray(value);
         } else if (Date.class.isAssignableFrom(retType)) {
@@ -97,14 +84,20 @@ public final class SimpleDBAttributeConverter {
         return val;
     }
 
-    public static Object toDomainFieldPrimitiveArrays(List<String> fromSimpleDbAttValues, Class<?> retType) throws ParseException {
+    public static Object decodeToPrimitiveArray(List<String> fromSimpleDbAttValues, Class<?> retType) throws ParseException {
         Object primitiveCollection = Array.newInstance(retType, fromSimpleDbAttValues.size());
         int idx = 0;
 
         for (Iterator<String> iterator = fromSimpleDbAttValues.iterator(); iterator.hasNext(); idx++) {
-            Array.set(primitiveCollection, idx, toFieldOfType(iterator.next(), retType));
+            Array.set(primitiveCollection, idx, decodeToFieldOfType(iterator.next(), retType));
         }
 
         return primitiveCollection;
     }
+
+
+
+
+
+
 }

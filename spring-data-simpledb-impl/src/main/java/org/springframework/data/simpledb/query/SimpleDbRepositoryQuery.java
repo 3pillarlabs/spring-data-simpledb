@@ -6,7 +6,8 @@ import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.query.SimpleDbQueryExecution.*;
-import org.springframework.data.simpledb.util.StringUtil;
+import org.springframework.data.simpledb.util.QueryUtils;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -50,19 +51,23 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         String query = method.getAnnotatedQuery();
         if (query.toLowerCase().contains("count(")) {
             return new CountExecution(simpledbOperations);
-        } else if (Collection.class.isAssignableFrom(getTypeFieldSelected(query))) {
-            return new PartialCollectionFieldExecution(simpledbOperations);
         } else if (method.isCollectionQuery()) {
             if (query.contains("*")) {
                 return new CollectionExecution(simpledbOperations);
-            } else if (isGenericResultQuery()){
+            } else if (QueryUtils.getQueryPartialFieldNames(query).size() > 1) {
                 return new PartialCollectionExecution(simpledbOperations);
-            }else if (List.class.isAssignableFrom(method.getReturnType())) {
-                return new PartialListOfOneFiledExecution(simpledbOperations);
-            } else if (Set.class.isAssignableFrom(method.getReturnType())) {
-                return new PartialSetOfOneFiledExecution(simpledbOperations);
             } else {
-                throw new IllegalArgumentException("Not implemented");
+                if (Collection.class.isAssignableFrom(getTypeFieldSelected(query))) {
+                    return new PartialCollectionFieldExecution(simpledbOperations);
+                } else if (isGenericResultQuery()) {
+                    return new PartialCollectionExecution(simpledbOperations);
+                } else if (List.class.isAssignableFrom(method.getReturnType())) {
+                    return new PartialListOfOneFiledExecution(simpledbOperations);
+                } else if (Set.class.isAssignableFrom(method.getReturnType())) {
+                    return new PartialSetOfOneFiledExecution(simpledbOperations);
+                } else {
+                    throw new IllegalArgumentException("Not implemented");
+                }
             }
         } else if (method.isQueryForEntity()) {
             return new SingleResultExecution(simpledbOperations);
@@ -89,10 +94,15 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         return queryMethod.getAnnotatedQuery() == null ? null : new SimpleDbRepositoryQuery(queryMethod, simpleDbOperations);
     }
 
+    private boolean isCollectionField(String query){
+        Collection.class.isAssignableFrom(getTypeFieldSelected(query));
+        return true;
+    }
 
     private Class<?> getTypeFieldSelected(String query){
         final Class<?> domainClass = method.getDomainClass();
-        List<String> attributesFromQuery = StringUtil.getAttributesInQuerry(query);
+        List<String> attributesFromQuery = QueryUtils.getQueryPartialFieldNames(query);
+        Assert.isTrue(attributesFromQuery.size() == 1, "Query doesn't contain only one attribute in selected clause :"+query);
         String attributeName = attributesFromQuery.get(0);
         Field field = null;
         try {
@@ -100,23 +110,25 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
             Class<?> type = field.getType();
             return type;
         } catch (NoSuchFieldException e) {
-            throw new IllegalArgumentException("Filed doesn't exist in entity :" + query);
+            throw new IllegalArgumentException("Filed doesn't exist in entity :" + query, e);
         }
     }
 
     private boolean isGenericResultQuery(){
         ParameterizedType returnType = method.getGenericReturnType();
-        Type genericType = returnType.getActualTypeArguments()[0];
+        Type returnedGenericType = returnType.getActualTypeArguments()[0];
 
-        if(genericType.equals(method.getDomainClass())) {
+        if(returnedGenericType.equals(method.getDomainClass())) {
             return true;
         }
 
-        if (!genericType.equals(Object.class)) {
-            return false;
-        } else {
-        ParameterizedType pp = (ParameterizedType) genericType;
-            Class<?> genericObject = (Class<?>) pp.getActualTypeArguments()[0];
+        if (returnedGenericType instanceof ParameterizedType) {
+            ParameterizedType secondGenericType = (ParameterizedType) returnedGenericType;
+            Class<?> rowType = (Class<?>)secondGenericType.getRawType();
+            if(!List.class.isAssignableFrom(rowType)){
+                return false;
+            }
+            Class<?> genericObject = (Class<?>) secondGenericType.getActualTypeArguments()[0];
 
             if(genericObject.equals(Object.class)) {
                 return true;

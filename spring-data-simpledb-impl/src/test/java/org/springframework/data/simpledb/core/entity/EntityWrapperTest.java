@@ -80,39 +80,32 @@ public class EntityWrapperTest {
 		assertNotNull(intValues);
 		assertFalse(intValues.isEmpty());
 		assertTrue(intValues.size() == 1);
-		assertEquals(entity.getIntField(), ((Integer) SimpleDBAttributeConverter.toFieldOfType(intValues.get(0), Integer.class)).intValue());
+		assertEquals(entity.getIntField(), ((Integer) SimpleDBAttributeConverter.decodeToFieldOfType(intValues.get(0), Integer.class)).intValue());
 
 		/* test long field */
 		List<String> longValues = attributes.get("longField");
-		assertEquals(entity.getLongField(), ((Long) SimpleDBAttributeConverter.toFieldOfType(longValues.get(0), Long.class)).longValue());
+		assertEquals(entity.getLongField(), ((Long) SimpleDBAttributeConverter.decodeToFieldOfType(longValues.get(0), Long.class)).longValue());
 
 		/* test short field */
 		List<String> shortValues = attributes.get("shortField");
-		assertEquals(entity.getShortField(), ((Short) SimpleDBAttributeConverter.toFieldOfType(shortValues.get(0), Short.class)).shortValue());
+		assertEquals(entity.getShortField(), ((Short) SimpleDBAttributeConverter.decodeToFieldOfType(shortValues.get(0), Short.class)).shortValue());
 
 		/* test float field */
 		List<String> floatValues = attributes.get("floatField");
-		assertTrue(entity.getFloatField() == ((Float) SimpleDBAttributeConverter.toFieldOfType(floatValues.get(0), Float.class)).floatValue());
+		assertTrue(entity.getFloatField() == ((Float) SimpleDBAttributeConverter.decodeToFieldOfType(floatValues.get(0), Float.class)).floatValue());
 
 		/* test double field */
 		List<String> doubleValues = attributes.get("doubleField");
-		assertTrue(entity.getDoubleField() == ((Double) SimpleDBAttributeConverter.toFieldOfType(doubleValues.get(0), Double.class)).doubleValue());
+		assertTrue(entity.getDoubleField() == ((Double) SimpleDBAttributeConverter.decodeToFieldOfType(doubleValues.get(0), Double.class)).doubleValue());
 
 		/* test byte field */
 		List<String> byteValues = attributes.get("byteField");
-		assertTrue(entity.getByteField() == ((Byte) SimpleDBAttributeConverter.toFieldOfType(byteValues.get(0), Byte.class)).byteValue());
+		assertTrue(entity.getByteField() == ((Byte) SimpleDBAttributeConverter.decodeToFieldOfType(byteValues.get(0), Byte.class)).byteValue());
 
 		/* test boolean field */
 		List<String> booleanValues = attributes.get("booleanField");
-		assertTrue(entity.getBooleanField() == ((Boolean)SimpleDBAttributeConverter.toFieldOfType(booleanValues.get(0), Boolean.class)).booleanValue());
+		assertTrue(entity.getBooleanField() == ((Boolean)SimpleDBAttributeConverter.decodeToFieldOfType(booleanValues.get(0), Boolean.class)).booleanValue());
 
-//		/* test String field */
-//		List<String> stringValues = attributes.get("stringField");
-//		assertTrue(entity.getStringField() == ((String)SimpleDBAttributeConverter.toFieldOfType(stringValues.get(0), String.class)));
-//
-//		/* test Double field */
-//		List<String> doubleWrapperValue = attributes.get("doubleWrapper");
-//		assertTrue(entity.getDoubleWrapper() == ((Double) SimpleDBAttributeConverter.toFieldOfType(doubleWrapperValue.get(0), Double.class)).doubleValue());
 	}
 
 	/* ***************************** Test serializing nested domain entities ******************* */

@@ -20,7 +20,7 @@ public class PrimitiveSimpleFieldWrapper<T, ID extends Serializable> extends Abs
     public List<String> serializeValue() {
         final List<String> fieldValues = new ArrayList<>();
 
-        fieldValues.add(SimpleDBAttributeConverter.toSimpleDBAttributeValue(this.getFieldValue()));
+        fieldValues.add(SimpleDBAttributeConverter.encode(this.getFieldValue()));
 
         return fieldValues;
     }
@@ -28,7 +28,7 @@ public class PrimitiveSimpleFieldWrapper<T, ID extends Serializable> extends Abs
     @Override
     public Object deserializeValue(List<String> value) {
         try {
-            return SimpleDBAttributeConverter.toFieldOfType(value.get(0), getField().getType());
+            return SimpleDBAttributeConverter.decodeToFieldOfType(value.get(0), getField().getType());
         } catch (IllegalArgumentException | ParseException e) {
             throw new MappingException("Could not map attributes", e);
         }

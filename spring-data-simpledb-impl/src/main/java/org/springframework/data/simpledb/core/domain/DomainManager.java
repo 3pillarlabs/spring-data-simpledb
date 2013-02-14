@@ -14,7 +14,7 @@ import java.util.List;
 public class DomainManager {
 
     private final AmazonSimpleDB sdb;
-    private DomainManagementPolicy policy;
+    private final DomainManagementPolicy policy;
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainManager.class);

@@ -15,9 +15,6 @@ public interface AnnotatedSingleResultQueryRepository extends PagingAndSortingRe
     @Query(value = "select count(*) from `testDB.simpleDbUser`")
     public int customIntCount();
 
-    @Query(value = "select count (*) from `testDB.simpleDbUser`")
-    public Long customCountWrongSelect();
-
     @Query(value = "select * from `testDB.simpleDbUser` where itemName()='Item_0'")
     public SimpleDbUser customSelectOneUser();
 

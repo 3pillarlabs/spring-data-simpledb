@@ -128,7 +128,7 @@ public final class MetadataParser {
     }
 
     private static boolean isSerializableFieldForObject(Object object, Field field) {
-        return FieldTypeIdentifier.hasDeclaredGetterAndSetter(field, object.getClass())
+        return ReflectionUtils.hasDeclaredGetterAndSetter(field, object.getClass())
                 && FieldTypeIdentifier.isSerializableField(field)
                 && !hasUnsupportedAnnotations(field)
                 && !isIdForObject(field, object);
