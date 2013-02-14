@@ -41,12 +41,12 @@ public class SimpleDBAttributeConverterTest {
 	}
 	
 	private String toDomainFieldPrimitive(String value, Class<?> clazz) throws ParseException {
-		return SimpleDBAttributeConverter.toFieldOfType(value, clazz).toString();
+		return SimpleDBAttributeConverter.decodeToFieldOfType(value, clazz).toString();
 	}
 
 	private String toSimpleDBAttributeValue(SampleEntity domainEntity, String fieldName) throws IllegalAccessException, NoSuchFieldException {
-		return SimpleDBAttributeConverter.toSimpleDBAttributeValue(domainEntity.getClass().getDeclaredField(fieldName).get(domainEntity));
-	}
+        return SimpleDBAttributeConverter.encode(domainEntity.getClass().getDeclaredField(fieldName).get(domainEntity));
+    }
 	
 	@Test
 	public void toDomainFieldPrimitive_int_test() throws Exception {
@@ -213,7 +213,7 @@ public class SimpleDBAttributeConverterTest {
         final int[] expectedIntArray = {1, 2, 3, 4};
         final List<String> simpleDBValues = Arrays.asList("1", "2", "3", "4");
 
-        Object returnedPrimitiveCol = SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(simpleDBValues, int.class);
+        Object returnedPrimitiveCol = SimpleDBAttributeConverter.decodeToPrimitiveArray(simpleDBValues, int.class);
         int arrayLength = Array.getLength(returnedPrimitiveCol);
 
         for (int idx = 0; idx < arrayLength; idx++) {
@@ -225,9 +225,9 @@ public class SimpleDBAttributeConverterTest {
     public void encode_decode_primitive_arrays() throws ParseException {
         int[] someInts = {1, 2, 3, 4};
 
-       List<String> returnedMappedAttributeValues = SimpleDBAttributeConverter.primitiveArraysToSimpleDBAttributeValues(someInts);
+       List<String> returnedMappedAttributeValues = SimpleDBAttributeConverter.encodePrimitiveArray(someInts);
 
-        Object returnedPrimitiveCol = SimpleDBAttributeConverter.toDomainFieldPrimitiveArrays(returnedMappedAttributeValues, int.class);
+        Object returnedPrimitiveCol = SimpleDBAttributeConverter.decodeToPrimitiveArray(returnedMappedAttributeValues, int.class);
         int arrayLength = Array.getLength(returnedPrimitiveCol);
 
         for (int idx = 0; idx < arrayLength; idx++) {
@@ -237,8 +237,8 @@ public class SimpleDBAttributeConverterTest {
 
     @Test public void encode_decode_core_type() throws ParseException{
         Object date = new Date(1);
-        String encodedDate = SimpleDBAttributeConverter.toSimpleDBAttributeValue(date);
-        Object decodedDate = SimpleDBAttributeConverter.toFieldOfType(encodedDate, Date.class);
+        String encodedDate = SimpleDBAttributeConverter.encode(date);
+        Object decodedDate = SimpleDBAttributeConverter.decodeToFieldOfType(encodedDate, Date.class);
 
         assertEquals(date, decodedDate);
     }

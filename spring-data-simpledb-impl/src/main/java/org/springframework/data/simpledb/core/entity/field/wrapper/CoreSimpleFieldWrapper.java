@@ -21,7 +21,7 @@ public class CoreSimpleFieldWrapper<T, ID extends Serializable> extends Abstract
     public List<String> serializeValue() {
         final List<String> fieldValues = new ArrayList<>();
 
-        fieldValues.add(SimpleDBAttributeConverter.toSimpleDBAttributeValue(this.getFieldValue()));
+        fieldValues.add(SimpleDBAttributeConverter.encode(this.getFieldValue()));
 
         return fieldValues;
     }
@@ -31,7 +31,7 @@ public class CoreSimpleFieldWrapper<T, ID extends Serializable> extends Abstract
         Assert.isTrue(value.size() == 1);
 
         try {
-            return SimpleDBAttributeConverter.toFieldOfType(value.get(0), getField().getType());
+            return SimpleDBAttributeConverter.decodeToFieldOfType(value.get(0), getField().getType());
         } catch (IllegalArgumentException | ParseException e) {
             throw new MappingException("Could not map attributes", e);
         }
