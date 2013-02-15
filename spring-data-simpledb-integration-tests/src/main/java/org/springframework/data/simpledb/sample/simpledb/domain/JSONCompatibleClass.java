@@ -1,5 +1,8 @@
 package org.springframework.data.simpledb.sample.simpledb.domain;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * Created by: mgrozea
  */
@@ -17,18 +20,11 @@ public class JSONCompatibleClass {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof JSONCompatibleClass)) return false;
-
-        JSONCompatibleClass that = (JSONCompatibleClass) o;
-
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-
-        return true;
+        return EqualsBuilder.reflectionEquals(this, o);
     }
 
     @Override
     public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }

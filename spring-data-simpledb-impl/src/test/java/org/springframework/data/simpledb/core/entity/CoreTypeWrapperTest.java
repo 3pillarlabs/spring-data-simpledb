@@ -1,5 +1,7 @@
 package org.springframework.data.simpledb.core.entity;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.junit.Test;
 import org.springframework.data.simpledb.core.entity.util.AttributeUtil;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
@@ -105,24 +107,12 @@ public class CoreTypeWrapperTest {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof SampleCoreType)) return false;
-
-            SampleCoreType that = (SampleCoreType) o;
-
-            if (dateField != null ? !dateField.equals(that.dateField) : that.dateField != null) return false;
-            if (strField != null ? !strField.equals(that.strField) : that.strField!= null) return false;
-            if (longField != null ? !longField.equals(that.longField) : that.longField != null) return false;
-
-            return true;
+            return EqualsBuilder.reflectionEquals(this, o);
         }
 
         @Override
         public int hashCode() {
-            int result = 0;
-            result = 31 * result + strField.hashCode();
-            result = 31 * result + (dateField == null ? 0 : dateField.hashCode());
-            return result;
+            return HashCodeBuilder.reflectionHashCode(this);
         }
     }
 }

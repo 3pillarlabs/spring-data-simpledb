@@ -1,5 +1,7 @@
 package org.springframework.data.simpledb.sample.simpledb.domain;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.data.annotation.Id;
 
 import java.util.Arrays;
@@ -7,7 +9,6 @@ import java.util.List;
 
 /**
  * TODO: extend with other types to be tested as other type handlers are implemented.
- * Also update equals!
  * One sample for each supported type. Each particular instance and other tests should be included as Regular Junit Tests
  */
 public class SimpleDbUser {
@@ -112,63 +113,24 @@ public class SimpleDbUser {
          */
 		@Override
 		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + nestedPrimitiveField;
-			return result;
+            return HashCodeBuilder.reflectionHashCode(NestedEntity.this);
 		}
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            NestedEntity other = (NestedEntity) obj;
-            if (nestedPrimitiveField != other.nestedPrimitiveField) {
-                return false;
-            }
-
-            return true;
+            return EqualsBuilder.reflectionEquals(NestedEntity.this, obj);
         }
     }
 
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SimpleDbUser)) return false;
-
-        SimpleDbUser that = (SimpleDbUser) o;
-
-        if (Float.compare(that.primitiveField, primitiveField) != 0) return false;
-        if (coreField != null ? !coreField.equals(that.coreField) : that.coreField != null) return false;
-        if (coreTypeList != null ? !coreTypeList.equals(that.coreTypeList) : that.coreTypeList != null) return false;
-        if (itemName != null ? !itemName.equals(that.itemName) : that.itemName != null) return false;
-        if (nestedEntity != null ? !nestedEntity.equals(that.nestedEntity) : that.nestedEntity != null) return false;
-        if (objectField != null ? !objectField.equals(that.objectField) : that.objectField != null) return false;
-        if (objectList != null ? !objectList.equals(that.objectList) : that.objectList != null) return false;
-        if (!Arrays.equals(primitiveArrayField, that.primitiveArrayField)) return false;
-
-        return true;
+        return EqualsBuilder.reflectionEquals(this, o);
     }
 
     @Override
     public int hashCode() {
-        int result = itemName != null ? itemName.hashCode() : 0;
-        result = 31 * result + (primitiveField != +0.0f ? Float.floatToIntBits(primitiveField) : 0);
-        result = 31 * result + (coreField != null ? coreField.hashCode() : 0);
-        result = 31 * result + (nestedEntity != null ? nestedEntity.hashCode() : 0);
-        result = 31 * result + (objectField != null ? objectField.hashCode() : 0);
-        result = 31 * result + (coreTypeList != null ? coreTypeList.hashCode() : 0);
-        result = 31 * result + (objectList != null ? objectList.hashCode() : 0);
-        result = 31 * result + (primitiveArrayField != null ? Arrays.hashCode(primitiveArrayField) : 0);
-        return result;
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
 }
