@@ -183,7 +183,7 @@ public abstract class SimpleDbQueryExecution {
         @Override
         protected Object doExecute(SimpleDbRepositoryQuery repositoryQuery, Object[] values, SimpleDbQueryRunner queryRunner) {
             Object returnedEntity = queryRunner.extractSingleEntityFromDb();
-            String attributeName = queryRunner.getSingleQueryFieldName();;
+            String attributeName = queryRunner.getSingleQueryFieldName();
             return ReflectionUtils.callGetter(returnedEntity, attributeName);
         }
     }

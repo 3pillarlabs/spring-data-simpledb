@@ -15,9 +15,9 @@ import java.util.List;
  * This class is used to get information about query field names and execute queries
  */
 public class SimpleDbQueryRunner {
-    SimpleDbOperations<?, Serializable> simpledbOperations;
-    SimpleDbRepositoryQuery repositoryQuery;
-    Object[] parameterValues;
+    private SimpleDbOperations<?, Serializable> simpledbOperations;
+    private SimpleDbRepositoryQuery repositoryQuery;
+    private Object[] parameterValues;
 
     public SimpleDbQueryRunner(SimpleDbOperations<?, Serializable> simpledbOperations, SimpleDbRepositoryQuery repositoryQuery, Object[] parameterValues) {
         this.simpledbOperations = simpledbOperations;
