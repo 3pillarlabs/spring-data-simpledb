@@ -6,7 +6,7 @@ import org.springframework.data.simpledb.query.SimpleDbQueryRunner;
 import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
 import org.springframework.util.Assert;
 
-public class CountExecution extends SimpleDbQueryExecution {
+public class CountExecution extends AbstractSimpleDbQueryExecution {
 
     public CountExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
         super(simpleDbOperations);

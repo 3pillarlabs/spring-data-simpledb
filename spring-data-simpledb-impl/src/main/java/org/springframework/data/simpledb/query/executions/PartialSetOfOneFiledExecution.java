@@ -1,15 +1,14 @@
 package org.springframework.data.simpledb.query.executions;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.query.SimpleDbQueryRunner;
 import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
-import org.springframework.data.simpledb.util.ReflectionUtils;
+import org.springframework.data.simpledb.query.SimpleDbResultConverter;
 
-public class PartialSetOfOneFiledExecution extends SimpleDbQueryExecution {
+import java.io.Serializable;
+import java.util.List;
+
+public class PartialSetOfOneFiledExecution extends AbstractSimpleDbQueryExecution {
 
     public PartialSetOfOneFiledExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
         super(simpleDbOperations);
@@ -19,11 +18,6 @@ public class PartialSetOfOneFiledExecution extends SimpleDbQueryExecution {
     protected Object doExecute(SimpleDbRepositoryQuery repositoryQuery, SimpleDbQueryRunner queryRunner) {
         String attributeName = queryRunner.getSingleQueryFieldName();
         List<?> returnListFromDb = queryRunner.executeQuery();
-
-        Set<Object> returnList = new HashSet<>();
-        for (Object object : returnListFromDb) {
-            returnList.add(ReflectionUtils.callGetter(object, attributeName));
-        }
-        return returnList;
+        return SimpleDbResultConverter.filterAsSetAttributesNamed(returnListFromDb, attributeName);
     }
 }

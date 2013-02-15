@@ -6,7 +6,7 @@ import org.springframework.data.simpledb.query.SimpleDbQueryRunner;
 import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
 import org.springframework.data.simpledb.util.ReflectionUtils;
 
-public class PartialSingleResultExecution extends SimpleDbQueryExecution {
+public class PartialSingleResultExecution extends AbstractSimpleDbQueryExecution {
 
     public PartialSingleResultExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
         super(simpleDbOperations);

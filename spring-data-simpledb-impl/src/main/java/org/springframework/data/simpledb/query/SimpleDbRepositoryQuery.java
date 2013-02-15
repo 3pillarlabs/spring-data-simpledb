@@ -1,13 +1,13 @@
 package org.springframework.data.simpledb.query;
 
-import org.springframework.data.simpledb.query.executions.SimpleDbQueryExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
-
-import org.springframework.data.simpledb.query.executions.SimpleDbQueryExecution.*;
+import org.springframework.data.simpledb.core.entity.field.FieldType;
+import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
+import org.springframework.data.simpledb.query.executions.*;
 import org.springframework.data.simpledb.util.QueryUtils;
 import org.springframework.util.Assert;
 
@@ -18,9 +18,6 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import org.springframework.data.simpledb.core.entity.field.FieldType;
-import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
-import org.springframework.data.simpledb.query.executions.*;
 
 /**
  * {@link RepositoryQuery} implementation that inspects a {@link SimpleDbQueryMethod} for the existence of an {@link org.springframework.data.simpledb.annotation.Query} annotation and provides
@@ -63,7 +60,19 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         return method.getAnnotatedQuery();
     }
 
-    protected SimpleDbQueryExecution getExecution() {
+    protected AbstractSimpleDbQueryExecution getExecution() {
+//        String query = method.getAnnotatedQuery();
+//        assertNotHavingNestedQueryParameters(query);
+//        if(method.isCollectionQuery()){
+//            return new MultipleResultExecution(simpledbOperations);
+//        } else if (method.isModifyingQuery()){
+//            throw new IllegalArgumentException("Not implemented");
+//        } else if (method.isPageQuery()){
+//            throw new IllegalArgumentException("Not implemented");
+//        } else {
+//            return new SingleResultExecution(simpledbOperations);
+//        }
+
         //TODO fix this
         //return query and method
         String query = method.getAnnotatedQuery();
