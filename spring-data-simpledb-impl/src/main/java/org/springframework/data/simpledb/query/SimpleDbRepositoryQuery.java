@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
+
 import org.springframework.data.simpledb.query.executions.SimpleDbQueryExecution.*;
 import org.springframework.data.simpledb.util.QueryUtils;
 import org.springframework.util.Assert;
@@ -17,6 +18,8 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import org.springframework.data.simpledb.core.entity.field.FieldType;
+import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
 import org.springframework.data.simpledb.query.executions.*;
 
 /**
@@ -64,6 +67,7 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         //TODO fix this
         //return query and method
         String query = method.getAnnotatedQuery();
+        assertNotHavingNestedQueryParameters(query);
         if (QueryUtils.isCountQuery(query)) {
             return new CountExecution(simpledbOperations);
         } else if (method.isCollectionQuery()) {
@@ -140,5 +144,20 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         Type returnedGenericType = returnType.getActualTypeArguments()[0];
 
         return returnedGenericType.equals(method.getDomainClass());
+    }
+
+    private void assertNotHavingNestedQueryParameters(String query) {
+        List<String> attributesFromQuery = QueryUtils.getQueryPartialFieldNames(query);
+        final Class<?> domainClass = method.getDomainClass();
+        for (String attribute : attributesFromQuery) {
+            try {
+                Field field = domainClass.getDeclaredField(attribute);
+                if (FieldTypeIdentifier.isOfType(field, FieldType.NESTED_ENTITY)) {
+                    throw new IllegalArgumentException("Invalid query parameter :" + attribute + " is nested object");
+                }
+            } catch (NoSuchFieldException e) {
+                //might be a count or something else
+            }
+        }
     }
 }
