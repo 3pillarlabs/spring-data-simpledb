@@ -12,14 +12,14 @@ package org.springframework.data.simpledb.util;
  *
  */
 
-import org.apache.commons.codec.binary.Base64;
-import org.springframework.data.mapping.model.MappingException;
-
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.apache.commons.codec.binary.Base64;
+import org.springframework.data.mapping.model.MappingException;
 
 /**
  * Provides collection of static functions for conversion of various values into strings that may be compared lexicographically.

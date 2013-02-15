@@ -1,13 +1,13 @@
 package org.springframework.data.simpledb.core;
 
+import java.io.Serializable;
+import java.util.Iterator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-
-import java.io.Serializable;
-import java.util.Iterator;
 
 public class QueryBuilder<T, ID extends Serializable> {
 

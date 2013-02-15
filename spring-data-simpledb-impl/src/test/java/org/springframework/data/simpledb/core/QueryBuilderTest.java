@@ -1,15 +1,14 @@
 package org.springframework.data.simpledb.core;
 
-import org.junit.Test;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.simpledb.core.domain.SimpleDbSampleEntity;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import org.junit.Test;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.simpledb.core.domain.SimpleDbSampleEntity;
 
 public class QueryBuilderTest {
 

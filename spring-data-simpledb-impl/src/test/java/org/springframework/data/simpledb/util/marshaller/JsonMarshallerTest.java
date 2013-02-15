@@ -1,7 +1,7 @@
 package org.springframework.data.simpledb.util.marshaller;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.junit.Before;
+import org.junit.Test;
 
 public class JsonMarshallerTest {
 

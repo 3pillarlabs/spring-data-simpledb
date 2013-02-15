@@ -1,17 +1,16 @@
 package org.springframework.data.simpledb.core.entity;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.junit.Test;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.simpledb.core.entity.util.AttributeUtil;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
-
-import java.lang.reflect.Field;
-import java.util.*;
-
-import static org.junit.Assert.assertTrue;
 
 public class PrimitiveArrayWrapperTest {
 

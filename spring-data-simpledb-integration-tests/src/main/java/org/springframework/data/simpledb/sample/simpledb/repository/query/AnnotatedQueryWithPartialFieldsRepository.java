@@ -1,11 +1,11 @@
 package org.springframework.data.simpledb.sample.simpledb.repository.query;
 
+import java.util.List;
+
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.simpledb.annotation.Query;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
-
-import java.util.List;
 
 interface AnnotatedQueryWithPartialFieldsRepository extends PagingAndSortingRepository<SimpleDbUser, String> {
     @Query(value = "select coreField from `testDB.simpleDbUser` where itemName()=:itemname")

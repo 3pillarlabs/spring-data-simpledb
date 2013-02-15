@@ -1,6 +1,5 @@
 package org.springframework.data.simpledb.sample.simpledb.repository;
 
-import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -10,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
+import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 

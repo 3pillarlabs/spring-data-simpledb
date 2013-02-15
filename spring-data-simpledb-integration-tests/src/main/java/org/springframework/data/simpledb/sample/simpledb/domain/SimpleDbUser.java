@@ -1,11 +1,10 @@
 package org.springframework.data.simpledb.sample.simpledb.domain;
 
+import java.util.List;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.data.annotation.Id;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * TODO: extend with other types to be tested as other type handlers are implemented.

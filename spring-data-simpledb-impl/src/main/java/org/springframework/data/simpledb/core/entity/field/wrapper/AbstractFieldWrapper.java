@@ -2,16 +2,10 @@ package org.springframework.data.simpledb.core.entity.field.wrapper;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.amazonaws.services.s3.internal.RestUtils;
-import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
-import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
 import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.Assert;
 

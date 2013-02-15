@@ -15,12 +15,10 @@
  */
 package org.springframework.data.simpledb.repository.support.entityinformation;
 
-import org.springframework.data.repository.core.support.AbstractEntityInformation;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbMetamodelEntityInformation;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.util.Assert;
-
 import java.io.Serializable;
+
+import org.springframework.data.repository.core.support.AbstractEntityInformation;
+import org.springframework.util.Assert;
 
 /**
  * Base class for {@link org.springframework.data.jpa.repository.support.JpaEntityInformation} implementations to share common method implementations.

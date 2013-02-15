@@ -1,12 +1,12 @@
 package org.springframework.data.simpledb.sample.simpledb.repository.util;
 
-import org.springframework.data.simpledb.sample.simpledb.domain.JSONCompatibleClass;
-import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.springframework.data.simpledb.sample.simpledb.domain.JSONCompatibleClass;
+import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 
 public class SimpleDbUserBuilder {
 

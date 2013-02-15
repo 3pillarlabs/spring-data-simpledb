@@ -1,5 +1,14 @@
 package org.springframework.data.simpledb.core.entity;
 
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
+
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.entity.field.FieldType;
 import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
@@ -8,11 +17,6 @@ import org.springframework.data.simpledb.core.entity.field.wrapper.AbstractField
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.util.AttributesKeySplitter;
 import org.springframework.data.simpledb.util.MetadataParser;
-
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.Map.Entry;
 
 public class EntityWrapper<T, ID extends Serializable> {
 

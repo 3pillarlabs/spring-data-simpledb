@@ -1,14 +1,19 @@
 package org.springframework.data.simpledb.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
 import org.springframework.util.Assert;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class QueryUtils {
 
@@ -81,8 +86,8 @@ public final class QueryUtils {
                 builder.append(iterator.next()).append(SINGLE_QUOTE).append(values[idx]).append(SINGLE_QUOTE);
             }
 
-        } catch (RuntimeException _) {
-            throw new MappingException("Invalid Query! Number of binding parameters in method must match number of query binding parameters");
+        } catch (RuntimeException e) {
+            throw new MappingException("Invalid Query! Number of binding parameters in method must match number of query binding parameters", e);
         }
 
         return builder.toString();
@@ -148,7 +153,7 @@ public final class QueryUtils {
         boolean isSelect = false;
         for (String val : vals) {
             String trimVal = val.trim();
-            //System.out.println("|"+trimVal+"|");
+
             if (trimVal.toLowerCase().contains("from")) {
                 break;
             }

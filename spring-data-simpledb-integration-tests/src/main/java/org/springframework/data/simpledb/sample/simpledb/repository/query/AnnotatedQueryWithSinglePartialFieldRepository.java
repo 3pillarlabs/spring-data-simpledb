@@ -1,13 +1,13 @@
 package org.springframework.data.simpledb.sample.simpledb.repository.query;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.simpledb.annotation.Query;
 import org.springframework.data.simpledb.sample.simpledb.domain.JSONCompatibleClass;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbDifferentFieldTypes;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 interface AnnotatedQueryWithSinglePartialFieldRepository extends PagingAndSortingRepository<SimpleDbDifferentFieldTypes, String> {
 

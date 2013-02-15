@@ -1,6 +1,7 @@
 package org.springframework.data.simpledb.query.executions;
 
 import java.io.Serializable;
+
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.query.SimpleDbQueryMethod;
 import org.springframework.data.simpledb.query.SimpleDbQueryRunner;

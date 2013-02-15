@@ -1,11 +1,11 @@
 package org.springframework.data.simpledb.core.domain;
 
+import java.util.Map;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.simpledb.annotation.Attributes;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
-
-import java.util.Map;
 
 public class SimpleDbSampleEntity {
 

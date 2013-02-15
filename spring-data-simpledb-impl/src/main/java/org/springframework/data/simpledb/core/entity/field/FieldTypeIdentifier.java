@@ -1,12 +1,9 @@
 package org.springframework.data.simpledb.core.entity.field;
 
+import java.lang.reflect.Field;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 public class FieldTypeIdentifier {
 

@@ -15,6 +15,10 @@
  */
 package org.springframework.data.simpledb.repository.support;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -27,11 +31,6 @@ import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.repository.SimpleDbPagingAndSortingRepository;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.util.Assert;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 @org.springframework.stereotype.Repository
 public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements PagingAndSortingRepository<T, ID>, SimpleDbPagingAndSortingRepository<T, ID> {

@@ -1,17 +1,16 @@
 package org.springframework.data.simpledb.util;
 
-import org.junit.Test;
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
-import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.junit.Test;
+import org.springframework.data.simpledb.core.entity.EntityWrapper;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 
 public class GetterAndSetterTest {
 

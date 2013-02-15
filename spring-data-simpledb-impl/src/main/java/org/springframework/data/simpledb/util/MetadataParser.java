@@ -1,5 +1,10 @@
 package org.springframework.data.simpledb.util;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
@@ -11,9 +16,6 @@ import org.springframework.data.simpledb.core.SimpleDbConfig;
 import org.springframework.data.simpledb.core.entity.field.FieldType;
 import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
 import org.springframework.stereotype.Component;
-
-import java.lang.reflect.Field;
-import java.util.*;
 
 @Component
 public final class MetadataParser {
