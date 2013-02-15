@@ -18,7 +18,10 @@ import java.lang.reflect.Method;
  * <li>from custom query annotations </li>
  * </ul>
  */
-public class SimpleDbQueryLookupStrategy {
+public final class SimpleDbQueryLookupStrategy {
+
+    private SimpleDbQueryLookupStrategy(){
+    };
 
     /**
      * {@link QueryLookupStrategy} that tries to detect a declared query declared via simple db <b>custom {@link Query} annotation</b>.

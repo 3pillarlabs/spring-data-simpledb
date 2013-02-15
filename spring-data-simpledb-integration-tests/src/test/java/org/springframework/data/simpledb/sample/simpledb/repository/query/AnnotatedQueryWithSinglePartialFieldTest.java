@@ -24,7 +24,7 @@ import static org.junit.Assert.*;
 public class AnnotatedQueryWithSinglePartialFieldTest {
 
     @Autowired
-    AnnotatedQueryWithPartialFieldsRepository repository;
+    AnnotatedQueryWithSinglePartialFieldRepository repository;
 
     @Test
     public void partialPrimitiveFieldSelect_should_return_a_single_primitive_field() {

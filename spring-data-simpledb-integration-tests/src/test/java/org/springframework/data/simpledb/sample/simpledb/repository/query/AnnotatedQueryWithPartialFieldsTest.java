@@ -18,7 +18,7 @@ import static org.junit.Assert.assertNotNull;
 public class AnnotatedQueryWithPartialFieldsTest {
 
     @Autowired
-    AnnotatedQueryWithPartialFieldsReqpository repository;
+    AnnotatedQueryWithPartialFieldsRepository repository;
 
     @Test
     public void selectSinglePartialField_should_return_a_single_column_in_a_single_row() {
@@ -35,7 +35,7 @@ public class AnnotatedQueryWithPartialFieldsTest {
         SimpleDbUser testUser = SimpleDbUserBuilder.createUserWithSampleAttributes("Item_0");
         repository.save(testUser);
 
-        List<List<Object>> result = repository.selectPrimitiveField_CoreFieldByItemName(testUser.getItemName());
+        List<List<Object>> result = repository.selectPrimitiveFieldAndCoreFieldByItemName(testUser.getItemName());
         assertNotNull(result);
         assertEquals(testUser.getPrimitiveField(), result.get(0).get(0));
         assertEquals(testUser.getCoreField(), result.get(0).get(1));
@@ -56,7 +56,7 @@ public class AnnotatedQueryWithPartialFieldsTest {
         List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
         repository.save(testUsers);
 
-        List<List<Object>> result = repository.selectPrimitiveFields_CoreFields();
+        List<List<Object>> result = repository.selectPrimitiveFieldsAndCoreFields();
         assertNotNull(result);
         assertEquals(testUsers.get(2).getPrimitiveField(), result.get(2).get(0));
         assertEquals(testUsers.get(2).getCoreField(), result.get(2).get(1));
