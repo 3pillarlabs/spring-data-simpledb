@@ -36,26 +36,30 @@ public class AnnotatedQueryWithSinglePartialFieldTest {
         assertThat(result, is(differentFieldsTypeEntity.getPrimitiveField()));
     }
 
-    @Test
-    @Ignore
-    public void partialNestedEntitySelect_should_return_a_single_object_field() {
+    @Test (expected = IllegalArgumentException.class)
+    public void partialNestedEntitySelect_should_not_return_a_single_nested_field() {
         SimpleDbDifferentFieldTypes differentFieldsTypeEntity = SimpleDbDifferentFiledTypesBuilder.createUserWithSampleAttributes("Item_0");
         repository.save(differentFieldsTypeEntity);
 
-        JSONCompatibleClass result = repository.partialNestedEntitySelect();
-        assertNotNull(result);
-        assertEquals(differentFieldsTypeEntity.getJsonCompatibleClass(), result);
+        repository.partialNestedEntitySelect();
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void partialMultipleNestedEntitySelect_should_not_return_a_list_of_nested_object_field() {
+        SimpleDbDifferentFieldTypes differentFieldsTypeEntity = SimpleDbDifferentFiledTypesBuilder.createUserWithSampleAttributes("Item_0");
+        repository.save(differentFieldsTypeEntity);
+
+        repository.partialMultipleNestedEntitySelect();
     }
 
     @Test
-    @Ignore
     public void partialObjectListSelect_should_return_a_single_object_field() {
         SimpleDbDifferentFieldTypes differentFieldsTypeEntity = SimpleDbDifferentFiledTypesBuilder.createUserWithSampleAttributes("Item_0");
         repository.save(differentFieldsTypeEntity);
 
         List<JSONCompatibleClass> result = repository.partialObjectListSelect();
         assertNotNull(result);
-        assertEquals(differentFieldsTypeEntity.getJsonCompatibleClass(), result);
+        assertEquals(differentFieldsTypeEntity.getObjectList(), result);
     }
 
     @Test

@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
+import org.springframework.data.simpledb.core.entity.field.FieldType;
+import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
 import org.springframework.data.simpledb.query.SimpleDbQueryExecution.*;
 import org.springframework.data.simpledb.util.QueryUtils;
 import org.springframework.util.Assert;
@@ -49,6 +51,7 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
     protected SimpleDbQueryExecution getExecution() {
         //TODO fix this
         String query = method.getAnnotatedQuery();
+        assertNotHavingNestedQueryParameters(query);
         if (query.toLowerCase().contains("count(")) {
             return new CountExecution(simpledbOperations);
         } else if (method.isCollectionQuery()) {
@@ -144,5 +147,20 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
             return true;
         }
         return false;
+    }
+
+    private void assertNotHavingNestedQueryParameters(String query){
+        List<String> attributesFromQuery = QueryUtils.getQueryPartialFieldNames(query);
+        final Class<?> domainClass = method.getDomainClass();
+        for(String attribute:attributesFromQuery){
+            try {
+                Field field = domainClass.getDeclaredField(attribute);
+                if (FieldTypeIdentifier.isOfType(field, FieldType.NESTED_ENTITY)){
+                    throw new IllegalArgumentException("Invalid query parameter :"+attribute+" is nested object");
+                }
+            } catch (NoSuchFieldException e) {
+                //might be a count or something else
+            }
+        }
     }
 }
