@@ -81,8 +81,8 @@ public final class QueryUtils {
                 builder.append(iterator.next()).append(SINGLE_QUOTE).append(values[idx]).append(SINGLE_QUOTE);
             }
 
-        } catch (RuntimeException _) {
-            throw new MappingException("Invalid Query! Number of binding parameters in method must match number of query binding parameters");
+        } catch (RuntimeException e) {
+            throw new MappingException("Invalid Query! Number of binding parameters in method must match number of query binding parameters", e);
         }
 
         return builder.toString();
@@ -148,7 +148,7 @@ public final class QueryUtils {
         boolean isSelect = false;
         for (String val : vals) {
             String trimVal = val.trim();
-            //System.out.println("|"+trimVal+"|");
+
             if (trimVal.toLowerCase().contains("from")) {
                 break;
             }
