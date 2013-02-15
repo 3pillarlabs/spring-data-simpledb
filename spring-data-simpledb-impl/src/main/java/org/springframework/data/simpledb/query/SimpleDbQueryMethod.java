@@ -1,6 +1,5 @@
 package org.springframework.data.simpledb.query;
 
-
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.Parameter;
@@ -27,7 +26,7 @@ public class SimpleDbQueryMethod extends QueryMethod {
     /**
      * Creates a new {@link org.springframework.data.simpledb.query.SimpleDbQueryMethod}
      *
-     * @param method   must not be {@literal null}
+     * @param method must not be {@literal null}
      * @param metadata must not be {@literal null}
      */
     public SimpleDbQueryMethod(Method method, RepositoryMetadata metadata) {
@@ -61,10 +60,8 @@ public class SimpleDbQueryMethod extends QueryMethod {
         }
     }
 
-
     /**
-     * Returns the query string declared in a {@link Query} annotation or {@literal null} if neither the annotation found
-     * nor the attribute was specified.
+     * Returns the query string declared in a {@link Query} annotation or {@literal null} if neither the annotation found nor the attribute was specified.
      *
      * @return
      */
@@ -75,8 +72,7 @@ public class SimpleDbQueryMethod extends QueryMethod {
     }
 
     /**
-     * Returns the {@link Query} annotation's attribute casted to the given type or default value if no annotation
-     * available.
+     * Returns the {@link Query} annotation's attribute casted to the given type or default value if no annotation available.
      *
      * @param attribute
      * @param type
@@ -91,17 +87,16 @@ public class SimpleDbQueryMethod extends QueryMethod {
         return type.cast(value);
     }
 
-
     @Override
     public Class<?> getDomainClass() {
         return super.getDomainClass();
     }
 
-    public Class<?> getReturnType(){
+    public Class<?> getReturnType() {
         return method.getReturnType();
     }
 
-    public ParameterizedType getGenericReturnType(){
-        return (ParameterizedType)method.getGenericReturnType();
+    public ParameterizedType getGenericReturnType() {
+        return (ParameterizedType) method.getGenericReturnType();
     }
 }

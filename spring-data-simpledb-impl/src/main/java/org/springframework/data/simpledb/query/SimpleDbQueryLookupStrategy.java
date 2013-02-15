@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
  */
 public class SimpleDbQueryLookupStrategy {
 
-
     /**
      * {@link QueryLookupStrategy} that tries to detect a declared query declared via simple db <b>custom {@link Query} annotation</b>.
      */
@@ -41,15 +40,12 @@ public class SimpleDbQueryLookupStrategy {
                 return query;
             }
 
-            throw new IllegalStateException(String.format(
-                    "Did not find an annotated query for method %s!", method));        }
+            throw new IllegalStateException(String.format("Did not find an annotated query for method %s!", method));
+        }
     }
-
-
-
 
     public static QueryLookupStrategy create(SimpleDbOperations<?, Serializable> simpleDbOperations, QueryLookupStrategy.Key key) {
         //TODO check in Spring data core key switching and their semantics (look in spring-data-jpa)
-        return  new AnnotationBasedQueryLookupStrategy(simpleDbOperations);
+        return new AnnotationBasedQueryLookupStrategy(simpleDbOperations);
     }
 }

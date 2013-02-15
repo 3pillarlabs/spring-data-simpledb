@@ -1,11 +1,12 @@
 package org.springframework.data.simpledb.query;
 
+import org.springframework.data.simpledb.query.executions.SimpleDbQueryExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
-import org.springframework.data.simpledb.query.SimpleDbQueryExecution.*;
+import org.springframework.data.simpledb.query.executions.SimpleDbQueryExecution.*;
 import org.springframework.data.simpledb.util.QueryUtils;
 import org.springframework.util.Assert;
 
@@ -16,6 +17,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import org.springframework.data.simpledb.query.executions.*;
 
 /**
  * {@link RepositoryQuery} implementation that inspects a {@link SimpleDbQueryMethod} for the existence of an {@link org.springframework.data.simpledb.annotation.Query} annotation and provides
@@ -42,14 +44,27 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         return method;
     }
 
+    /**
+     * Creates a {@link RepositoryQuery} from the given {@link org.springframework.data.repository.query.QueryMethod} that is potentially annotated with
+     * {@link org.springframework.data.simpledb.annotation.Query}.
+     *
+     * @param queryMethod
+     * @return the {@link RepositoryQuery} derived from the annotation or {@code null} if no annotation found.
+     */
+    public static RepositoryQuery fromQueryAnnotation(SimpleDbQueryMethod queryMethod, SimpleDbOperations<?, Serializable> simpleDbOperations) {
+        LOGGER.debug("Looking up query for method {}", queryMethod.getName());
+        return queryMethod.getAnnotatedQuery() == null ? null : new SimpleDbRepositoryQuery(queryMethod, simpleDbOperations);
+    }
+
     public String getAnnotatedQuery() {
         return method.getAnnotatedQuery();
     }
 
     protected SimpleDbQueryExecution getExecution() {
         //TODO fix this
+        //return query and method
         String query = method.getAnnotatedQuery();
-        if (query.toLowerCase().contains("count(")) {
+        if (QueryUtils.isCountQuery(query)) {
             return new CountExecution(simpledbOperations);
         } else if (method.isCollectionQuery()) {
             if (isReturnedTypeListOfDomainClass()) {
@@ -66,7 +81,7 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
                 } else if (Set.class.isAssignableFrom(method.getReturnType())) {
                     return new PartialSetOfOneFiledExecution(simpledbOperations);
                 } else {
-                    throw new IllegalArgumentException("Wrong return type for query: "+ query);
+                    throw new IllegalArgumentException("Wrong return type for query: " + query);
                 }
             }
         } else if (method.isQueryForEntity()) {
@@ -80,29 +95,13 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         }
     }
 
-    /**
-     * Creates a {@link RepositoryQuery} from the given {@link org.springframework.data.repository.query.QueryMethod} that is potentially annotated with
-     * {@link org.springframework.data.simpledb.annotation.Query}.
-     *
-     * @param queryMethod
-     * @return the {@link RepositoryQuery} derived from the annotation or {@code null} if no annotation found.
-     */
-    public static RepositoryQuery fromQueryAnnotation(SimpleDbQueryMethod queryMethod, SimpleDbOperations<?, Serializable> simpleDbOperations) {
-
-        LOGGER.debug("Looking up query for method {}", queryMethod.getName());
-
-        return queryMethod.getAnnotatedQuery() == null ? null : new SimpleDbRepositoryQuery(queryMethod, simpleDbOperations);
-    }
-
-
-    private boolean isSingleCollectionField(String query){
+    private boolean isSingleCollectionField(String query) {
         final Class<?> domainClass = method.getDomainClass();
         List<String> attributesFromQuery = QueryUtils.getQueryPartialFieldNames(query);
-        Assert.isTrue(attributesFromQuery.size() == 1, "Query doesn't contain only one attribute in selected clause :"+query);
+        Assert.isTrue(attributesFromQuery.size() == 1, "Query doesn't contain only one attribute in selected clause :" + query);
         String attributeName = attributesFromQuery.get(0);
-        Field field = null;
         try {
-            field = domainClass.getDeclaredField(attributeName);
+            Field field = domainClass.getDeclaredField(attributeName);
             Class<?> type = field.getType();
             if (Collection.class.isAssignableFrom(type)) {
                 ParameterizedType returnType = method.getGenericReturnType();
@@ -117,32 +116,29 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         return false;
     }
 
-    private boolean isGenericResultType(){
+    private boolean isGenericResultType() {
         ParameterizedType returnType = method.getGenericReturnType();
         Type returnedGenericType = returnType.getActualTypeArguments()[0];
 
         if (returnedGenericType instanceof ParameterizedType) {
             ParameterizedType secondGenericType = (ParameterizedType) returnedGenericType;
-            Class<?> rowType = (Class<?>)secondGenericType.getRawType();
-            if(!List.class.isAssignableFrom(rowType)){
+            Class<?> rowType = (Class<?>) secondGenericType.getRawType();
+            if (!List.class.isAssignableFrom(rowType)) {
                 return false;
             }
             Class<?> genericObject = (Class<?>) secondGenericType.getActualTypeArguments()[0];
 
-            if(genericObject.equals(Object.class)) {
+            if (genericObject.equals(Object.class)) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean isReturnedTypeListOfDomainClass(){
+    private boolean isReturnedTypeListOfDomainClass() {
         ParameterizedType returnType = method.getGenericReturnType();
         Type returnedGenericType = returnType.getActualTypeArguments()[0];
 
-        if(returnedGenericType.equals(method.getDomainClass())) {
-            return true;
-        }
-        return false;
+        return returnedGenericType.equals(method.getDomainClass());
     }
 }
