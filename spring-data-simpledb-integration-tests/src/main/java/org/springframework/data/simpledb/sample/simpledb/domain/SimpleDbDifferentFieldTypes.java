@@ -1,11 +1,12 @@
 package org.springframework.data.simpledb.sample.simpledb.domain;
 
-import org.springframework.data.annotation.Id;
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.springframework.data.annotation.Id;
 
 /**
  * TODO: extend with other types to be tested as other type handlers are implemented.
@@ -118,38 +119,11 @@ public class SimpleDbDifferentFieldTypes {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SimpleDbDifferentFieldTypes)) return false;
-
-        SimpleDbDifferentFieldTypes that = (SimpleDbDifferentFieldTypes) o;
-
-        if (Float.compare(that.primitiveField, primitiveField) != 0) return false;
-        if (coreField != null ? !coreField.equals(that.coreField) : that.coreField != null) return false;
-        if (coreTypeList != null ? !coreTypeList.equals(that.coreTypeList) : that.coreTypeList != null) return false;
-        if (coreTypeMap != null ? !coreTypeMap.equals(that.coreTypeMap) : that.coreTypeMap != null) return false;
-        if (coreTypeSet != null ? !coreTypeSet.equals(that.coreTypeSet) : that.coreTypeSet != null) return false;
-        if (itemName != null ? !itemName.equals(that.itemName) : that.itemName != null) return false;
-        if (jsonCompatibleClass != null ? !jsonCompatibleClass.equals(that.jsonCompatibleClass) : that.jsonCompatibleClass != null)
-            return false;
-        if (objectField != null ? !objectField.equals(that.objectField) : that.objectField != null) return false;
-        if (objectList != null ? !objectList.equals(that.objectList) : that.objectList != null) return false;
-        if (!Arrays.equals(primitiveArrayField, that.primitiveArrayField)) return false;
-
-        return true;
+        return EqualsBuilder.reflectionEquals(this, o);
     }
 
     @Override
     public int hashCode() {
-        int result = itemName != null ? itemName.hashCode() : 0;
-        result = 31 * result + (primitiveField != +0.0f ? Float.floatToIntBits(primitiveField) : 0);
-        result = 31 * result + (coreField != null ? coreField.hashCode() : 0);
-        result = 31 * result + (objectField != null ? objectField.hashCode() : 0);
-        result = 31 * result + (coreTypeList != null ? coreTypeList.hashCode() : 0);
-        result = 31 * result + (objectList != null ? objectList.hashCode() : 0);
-        result = 31 * result + (coreTypeSet != null ? coreTypeSet.hashCode() : 0);
-        result = 31 * result + (coreTypeMap != null ? coreTypeMap.hashCode() : 0);
-        result = 31 * result + (jsonCompatibleClass != null ? jsonCompatibleClass.hashCode() : 0);
-        result = 31 * result + (primitiveArrayField != null ? Arrays.hashCode(primitiveArrayField) : 0);
-        return result;
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }
