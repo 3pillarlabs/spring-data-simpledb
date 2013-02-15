@@ -8,7 +8,7 @@ import org.springframework.data.simpledb.query.SimpleDbQueryRunner;
 import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
 import org.springframework.util.Assert;
 
-public class CollectionExecution extends SimpleDbQueryExecution {
+public class CollectionExecution extends AbstractSimpleDbQueryExecution {
 
     public CollectionExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
         super(simpleDbOperations);
