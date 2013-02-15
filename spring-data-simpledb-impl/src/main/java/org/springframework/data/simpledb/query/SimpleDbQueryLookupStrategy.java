@@ -4,8 +4,8 @@ import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.RepositoryQuery;
-import org.springframework.data.simpledb.annotation.Query;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
+import org.springframework.data.simpledb.annotation.Query;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -43,15 +43,12 @@ public final class SimpleDbQueryLookupStrategy {
                 return query;
             }
 
-            throw new IllegalStateException(String.format(
-                    "Did not find an annotated query for method %s!", method));        }
+            throw new IllegalStateException(String.format("Did not find an annotated query for method %s!", method));
+        }
     }
-
-
-
 
     public static QueryLookupStrategy create(SimpleDbOperations<?, Serializable> simpleDbOperations, QueryLookupStrategy.Key key) {
         //TODO check in Spring data core key switching and their semantics (look in spring-data-jpa)
-        return  new AnnotationBasedQueryLookupStrategy(simpleDbOperations);
+        return new AnnotationBasedQueryLookupStrategy(simpleDbOperations);
     }
 }

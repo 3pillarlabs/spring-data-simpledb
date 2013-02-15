@@ -81,7 +81,7 @@ public final class QueryUtils {
                 builder.append(iterator.next()).append(SINGLE_QUOTE).append(values[idx]).append(SINGLE_QUOTE);
             }
 
-        } catch (RuntimeException exception) {
+        } catch (RuntimeException _) {
             throw new MappingException("Invalid Query! Number of binding parameters in method must match number of query binding parameters");
         }
 
@@ -160,5 +160,9 @@ public final class QueryUtils {
             }
         }
         return result;
+    }
+
+    public static boolean isCountQuery(String query) {
+        return query.toLowerCase().contains("count(");
     }
 }
