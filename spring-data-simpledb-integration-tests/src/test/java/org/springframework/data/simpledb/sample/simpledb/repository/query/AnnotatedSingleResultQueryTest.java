@@ -56,20 +56,6 @@ public class AnnotatedSingleResultQueryTest {
     }
 
     @Test
-    public void customCountWrongSelect_should_fail_wrong_query() {
-        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
-        repository.save(testUsers);
-
-        try{
-            long result = repository.customCountWrongSelect();
-        }catch (IllegalArgumentException e){
-            assertTrue(e.getMessage().contains("Provided query not recognized by simpleDB"));
-            return;
-        }
-        fail();
-    }
-
-    @Test
     public void customSelectOneUser_should_return_one_users() {
         List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
         repository.save(testUsers);

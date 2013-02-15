@@ -3,12 +3,12 @@ package org.springframework.data.simpledb.util;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
+import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
 import org.springframework.util.Assert;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
 
 public final class QueryUtils {
 
