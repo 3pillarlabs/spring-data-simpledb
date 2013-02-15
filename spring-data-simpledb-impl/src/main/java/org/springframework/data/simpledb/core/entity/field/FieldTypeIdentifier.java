@@ -2,12 +2,7 @@ package org.springframework.data.simpledb.core.entity.field;
 
 import java.lang.reflect.Field;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class FieldTypeIdentifier {
-
-   private static final Logger LOG = LoggerFactory.getLogger(FieldTypeIdentifier.class);
 
 	protected FieldTypeIdentifier() {
 		/* utility class */

@@ -11,6 +11,11 @@ import java.util.Set;
  * Created by: mgrozea
  */
 public class SimpleDbResultConverter {
+	
+	public SimpleDbResultConverter() {
+		/* utility class */
+	}
+	
     public static List<Object> filterAsListAttributesNamed(List<?> domainObjects, String attributeName){
         List<Object> ret = new ArrayList<>();
         for (Object object : domainObjects) {

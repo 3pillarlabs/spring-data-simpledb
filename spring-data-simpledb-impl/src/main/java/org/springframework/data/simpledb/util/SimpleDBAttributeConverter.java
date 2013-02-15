@@ -12,7 +12,6 @@ import org.springframework.util.Assert;
 
 public final class SimpleDBAttributeConverter {
 
-
     private SimpleDBAttributeConverter() {
     	/* utility class */
     }
@@ -95,10 +94,5 @@ public final class SimpleDBAttributeConverter {
 
         return primitiveCollection;
     }
-
-
-
-
-
 
 }
