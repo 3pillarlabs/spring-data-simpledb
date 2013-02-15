@@ -4,8 +4,8 @@ import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.RepositoryQuery;
-import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.annotation.Query;
+import org.springframework.data.simpledb.core.SimpleDbOperations;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -18,8 +18,10 @@ import java.lang.reflect.Method;
  * <li>from custom query annotations </li>
  * </ul>
  */
-public class SimpleDbQueryLookupStrategy {
+public final class SimpleDbQueryLookupStrategy {
 
+    private SimpleDbQueryLookupStrategy(){
+    };
 
     /**
      * {@link QueryLookupStrategy} that tries to detect a declared query declared via simple db <b>custom {@link Query} annotation</b>.

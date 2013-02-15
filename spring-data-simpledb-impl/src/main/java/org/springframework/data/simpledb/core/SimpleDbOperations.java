@@ -1,13 +1,10 @@
 package org.springframework.data.simpledb.core;
 
-import java.io.Serializable;
-import java.util.List;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
-import org.springframework.data.simpledb.core.domain.DomainManager;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
+
+import java.io.Serializable;
+import java.util.List;
 
 public interface SimpleDbOperations<T, ID extends Serializable> {
 

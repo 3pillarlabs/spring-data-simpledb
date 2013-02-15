@@ -9,6 +9,7 @@ import org.springframework.data.simpledb.util.StringUtil;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,7 +23,9 @@ public class SimpleDbQueryRunner {
     public SimpleDbQueryRunner(SimpleDbOperations<?, Serializable> simpledbOperations, SimpleDbRepositoryQuery repositoryQuery, Object[] parameterValues) {
         this.simpledbOperations = simpledbOperations;
         this.repositoryQuery = repositoryQuery;
-        this.parameterValues = parameterValues;
+        if (parameterValues != null) {
+            this.parameterValues = Arrays.copyOf(parameterValues, parameterValues.length);
+        }
     }
 
     public List<?> extractEntitiesFromDb() {

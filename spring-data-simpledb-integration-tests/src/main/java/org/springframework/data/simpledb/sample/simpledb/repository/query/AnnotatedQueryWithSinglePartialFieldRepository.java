@@ -26,12 +26,6 @@ interface AnnotatedQueryWithSinglePartialFieldRepository extends PagingAndSortin
     @Query(value = "Select primitiveField from `testDB.simpleDbDifferentFieldTypes`")
     List<Float> partialPrimitiveListSelect();
 
-    @Query(value = "select coreField from `testDB.simpleDbDifferentFieldTypes` where itemName()='Item_0'")
-    String partialCoreFieldSelect();
-
-    @Query(value = "select coreField from `testDB.simpleDbDifferentFieldTypes`")
-    List<String> partialCoreListSelect();
-
     @Query(value = "select coreTypeSet from `testDB.simpleDbDifferentFieldTypes` where itemName()='Item_0'")
     Set<String> partialCoreSetSelect();
 
@@ -41,12 +35,13 @@ interface AnnotatedQueryWithSinglePartialFieldRepository extends PagingAndSortin
     @Query(value = "Select primitiveField from `testDB.simpleDbDifferentFieldTypes`")
     Set<Float> partialPrimitiveSetSelect();
 
-    @Query(value = "Select primitiveField from `testDB.simpleDbDifferentFieldTypes`")
-    List<List<Object>> partialGenericSelect();
-
-    @Query(value = "Select primitiveField from `testDB.simpleDbDifferentFieldTypes`")
-    List<SimpleDbDifferentFieldTypes> partialGenericDomainSelect();
-
     @Query(value = "SELECT coreTypeList FROM `testDB.simpleDbDifferentFieldTypes`")
     List<List<Integer>> partialListOfCoreTypeListSelect();
+
+    @Query(value = "SELECT coreTypeList FROM `testDB.simpleDbDifferentFieldTypes`")
+    List<SimpleDbDifferentFieldTypes> partialDomainClassListSelect();
+
+
+    @Query(value = "SELECT jsonCompatibleClass FROM `testDB.simpleDbDifferentFieldTypes`")
+    List<JSONCompatibleClass> partialMultipleNestedEntitySelect();
 }

@@ -10,36 +10,34 @@ The Spring Data SimpleDB module aims to provide a familiar and consistent Spring
 
 Clone the Spring Data SimpleDB module into and define it as a dependency in your project's Maven file:
 
-```xml
-<dependency>
-    <groupId>org.springframework.data.simpledb</groupId>
-    <artifactId>spring-data-simpledb</artifactId>
-    <version>1.0-SNAPSHOT</version>
-</dependency>
-```
+
+    <dependency>
+        <groupId>org.springframework.data.simpledb</groupId>
+        <artifactId>spring-data-simpledb</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+
 
 Setup Spring Data SimpleDB repository support:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:simpledb="http://www.springframework.org/schema/data/simpledb"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-    https://raw.github.com/ThreePillarGlobal/spring-data-simpledb/dev/spring-data-simpledb-impl/src/main/resources/META-INF/spring-simpledb.xsd?login=cmester&amp;token=0e3a2a9b21a0daa3044b09c3ecdd59d4">
-
-    <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
-
-    <simpledb:config>
-        <simpledb:property name="accessID" value="$AWS_ACCESS_ID" />
-        <simpledb:property name="secretKey" value="$AWS_SECRET_KEY"/>
-        <simpledb:property name="domainPrefix" value="$DOMAIN_PREFIX"/>
-        <simpledb:property name="domainManagementPolicy" value="$DOMAIN_MANAGEMENT_POLICY"/>
-        <simpledb:property name="consistentRead" value="$CONSISTENT_READ_VALUE"/>
-    </simpledb:config>
-
-</beans>
-```
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:simpledb="http://www.springframework.org/schema/data/simpledb"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        https://raw.github.com/ThreePillarGlobal/spring-data-simpledb/dev/spring-data-simpledb-impl/src/main/resources/META-INF/spring-simpledb.xsd?login=cmester&amp;token=0e3a2a9b21a0daa3044b09c3ecdd59d4">
+    
+        <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
+    
+        <simpledb:config>
+            <simpledb:property name="accessID" value="$AWS_ACCESS_ID" />
+            <simpledb:property name="secretKey" value="$AWS_SECRET_KEY"/>
+            <simpledb:property name="domainPrefix" value="$DOMAIN_PREFIX"/>
+            <simpledb:property name="domainManagementPolicy" value="$DOMAIN_MANAGEMENT_POLICY"/>
+            <simpledb:property name="consistentRead" value="$CONSISTENT_READ_VALUE"/>
+        </simpledb:config>
+    
+    </beans>
 
 For SimpleDB specific configurations,  the __config__ tag must be used.
 
@@ -82,22 +80,21 @@ This repository has an additional parameter __readConsistent__ on each repositor
 
 Next, create and entity to model your domain:
 
-```java
-public class SimpleDBUser {
-    @org.springframework.data.annotation.Id
-    private String itemName;
-    //... additional properties here
 
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
+    public class SimpleDBUser {
+        @org.springframework.data.annotation.Id
+        private String itemName;
+        //... additional properties here
+    
+        public void setItemName(String itemName) {
+            this.itemName = itemName;
+        }
+        public String getItemName() {
+            return itemName;
+        }
+    
+        //... additional getters and setters
     }
-    public String getItemName() {
-        return itemName;
-    }
-
-    //... additional getters and setters
-}
-```
 
 
 To specify the attribute holding the SimpleDB **itemName** you can either annotate one of the class attributes with the standard **org.springframework.data.annotation.Id** annotation, or you can simply define an **id** field as part of your domain class.
@@ -107,34 +104,36 @@ If a domain field does not contain getter and/or setter it will **not** be persi
 
 Create a repository interface:
 
-```java
-public interface BasicSimpleDbUserRepository extends CrudRepository<SimpleDbUser, String> { }
-```
+
+    public interface BasicSimpleDbUserRepository extends CrudRepository<SimpleDbUser, String> { }
+    
+
 
 Write a test client:
 
-```java
-@RunWith(SpringJUnit4TestRunner.class)
-@ContextConfiguration("classpath:your-config-file.xml")
-public class BasicSimpleDbUserRepositoryTest {
+    @RunWith(SpringJUnit4TestRunner.class)
+    @ContextConfiguration("classpath:your-config-file.xml")
+    public class BasicSimpleDbUserRepositoryTest {
 
-    @Autowired BasicSimpleDbUserRepository repository;
+        @Autowired BasicSimpleDbUserRepository repository;
 
-    @Test
-    public void sampleTestCase() {
-        SimpleDbUser user = new SimpleDbUser();
-        repository.save(user);
-
-        user.setItemName("TestItemName");
-
-        user = repository.save(user);
-
-        Assert.notNull(repository.findAll());
+        @Test
+        public void sampleTestCase() {
+            SimpleDbUser user = new SimpleDbUser();
+            repository.save(user);
+    
+            user.setItemName("TestItemName");
+    
+            user = repository.save(user);
+    
+            Assert.notNull(repository.findAll());
+        }
     }
-}
-```
+
 
 ## Known Limitations ##
+
+### Serialization limitations
 
 When serializing fields of type List, Set or Map, a json object is created and is stored in database.
 This json object contains the actual values and also class information about the serialized field.
@@ -146,5 +145,26 @@ From the reasons mentioned about Map<String, Object>, Map<Integer, Object> are *
 ### Primitive field conversions ###
 
 The current version supports converting all primitive types but *Character*. More that that, *Float.MIN_VALUE* and *Double.MIN_VALUE* cannot be converted accurately.
+
+### Custom select
+Methods annotated with @Query can run custom SimpleDb valid queries.
+
+Since nested object fields are stored in SimpleDb as multiple Items
+
+    public class Company {
+        private Customer customer;
+    }
+    will be stored in SimpleDb as a list of attributes for each customer field:
+    customer.name
+    customer.age
+    ...
+
+A select like the following won't be a SimpleDB valid select statement and __won't be executed__:
+
+    select customer from `testDb.company`
+    
+Nevertheless the following will be a valid SimpleDb select statement and __will be executed__:
+
+    select customer.name from `testDb.company`
 
 DEV_NOTES: Please use http://dillinger.io/ when editing this file
