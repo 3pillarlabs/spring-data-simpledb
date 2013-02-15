@@ -10,6 +10,7 @@ import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleD
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,8 +65,8 @@ public class AnnotatedQueryWithSinglePartialFieldTest {
 
         List<Float> result = repository.partialPrimitiveListSelect();
         assertNotNull(result);
-        for(SimpleDbDifferentFieldTypes simpleUser : differentFieldsTypeEntity){
-            assertTrue(result.indexOf(simpleUser.getPrimitiveField()) != -1);
+        for(SimpleDbDifferentFieldTypes entity : differentFieldsTypeEntity){
+            assertTrue(result.indexOf(entity.getPrimitiveField()) != -1);
         }
     }
 
@@ -97,8 +98,8 @@ public class AnnotatedQueryWithSinglePartialFieldTest {
 
         Set<Float> result = repository.partialPrimitiveSetSelect();
         assertNotNull(result);
-        for(SimpleDbDifferentFieldTypes simpleUser : differentFieldsTypeEntity){
-            assertTrue(result.contains(simpleUser.getPrimitiveField()));
+        for(SimpleDbDifferentFieldTypes entity : differentFieldsTypeEntity){
+            assertTrue(result.contains(entity.getPrimitiveField()));
         }
     }
 
@@ -120,8 +121,24 @@ public class AnnotatedQueryWithSinglePartialFieldTest {
 
         List<List<Integer>> result = repository.partialListOfCoreTypeListSelect();
         assertNotNull(result);
-        for(SimpleDbDifferentFieldTypes simpleUser : differentFieldsTypeEntity){
-            assertTrue(result.contains(simpleUser.getCoreTypeList()));
+        for(SimpleDbDifferentFieldTypes entity : differentFieldsTypeEntity){
+            assertTrue(result.contains(entity.getCoreTypeList()));
+        }
+    }
+
+    @Test
+    public void partialDomainClassListSelect_should_return_a_list_of_domains_with_completed() {
+        List<SimpleDbDifferentFieldTypes> differentFieldsTypeEntity = SimpleDbDifferentFiledTypesBuilder.createListOfItems(3);
+        repository.save(differentFieldsTypeEntity);
+
+        List<SimpleDbDifferentFieldTypes> result = repository.partialDomainClassListSelect();
+        List<List<Integer>> listOfCoreTypeList = new ArrayList<>();
+        for(SimpleDbDifferentFieldTypes entity : differentFieldsTypeEntity){
+            listOfCoreTypeList.add(entity.getCoreTypeList());
+        }
+        assertNotNull(result);
+        for(SimpleDbDifferentFieldTypes entity : differentFieldsTypeEntity){
+            assertTrue(listOfCoreTypeList.contains(entity.getCoreTypeList()));
         }
     }
 }

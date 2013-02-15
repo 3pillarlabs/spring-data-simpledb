@@ -52,21 +52,21 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         if (query.toLowerCase().contains("count(")) {
             return new CountExecution(simpledbOperations);
         } else if (method.isCollectionQuery()) {
-            if (query.contains("*")) {
+            if (isReturnedTypeListOfDomainClass()) {
                 return new CollectionExecution(simpledbOperations);
             } else if (QueryUtils.getQueryPartialFieldNames(query).size() > 1) {
                 return new PartialCollectionExecution(simpledbOperations);
             } else {
-                if (isSingleCollectionField(query)) {
-                    return new PartialCollectionFieldExecution(simpledbOperations);
-                } else if (isGenericResultQuery()) {
+                if (isGenericResultType()) {
                     return new PartialCollectionExecution(simpledbOperations);
+                } else if (isSingleCollectionField(query)) {
+                    return new PartialCollectionFieldExecution(simpledbOperations);
                 } else if (List.class.isAssignableFrom(method.getReturnType())) {
                     return new PartialListOfOneFiledExecution(simpledbOperations);
                 } else if (Set.class.isAssignableFrom(method.getReturnType())) {
                     return new PartialSetOfOneFiledExecution(simpledbOperations);
                 } else {
-                    throw new IllegalArgumentException("Not implemented");
+                    throw new IllegalArgumentException("Wrong return type for query: "+ query);
                 }
             }
         } else if (method.isQueryForEntity()) {
@@ -117,13 +117,9 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         return false;
     }
 
-    private boolean isGenericResultQuery(){
+    private boolean isGenericResultType(){
         ParameterizedType returnType = method.getGenericReturnType();
         Type returnedGenericType = returnType.getActualTypeArguments()[0];
-
-        if(returnedGenericType.equals(method.getDomainClass())) {
-            return true;
-        }
 
         if (returnedGenericType instanceof ParameterizedType) {
             ParameterizedType secondGenericType = (ParameterizedType) returnedGenericType;
@@ -136,6 +132,16 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
             if(genericObject.equals(Object.class)) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    private boolean isReturnedTypeListOfDomainClass(){
+        ParameterizedType returnType = method.getGenericReturnType();
+        Type returnedGenericType = returnType.getActualTypeArguments()[0];
+
+        if(returnedGenericType.equals(method.getDomainClass())) {
+            return true;
         }
         return false;
     }

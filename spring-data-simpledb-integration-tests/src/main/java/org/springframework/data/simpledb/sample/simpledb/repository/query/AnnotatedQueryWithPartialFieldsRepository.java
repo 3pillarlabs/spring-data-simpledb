@@ -49,4 +49,7 @@ public interface AnnotatedQueryWithPartialFieldsRepository extends PagingAndSort
 
     @Query(value = "SELECT coreTypeList FROM `testDB.simpleDbDifferentFieldTypes`")
     public List<List<Integer>> partialListOfCoreTypeListSelect();
+
+    @Query(value = "SELECT coreTypeList FROM `testDB.simpleDbDifferentFieldTypes`")
+    public List<SimpleDbDifferentFieldTypes> partialDomainClassListSelect();
 }
