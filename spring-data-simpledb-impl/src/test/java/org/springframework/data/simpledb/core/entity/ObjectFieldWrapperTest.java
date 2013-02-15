@@ -1,13 +1,15 @@
 package org.springframework.data.simpledb.core.entity;
 
-import org.junit.Test;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 
 public class ObjectFieldWrapperTest {
 

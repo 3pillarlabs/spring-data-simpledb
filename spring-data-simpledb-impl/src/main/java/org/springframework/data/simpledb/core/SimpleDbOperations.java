@@ -1,10 +1,10 @@
 package org.springframework.data.simpledb.core;
 
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-
 import java.io.Serializable;
 import java.util.List;
+
+import org.springframework.data.simpledb.core.entity.EntityWrapper;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 public interface SimpleDbOperations<T, ID extends Serializable> {
 

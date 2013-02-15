@@ -4,7 +4,14 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
-import org.springframework.data.simpledb.core.entity.field.wrapper.*;
+import org.springframework.data.simpledb.core.entity.field.wrapper.AbstractFieldWrapper;
+import org.springframework.data.simpledb.core.entity.field.wrapper.ArraySimpleFieldWrapper;
+import org.springframework.data.simpledb.core.entity.field.wrapper.CollectionSimpleFieldWrapper;
+import org.springframework.data.simpledb.core.entity.field.wrapper.CoreSimpleFieldWrapper;
+import org.springframework.data.simpledb.core.entity.field.wrapper.MapSimpleFieldWrapper;
+import org.springframework.data.simpledb.core.entity.field.wrapper.NestedEntityFieldWrapper;
+import org.springframework.data.simpledb.core.entity.field.wrapper.ObjectSimpleFieldWrapper;
+import org.springframework.data.simpledb.core.entity.field.wrapper.PrimitiveSimpleFieldWrapper;
 
 public final class FieldWrapperFactory {
 	

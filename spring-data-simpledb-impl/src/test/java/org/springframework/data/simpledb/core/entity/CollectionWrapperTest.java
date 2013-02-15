@@ -1,14 +1,21 @@
 package org.springframework.data.simpledb.core.entity;
 
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.Test;
 import org.springframework.data.simpledb.core.entity.util.AttributeUtil;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
-
-import java.util.*;
-
-import static org.junit.Assert.assertTrue;
 
 public class CollectionWrapperTest {
 

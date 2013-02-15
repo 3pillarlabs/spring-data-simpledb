@@ -1,6 +1,7 @@
 package org.springframework.data.simpledb.repository.support;
 
-import com.amazonaws.services.simpledb.AmazonSimpleDB;
+import java.io.Serializable;
+
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.query.QueryLookupStrategy;
@@ -12,7 +13,7 @@ import org.springframework.data.simpledb.query.SimpleDbQueryLookupStrategy;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 
-import java.io.Serializable;
+import com.amazonaws.services.simpledb.AmazonSimpleDB;
 
 /**
  * SimpleDB specific generic repository factory.

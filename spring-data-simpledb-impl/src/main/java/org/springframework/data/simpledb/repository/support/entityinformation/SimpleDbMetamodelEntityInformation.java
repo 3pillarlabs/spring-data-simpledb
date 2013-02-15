@@ -15,10 +15,10 @@
  */
 package org.springframework.data.simpledb.repository.support.entityinformation;
 
-import org.springframework.data.simpledb.util.MetadataParser;
-
 import java.io.Serializable;
 import java.util.Map;
+
+import org.springframework.data.simpledb.util.MetadataParser;
 
 /**
  * Implementation of {@link org.springframework.data.repository.core.EntityInformation} that uses JPA {@link javax.persistence.metamodel.Metamodel}

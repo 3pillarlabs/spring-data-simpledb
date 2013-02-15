@@ -1,5 +1,8 @@
 package org.springframework.data.simpledb.query;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.Parameter;
@@ -8,9 +11,6 @@ import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.simpledb.annotation.Query;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 
 /**
  * SimpleDB specific extension of {@link org.springframework.data.repository.query.QueryMethod}. <br/>

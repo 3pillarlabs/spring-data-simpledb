@@ -3,6 +3,7 @@ package org.springframework.data.simpledb.query.executions;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.query.SimpleDbQueryRunner;

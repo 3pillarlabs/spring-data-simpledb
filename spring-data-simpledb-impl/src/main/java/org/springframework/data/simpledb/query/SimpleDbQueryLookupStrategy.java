@@ -1,14 +1,14 @@
 package org.springframework.data.simpledb.query;
 
+import java.io.Serializable;
+import java.lang.reflect.Method;
+
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.RepositoryQuery;
-import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.annotation.Query;
-
-import java.io.Serializable;
-import java.lang.reflect.Method;
+import org.springframework.data.simpledb.core.SimpleDbOperations;
 
 /**
  * Query lookup strategy to execute custom interface query methods <br/>

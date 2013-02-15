@@ -1,14 +1,19 @@
 package org.springframework.data.simpledb.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
 import org.springframework.util.Assert;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class QueryUtils {
 

@@ -1,12 +1,14 @@
 package org.springframework.data.simpledb.util;
 
-import org.springframework.data.mapping.model.MappingException;
-import org.springframework.util.Assert;
-
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import org.springframework.util.Assert;
 
 public final class SimpleDBAttributeConverter {
 
@@ -50,7 +52,6 @@ public final class SimpleDBAttributeConverter {
 
         return attributeValues;
     }
-
 
     public static Object decodeToFieldOfType(String value, Class<?> retType) throws ParseException {
         Object val = null;

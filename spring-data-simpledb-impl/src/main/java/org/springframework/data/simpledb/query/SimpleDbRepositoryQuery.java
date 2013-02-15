@@ -1,16 +1,5 @@
 package org.springframework.data.simpledb.query;
 
-import org.springframework.data.simpledb.query.executions.SimpleDbQueryExecution;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.repository.query.QueryMethod;
-import org.springframework.data.repository.query.RepositoryQuery;
-import org.springframework.data.simpledb.core.SimpleDbOperations;
-
-import org.springframework.data.simpledb.query.executions.SimpleDbQueryExecution.*;
-import org.springframework.data.simpledb.util.QueryUtils;
-import org.springframework.util.Assert;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -18,9 +7,25 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.repository.query.QueryMethod;
+import org.springframework.data.repository.query.RepositoryQuery;
+import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.core.entity.field.FieldType;
 import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
-import org.springframework.data.simpledb.query.executions.*;
+import org.springframework.data.simpledb.query.executions.CollectionExecution;
+import org.springframework.data.simpledb.query.executions.CountExecution;
+import org.springframework.data.simpledb.query.executions.PartialCollectionExecution;
+import org.springframework.data.simpledb.query.executions.PartialCollectionFieldExecution;
+import org.springframework.data.simpledb.query.executions.PartialListOfOneFiledExecution;
+import org.springframework.data.simpledb.query.executions.PartialSetOfOneFiledExecution;
+import org.springframework.data.simpledb.query.executions.PartialSingleResultExecution;
+import org.springframework.data.simpledb.query.executions.SimpleDbQueryExecution;
+import org.springframework.data.simpledb.query.executions.SingleResultExecution;
+import org.springframework.data.simpledb.util.QueryUtils;
+import org.springframework.util.Assert;
 
 /**
  * {@link RepositoryQuery} implementation that inspects a {@link SimpleDbQueryMethod} for the existence of an {@link org.springframework.data.simpledb.annotation.Query} annotation and provides

@@ -1,29 +1,17 @@
 package org.springframework.data.simpledb.query;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.mapping.model.MappingException;
-import org.springframework.data.repository.Repository;
-import org.springframework.data.repository.core.RepositoryMetadata;
-import org.springframework.data.repository.core.support.DefaultRepositoryMetadata;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
-import org.springframework.data.repository.query.QueryMethod;
-import org.springframework.data.simpledb.annotation.Query;
-import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.util.QueryUtils;
-import org.springframework.data.simpledb.query.SimpleDbQueryMethod;
-import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
-
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 public class QueryUtilsNamedQueryTest {
 

@@ -1,14 +1,14 @@
 package org.springframework.data.simpledb.core.entity.field.wrapper;
 
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
-import org.springframework.data.simpledb.util.marshaller.JsonMarshaller;
-import org.springframework.util.Assert;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.data.simpledb.core.entity.EntityWrapper;
+import org.springframework.data.simpledb.util.marshaller.JsonMarshaller;
+import org.springframework.util.Assert;
 
 public class MapSimpleFieldWrapper<T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T, ID> {
 

@@ -1,5 +1,16 @@
 package org.springframework.data.simpledb.core.entity;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.text.ParseException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Test;
 import org.springframework.data.annotation.Id;
@@ -9,13 +20,6 @@ import org.springframework.data.simpledb.core.entity.EntityWrapperTest.AClass.BC
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
-
-import java.text.ParseException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.junit.Assert.*;
 
 public class EntityWrapperTest {
 
