@@ -15,6 +15,7 @@ package org.springframework.data.simpledb.util;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.data.mapping.model.MappingException;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,8 +31,9 @@ public final class AmazonSimpleDBUtil {
      * static value hardcoding date format used for conversation of Date into String
      */
     private static String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-    public static final int LONG_DIGITS = 20;
-    public static final BigDecimal OFFSET_VALUE = new BigDecimal(Long.MIN_VALUE).negate();
+    private static final int LONG_DIGITS = 20;
+    private static final BigDecimal OFFSET_VALUE = new BigDecimal(Long.MIN_VALUE).negate();
+    private static final String UTF8_ENCODING = "UTF-8";
 
 
     private AmazonSimpleDBUtil() {
@@ -152,12 +154,16 @@ public final class AmazonSimpleDBUtil {
     }
 
     /**
-     * Encodes date value into a base64-encoded string.
+     * Encodes byteArray value into a base64-encoded string.
      *
      * @return string representation of the date value
      */
     public static String encodeByteArray(byte[] byteArray) {
-        return new String(Base64.encodeBase64(byteArray));
+        try {
+            return new String(Base64.encodeBase64(byteArray), UTF8_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+             throw new MappingException("Could not encode byteArray to UTF8 encoding", e);
+        }
     }
 
     /**
@@ -167,7 +173,11 @@ public final class AmazonSimpleDBUtil {
      * @return original byte[] value
      */
     public static byte[] decodeByteArray(String value) throws ParseException {
-        return Base64.decodeBase64(value.getBytes());
+        try {
+            return Base64.decodeBase64(value.getBytes(UTF8_ENCODING));
+        } catch (UnsupportedEncodingException e) {
+            throw new MappingException("Could not decode byteArray to UTF8 encoding", e);
+        }
 
     }
 
