@@ -57,7 +57,7 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
             } else if (QueryUtils.getQueryPartialFieldNames(query).size() > 1) {
                 return new PartialCollectionExecution(simpledbOperations);
             } else {
-                if (Collection.class.isAssignableFrom(getTypeFieldSelected(query))) {
+                if (isSingleCollectionField(query)) {
                     return new PartialCollectionFieldExecution(simpledbOperations);
                 } else if (isGenericResultQuery()) {
                     return new PartialCollectionExecution(simpledbOperations);
@@ -94,12 +94,8 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         return queryMethod.getAnnotatedQuery() == null ? null : new SimpleDbRepositoryQuery(queryMethod, simpleDbOperations);
     }
 
-    private boolean isCollectionField(String query){
-        Collection.class.isAssignableFrom(getTypeFieldSelected(query));
-        return true;
-    }
 
-    private Class<?> getTypeFieldSelected(String query){
+    private boolean isSingleCollectionField(String query){
         final Class<?> domainClass = method.getDomainClass();
         List<String> attributesFromQuery = QueryUtils.getQueryPartialFieldNames(query);
         Assert.isTrue(attributesFromQuery.size() == 1, "Query doesn't contain only one attribute in selected clause :"+query);
@@ -108,10 +104,17 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         try {
             field = domainClass.getDeclaredField(attributeName);
             Class<?> type = field.getType();
-            return type;
+            if (Collection.class.isAssignableFrom(type)) {
+                ParameterizedType returnType = method.getGenericReturnType();
+                Type returnedGenericType = returnType.getActualTypeArguments()[0];
+                if (!(returnedGenericType instanceof ParameterizedType)) {
+                    return true;
+                }
+            }
         } catch (NoSuchFieldException e) {
             throw new IllegalArgumentException("Filed doesn't exist in entity :" + query, e);
         }
+        return false;
     }
 
     private boolean isGenericResultQuery(){

@@ -114,7 +114,6 @@ public class AnnotatedQueryWithSinglePartialFieldTest {
 
 
     @Test
-    @Ignore
     public void partialListOfListField_should_return_a_list_of_core_object_fields() {
         List<SimpleDbDifferentFieldTypes> differentFieldsTypeEntity = SimpleDbDifferentFiledTypesBuilder.createListOfItems(3);
         repository.save(differentFieldsTypeEntity);
