@@ -24,11 +24,14 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
 
     @Override
     protected Object doExecute(SimpleDbRepositoryQuery query, SimpleDbQueryRunner queryRunner) {
-        MultipleResultType resultType = detectResultType(query);
+        String queryString = query.getAnnotatedQuery();
+        SimpleDbQueryMethod method = (SimpleDbQueryMethod)query.getQueryMethod();
+
+        MultipleResultType resultType = detectResultType(queryString, method);
         switch (resultType){
             case COLLECTION_OF_DOMAIN_ENTITIES:
-                final Class<?> returnedClass = query.getQueryMethod().getReturnedObjectType();
-                final Class<?> domainClass = ((SimpleDbQueryMethod) query.getQueryMethod()).getDomainClass();
+                final Class<?> returnedClass = method.getReturnedObjectType();
+                final Class<?> domainClass = method.getDomainClass();
                 Assert.isAssignable(domainClass, returnedClass);
                 return queryRunner.executeQuery();
             case LIST_OF_LIST_OF_OBJECT:
@@ -52,10 +55,7 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
         throw new IllegalArgumentException("Unrecognized multiple result type");
     }
 
-    private MultipleResultType detectResultType(SimpleDbRepositoryQuery simpleDbRepositoryQuery) {
-        String query = simpleDbRepositoryQuery.getAnnotatedQuery();
-        SimpleDbQueryMethod method = (SimpleDbQueryMethod)simpleDbRepositoryQuery.getQueryMethod();
-
+    MultipleResultType detectResultType(String query, SimpleDbQueryMethod method) {
         if (isCollectionOfDomainClass(method)) {
             return MultipleResultType.COLLECTION_OF_DOMAIN_ENTITIES;
         } else if (QueryUtils.getQueryPartialFieldNames(query).size() > 1) {
@@ -86,7 +86,7 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
             Field field = domainClass.getDeclaredField(attributeName);
             Class<?> type = field.getType();
             if (Collection.class.isAssignableFrom(type)) {
-                ParameterizedType returnType = method.getGenericReturnType();
+                ParameterizedType returnType = (ParameterizedType) method.getGenericReturnType();
                 Type returnedGenericType = returnType.getActualTypeArguments()[0];
                 if (!(returnedGenericType instanceof ParameterizedType)) {
                     return true;
@@ -116,7 +116,7 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
     }
 
     private Type getCollectionGenericType(SimpleDbQueryMethod method){
-        ParameterizedType returnType = method.getGenericReturnType();
+        ParameterizedType returnType =  (ParameterizedType)method.getGenericReturnType();
         return returnType.getActualTypeArguments()[0];
     }
 
