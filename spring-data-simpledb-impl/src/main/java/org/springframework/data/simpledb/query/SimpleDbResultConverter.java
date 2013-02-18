@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class SimpleDbResultConverter {
 	
-	public SimpleDbResultConverter() {
+	private SimpleDbResultConverter() {
 		/* utility class */
 	}
 	

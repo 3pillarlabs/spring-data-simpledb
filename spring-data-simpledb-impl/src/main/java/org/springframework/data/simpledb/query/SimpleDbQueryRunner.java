@@ -7,7 +7,6 @@ import org.springframework.data.simpledb.core.SimpleDbConfig;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbMetamodelEntityInformation;
-import org.springframework.data.simpledb.util.QueryUtils;
 import org.springframework.util.Assert;
 
 /**

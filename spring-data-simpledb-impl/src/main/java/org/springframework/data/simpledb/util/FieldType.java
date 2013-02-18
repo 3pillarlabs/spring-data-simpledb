@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.core.entity.field;
+package org.springframework.data.simpledb.util;
 
 import java.lang.reflect.Field;
 import java.util.Collection;

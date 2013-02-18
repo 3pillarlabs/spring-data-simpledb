@@ -13,8 +13,6 @@ import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.annotation.Attributes;
 import org.springframework.data.simpledb.annotation.DomainPrefix;
 import org.springframework.data.simpledb.core.SimpleDbConfig;
-import org.springframework.data.simpledb.core.entity.field.FieldType;
-import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
 import org.springframework.stereotype.Component;
 
 @Component
