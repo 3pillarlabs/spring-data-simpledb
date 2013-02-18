@@ -5,10 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
-import org.springframework.data.simpledb.core.entity.field.FieldType;
-import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
 import org.springframework.data.simpledb.query.executions.*;
-import org.springframework.data.simpledb.util.QueryUtils;
+import org.springframework.data.simpledb.util.FieldType;
+import org.springframework.data.simpledb.util.FieldTypeIdentifier;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
