@@ -3,7 +3,7 @@ package org.springframework.data.simpledb.repository.config;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.data.simpledb.core.SimpleDbConfig;
+import org.springframework.data.simpledb.config.SimpleDbConfig;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;

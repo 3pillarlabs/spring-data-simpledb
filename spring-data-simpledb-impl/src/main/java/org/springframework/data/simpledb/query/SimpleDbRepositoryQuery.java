@@ -83,7 +83,7 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
 
     private void assertNotHavingNestedQueryParameters(String query) {
         List<String> attributesFromQuery = QueryUtils.getQueryPartialFieldNames(query);
-        final Class<?> domainClass = method.getDomainClass();
+        final Class<?> domainClass = method.getDomainClazz();
         for (String attribute : attributesFromQuery) {
             try {
                 Field field = domainClass.getDeclaredField(attribute);

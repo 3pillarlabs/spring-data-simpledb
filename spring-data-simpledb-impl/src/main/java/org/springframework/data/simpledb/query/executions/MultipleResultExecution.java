@@ -28,7 +28,7 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
         switch (resultType){
             case COLLECTION_OF_DOMAIN_ENTITIES:
                 final Class<?> returnedClass = query.getQueryMethod().getReturnedObjectType();
-                final Class<?> domainClass = ((SimpleDbQueryMethod) query.getQueryMethod()).getDomainClass();
+                final Class<?> domainClass = ((SimpleDbQueryMethod) query.getQueryMethod()).getDomainClazz();
                 Assert.isAssignable(domainClass, returnedClass);
                 return queryRunner.executeQuery();
             case LIST_OF_LIST_OF_OBJECT:
@@ -78,7 +78,7 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
 
 
     private boolean isFieldOfTypeCollection(String query, SimpleDbQueryMethod method) {
-        final Class<?> domainClass = method.getDomainClass();
+        final Class<?> domainClass = method.getDomainClazz();
         List<String> attributesFromQuery = QueryUtils.getQueryPartialFieldNames(query);
         Assert.isTrue(attributesFromQuery.size() == 1, "Query doesn't contain only one attribute in selected clause :" + query);
         String attributeName = attributesFromQuery.get(0);
@@ -122,7 +122,7 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
 
     private boolean isCollectionOfDomainClass(SimpleDbQueryMethod method) {
         Type returnedGenericType = getCollectionGenericType(method);
-        return returnedGenericType.equals(method.getDomainClass());
+        return returnedGenericType.equals(method.getDomainClazz());
     }
 
 }

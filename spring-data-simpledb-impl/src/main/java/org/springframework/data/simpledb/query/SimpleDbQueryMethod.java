@@ -87,8 +87,10 @@ public class SimpleDbQueryMethod extends QueryMethod {
         return type.cast(value);
     }
 
-    @Override
-    public Class<?> getDomainClass() {
+    /**
+     * Provides public access to the {@link QueryMethod.getDomainClass}
+     */
+    public Class<?> getDomainClazz() {
         return super.getDomainClass();
     }
 

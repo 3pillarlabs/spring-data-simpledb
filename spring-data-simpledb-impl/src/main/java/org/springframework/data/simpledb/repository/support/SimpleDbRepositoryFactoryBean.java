@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
-import org.springframework.data.simpledb.core.SimpleDbConfig;
+import org.springframework.data.simpledb.config.SimpleDbConfig;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
