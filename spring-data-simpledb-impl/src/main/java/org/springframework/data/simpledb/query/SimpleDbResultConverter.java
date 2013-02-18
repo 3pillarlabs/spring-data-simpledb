@@ -2,10 +2,7 @@ package org.springframework.data.simpledb.query;
 
 import org.springframework.data.simpledb.util.ReflectionUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by: mgrozea
@@ -16,7 +13,7 @@ public final class SimpleDbResultConverter {
 		/* utility class */
 	}
 	
-    public static List<Object> filterAsListAttributesNamed(List<?> domainObjects, String attributeName){
+    public static List<Object> filterNamedAttributesAsList(List<?> domainObjects, String attributeName){
         List<Object> ret = new ArrayList<>();
         for (Object object : domainObjects) {
             ret.add(ReflectionUtils.callGetter(object, attributeName));
@@ -24,7 +21,7 @@ public final class SimpleDbResultConverter {
         return ret;
     }
 
-    public static Set<Object> filterAsSetAttributesNamed(List<?> domainObjects, String attributeName){
+    public static Set<Object> filterNamedAttributesAsSet(List<?> domainObjects, String attributeName){
         Set<Object> ret = new LinkedHashSet<>();
         for (Object object : domainObjects) {
             ret.add(ReflectionUtils.callGetter(object, attributeName));
@@ -45,7 +42,7 @@ public final class SimpleDbResultConverter {
             }
             return rows;
         } else {
-            return null;
+            return Collections.EMPTY_LIST;
         }
     }
 

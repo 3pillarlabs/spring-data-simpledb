@@ -20,4 +20,7 @@ interface AnnotatedSingleResultQueryRepository extends PagingAndSortingRepositor
 
     @Query(value = "select * from `testDB.simpleDbUser`")
     SimpleDbUser customFailSelectOneUser();
+
+    @Query(value = "SELECT primitiveField FROM `testDB.simpleDbUser` where itemName()='Item_0'")
+    float partialPrimitiveFieldSelect();
 }
