@@ -60,7 +60,7 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         if(method.isCollectionQuery()){
             return new MultipleResultExecution(simpledbOperations);
         } else if (method.isModifyingQuery()){
-            throw new IllegalArgumentException("Not implemented");
+            throw new IllegalArgumentException("Modifying query not supported. Please use repository methods for update operations.");
         } else if (method.isPageQuery()){
             throw new IllegalArgumentException("Not implemented");
         }
