@@ -63,21 +63,8 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
             throw new IllegalArgumentException("Modifying query not supported. Please use repository methods for update operations.");
         } else if (method.isPageQuery()){
             throw new IllegalArgumentException("Not implemented");
-        }
-//          else {
-//            return new SingleResultExecution(simpledbOperations);
-//        }
-
-        if (QueryUtils.isCountQuery(query)) {
-            return new CountExecution(simpledbOperations);
-        } else if (method.isQueryForEntity()) {
-            return new SingleResultExecution(simpledbOperations);
-        } else if (method.isPageQuery()) {
-            throw new IllegalArgumentException("Not implemented");
-        } else if (method.isModifyingQuery()) {
-            throw new IllegalArgumentException("Not implemented");
         } else {
-            return new PartialSingleResultExecution(simpledbOperations);
+            return new SingleResultExecution(simpledbOperations);
         }
     }
 
