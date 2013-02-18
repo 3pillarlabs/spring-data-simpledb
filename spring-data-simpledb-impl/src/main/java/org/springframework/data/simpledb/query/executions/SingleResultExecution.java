@@ -18,15 +18,13 @@ public class SingleResultExecution extends AbstractSimpleDbQueryExecution {
 	 *     <li>SINGLE_RESULT - Any Core Type or Primitive Field </li> as returned type for query: <pre>{@code SELECT field FROM entity} </pre>
 	 *     <li>COUNT_RESULT - Boxed Long or Primitive long Field </li> as returned type for query: <pre>{@code SELECT count(*) FROM entity} </pre>
 	 *     <li>ENTITY_RESULT - Entity </li> as returned type for query: <pre> {@code SELECT* FROM entity where itemName()="1"} </pre>
-	 *     <li>UNRECOGNIZED_RESULT - Type is not supported </li>
 	 * </ul>
 	 */
 	public enum SingleResultType {
 		
 		SINGLE_RESULT,
 		COUNT_RESULT,
-		ENTITY_RESULT,
-		UNRECOGNIZED_RESULT;
+		ENTITY_RESULT;
 	}
 
 	public SingleResultExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
@@ -70,10 +68,10 @@ public class SingleResultExecution extends AbstractSimpleDbQueryExecution {
 			return SingleResultType.COUNT_RESULT;
 		} else if (method.isQueryForEntity()) {
 			return SingleResultType.ENTITY_RESULT;
-		} else if(QueryUtils.getQueryPartialFieldNames(query).size() == 1 && !method.isCollectionQuery()) {
+		} else if(QueryUtils.getQueryPartialFieldNames(query).size() == 1) {
 			return SingleResultType.SINGLE_RESULT;
 		} else {
-			return SingleResultType.UNRECOGNIZED_RESULT;
+			throw new IllegalArgumentException("Wrong return type for query: " + query);
 		}
 	}
 }
