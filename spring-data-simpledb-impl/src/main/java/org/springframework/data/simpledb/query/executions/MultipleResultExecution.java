@@ -31,10 +31,10 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
                 final Class<?> domainClass = ((SimpleDbQueryMethod) query.getQueryMethod()).getDomainClass();
                 Assert.isAssignable(domainClass, returnedClass);
                 return queryRunner.executeQuery();
-            case LIST_BASED_REPRESENTATION:
+            case LIST_OF_LIST_OF_OBJECT:
                 List<?> returnList = queryRunner.executeQuery();
                 List<String> requestedQueryFieldNames = queryRunner.getRequestedQueryFieldNames();
-                return SimpleDbResultConverter.toListBasedRepresentation(returnList, requestedQueryFieldNames);
+                return SimpleDbResultConverter.toListOfListOfObject(returnList, requestedQueryFieldNames);
             case FIELD_OF_TYPE_COLLECTION:
                 String attributeName = queryRunner.getSingleQueryFieldName();
                 Object returnedEntity = queryRunner.executeSingleResultQuery();
@@ -59,10 +59,10 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
         if (isCollectionOfDomainClass(method)) {
             return MultipleResultType.COLLECTION_OF_DOMAIN_ENTITIES;
         } else if (QueryUtils.getQueryPartialFieldNames(query).size() > 1) {
-            return MultipleResultType.LIST_BASED_REPRESENTATION;
+            return MultipleResultType.LIST_OF_LIST_OF_OBJECT;
         } else {
-            if (isListBasedRepresentation(method)) {
-                return MultipleResultType.LIST_BASED_REPRESENTATION;
+            if (isListOfListOfObject(method)) {
+                return MultipleResultType.LIST_OF_LIST_OF_OBJECT;
             } else if (isFieldOfTypeCollection(query, method)) {
                 return MultipleResultType.FIELD_OF_TYPE_COLLECTION;
             } else if (List.class.isAssignableFrom(method.getReturnType())) {
@@ -98,7 +98,7 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
         return false;
     }
 
-    private boolean isListBasedRepresentation(SimpleDbQueryMethod method) {
+    private boolean isListOfListOfObject(SimpleDbQueryMethod method) {
         Type returnedGenericType = getCollectionGenericType(method);
         if (returnedGenericType instanceof ParameterizedType) {
             ParameterizedType secondGenericType = (ParameterizedType) returnedGenericType;

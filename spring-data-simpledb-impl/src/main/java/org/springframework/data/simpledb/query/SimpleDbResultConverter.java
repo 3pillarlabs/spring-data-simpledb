@@ -32,7 +32,7 @@ public final class SimpleDbResultConverter {
         return ret;
     }
 
-    public static List<List<Object>> toListBasedRepresentation(List<?> entityList, List<String> requestedQueryFieldNames) {
+    public static List<List<Object>> toListOfListOfObject(List<?> entityList, List<String> requestedQueryFieldNames) {
         if (entityList.size() > 0) {
             List<List<Object>> rows = new ArrayList<>();
             for (Object entity : entityList) {
