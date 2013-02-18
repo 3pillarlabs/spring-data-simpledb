@@ -60,7 +60,7 @@ The generated SimpleDB domain will be testDB.userJob
 If a value is specified here, at application startup Amazon SimpleDB domains are created/updated accordingly.
 $DOMAIN_MANAGEMENT_POLICY possible values:
 
-* **DROP_CREATE**	-  Amazon simple db domains will be dropped and recreated at startup; recommended for testing purposes.
+* **DROP_CREATE**    -  Amazon simple db domains will be dropped and recreated at startup; recommended for testing purposes.
 * **UPDATE**	        -  Amazon simple db domains will be created only if they are not already existing.
 * **NONE**            -  This option implies that all domains are created in simple db manually.
 
@@ -129,6 +129,35 @@ Write a test client:
             Assert.notNull(repository.findAll());
         }
     }
+
+### Using custom queries ###
+SimpleDb native queries can be run using a custom **@Query** annotation.
+
+Parameters can be bound to queries using  **@Param** annotation or by their position in method's signature if **?** are presents in queries.
+
+Queries may return Single Values or Multiple values.
+
+Is it possible for instance to select individual fields of a given Entity, by specifying the field name in the select condition.
+
+    @Query(value = "select primitiveField from `testDB.simpleDbUser`")
+    Set<Float> primitiveFieldSelect();
+
+Also, whole entities can be returned as in the following example.
+
+    @Query("select * from `testDB.simpleDbUser` where primitiveField = :primitiveField")
+    List<SimpleDbUser> customSelectWithNamedParamsQuery(@Param(value="primitiveField") String primitiveField);
+
+To select multiple fields of a given Entity, a query like the one bellow can be used.
+
+    @Query(value = "select coreField from `testDB.simpleDbUser` where itemName()='Item_0'")
+    List<List<Object>> selectCoreFields();
+
+Queries are validated against method's returned type. The following query won't be run.
+
+    @Query(value = "select * from `testDB.simpleDbUser`")
+    List<String> customSelectAllWrongReturnType();
+
+
 
 
 ## Known Limitations ##
