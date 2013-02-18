@@ -1,5 +1,10 @@
 package org.springframework.data.simpledb.query.executions;
 
+import org.springframework.data.simpledb.core.SimpleDbOperations;
+import org.springframework.data.simpledb.query.*;
+import org.springframework.data.simpledb.util.ReflectionUtils;
+import org.springframework.util.Assert;
+
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -7,15 +12,6 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import org.springframework.data.simpledb.core.SimpleDbOperations;
-import org.springframework.data.simpledb.query.QueryUtils;
-import org.springframework.data.simpledb.query.SimpleDbQueryMethod;
-import org.springframework.data.simpledb.query.SimpleDbQueryRunner;
-import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
-import org.springframework.data.simpledb.query.SimpleDbResultConverter;
-import org.springframework.data.simpledb.util.ReflectionUtils;
-import org.springframework.util.Assert;
 
 /**
  * Factory class for creating the appropriate type of execution.
@@ -29,11 +25,11 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
     /**
      * The following multiple result types can be requested: <br/>
      * <ul>
-     *     <li>COLLECTION_OF_DOMAIN_ENTITIES - List&lt;Entity&gt; <br/> as returned type for query  <code> select * from entity</code> </li>
-     *     <li>LIST_OF_LIST_OF_OBJECT - List&lt; List &lt; Object &gt; &gt;</li> <br/> as returned type for query <code> select aField, bField from entity</code>
-     *     <li>FIELD_OF_TYPE_COLLECTION - Collection &lt; ? &gt; </li> <br/> as returned type for query <code> select collectionField from entity where itemName()="1"</code>
-     *     <li>LIST_OF_FIELDS - List &lt; ? &gt; </li> <br/> as returned type for query <code> select aField from entity</code>
-     *     <li>SET_OF_FIELDS - Set &lt; ? &gt; </li> <br/> as returned type for query <code> select aField from entity</code>
+     *     <li>COLLECTION_OF_DOMAIN_ENTITIES - {@code List<Entity>} <br/> as returned type for query  <code> select * from entity</code> </li>
+     *     <li>LIST_OF_LIST_OF_OBJECT - {@code List<List<Object>>} <br/> as returned type for query <code> select aField, bField from entity</code></li>
+     *     <li>FIELD_OF_TYPE_COLLECTION - {@code Collection<?>}  <br/> as returned type for query <code> select collectionField from entity where itemName()="1"</code></li>
+     *     <li>LIST_OF_FIELDS - {@code List<?>} <br/> as returned type for query <code> select aField from entity</code></li>
+     *     <li>SET_OF_FIELDS - {@code Set<?>} <br/> as returned type for query <code> select aField from entity</code></li>
      * </ul>
      */
     public enum MultipleResultType {
