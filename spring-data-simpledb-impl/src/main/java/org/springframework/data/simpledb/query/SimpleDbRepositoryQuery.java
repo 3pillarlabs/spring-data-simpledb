@@ -9,15 +9,10 @@ import org.springframework.data.simpledb.core.entity.field.FieldType;
 import org.springframework.data.simpledb.core.entity.field.FieldTypeIdentifier;
 import org.springframework.data.simpledb.query.executions.*;
 import org.springframework.data.simpledb.util.QueryUtils;
-import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * {@link RepositoryQuery} implementation that inspects a {@link SimpleDbQueryMethod} for the existence of an {@link org.springframework.data.simpledb.annotation.Query} annotation and provides
@@ -61,42 +56,21 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
     }
 
     protected AbstractSimpleDbQueryExecution getExecution() {
-//        String query = method.getAnnotatedQuery();
-//        assertNotHavingNestedQueryParameters(query);
-//        if(method.isCollectionQuery()){
-//            return new MultipleResultExecution(simpledbOperations);
-//        } else if (method.isModifyingQuery()){
-//            throw new IllegalArgumentException("Not implemented");
-//        } else if (method.isPageQuery()){
-//            throw new IllegalArgumentException("Not implemented");
-//        } else {
+        String query = method.getAnnotatedQuery();
+        assertNotHavingNestedQueryParameters(query);
+        if(method.isCollectionQuery()){
+            return new MultipleResultExecution(simpledbOperations);
+        } else if (method.isModifyingQuery()){
+            throw new IllegalArgumentException("Not implemented");
+        } else if (method.isPageQuery()){
+            throw new IllegalArgumentException("Not implemented");
+        }
+//          else {
 //            return new SingleResultExecution(simpledbOperations);
 //        }
 
-        //TODO fix this
-        //return query and method
-        String query = method.getAnnotatedQuery();
-        assertNotHavingNestedQueryParameters(query);
         if (QueryUtils.isCountQuery(query)) {
             return new CountExecution(simpledbOperations);
-        } else if (method.isCollectionQuery()) {
-            if (isReturnedTypeListOfDomainClass()) {
-                return new CollectionExecution(simpledbOperations);
-            } else if (QueryUtils.getQueryPartialFieldNames(query).size() > 1) {
-                return new PartialCollectionExecution(simpledbOperations);
-            } else {
-                if (isGenericResultType()) {
-                    return new PartialCollectionExecution(simpledbOperations);
-                } else if (isSingleCollectionField(query)) {
-                    return new PartialCollectionFieldExecution(simpledbOperations);
-                } else if (List.class.isAssignableFrom(method.getReturnType())) {
-                    return new PartialListOfOneFiledExecution(simpledbOperations);
-                } else if (Set.class.isAssignableFrom(method.getReturnType())) {
-                    return new PartialSetOfOneFiledExecution(simpledbOperations);
-                } else {
-                    throw new IllegalArgumentException("Wrong return type for query: " + query);
-                }
-            }
         } else if (method.isQueryForEntity()) {
             return new SingleResultExecution(simpledbOperations);
         } else if (method.isPageQuery()) {
@@ -106,53 +80,6 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
         } else {
             return new PartialSingleResultExecution(simpledbOperations);
         }
-    }
-
-    private boolean isSingleCollectionField(String query) {
-        final Class<?> domainClass = method.getDomainClass();
-        List<String> attributesFromQuery = QueryUtils.getQueryPartialFieldNames(query);
-        Assert.isTrue(attributesFromQuery.size() == 1, "Query doesn't contain only one attribute in selected clause :" + query);
-        String attributeName = attributesFromQuery.get(0);
-        try {
-            Field field = domainClass.getDeclaredField(attributeName);
-            Class<?> type = field.getType();
-            if (Collection.class.isAssignableFrom(type)) {
-                ParameterizedType returnType = method.getGenericReturnType();
-                Type returnedGenericType = returnType.getActualTypeArguments()[0];
-                if (!(returnedGenericType instanceof ParameterizedType)) {
-                    return true;
-                }
-            }
-        } catch (NoSuchFieldException e) {
-            throw new IllegalArgumentException("Filed doesn't exist in entity :" + query, e);
-        }
-        return false;
-    }
-
-    private boolean isGenericResultType() {
-        ParameterizedType returnType = method.getGenericReturnType();
-        Type returnedGenericType = returnType.getActualTypeArguments()[0];
-
-        if (returnedGenericType instanceof ParameterizedType) {
-            ParameterizedType secondGenericType = (ParameterizedType) returnedGenericType;
-            Class<?> rowType = (Class<?>) secondGenericType.getRawType();
-            if (!List.class.isAssignableFrom(rowType)) {
-                return false;
-            }
-            Class<?> genericObject = (Class<?>) secondGenericType.getActualTypeArguments()[0];
-
-            if (genericObject.equals(Object.class)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isReturnedTypeListOfDomainClass() {
-        ParameterizedType returnType = method.getGenericReturnType();
-        Type returnedGenericType = returnType.getActualTypeArguments()[0];
-
-        return returnedGenericType.equals(method.getDomainClass());
     }
 
     private void assertNotHavingNestedQueryParameters(String query) {
