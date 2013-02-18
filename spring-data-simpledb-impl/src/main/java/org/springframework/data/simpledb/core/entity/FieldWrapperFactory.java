@@ -1,17 +1,10 @@
-package org.springframework.data.simpledb.core.entity.field;
+package org.springframework.data.simpledb.core.entity;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
-import org.springframework.data.simpledb.core.entity.field.wrapper.AbstractFieldWrapper;
-import org.springframework.data.simpledb.core.entity.field.wrapper.ArraySimpleFieldWrapper;
-import org.springframework.data.simpledb.core.entity.field.wrapper.CollectionSimpleFieldWrapper;
-import org.springframework.data.simpledb.core.entity.field.wrapper.CoreSimpleFieldWrapper;
-import org.springframework.data.simpledb.core.entity.field.wrapper.MapSimpleFieldWrapper;
-import org.springframework.data.simpledb.core.entity.field.wrapper.NestedEntityFieldWrapper;
-import org.springframework.data.simpledb.core.entity.field.wrapper.ObjectSimpleFieldWrapper;
-import org.springframework.data.simpledb.core.entity.field.wrapper.PrimitiveSimpleFieldWrapper;
+import org.springframework.data.simpledb.util.FieldType;
+import org.springframework.data.simpledb.util.FieldTypeIdentifier;
 
 public final class FieldWrapperFactory {
 	

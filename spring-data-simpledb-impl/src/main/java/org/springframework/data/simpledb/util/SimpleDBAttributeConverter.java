@@ -12,7 +12,6 @@ import org.springframework.util.Assert;
 
 public final class SimpleDBAttributeConverter {
 
-
     private SimpleDBAttributeConverter() {
     	/* utility class */
     }
@@ -56,20 +55,8 @@ public final class SimpleDBAttributeConverter {
     public static Object decodeToFieldOfType(String value, Class<?> retType) throws ParseException {
         Object val = null;
 
-
-        if (Integer.class.isAssignableFrom(retType) || retType == int.class) {
-            val = AmazonSimpleDBUtil.decodeIntegerNumber(value).intValue();
-        } else if (Long.class.isAssignableFrom(retType) || retType == long.class) {
-            val = AmazonSimpleDBUtil.decodeIntegerNumber(value).longValue();
-        }
-        if (Short.class.isAssignableFrom(retType) || retType == short.class) {
-            val = AmazonSimpleDBUtil.decodeIntegerNumber(value).shortValue();
-        } else if (Byte.class.isAssignableFrom(retType) || retType == byte.class) {
-            val = AmazonSimpleDBUtil.decodeIntegerNumber(value).byteValue();
-        } else if (Float.class.isAssignableFrom(retType) || retType == float.class) {
-            val = AmazonSimpleDBUtil.decodeRealNumber(value).floatValue();
-        } else if (Double.class.isAssignableFrom(retType) || retType == double.class) {
-            val = AmazonSimpleDBUtil.decodeRealNumber(value).doubleValue();
+        if(Number.class.isAssignableFrom(retType) || (retType.isPrimitive() && retType != boolean.class)) {
+        	val = decodeToFieldOfNumericType(value, retType);
         } else if (BigDecimal.class.isAssignableFrom(retType)) {
             val = AmazonSimpleDBUtil.decodeRealNumber(value);
         } else if (byte[].class.isAssignableFrom(retType)) {
@@ -85,6 +72,26 @@ public final class SimpleDBAttributeConverter {
         return val;
     }
 
+    private static Object decodeToFieldOfNumericType(String value, Class<?> retType) throws ParseException {
+        Object val = null;
+
+        if (Integer.class.isAssignableFrom(retType) || retType == int.class) {
+            val = AmazonSimpleDBUtil.decodeIntegerNumber(value).intValue();
+        } else if (Long.class.isAssignableFrom(retType) || retType == long.class) {
+            val = AmazonSimpleDBUtil.decodeIntegerNumber(value).longValue();
+        } else if (Short.class.isAssignableFrom(retType) || retType == short.class) {
+            val = AmazonSimpleDBUtil.decodeIntegerNumber(value).shortValue();
+        } else if (Byte.class.isAssignableFrom(retType) || retType == byte.class) {
+            val = AmazonSimpleDBUtil.decodeIntegerNumber(value).byteValue();
+        } else if (Float.class.isAssignableFrom(retType) || retType == float.class) {
+            val = AmazonSimpleDBUtil.decodeRealNumber(value).floatValue();
+        } else if (Double.class.isAssignableFrom(retType) || retType == double.class) {
+            val = AmazonSimpleDBUtil.decodeRealNumber(value).doubleValue();
+        } 
+        
+        return val;
+    }
+    
     public static Object decodeToPrimitiveArray(List<String> fromSimpleDbAttValues, Class<?> retType) throws ParseException {
         Object primitiveCollection = Array.newInstance(retType, fromSimpleDbAttValues.size());
         int idx = 0;
@@ -95,10 +102,5 @@ public final class SimpleDBAttributeConverter {
 
         return primitiveCollection;
     }
-
-
-
-
-
 
 }

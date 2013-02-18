@@ -34,6 +34,9 @@ public final class AmazonSimpleDBUtil {
     private static final int LONG_DIGITS = 20;
     private static final BigDecimal OFFSET_VALUE = new BigDecimal(Long.MIN_VALUE).negate();
     private static final String UTF8_ENCODING = "UTF-8";
+    private static final int BASE = 10;
+    private static final int ENCODE_DATE_COLONS_INDEX = 2;
+    private static final int DECODE_DATE_COLONS_INDEX = 3;
 
 
     private AmazonSimpleDBUtil() {
@@ -79,6 +82,7 @@ public final class AmazonSimpleDBUtil {
         if(value.matches(".*Infinity|NaN")){
             throw new MappingException("Could not serialize NaN or Infinity values");
         }
+        
         return AmazonSimpleDBUtil.decodeRealNumberRange(value, AmazonSimpleDBUtil.LONG_DIGITS, OFFSET_VALUE);
     }
 
@@ -93,11 +97,12 @@ public final class AmazonSimpleDBUtil {
             strBuffer.insert(i, '0');
         }
         strBuffer.append(longString);
+        
         return strBuffer.toString();
     }
 
     public static String encodeRealNumberRange(BigDecimal number, int maxDigitsLeft, int maxDigitsRight, BigDecimal offsetValue) {
-        BigDecimal shiftMultiplier = new BigDecimal(Math.pow(10, maxDigitsRight));
+        BigDecimal shiftMultiplier = new BigDecimal(Math.pow(BASE, maxDigitsRight));
         BigDecimal shiftedNumber = number.multiply(shiftMultiplier);
         shiftedNumber = shiftedNumber.setScale(0, BigDecimal.ROUND_HALF_UP);
         final BigDecimal shiftedOffset = offsetValue.multiply(shiftMultiplier);
@@ -122,7 +127,7 @@ public final class AmazonSimpleDBUtil {
 
     public static BigDecimal decodeRealNumberRange(String value, int maxDigitsRight, BigDecimal offsetValue) {
         BigDecimal offsetNumber = new BigDecimal(value);
-        BigDecimal shiftMultiplier = new BigDecimal(Math.pow(10, maxDigitsRight));
+        BigDecimal shiftMultiplier = new BigDecimal(Math.pow(BASE, maxDigitsRight));
         BigDecimal tempVal0 = offsetValue.multiply(shiftMultiplier);
         BigDecimal tempVal = (offsetNumber.subtract(tempVal0));
         return (tempVal.divide(shiftMultiplier));
@@ -138,7 +143,7 @@ public final class AmazonSimpleDBUtil {
         SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormat);
         /* Java doesn't handle ISO8601 nicely: need to add ':' manually */
         String result = dateFormatter.format(date);
-        return result.substring(0, result.length() - 2) + ":" + result.substring(result.length() - 2);
+        return result.substring(0, result.length() - ENCODE_DATE_COLONS_INDEX) + ":" + result.substring(result.length() - ENCODE_DATE_COLONS_INDEX);
     }
 
     /**
@@ -148,7 +153,7 @@ public final class AmazonSimpleDBUtil {
      * @return	original date value
      */
     public static Date decodeDate(String value) throws ParseException {
-        String javaValue = value.substring(0, value.length() - 3) + value.substring(value.length() - 2);
+        String javaValue = value.substring(0, value.length() - DECODE_DATE_COLONS_INDEX) + value.substring(value.length() - ENCODE_DATE_COLONS_INDEX);
         SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormat);
         return dateFormatter.parse(javaValue);
     }
@@ -180,7 +185,6 @@ public final class AmazonSimpleDBUtil {
         }
 
     }
-
 
     private static BigDecimal tryToStoreAsRealBigDecimal(Object ob){
         BigDecimal bigDecimal = null;

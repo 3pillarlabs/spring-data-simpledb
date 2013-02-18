@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.core.entity.field.wrapper;
+package org.springframework.data.simpledb.core.entity;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.mapping.model.MappingException;
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 

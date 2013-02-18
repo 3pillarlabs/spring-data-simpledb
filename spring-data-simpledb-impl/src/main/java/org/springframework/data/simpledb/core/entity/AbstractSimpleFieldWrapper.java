@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.core.entity.field.wrapper;
+package org.springframework.data.simpledb.core.entity;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.util.Assert;
 
 public abstract class AbstractSimpleFieldWrapper<T, ID extends Serializable> extends AbstractFieldWrapper<T, ID> {
