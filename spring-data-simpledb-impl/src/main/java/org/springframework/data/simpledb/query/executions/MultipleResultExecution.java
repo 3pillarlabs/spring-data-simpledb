@@ -17,11 +17,9 @@ import java.util.Set;
  * Factory class for creating the appropriate type of execution.
  */
 public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
-    private final SimpleDbOperations<?, Serializable> simpledbOperations;
 
     public MultipleResultExecution(SimpleDbOperations<?, Serializable> simpledbOperations) {
         super(simpledbOperations);
-        this.simpledbOperations = simpledbOperations;
     }
 
     @Override
