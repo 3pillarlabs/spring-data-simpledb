@@ -1,5 +1,10 @@
 package org.springframework.data.simpledb.query.executions;
 
+import org.springframework.data.simpledb.core.SimpleDbOperations;
+import org.springframework.data.simpledb.query.*;
+import org.springframework.data.simpledb.util.ReflectionUtils;
+import org.springframework.util.Assert;
+
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -7,15 +12,6 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import org.springframework.data.simpledb.core.SimpleDbOperations;
-import org.springframework.data.simpledb.query.QueryUtils;
-import org.springframework.data.simpledb.query.SimpleDbQueryMethod;
-import org.springframework.data.simpledb.query.SimpleDbQueryRunner;
-import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
-import org.springframework.data.simpledb.query.SimpleDbResultConverter;
-import org.springframework.data.simpledb.util.ReflectionUtils;
-import org.springframework.util.Assert;
 
 /**
  * Factory class for creating the appropriate type of execution.
@@ -34,8 +30,13 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
         MultipleResultType resultType = detectResultType(queryString, method);
         switch (resultType){
             case COLLECTION_OF_DOMAIN_ENTITIES:
+<<<<<<< HEAD
                 final Class<?> returnedClass = query.getQueryMethod().getReturnedObjectType();
                 final Class<?> domainClass = ((SimpleDbQueryMethod) query.getQueryMethod()).getDomainClazz();
+=======
+                final Class<?> returnedClass = method.getReturnedObjectType();
+                final Class<?> domainClass = method.getDomainClass();
+>>>>>>> 4ca4c343a5cb81dd71a61fe011a803f2e3b771a6
                 Assert.isAssignable(domainClass, returnedClass);
                 return queryRunner.executeQuery();
             case LIST_OF_LIST_OF_OBJECT:
