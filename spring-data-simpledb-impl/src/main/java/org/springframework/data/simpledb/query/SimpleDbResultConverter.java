@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * Created by: mgrozea
  */
-public class SimpleDbResultConverter {
+public final class SimpleDbResultConverter {
 	
 	private SimpleDbResultConverter() {
 		/* utility class */
