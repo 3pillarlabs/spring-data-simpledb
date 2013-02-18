@@ -1,14 +1,15 @@
 package org.springframework.data.simpledb.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.mapping.model.MappingException;
+import org.springframework.util.Assert;
+
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.mapping.model.MappingException;
 
 public final class ReflectionUtils {
 
@@ -21,6 +22,7 @@ public final class ReflectionUtils {
     public static Object callGetter(Object obj, String fieldName) {
         try {
             Method getterMethod = retrieveGetterFrom(obj.getClass(), fieldName);
+            Assert.notNull(getterMethod, "No getter found for: " + fieldName);
             return getterMethod.invoke(obj);
 
         } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -31,6 +33,7 @@ public final class ReflectionUtils {
     public static void callSetter(Object obj, String fieldName, Object fieldValue) {
         try {
             Method setterMethod = retrieveSetterFrom(obj.getClass(), fieldName);
+            Assert.notNull(setterMethod, "No setter found for: " + fieldName);
             setterMethod.invoke(obj, fieldValue);
 
         } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {

@@ -45,11 +45,11 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
             case LIST_OF_FIELDS:
                 String attributeName1 = queryRunner.getSingleQueryFieldName();
                 List<?> returnListFromDb = queryRunner.executeQuery();
-                return SimpleDbResultConverter.filterAsListAttributesNamed(returnListFromDb, attributeName1);
+                return SimpleDbResultConverter.filterNamedAttributesAsList(returnListFromDb, attributeName1);
             case SET_OF_FIELDS:
                 String attributeName3 = queryRunner.getSingleQueryFieldName();
                 List<?> returnListFromDb1 = queryRunner.executeQuery();
-                return SimpleDbResultConverter.filterAsSetAttributesNamed(returnListFromDb1, attributeName3);
+                return SimpleDbResultConverter.filterNamedAttributesAsSet(returnListFromDb1, attributeName3);
 
         }
         throw new IllegalArgumentException("Unrecognized multiple result type");
