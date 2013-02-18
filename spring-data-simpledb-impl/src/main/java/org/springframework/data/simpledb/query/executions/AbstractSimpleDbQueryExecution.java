@@ -25,7 +25,7 @@ public abstract class AbstractSimpleDbQueryExecution {
         Assert.notNull(repositoryQuery);
         Assert.notNull(values);
         String query = QueryUtils.bindQueryParameters(repositoryQuery, StringUtil.toStringArray(values));
-        Class<?> domainClass = ((SimpleDbQueryMethod) repositoryQuery.getQueryMethod()).getDomainClass();
+        Class<?> domainClass = ((SimpleDbQueryMethod) repositoryQuery.getQueryMethod()).getDomainClazz();
         SimpleDbQueryRunner queryRunner = new SimpleDbQueryRunner(simpledbOperations, domainClass, query);
         return doExecute(repositoryQuery, queryRunner);
     }

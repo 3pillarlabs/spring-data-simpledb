@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.core;
+package org.springframework.data.simpledb.config;
 
 public final class SimpleDbConfig {
 

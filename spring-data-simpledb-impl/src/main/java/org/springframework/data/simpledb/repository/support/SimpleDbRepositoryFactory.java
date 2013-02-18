@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.query.QueryLookupStrategy;
-import org.springframework.data.simpledb.core.SimpleDbConfig;
+import org.springframework.data.simpledb.config.SimpleDbConfig;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.core.SimpleDbOperationsImpl;
 import org.springframework.data.simpledb.core.domain.DomainManager;
