@@ -15,10 +15,11 @@ import java.io.Serializable;
  */
 public abstract class AbstractSimpleDbQueryExecution {
 
+	private final SimpleDbOperations<?, Serializable> simpledbOperations;
+	
     public AbstractSimpleDbQueryExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
         this.simpledbOperations = simpleDbOperations;
     }
-    private final SimpleDbOperations<?, Serializable> simpledbOperations;
 
     public Object execute(SimpleDbRepositoryQuery repositoryQuery, Object[] values) {
         Assert.notNull(repositoryQuery);
@@ -29,5 +30,10 @@ public abstract class AbstractSimpleDbQueryExecution {
         return doExecute(repositoryQuery, queryRunner);
     }
 
+    protected SimpleDbOperations<?, Serializable> getSimpledbOperations() {
+		return simpledbOperations;
+	}
+    
     protected abstract Object doExecute(SimpleDbRepositoryQuery query, SimpleDbQueryRunner queryRunner);
+    
 }
