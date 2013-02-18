@@ -35,3 +35,5 @@ logs
 *.DS_Store
 *.swp
 *.vim
+
+*.orig

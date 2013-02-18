@@ -65,7 +65,7 @@ public class SimpleDbQueryMethod extends QueryMethod {
      *
      * @return
      */
-    public String getAnnotatedQuery() {
+    public final String getAnnotatedQuery() {
 
         String query = getAnnotationValue("value", String.class);
         return StringUtils.hasText(query) ? query : null;
