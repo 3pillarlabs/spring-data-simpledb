@@ -29,10 +29,6 @@ public abstract class AbstractSimpleDbQueryExecution {
         SimpleDbQueryRunner queryRunner = new SimpleDbQueryRunner(simpledbOperations, domainClass, query);
         return doExecute(repositoryQuery, queryRunner);
     }
-
-    protected SimpleDbOperations<?, Serializable> getSimpledbOperations() {
-		return simpledbOperations;
-	}
     
     protected abstract Object doExecute(SimpleDbRepositoryQuery query, SimpleDbQueryRunner queryRunner);
     

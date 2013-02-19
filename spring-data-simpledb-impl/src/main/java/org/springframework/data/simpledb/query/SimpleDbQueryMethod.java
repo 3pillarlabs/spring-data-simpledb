@@ -100,10 +100,6 @@ public class SimpleDbQueryMethod extends QueryMethod {
     }
 
     public boolean returnsFieldOfTypeCollection() {
-        if(returnsListOfListOfObject()){
-            return false;
-        }
-
         String query = getAnnotatedQuery();
         List<String> attributesFromQuery = QueryUtils.getQueryPartialFieldNames(query);
         if(attributesFromQuery.size() != 1){
@@ -113,7 +109,15 @@ public class SimpleDbQueryMethod extends QueryMethod {
 
         Class<?> fieldType = ReflectionUtils.getFieldClass(getDomainClass(), attributeName);
 
-        return Collection.class.isAssignableFrom(fieldType);
+        if (Collection.class.isAssignableFrom(fieldType)) {
+            ParameterizedType returnType = (ParameterizedType) method.getGenericReturnType();
+            Type returnedGenericType = returnType.getActualTypeArguments()[0];
+            if (!(returnedGenericType instanceof ParameterizedType)) {
+                return true;
+            }
+        }
+        return false;
+//        return ReflectionUtils.isOfType(method.getGenericReturnType(), getDomainClass(), attributeName);
     }
 
     public boolean returnsListOfListOfObject() {
@@ -128,7 +132,7 @@ public class SimpleDbQueryMethod extends QueryMethod {
     }
 
     private Type getCollectionGenericType(){
-        Type returnType =  (Type)method.getGenericReturnType();
+        Type returnType =  method.getGenericReturnType();
         if(isCollectionQuery()){
             return ((ParameterizedType)returnType).getActualTypeArguments()[0];
         } else {

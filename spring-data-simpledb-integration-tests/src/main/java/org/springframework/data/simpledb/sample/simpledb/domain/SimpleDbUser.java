@@ -1,10 +1,11 @@
 package org.springframework.data.simpledb.sample.simpledb.domain;
 
-import java.util.List;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.data.annotation.Id;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * TODO: extend with other types to be tested as other type handlers are implemented.
@@ -28,6 +29,8 @@ public class SimpleDbUser {
     private List<JSONCompatibleClass> objectList;
 
     private long[] primitiveArrayField;
+
+    private Map<String, JSONCompatibleClass> mapOfStringAndObject;
 
     public void setItemName(String itemName) {
         this.itemName = itemName;
@@ -93,6 +96,14 @@ public class SimpleDbUser {
 
     public void setObjectList(List<JSONCompatibleClass> objectList) {
         this.objectList = objectList;
+    }
+
+    public Map<String, JSONCompatibleClass> getMapOfStringAndObject() {
+        return mapOfStringAndObject;
+    }
+
+    public void setMapOfStringAndObject(Map<String, JSONCompatibleClass> mapOfStringAndObject) {
+        this.mapOfStringAndObject = mapOfStringAndObject;
     }
 
     public static class NestedEntity {

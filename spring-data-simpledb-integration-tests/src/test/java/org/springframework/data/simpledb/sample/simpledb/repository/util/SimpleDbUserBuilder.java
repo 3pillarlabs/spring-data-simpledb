@@ -1,12 +1,9 @@
 package org.springframework.data.simpledb.sample.simpledb.repository.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.springframework.data.simpledb.sample.simpledb.domain.JSONCompatibleClass;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
+
+import java.util.*;
 
 public class SimpleDbUserBuilder {
 
@@ -21,6 +18,7 @@ public class SimpleDbUserBuilder {
 
             List<Integer> list = Arrays.asList(Integer.valueOf(123), Integer.valueOf(23));
             user.setCoreTypeList(list);
+
 
             user.setPrimitiveArrayField(new long[]{1234L});
 
@@ -38,6 +36,12 @@ public class SimpleDbUserBuilder {
             user.setObjectField(sampleJSONList);
 
             user.setObjectList( buildListOfObjects());
+
+            Map<String, JSONCompatibleClass> map = new HashMap<>();
+            JSONCompatibleClass json = new JSONCompatibleClass();
+            json.setName("Tom");
+            map.put("Tom", json);
+            user.setMapOfStringAndObject(map);
         }
         return user;
     }

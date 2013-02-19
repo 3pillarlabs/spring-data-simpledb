@@ -58,6 +58,27 @@ public final class ReflectionUtils {
         return hasDeclaredAccessorsMutators;
     }
 
+    public static boolean isOfType(Type type, final Class<?> entityClazz, final String fieldName) {
+        try {
+            Field field = entityClazz.getDeclaredField(fieldName);
+            Type fieldType = field.getGenericType();
+
+            while (type instanceof ParameterizedType && fieldType instanceof ParameterizedType) {
+                type = ((ParameterizedType) type).getActualTypeArguments()[0];
+                fieldType = ((ParameterizedType) fieldType).getActualTypeArguments()[0];
+                Class<?> typeClass = (Class<?>)type;
+                Class<?> fieldTypeClass = (Class<?>)fieldType;
+                if (!typeClass.isAssignableFrom(fieldTypeClass)){
+                    return false;
+                }
+            }
+
+            return type.equals(fieldType);
+        } catch (NoSuchFieldException e) {
+            throw new IllegalArgumentException("Field doesn't exist in entity :" + fieldName, e);
+        }
+    }
+
     public static Class<?> getFieldClass(final Class<?> entityClazz, final String fieldName){
         try {
             Field field = entityClazz.getDeclaredField(fieldName);
