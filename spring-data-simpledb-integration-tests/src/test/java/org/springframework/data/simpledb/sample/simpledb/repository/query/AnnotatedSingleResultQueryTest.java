@@ -27,37 +27,11 @@ public class AnnotatedSingleResultQueryTest {
 
         long result = repository.customLongCount();
         assertNotNull(result);
-        System.out.println(result);
         assertEquals(testUsers.size(), result);
     }
 
     @Test
-    public void customlongCount_should_return_the_number_of_users_represented_as_long() {
-        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
-        repository.save(testUsers);
-
-        long result = repository.customlongCount();
-        assertNotNull(result);
-        System.out.println(result);
-        assertEquals(testUsers.size(),result);
-    }
-
-    @Test
-    public void customIntCount_should_fail_if_return_number_of_users__is_represented_as_int() {
-        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
-        repository.save(testUsers);
-
-        try{
-            int result = repository.customIntCount();
-        }catch (IllegalArgumentException e){
-            assertTrue(e.getMessage().contains("Method declared in repository should return type long or Long"));
-            return;
-        }
-        fail();
-    }
-
-    @Test
-    public void customSelectOneUser_should_return_one_users() {
+    public void customSelectOneUser_should_return_one_user() {
         List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
         repository.save(testUsers);
 
@@ -65,21 +39,6 @@ public class AnnotatedSingleResultQueryTest {
         assertNotNull(result);
         assertEquals(testUsers.get(0),result);
     }
-
-    @Test
-    public void customSelectOneUser_should_fail_if_more_users_can_be_selected() {
-        List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
-        repository.save(testUsers);
-
-        try{
-            SimpleDbUser result = repository.customFailSelectOneUser();
-        }catch (IllegalArgumentException e){
-            assertTrue(e.getMessage().contains("Select statement doesn't return only one entity"));
-            return;
-        }
-        fail();
-    }
-
 
     @Test
     public void partialPrimitiveFieldSelect_should_return_a_single_primitive_field() {
