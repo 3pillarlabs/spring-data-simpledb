@@ -6,11 +6,15 @@ import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.simpledb.annotation.Query;
+import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * SimpleDB specific extension of {@link org.springframework.data.repository.query.QueryMethod}. <br/>
@@ -87,9 +91,6 @@ public class SimpleDbQueryMethod extends QueryMethod {
         return type.cast(value);
     }
 
-    /**
-     * Provides public access to the {@link QueryMethod.getDomainClass}
-     */
     public Class<?> getDomainClazz() {
         return super.getDomainClass();
     }
@@ -98,7 +99,41 @@ public class SimpleDbQueryMethod extends QueryMethod {
         return method.getReturnType();
     }
 
-    public Type getGenericReturnType() {
-        return method.getGenericReturnType();
+    public boolean returnsFieldOfTypeCollection() {
+        if(returnsListOfListOfObject()){
+            return false;
+        }
+
+        String query = getAnnotatedQuery();
+        List<String> attributesFromQuery = QueryUtils.getQueryPartialFieldNames(query);
+        if(attributesFromQuery.size() != 1){
+            return false;
+        }
+        String attributeName = attributesFromQuery.get(0);
+
+        Class<?> fieldType = ReflectionUtils.getFieldClass(getDomainClass(), attributeName);
+
+        return Collection.class.isAssignableFrom(fieldType);
     }
+
+    public boolean returnsListOfListOfObject() {
+        Type returnedGenericType = getCollectionGenericType();
+        return ReflectionUtils.isListOfListOfObject(returnedGenericType);
+    }
+
+
+    public boolean returnsCollectionOfDomainClass() {
+        Type returnedGenericType = getCollectionGenericType();
+        return returnedGenericType.equals(getDomainClass());
+    }
+
+    private Type getCollectionGenericType(){
+        Type returnType =  (Type)method.getGenericReturnType();
+        if(isCollectionQuery()){
+            return ((ParameterizedType)returnType).getActualTypeArguments()[0];
+        } else {
+            return returnType;
+        }
+    }
+
 }

@@ -3,13 +3,8 @@ package org.springframework.data.simpledb.query.executions;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.query.*;
 import org.springframework.data.simpledb.util.ReflectionUtils;
-import org.springframework.util.Assert;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -43,15 +38,11 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
 
     @Override
     protected Object doExecute(SimpleDbRepositoryQuery query, SimpleDbQueryRunner queryRunner) {
-        String queryString = query.getAnnotatedQuery();
         SimpleDbQueryMethod method = (SimpleDbQueryMethod)query.getQueryMethod();
 
-        MultipleResultType resultType = detectResultType(queryString, method);
+        MultipleResultType resultType = detectResultType(method);
         switch (resultType){
             case COLLECTION_OF_DOMAIN_ENTITIES:
-                final Class<?> returnedClass = query.getQueryMethod().getReturnedObjectType();
-                final Class<?> domainClass = ((SimpleDbQueryMethod) query.getQueryMethod()).getDomainClazz();
-                Assert.isAssignable(domainClass, returnedClass);
                 return queryRunner.executeQuery();
             case LIST_OF_LIST_OF_OBJECT:
                 List<?> returnList = queryRunner.executeQuery();
@@ -74,15 +65,16 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
         throw new IllegalArgumentException("Unrecognized multiple result type");
     }
 
-    MultipleResultType detectResultType(String query, SimpleDbQueryMethod method) {
-        if (isCollectionOfDomainClass(method)) {
+    MultipleResultType detectResultType(SimpleDbQueryMethod method) {
+        String query = method.getAnnotatedQuery();
+        if (method.returnsCollectionOfDomainClass()) {
             return MultipleResultType.COLLECTION_OF_DOMAIN_ENTITIES;
         } else if (QueryUtils.getQueryPartialFieldNames(query).size() > 1) {
             return MultipleResultType.LIST_OF_LIST_OF_OBJECT;
         } else {
-            if (isListOfListOfObject(method)) {
+            if (method.returnsListOfListOfObject()) {
                 return MultipleResultType.LIST_OF_LIST_OF_OBJECT;
-            } else if (isFieldOfTypeCollection(query, method)) {
+            } else if (method.returnsFieldOfTypeCollection()) {
                 return MultipleResultType.FIELD_OF_TYPE_COLLECTION;
             } else if (List.class.isAssignableFrom(method.getReturnType())) {
                 return MultipleResultType.LIST_OF_FIELDS;
@@ -93,55 +85,4 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
             }
         }
     }
-
-
-
-    private boolean isFieldOfTypeCollection(String query, SimpleDbQueryMethod method) {
-        final Class<?> domainClass = method.getDomainClazz();
-        List<String> attributesFromQuery = QueryUtils.getQueryPartialFieldNames(query);
-        Assert.isTrue(attributesFromQuery.size() == 1, "Query doesn't contain only one attribute in selected clause :" + query);
-        String attributeName = attributesFromQuery.get(0);
-        try {
-            Field field = domainClass.getDeclaredField(attributeName);
-            Class<?> type = field.getType();
-            if (Collection.class.isAssignableFrom(type)) {
-                ParameterizedType returnType = (ParameterizedType) method.getGenericReturnType();
-                Type returnedGenericType = returnType.getActualTypeArguments()[0];
-                if (!(returnedGenericType instanceof ParameterizedType)) {
-                    return true;
-                }
-            }
-        } catch (NoSuchFieldException e) {
-            throw new IllegalArgumentException("Filed doesn't exist in entity :" + query, e);
-        }
-        return false;
-    }
-
-    private boolean isListOfListOfObject(SimpleDbQueryMethod method) {
-        Type returnedGenericType = getCollectionGenericType(method);
-        if (returnedGenericType instanceof ParameterizedType) {
-            ParameterizedType secondGenericType = (ParameterizedType) returnedGenericType;
-            Class<?> rowType = (Class<?>) secondGenericType.getRawType();
-            if (!List.class.isAssignableFrom(rowType)) {
-                return false;
-            }
-            Class<?> genericObject = (Class<?>) secondGenericType.getActualTypeArguments()[0];
-
-            if (genericObject.equals(Object.class)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Type getCollectionGenericType(SimpleDbQueryMethod method){
-        ParameterizedType returnType =  (ParameterizedType)method.getGenericReturnType();
-        return returnType.getActualTypeArguments()[0];
-    }
-
-    private boolean isCollectionOfDomainClass(SimpleDbQueryMethod method) {
-        Type returnedGenericType = getCollectionGenericType(method);
-        return returnedGenericType.equals(method.getDomainClazz());
-    }
-
 }
