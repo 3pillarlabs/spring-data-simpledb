@@ -7,9 +7,8 @@ import org.springframework.util.Assert;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
+import java.util.List;
 
 public final class ReflectionUtils {
 
@@ -41,6 +40,7 @@ public final class ReflectionUtils {
         }
     }
 
+
     /**
      * This method checks if the declared Field is accessible through getters and setters methods
      * Fields which have only setters OR getters and NOT both are discarded from serialization process
@@ -57,6 +57,33 @@ public final class ReflectionUtils {
 
         return hasDeclaredAccessorsMutators;
     }
+
+    public static Class<?> getFieldClass(final Class<?> entityClazz, final String fieldName){
+        try {
+            Field field = entityClazz.getDeclaredField(fieldName);
+            return field.getType();
+        } catch (NoSuchFieldException e) {
+            throw new IllegalArgumentException("Field doesn't exist in entity :" + fieldName, e);
+        }
+    }
+
+    public static boolean isListOfListOfObject(Type type) {
+        if (type instanceof ParameterizedType) {
+            ParameterizedType secondGenericType = (ParameterizedType) type;
+            Class<?> rowType = (Class<?>) secondGenericType.getRawType();
+            if (!List.class.isAssignableFrom(rowType)) {
+                return false;
+            }
+            Class<?> genericObject = (Class<?>) secondGenericType.getActualTypeArguments()[0];
+
+            if (genericObject.equals(Object.class)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 
     private static <T> Method retrieveGetterFrom(final Class<T> entityClazz, final String fieldName) {
         Method getterMethod;
