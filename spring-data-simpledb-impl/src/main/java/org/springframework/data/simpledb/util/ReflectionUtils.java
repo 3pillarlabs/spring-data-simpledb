@@ -58,33 +58,43 @@ public final class ReflectionUtils {
         return hasDeclaredAccessorsMutators;
     }
 
-    public static boolean isOfType(Type type, final Class<?> entityClazz, final String fieldName) {
-        try {
-            Field field = entityClazz.getDeclaredField(fieldName);
-            Type fieldType = field.getGenericType();
-
-            while (type instanceof ParameterizedType && fieldType instanceof ParameterizedType) {
-                type = ((ParameterizedType) type).getActualTypeArguments()[0];
-                fieldType = ((ParameterizedType) fieldType).getActualTypeArguments()[0];
-                Class<?> typeClass = (Class<?>)type;
-                Class<?> fieldTypeClass = (Class<?>)fieldType;
-                if (!typeClass.isAssignableFrom(fieldTypeClass)){
-                    return false;
-                }
-            }
-
-            return type.equals(fieldType);
-        } catch (NoSuchFieldException e) {
-            throw new IllegalArgumentException("Field doesn't exist in entity :" + fieldName, e);
-        }
-    }
-
     public static Class<?> getFieldClass(final Class<?> entityClazz, final String fieldName){
         try {
             Field field = entityClazz.getDeclaredField(fieldName);
             return field.getType();
         } catch (NoSuchFieldException e) {
             throw new IllegalArgumentException("Field doesn't exist in entity :" + fieldName, e);
+        }
+    }
+
+    public static boolean isOfType(Type type, final Class<?> entityClazz, final String fieldName) {
+        try {
+            Field field = entityClazz.getDeclaredField(fieldName);
+            Type fieldType = field.getGenericType();
+
+            return isSameConcreteType(type, fieldType);
+
+        } catch (NoSuchFieldException e) {
+            throw new IllegalArgumentException("Field doesn't exist in entity :" + fieldName, e);
+        }
+    }
+
+    private static boolean isSameConcreteType(Type firstType, Type secondType){
+        if (firstType instanceof ParameterizedType && secondType instanceof ParameterizedType){
+
+            Type firstRawType = ((ParameterizedType) firstType).getRawType();
+            Class<?> firstTypeClass = (Class<?>)firstRawType;
+            Type secondRawType = ((ParameterizedType) secondType).getRawType();
+            Class<?> secondTypeClass = (Class<?>)secondRawType;
+
+            if(firstTypeClass.isAssignableFrom(secondTypeClass)){
+                firstType = ((ParameterizedType) firstType).getActualTypeArguments()[0];
+                secondType = ((ParameterizedType) secondType).getActualTypeArguments()[0];
+                return isSameConcreteType(firstType, secondType);
+            }
+            return false;
+        } else {
+            return firstType.equals(secondType);
         }
     }
 

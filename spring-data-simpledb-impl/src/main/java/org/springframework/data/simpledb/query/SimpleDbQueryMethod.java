@@ -13,7 +13,6 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -101,23 +100,15 @@ public class SimpleDbQueryMethod extends QueryMethod {
 
     public boolean returnsFieldOfTypeCollection() {
         String query = getAnnotatedQuery();
+        if(!isCollectionQuery()){
+            return false;
+        }
         List<String> attributesFromQuery = QueryUtils.getQueryPartialFieldNames(query);
         if(attributesFromQuery.size() != 1){
             return false;
         }
         String attributeName = attributesFromQuery.get(0);
-
-        Class<?> fieldType = ReflectionUtils.getFieldClass(getDomainClass(), attributeName);
-
-        if (Collection.class.isAssignableFrom(fieldType)) {
-            ParameterizedType returnType = (ParameterizedType) method.getGenericReturnType();
-            Type returnedGenericType = returnType.getActualTypeArguments()[0];
-            if (!(returnedGenericType instanceof ParameterizedType)) {
-                return true;
-            }
-        }
-        return false;
-//        return ReflectionUtils.isOfType(method.getGenericReturnType(), getDomainClass(), attributeName);
+        return ReflectionUtils.isOfType(method.getGenericReturnType(), getDomainClass(), attributeName);
     }
 
     public boolean returnsListOfListOfObject() {

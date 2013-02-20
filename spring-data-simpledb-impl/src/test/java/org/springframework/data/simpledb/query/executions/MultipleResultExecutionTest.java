@@ -69,6 +69,13 @@ public class MultipleResultExecutionTest {
         assertEquals(MultipleResultExecution.MultipleResultType.SET_OF_FIELDS, multipleResultExecution.detectResultType(repositoryMethod));
     }
 
+    @Test
+    public void detectResultType_should_return_FIELD_OF_TYPE_COLLECTION_of_list_of_lists() throws Exception{
+        SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("listOfListOfIntegerFieldSelect", SampleEntity.class);
+        MultipleResultExecution multipleResultExecution = new MultipleResultExecution(null);
+        assertEquals(MultipleResultExecution.MultipleResultType.FIELD_OF_TYPE_COLLECTION, multipleResultExecution.detectResultType(repositoryMethod));
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void detectResultType_should_return_error_for_inexisting_field() throws Exception{
         SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("sampleWrongField", SampleEntity.class);
@@ -103,6 +110,9 @@ public class MultipleResultExecutionTest {
 
         @Query(value = "select sampleFail from `testDB.simpleDbUser`")
         Set<List<Integer>> sampleWrongField();
+
+        @Query(value = "select listOfListOfInteger from `testDB.simpleDbUser`")
+        List<List<Integer>> listOfListOfIntegerFieldSelect();
 
     }
 
