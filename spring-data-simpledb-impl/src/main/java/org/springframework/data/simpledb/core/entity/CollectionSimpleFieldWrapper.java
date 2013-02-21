@@ -36,12 +36,12 @@ public class CollectionSimpleFieldWrapper<T, ID extends Serializable> extends Ab
     public Object deserializeValue(List<String> value) {
         Assert.isTrue(value.size() <= 1);
 
-
         Collection<?> jsonCollection = null;
         if (value.size() > 0) {
             String fieldValue = value.get(0);
             jsonCollection = (Collection<?>) JsonMarshaller.getInstance().unmarshall(fieldValue, getField().getType());
         }
+        
         return jsonCollection;
     }
 

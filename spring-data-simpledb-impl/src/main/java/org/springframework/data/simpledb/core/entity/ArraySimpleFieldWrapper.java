@@ -2,11 +2,11 @@ package org.springframework.data.simpledb.core.entity;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.mapping.model.MappingException;
-import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+import org.springframework.data.simpledb.util.marshaller.JsonMarshaller;
+import org.springframework.util.Assert;
 
 public class ArraySimpleFieldWrapper<T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T, ID> {
 
@@ -17,17 +17,27 @@ public class ArraySimpleFieldWrapper<T, ID extends Serializable> extends Abstrac
 
     @Override
     public List<String> serializeValue() {
-        return SimpleDBAttributeConverter.encodePrimitiveArray(this.getFieldValue());
+    	final List<String> fieldValues = new ArrayList<>();
+    	
+        if(getFieldValue() != null) {
+            String fieldMarshaled2JSON = JsonMarshaller.getInstance().marshall(getFieldValue());
+            fieldValues.add(fieldMarshaled2JSON);
+        }
+        
+        return fieldValues;
     }
 
     @Override
     public Object deserializeValue(List<String> value) {
-        try {
-            Class<?> fieldClazz = getField().getType();
-            return SimpleDBAttributeConverter.decodeToPrimitiveArray(value, fieldClazz.getComponentType());
+        Assert.isTrue(value.size() <= 1);
 
-        } catch (ParseException e) {
-            throw new MappingException("Could not read object", e);
+        Object jsonArray = null;
+        
+        if (value.size() > 0) {
+            String fieldValue = value.get(0);
+            jsonArray = JsonMarshaller.getInstance().unmarshall(fieldValue, getField().getType());
         }
+        
+    	return jsonArray;
     }
 }
