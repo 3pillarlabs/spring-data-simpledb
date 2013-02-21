@@ -26,7 +26,7 @@ public class CollectionWrapperTest {
         sampleCollection.setHashSetOfFloats(new HashSet<>(Arrays.asList(Float.valueOf(23f), Float.valueOf(32f))));
 
         EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
         final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
@@ -42,7 +42,7 @@ public class CollectionWrapperTest {
         sampleCollection.setListOfBytes(new ArrayList<>(Arrays.asList(Byte.valueOf("123"), Byte.valueOf("23"))));
 
         EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
         final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
@@ -61,7 +61,7 @@ public class CollectionWrapperTest {
         sampleCollection.getListOfObjects().add(user);
 
         EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
         final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
@@ -77,7 +77,7 @@ public class CollectionWrapperTest {
         sampleCollection.setCollectionOfLongs(new ArrayList<>(Arrays.asList(Long.valueOf("123"), Long.valueOf("23"))));
 
         EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
         final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
@@ -92,7 +92,7 @@ public class CollectionWrapperTest {
         SampleCoreCollection sampleCollection = new SampleCoreCollection();
 
         EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
         final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
@@ -113,7 +113,7 @@ public class CollectionWrapperTest {
 
         /* ----------------------- Serialize Representation ------------------------ */
         EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), collection);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         assertTrue(attributes.size() == 5);
 

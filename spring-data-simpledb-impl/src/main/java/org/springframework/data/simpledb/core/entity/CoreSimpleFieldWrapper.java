@@ -3,12 +3,9 @@ package org.springframework.data.simpledb.core.entity;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
-import org.springframework.util.Assert;
 
 public class CoreSimpleFieldWrapper<T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T, ID> {
 
@@ -17,20 +14,14 @@ public class CoreSimpleFieldWrapper<T, ID extends Serializable> extends Abstract
 	}
 
     @Override
-    public List<String> serializeValue() {
-        final List<String> fieldValues = new ArrayList<>();
-
-        fieldValues.add(SimpleDBAttributeConverter.encode(this.getFieldValue()));
-
-        return fieldValues;
+    public String serializeValue() {
+        return SimpleDBAttributeConverter.encode(this.getFieldValue());
     }
 
     @Override
-    public Object deserializeValue(List<String> value) {
-        Assert.isTrue(value.size() == 1);
-
+    public Object deserializeValue(String value) {
         try {
-            return SimpleDBAttributeConverter.decodeToFieldOfType(value.get(0), getField().getType());
+            return SimpleDBAttributeConverter.decodeToFieldOfType(value, getField().getType());
         } catch (IllegalArgumentException | ParseException e) {
             throw new MappingException("Could not map attributes", e);
         }

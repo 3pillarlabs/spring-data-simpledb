@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -48,7 +47,7 @@ public class ObjectFieldWrapperTest {
         AClass aDomainObject = new AClass();
 
         EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         assertEquals(0, attributes.size());
     }
@@ -60,7 +59,7 @@ public class ObjectFieldWrapperTest {
         AClass aDomainObject = new AClass();
 
         EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         EntityWrapper<AClass, String> newSdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class));
         newSdbEntity.deserialize(attributes);
@@ -81,17 +80,14 @@ public class ObjectFieldWrapperTest {
 
 
         EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         assertNotNull(attributes);
 
 
-        List<String> serializedValue = attributes.values().iterator().next();
-        assertTrue(serializedValue.size() == 1);
+        String serializedValue = attributes.values().iterator().next();
 
-        String jsonString = serializedValue.get(0);
-
-        assertTrue(jsonString.contains(SAMPLE_STRING_VALUE));
+        assertTrue(serializedValue.contains(SAMPLE_STRING_VALUE));
     }
 
     @Test
@@ -105,7 +101,7 @@ public class ObjectFieldWrapperTest {
 
 
         EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
 
         EntityWrapper<AClass, String> newSdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class));

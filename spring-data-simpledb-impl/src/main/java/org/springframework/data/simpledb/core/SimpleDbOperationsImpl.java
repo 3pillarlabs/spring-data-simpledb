@@ -103,30 +103,22 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         return 0;
     }
 
-    private List<ReplaceableAttribute> toReplaceableAttributeList(Map<String, List<String>> attributes, boolean replace) {
+    private List<ReplaceableAttribute> toReplaceableAttributeList(Map<String, String> attributes, boolean replace) {
         final List<ReplaceableAttribute> result = new ArrayList<>();
 
-        final Map<String, List<String>> attrs = attributes;
-
-        for (final Entry<String, List<String>> entry : attrs.entrySet()) {
-            for (final String attributeValue : entry.getValue()) {
-                result.add(new ReplaceableAttribute(entry.getKey(), attributeValue, replace));
-            }
+        for (final Entry<String, String> entry: attributes.entrySet()) {
+        	 result.add(new ReplaceableAttribute(entry.getKey(), entry.getValue(), replace));
         }
 
         return result;
     }
 
-    // TODO: remove this method if unused in later release
     @SuppressWarnings("unused")
-    private List<Attribute> toAttributeList(Map<String, List<String>> attributes) {
+    private List<Attribute> toAttributeList(Map<String, String> attributes) {
         final List<Attribute> result = new ArrayList<>();
 
-        final Map<String, List<String>> attrs = attributes;
-        for (final Entry<String, List<String>> entry : attrs.entrySet()) {
-            for (final String attributeValue : entry.getValue()) {
-                result.add(new Attribute(entry.getKey(), attributeValue));
-            }
+        for (final Entry<String, String> entry: attributes.entrySet()) {
+        	result.add(new Attribute(entry.getKey(), entry.getValue()));
         }
 
         return result;

@@ -2,7 +2,6 @@ package org.springframework.data.simpledb.core.entity;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -20,7 +19,7 @@ public class PrimitiveArrayWrapperTest {
         primitivesArray.longPrimitives = new long[]{123L, 234L, 345L};
 
         EntityWrapper<SamplePrimitivesArray, String> sdbEntity = new EntityWrapper<>(this.<SamplePrimitivesArray>readEntityInformation(SamplePrimitivesArray.class), primitivesArray);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
         final EntityWrapper<SamplePrimitivesArray, String> convertedEntity = new EntityWrapper<>(this.<SamplePrimitivesArray>readEntityInformation(SamplePrimitivesArray.class));
@@ -37,7 +36,7 @@ public class PrimitiveArrayWrapperTest {
 
         /* ----------------------- Serialize Representation ------------------------ */
         EntityWrapper<SamplePrimitivesArray, String> sdbEntity = new EntityWrapper<>(this.<SamplePrimitivesArray>readEntityInformation(SamplePrimitivesArray.class), primitivesArray);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         /* ----------------------- De-serialize Representation ------------------------ */
         final EntityWrapper<SamplePrimitivesArray, String> convertedEntity = new EntityWrapper<>(this.<SamplePrimitivesArray>readEntityInformation(SamplePrimitivesArray.class));
@@ -58,7 +57,7 @@ public class PrimitiveArrayWrapperTest {
 
         /* ----------------------- Serialize Representation ------------------------ */
         EntityWrapper<SamplePrimitivesArray, String> sdbEntity = new EntityWrapper<>(this.<SamplePrimitivesArray>readEntityInformation(SamplePrimitivesArray.class), primitivesArray);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         assertTrue(attributes.size() == 1);
 
