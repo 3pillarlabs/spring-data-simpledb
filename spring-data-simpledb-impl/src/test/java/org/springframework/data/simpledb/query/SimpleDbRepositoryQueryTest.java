@@ -3,9 +3,6 @@ package org.springframework.data.simpledb.query;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-/**
- * Created by: mgrozea
- */
 public class SimpleDbRepositoryQueryTest {
 
 

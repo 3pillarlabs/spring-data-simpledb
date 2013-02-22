@@ -15,10 +15,11 @@
  */
 package org.springframework.data.simpledb.repository.support.entityinformation;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import org.springframework.data.repository.core.EntityInformation;
+
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.Map;
 
 /**
  * Extension of {@link org.springframework.data.repository.core.EntityInformation} to capture aditional JPA specific information about entities.
@@ -32,5 +33,7 @@ public interface SimpleDbEntityInformation<T, ID extends Serializable> extends E
     String getItemName(T entity);
 
     Map<String, String> getAttributes(T entity);
+
+    Field getIdField(Class<?> domainClass);
 
 }

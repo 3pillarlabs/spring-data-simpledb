@@ -15,10 +15,11 @@
  */
 package org.springframework.data.simpledb.repository.support.entityinformation;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import org.springframework.data.simpledb.util.MetadataParser;
+
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.Map;
 
 /**
  * Implementation of {@link org.springframework.data.repository.core.EntityInformation} that uses JPA {@link javax.persistence.metamodel.Metamodel}
@@ -86,6 +87,11 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
     @Override
     public String getAttributesFieldName(T entity) {
     	return MetadataParser.getAttributesField(entity).getName();
+    }
+
+    @Override
+    public Field getIdField(Class<?> domainClass) {
+        return MetadataParser.getIdField(domainClass);
     }
 
 }

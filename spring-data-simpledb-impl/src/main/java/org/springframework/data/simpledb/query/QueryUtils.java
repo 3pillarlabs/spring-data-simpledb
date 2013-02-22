@@ -1,18 +1,17 @@
 package org.springframework.data.simpledb.query;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbMetamodelEntityInformation;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class QueryUtils {
 
@@ -118,7 +117,7 @@ public final class QueryUtils {
     private static Map<String, String> buildPlaceholderValues(Parameters parameters, String... parameterValues) {
         Map<String, String> map = new LinkedHashMap<>();
 
-        for (Iterator<Parameter> iterator = parameters.iterator(); iterator.hasNext();) {
+        for (Iterator<Parameter> iterator = parameters.iterator(); iterator.hasNext(); ) {
             Parameter eachParameter = iterator.next();
             map.put(eachParameter.getPlaceholder(), parameterValues[eachParameter.getIndex()]);
         }
@@ -168,5 +167,61 @@ public final class QueryUtils {
 
     public static boolean isCountQuery(String query) {
         return query.toLowerCase().contains("count(");
+    }
+
+    public static String createWhereClause(Class<?> domainClass, String[] whereParameters) {
+        StringBuilder query = new StringBuilder();
+
+        SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
+        Field idField = entityInformation.getIdField(domainClass);
+
+
+        if (whereParameters.length == 0) {
+            return null;
+        }
+
+        query.append(" where ");
+        for (String whereParameter : whereParameters) {
+            if (idField != null) {
+                whereParameter = tryReplaceIdField(whereParameter, idField.getName());
+            }
+            query.append("`" + whereParameter + "`" + " and ");
+        }
+        query.delete(query.length() - 5, query.length());
+
+        return query.toString();
+
+    }
+
+    private static String tryReplaceIdField(String whereParameter, String idField) {
+        final Pattern regex = Pattern.compile("(?:\\s*)"+idField+"(?:\\s*=)", Pattern.CASE_INSENSITIVE);
+        final Matcher matcher = regex.matcher(whereParameter);
+        if (matcher.find()) {
+            final Pattern replacePattern = Pattern.compile("(?:\\s*)(.+?)(?:\\s*=)", Pattern.CASE_INSENSITIVE);
+            return matcher.replaceFirst("itemName()=");
+        }
+        return whereParameter;
+    }
+
+    public static String buildQueryFromQueryParameters(String queryFromValueParameter, String[] queryFromSelectParameter, String[] queryFromWhereParameter, Class<?> domainClass){
+        StringBuilder stringBuilder = new StringBuilder();
+        if(StringUtils.hasText(queryFromValueParameter)){
+            stringBuilder.append(queryFromValueParameter);
+            return stringBuilder.toString();
+        }
+        if(StringUtils.hasText(queryFromSelectParameter[0])){
+            stringBuilder.append(createSelectClause(queryFromSelectParameter));
+        } else {
+            SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
+            stringBuilder.append("select * from `"+ entityInformation.getDomain()+"`");
+        }
+        if(StringUtils.hasText(queryFromWhereParameter[0])){
+            stringBuilder.append(createWhereClause(domainClass, queryFromWhereParameter));
+        }
+        return stringBuilder.toString();
+    }
+
+    private static String createSelectClause(String[] queryFromSelectParameter){
+        return null;
     }
 }

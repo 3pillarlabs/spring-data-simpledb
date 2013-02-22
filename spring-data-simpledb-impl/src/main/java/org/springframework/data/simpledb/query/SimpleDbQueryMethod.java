@@ -63,15 +63,23 @@ public class SimpleDbQueryMethod extends QueryMethod {
         }
     }
 
+
     /**
      * Returns the query string declared in a {@link Query} annotation or {@literal null} if neither the annotation found nor the attribute was specified.
      *
      * @return
      */
     public final String getAnnotatedQuery() {
+        String queryFromValueParameter = getAnnotationValue("value", String.class);
+        String[] queryFromWhereParameter = getAnnotationValue("where", String[].class);
+        String[] queryFromSelectParameter = getAnnotationValue("select", String[].class);
 
-        String query = getAnnotationValue("value", String.class);
-        return StringUtils.hasText(query) ? query : null;
+        assertCorrectAnnotatedQueryParameters(queryFromValueParameter, queryFromSelectParameter, queryFromWhereParameter);
+        return QueryUtils.buildQueryFromQueryParameters(queryFromValueParameter, queryFromSelectParameter, queryFromWhereParameter, getDomainClass());
+    }
+
+    private void assertCorrectAnnotatedQueryParameters(String queryFromValueParameter, String[] queryFromSelectParameter, String[] queryFromWhereParameter){
+
     }
 
     /**

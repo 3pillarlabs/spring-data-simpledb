@@ -3,9 +3,6 @@ package org.springframework.data.simpledb.sample.simpledb.domain;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-/**
- * Created by: mgrozea
- */
 public class JSONCompatibleClass {
     private String name;
 

@@ -1,10 +1,6 @@
 package org.springframework.data.simpledb.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Annotation to declare finder queries directly on repository methods.
@@ -19,5 +15,7 @@ public @interface Query {
      * Defines the SimpleDb query to be executed when the annotated method is called.
      */
     String value() default "";
+    String[] where() default "";
+    String[] select() default "";
 
 }

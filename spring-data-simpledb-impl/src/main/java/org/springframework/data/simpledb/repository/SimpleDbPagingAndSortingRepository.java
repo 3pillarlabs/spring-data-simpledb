@@ -1,16 +1,13 @@
 package org.springframework.data.simpledb.repository;
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.Repository;
 
-/**
- * Created by: mgrozea
- */
+import java.io.Serializable;
+import java.util.List;
+
 public interface SimpleDbPagingAndSortingRepository<T, ID extends Serializable> extends Repository<T, ID> {
 
     /**
