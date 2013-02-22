@@ -14,11 +14,11 @@ import org.junit.Test;
 
 public class JsonMarshallerTest {
 
-    private JsonMarshaller cut;
+    private JsonMarshaller marshaller;
 
     @Before
     public void setUp() {
-        cut = JsonMarshaller.getInstance();
+        marshaller = JsonMarshaller.getInstance();
     }
 
     @Test
@@ -29,13 +29,35 @@ public class JsonMarshallerTest {
         Object object = newUser;
 
         // Exercise
-        String marshalledUser = cut.marshall(object);
-        User returnedUser = cut.unmarshall(marshalledUser, User.class);
+        String marshalledUser = marshaller.marshall(object);
+        User returnedUser = marshaller.unmarshall(marshalledUser, User.class);
 
         // Verify
         assertNotNull(returnedUser);
         assertEquals(newUser.getName().getFirst(), returnedUser.getName().getFirst());
         assertEquals(newUser.getName().getLast(), returnedUser.getName().getLast());
+    }
+    
+    @Test
+    public void marshal_should_marshal_primitive_array() throws IOException {
+    	final long[] longPrimitiveArray = new long[5];
+    	for(int i = 0; i < 5; i++) {
+    		longPrimitiveArray[i] = i;
+    	}
+    	
+    	final String marshalledValue = marshaller.marshall(longPrimitiveArray);
+    	
+    	assertNotNull(marshalledValue);
+    	
+    	/* unmarshall */
+    	final long[] unmarshalledValue = marshaller.unmarshall(marshalledValue, long[].class);
+    	
+    	assertNotNull(unmarshalledValue);
+    	assertEquals(longPrimitiveArray.length, unmarshalledValue.length);
+    	
+    	for(int i = 0; i < longPrimitiveArray.length; i++) {
+    		assertEquals(longPrimitiveArray[i], unmarshalledValue[i]);
+    	}
     }
 
     @Test
@@ -48,8 +70,8 @@ public class JsonMarshallerTest {
         Object object = listOfUsers;
 
         // Exercise
-        String marshalledUser = cut.marshall(object);
-        List<User> returnedList = cut.unmarshall(marshalledUser, List.class);
+        String marshalledUser = marshaller.marshall(object);
+        List<User> returnedList = marshaller.unmarshall(marshalledUser, List.class);
 
         // Verify
         assertNotNull(returnedList);
@@ -63,9 +85,9 @@ public class JsonMarshallerTest {
         Map<String, String> map = new LinkedHashMap<>();
         map.put("TestKey", "Test Value");
 
-        String marsahledMap = cut.marshall(map);
+        String marsahledMap = marshaller.marshall(map);
 
-        Map<String, String> unmarshaledMap = (Map<String, String>)cut.unmarshall(marsahledMap, Map.class);
+        Map<String, String> unmarshaledMap = (Map<String, String>)marshaller.unmarshall(marsahledMap, Map.class);
 
         assertEquals(map.keySet(), unmarshaledMap.keySet());
 

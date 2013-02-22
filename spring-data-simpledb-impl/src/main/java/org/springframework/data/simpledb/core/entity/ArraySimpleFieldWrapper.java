@@ -2,11 +2,8 @@ package org.springframework.data.simpledb.core.entity;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.text.ParseException;
-import java.util.List;
 
-import org.springframework.data.mapping.model.MappingException;
-import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+import org.springframework.data.simpledb.util.marshaller.JsonMarshaller;
 
 public class ArraySimpleFieldWrapper<T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T, ID> {
 
@@ -16,18 +13,22 @@ public class ArraySimpleFieldWrapper<T, ID extends Serializable> extends Abstrac
 
 
     @Override
-    public List<String> serializeValue() {
-        return SimpleDBAttributeConverter.encodePrimitiveArray(this.getFieldValue());
+    public String serializeValue() {
+        if(getFieldValue() != null) {
+            return JsonMarshaller.getInstance().marshall(getFieldValue());
+        }
+        
+        return null;
     }
 
     @Override
-    public Object deserializeValue(List<String> value) {
-        try {
-            Class<?> fieldClazz = getField().getType();
-            return SimpleDBAttributeConverter.decodeToPrimitiveArray(value, fieldClazz.getComponentType());
-
-        } catch (ParseException e) {
-            throw new MappingException("Could not read object", e);
+    public Object deserializeValue(String value) {
+        Object jsonArray = null;
+        
+        if (value != null) {
+            jsonArray = JsonMarshaller.getInstance().unmarshall(value, getField().getType());
         }
+        
+    	return jsonArray;
     }
 }

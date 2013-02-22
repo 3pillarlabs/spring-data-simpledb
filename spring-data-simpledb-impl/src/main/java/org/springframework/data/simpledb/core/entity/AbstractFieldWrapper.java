@@ -2,7 +2,6 @@ package org.springframework.data.simpledb.core.entity;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.simpledb.util.ReflectionUtils;
@@ -28,9 +27,9 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 		}
 	}
 
-	public abstract Map<String, List<String>> serialize(String prefix);
+	public abstract Map<String, String> serialize(String prefix);
 
-	public abstract Object deserialize(final Map<String, List<String>> attributes);
+	public abstract Object deserialize(final Map<String, String> attributes);
 
 	/**
 	 * Template method.

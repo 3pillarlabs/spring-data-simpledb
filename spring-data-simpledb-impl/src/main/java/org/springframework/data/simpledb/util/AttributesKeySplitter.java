@@ -6,7 +6,6 @@ package org.springframework.data.simpledb.util;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public final class AttributesKeySplitter {
@@ -15,13 +14,14 @@ public final class AttributesKeySplitter {
 		/* utility class */
 	}
 	
-    public static Map<String, Map<String, List<String>>> splitNestedAttributeKeys(Map<String, List<String>> attributes) {
-        final Map<String, Map<String, List<String>>> nestedFieldAttributes = new HashMap<>();
-        for (final Map.Entry<String, List<String>> entry : attributes.entrySet()) {
+    public static Map<String, Map<String, String>> splitNestedAttributeKeys(Map<String, String> attributes) {
+        final Map<String, Map<String, String>> nestedFieldAttributes = new HashMap<>();
+        
+        for (final Map.Entry<String, String> entry : attributes.entrySet()) {
             final String key = entry.getKey();
 
             if (key.contains(".")) {
-                Map<String, List<String>> nestedFieldValues = new HashMap<>();
+                Map<String, String> nestedFieldValues = new HashMap<>();
                 int prefixIndex = key.indexOf('.');
                 final String nestedFieldName = key.substring(0, prefixIndex);
                 final String subField = key.substring(prefixIndex + 1);
@@ -38,11 +38,11 @@ public final class AttributesKeySplitter {
         return nestedFieldAttributes;
     }
 
-    public static Map<String, List<String>> splitSimpleAttributesKeys(Map<String, List<String>> attributes) {
+    public static Map<String, String> splitSimpleAttributesKeys(Map<String, String> attributes) {
 
-        Map<String, List<String>> primitiveAttributes = new LinkedHashMap<>();
+        Map<String, String> primitiveAttributes = new LinkedHashMap<>();
 
-        for (final Map.Entry<String, List<String>> entry : attributes.entrySet()) {
+        for (final Map.Entry<String, String> entry : attributes.entrySet()) {
             if (isSimpleKey(entry.getKey())) {
                 primitiveAttributes.put(entry.getKey(), entry.getValue());
             }

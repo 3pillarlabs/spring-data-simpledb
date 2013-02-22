@@ -34,7 +34,7 @@ public class GetterAndSetterTest {
         sampleBean.withoutGetterAndSetter = "simple-db";
 
         EntityWrapper<SampleBean, String> sdbEntity = new EntityWrapper<>(this.<SampleBean>readEntityInformation(SampleBean.class), sampleBean);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         final EntityWrapper<SampleBean, String> convertedEntity = new EntityWrapper<>(this.<SampleBean>readEntityInformation(SampleBean.class));
         convertedEntity.deserialize(attributes);

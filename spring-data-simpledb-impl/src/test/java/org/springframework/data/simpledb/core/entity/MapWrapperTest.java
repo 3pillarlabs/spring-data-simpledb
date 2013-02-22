@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -25,7 +24,7 @@ public class MapWrapperTest {
 
 
         EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
         final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class));
@@ -44,7 +43,7 @@ public class MapWrapperTest {
         simpleMap.getMapOfStrings().put("first", "firstValue");
 
         EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
         final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class));
@@ -59,7 +58,7 @@ public class MapWrapperTest {
         SampleCoreMap simpleMap = new SampleCoreMap();
 
         EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
         final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class));
@@ -79,7 +78,7 @@ public class MapWrapperTest {
 
         /* ----------------------- Serialize Representation ------------------------ */
         EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         assertTrue(attributes.size() == 2);
 

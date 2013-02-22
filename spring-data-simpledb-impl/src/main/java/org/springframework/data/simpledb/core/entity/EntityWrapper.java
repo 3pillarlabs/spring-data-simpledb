@@ -4,17 +4,13 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.data.simpledb.util.AttributesKeySplitter;
-import org.springframework.data.simpledb.util.FieldType;
-import org.springframework.data.simpledb.util.FieldTypeIdentifier;
-import org.springframework.data.simpledb.util.MetadataParser;
+import org.springframework.data.simpledb.util.*;
 
 public class EntityWrapper<T, ID extends Serializable> {
 
@@ -85,12 +81,12 @@ public class EntityWrapper<T, ID extends Serializable> {
         }
     }
 
-    public Map<String, List<String>> serialize() {
+    public Map<String, String> serialize() {
         return serialize("");
     }
 
-    public Map<String, List<String>> serialize(final String fieldNamePrefix) {
-        final Map<String, List<String>> result = new HashMap<>();
+    public Map<String, String> serialize(final String fieldNamePrefix) {
+        final Map<String, String> result = new HashMap<>();
 
         for (final AbstractFieldWrapper<T, ID> wrappedField : wrappedFields.values()) {
             if(wrappedField.getFieldValue() != null) {
@@ -98,29 +94,31 @@ public class EntityWrapper<T, ID extends Serializable> {
             }
         }
 
-        return result;
+        return SimpleDbAttributeValueSplitter.splitAttributeValuesWithExceedingLengths(result);
     }
 
-    public Object deserialize(final Map<String, List<String>> attributes) {
-        final Map<String, Map<String, List<String>>> nestedFields = AttributesKeySplitter.splitNestedAttributeKeys(attributes);
+    public Object deserialize(final Map<String, String> attributes) {
+        Map<String, String> rawAttributes = SimpleDbAttributeValueSplitter.combineAttributeValuesWithExceedingLengths(attributes);
 
-        for (final Entry<String, Map<String, List<String>>> nestedField : nestedFields.entrySet()) {
-    		/* call deserialize field with Map<String, List<String>> */
+        final Map<String, Map<String, String>> nestedFields = AttributesKeySplitter.splitNestedAttributeKeys(rawAttributes);
+
+        for (final Entry<String, Map<String, String>> nestedField : nestedFields.entrySet()) {
+    		/* call deserialize field with Map<String, String> */
             final String fieldName = nestedField.getKey();
-            final Map<String, List<String>> fieldAttributes = nestedField.getValue();
+            final Map<String, String> fieldAttributes = nestedField.getValue();
             AbstractFieldWrapper<T, ID> fieldWrapper = getWrapper(fieldName);
 
             Object convertedValue = fieldWrapper.deserialize(fieldAttributes);
             fieldWrapper.setFieldValue(convertedValue);
         }
 
-        final Map<String, List<String>> simpleFields = AttributesKeySplitter.splitSimpleAttributesKeys(attributes);
-        for (final Entry<String, List<String>> simpleField : simpleFields.entrySet()) {
+        final Map<String, String> simpleFields = AttributesKeySplitter.splitSimpleAttributesKeys(rawAttributes);
+        for (final Entry<String, String> simpleField : simpleFields.entrySet()) {
             final String fieldName = simpleField.getKey();
 
             AbstractFieldWrapper<T, ID> fieldWrapper = getWrapper(fieldName);
 
-            Map<String, List<String>> fieldAttributes = new LinkedHashMap<>();
+            Map<String, String> fieldAttributes = new LinkedHashMap<>();
             fieldAttributes.put(fieldName, simpleField.getValue());
 
             Object convertedValue = fieldWrapper.deserialize(fieldAttributes);

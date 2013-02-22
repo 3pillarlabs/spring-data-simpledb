@@ -3,7 +3,6 @@ package org.springframework.data.simpledb.core.entity;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.util.Assert;
@@ -16,25 +15,27 @@ public abstract class AbstractSimpleFieldWrapper<T, ID extends Serializable> ext
 
 
     @Override
-    public final Map<String, List<String>> serialize(String prefix){
-        final Map<String, List<String>> result = new HashMap<>();
-        List<String> serializedValues = serializeValue();
-        result.put(prefix.isEmpty() ? getFieldName() : prefix + "." + getFieldName(), serializedValues);
+    public final Map<String, String> serialize(String prefix){
+        final Map<String, String> result = new HashMap<>();
+        result.put(prefix.isEmpty() ? getFieldName() : prefix + "." + getFieldName(), serializeValue());
+        
         return result;
     }
 
-    public abstract List<String> serializeValue();
+    public abstract String serializeValue();
 
 
     @Override
-    public final Object deserialize(final Map<String, List<String>> attributes) {
+    public final Object deserialize(final Map<String, String> attributes) {
         Assert.isTrue(attributes.size() == 1);
-        List<String> attributeValue = attributes.values().iterator().next();
+        
+        String attributeValue = attributes.values().iterator().next();
         Assert.notNull(attributeValue);
+        
         return deserializeValue(attributeValue);
     }
 
-    public abstract Object deserializeValue(final List<String> value);
+    public abstract Object deserializeValue(final String value);
 
 
     @Override

@@ -1,13 +1,11 @@
 package org.springframework.data.simpledb.core.entity;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.text.ParseException;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -76,39 +74,37 @@ public class EntityWrapperTest {
 
         assertNotNull(sdbEntity);
 
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
         assertNotNull(attributes);
 
 		/* test int field */
-        List<String> intValues = attributes.get("intField");
+        String intValues = attributes.get("intField");
         assertNotNull(intValues);
-        assertFalse(intValues.isEmpty());
-        assertTrue(intValues.size() == 1);
-        assertEquals(entity.getIntField(), ((Integer) SimpleDBAttributeConverter.decodeToFieldOfType(intValues.get(0), Integer.class)).intValue());
+        assertEquals(entity.getIntField(), ((Integer) SimpleDBAttributeConverter.decodeToFieldOfType(intValues, Integer.class)).intValue());
 
 		/* test long field */
-        List<String> longValues = attributes.get("longField");
-        assertEquals(entity.getLongField(), ((Long) SimpleDBAttributeConverter.decodeToFieldOfType(longValues.get(0), Long.class)).longValue());
+        String longValues = attributes.get("longField");
+        assertEquals(entity.getLongField(), ((Long) SimpleDBAttributeConverter.decodeToFieldOfType(longValues, Long.class)).longValue());
 
 		/* test short field */
-        List<String> shortValues = attributes.get("shortField");
-        assertEquals(entity.getShortField(), ((Short) SimpleDBAttributeConverter.decodeToFieldOfType(shortValues.get(0), Short.class)).shortValue());
+        String shortValues = attributes.get("shortField");
+        assertEquals(entity.getShortField(), ((Short) SimpleDBAttributeConverter.decodeToFieldOfType(shortValues, Short.class)).shortValue());
 
 		/* test float field */
-        List<String> floatValues = attributes.get("floatField");
-        assertTrue(entity.getFloatField() == ((Float) SimpleDBAttributeConverter.decodeToFieldOfType(floatValues.get(0), Float.class)).floatValue());
+        String floatValues = attributes.get("floatField");
+        assertTrue(entity.getFloatField() == ((Float) SimpleDBAttributeConverter.decodeToFieldOfType(floatValues, Float.class)).floatValue());
 
 		/* test double field */
-        List<String> doubleValues = attributes.get("doubleField");
-        assertTrue(entity.getDoubleField() == ((Double) SimpleDBAttributeConverter.decodeToFieldOfType(doubleValues.get(0), Double.class)).doubleValue());
+        String doubleValues = attributes.get("doubleField");
+        assertTrue(entity.getDoubleField() == ((Double) SimpleDBAttributeConverter.decodeToFieldOfType(doubleValues, Double.class)).doubleValue());
 
 		/* test byte field */
-        List<String> byteValues = attributes.get("byteField");
-        assertTrue(entity.getByteField() == ((Byte) SimpleDBAttributeConverter.decodeToFieldOfType(byteValues.get(0), Byte.class)).byteValue());
+        String byteValues = attributes.get("byteField");
+        assertTrue(entity.getByteField() == ((Byte) SimpleDBAttributeConverter.decodeToFieldOfType(byteValues, Byte.class)).byteValue());
 
 		/* test boolean field */
-        List<String> booleanValues = attributes.get("booleanField");
-        assertTrue(entity.getBooleanField() == ((Boolean) SimpleDBAttributeConverter.decodeToFieldOfType(booleanValues.get(0), Boolean.class)).booleanValue());
+        String booleanValues = attributes.get("booleanField");
+        assertTrue(entity.getBooleanField() == ((Boolean) SimpleDBAttributeConverter.decodeToFieldOfType(booleanValues, Boolean.class)).booleanValue());
 
     }
 
@@ -128,7 +124,7 @@ public class EntityWrapperTest {
         }
 
         EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomain);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
         assertNotNull(attributes);
         assertTrue(attributes.size() == 3);
@@ -155,7 +151,7 @@ public class EntityWrapperTest {
         }
 
         EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomain);
-        final Map<String, List<String>> attributes = sdbEntity.serialize();
+        final Map<String, String> attributes = sdbEntity.serialize();
 
 		/* convert back */
         final EntityWrapper<AClass, String> convertedEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class));
