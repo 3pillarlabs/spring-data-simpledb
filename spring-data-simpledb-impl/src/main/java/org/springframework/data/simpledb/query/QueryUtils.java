@@ -1,5 +1,15 @@
 package org.springframework.data.simpledb.query;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
@@ -8,15 +18,18 @@ import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+// TODO: 
+// 1. check if where clause has parameters && select has parameters && select does not have "*"
+// 	  then if those parameters don't exist in the select, throw an assertion error;
+// 2. select -
+// 3. refactoring, make some shared methods reusable between select and where features
 
 public final class QueryUtils {
 
     private static final String BIND_PARAMETER_REGEX = "(\\?)";
     private static final String SINGLE_QUOTE = "'";
+    private static final String WHERE_REGEX_PATTERN = "(?:\\s*)(.+?)(?:\\s*)(=|!=|>|<|\\slike|\\snot|\\sbetween\\sin|\\sis|\\severy())";
+    private static final String SELECT_REGEX_PATTERN = "(?:\\s*)(.+)(?:\\s*)";
 
     private QueryUtils() {
     }
@@ -169,20 +182,6 @@ public final class QueryUtils {
         return query.toLowerCase().contains("count(");
     }
 
-    public static String createWhereClause(Class<?> domainClass, String[] whereParameters) {
-        StringBuilder query = new StringBuilder(" where ");
-        Field idField = MetadataParser.getIdField(domainClass);
-
-        for (String whereParameter : whereParameters) {
-            whereParameter = validateAndChangeFieldInParameter(whereParameter, idField.getName(), domainClass);
-            query.append(whereParameter + " and ");
-        }
-        query.delete(query.length() - 5, query.length());
-
-        return query.toString();
-
-    }
-
     private static String validateAndChangeFieldInParameter(String whereParameter, String idField, Class<?> domainClass){
         //pattern to get the field in where clause
         final Pattern regex = Pattern.compile("(?:\\s*)(.+?)(?:\\s*)(=|!=|>|<|\\slike|\\snot|\\sbetween\\sin|\\sis|\\severy())");
@@ -213,19 +212,32 @@ public final class QueryUtils {
 
         StringBuilder stringBuilder = new StringBuilder();
         if(StringUtils.hasText(queryFromSelectParameters[0])){
-            stringBuilder.append(createSelectClause(queryFromSelectParameters));
+            stringBuilder.append(createQueryClause(queryFromSelectParameters, domainClass, "select ", ", "));
         } else {
             stringBuilder.append("select * from `"+ MetadataParser.getDomain(domainClass)+"`");
         }
 
         if(StringUtils.hasText(queryFromWhereParameters[0])){
-            stringBuilder.append(createWhereClause(domainClass, queryFromWhereParameters));
+            stringBuilder.append(createQueryClause(queryFromWhereParameters, domainClass, "where ", " and "));
         }
 
         return stringBuilder.toString();
     }
 
-    private static String createSelectClause(String[] queryFromSelectParameter){
-        return null;
+    private static String createQueryClause(String[] queryClauseParameters, Class<?> domainClazz, String operationClause, String delimiter){
+        StringBuilder query = new StringBuilder(operationClause);
+        Field idField = MetadataParser.getIdField(domainClazz);
+        int idx = 1;
+        
+        for (String eachParameter : queryClauseParameters) {
+        	eachParameter = validateAndChangeFieldInParameter(eachParameter, idField.getName(), domainClazz);
+        	query.append(eachParameter);
+        	
+        	if(idx++ != queryClauseParameters.length) {
+        		query.append(delimiter);
+        	}
+        }
+        
+        return query.toString();
     }
 }
