@@ -32,7 +32,7 @@ public class SimpleDBLimitationsTest {
 
 
 	@Test
-	public void should_persist_max_simple_db_length_charaters_long_string() {
+	public void should_persist_max_simple_db_length_characters_long_string() {
 		String itemName = "FirstItem";
 
 		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
@@ -88,7 +88,7 @@ public class SimpleDBLimitationsTest {
 
     private static String generateStringOfLength(int length){
         final StringBuilder sb = new StringBuilder();
-        while(sb.length() < MAX_SIMPLE_DB_ATTRIBUTE_LENGTH) {
+        while(sb.length() < length) {
             sb.append("a");
         }
         return sb.toString();
