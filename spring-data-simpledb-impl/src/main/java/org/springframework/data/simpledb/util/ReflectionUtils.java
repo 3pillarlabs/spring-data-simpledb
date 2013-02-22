@@ -67,6 +67,15 @@ public final class ReflectionUtils {
         }
     }
 
+    public static boolean isFieldInClass(final Class<?> entityClazz, final String fieldName){
+        try {
+            Field field = entityClazz.getDeclaredField(fieldName);
+            return hasDeclaredGetterAndSetter(field, entityClazz);
+        } catch (NoSuchFieldException e) {
+            throw new IllegalArgumentException("Field doesn't exist in entity :" + fieldName, e);
+        }
+    }
+
     public static boolean isOfType(Type type, final Class<?> entityClazz, final String fieldName) {
         try {
             Field field = entityClazz.getDeclaredField(fieldName);

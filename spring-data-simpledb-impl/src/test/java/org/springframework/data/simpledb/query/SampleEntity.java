@@ -1,10 +1,12 @@
 package org.springframework.data.simpledb.query;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.simpledb.annotation.DomainPrefix;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@DomainPrefix(value = "testDB")
 public class SampleEntity {
     @Id
     private String item_id;

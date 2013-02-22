@@ -18,7 +18,6 @@ package org.springframework.data.simpledb.repository.support.entityinformation;
 import org.springframework.data.simpledb.util.MetadataParser;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.Map;
 
 /**
@@ -87,11 +86,6 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
     @Override
     public String getAttributesFieldName(T entity) {
     	return MetadataParser.getAttributesField(entity).getName();
-    }
-
-    @Override
-    public Field getIdField(Class<?> domainClass) {
-        return MetadataParser.getIdField(domainClass);
     }
 
 }

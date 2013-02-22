@@ -79,7 +79,9 @@ public class SimpleDbQueryMethod extends QueryMethod {
     }
 
     private void assertCorrectAnnotatedQueryParameters(String queryFromValueParameter, String[] queryFromSelectParameter, String[] queryFromWhereParameter){
-
+       if(StringUtils.hasText(queryFromValueParameter) && StringUtils.hasText(queryFromSelectParameter[0]) && StringUtils.hasText(queryFromWhereParameter[0])){
+           Assert.isTrue(false, "Too many parameters for query. If value parameter present, no select or where parameter");
+       }
     }
 
     /**

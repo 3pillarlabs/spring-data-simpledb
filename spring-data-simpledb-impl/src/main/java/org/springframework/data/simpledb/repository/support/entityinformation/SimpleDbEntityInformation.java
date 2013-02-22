@@ -18,7 +18,6 @@ package org.springframework.data.simpledb.repository.support.entityinformation;
 import org.springframework.data.repository.core.EntityInformation;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.Map;
 
 /**
@@ -33,7 +32,4 @@ public interface SimpleDbEntityInformation<T, ID extends Serializable> extends E
     String getItemName(T entity);
 
     Map<String, String> getAttributes(T entity);
-
-    Field getIdField(Class<?> domainClass);
-
 }

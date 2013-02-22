@@ -3,8 +3,8 @@ package org.springframework.data.simpledb.query;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbMetamodelEntityInformation;
+import org.springframework.data.simpledb.util.MetadataParser;
+import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -170,22 +170,12 @@ public final class QueryUtils {
     }
 
     public static String createWhereClause(Class<?> domainClass, String[] whereParameters) {
-        StringBuilder query = new StringBuilder();
+        StringBuilder query = new StringBuilder(" where ");
+        Field idField = MetadataParser.getIdField(domainClass);
 
-        SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
-        Field idField = entityInformation.getIdField(domainClass);
-
-
-        if (whereParameters.length == 0) {
-            return null;
-        }
-
-        query.append(" where ");
         for (String whereParameter : whereParameters) {
-            if (idField != null) {
-                whereParameter = tryReplaceIdField(whereParameter, idField.getName());
-            }
-            query.append("`" + whereParameter + "`" + " and ");
+            whereParameter = validateAndChangeFieldInParameter(whereParameter, idField.getName(), domainClass);
+            query.append(whereParameter + " and ");
         }
         query.delete(query.length() - 5, query.length());
 
@@ -193,31 +183,45 @@ public final class QueryUtils {
 
     }
 
-    private static String tryReplaceIdField(String whereParameter, String idField) {
-        final Pattern regex = Pattern.compile("(?:\\s*)"+idField+"(?:\\s*=)", Pattern.CASE_INSENSITIVE);
+    private static String validateAndChangeFieldInParameter(String whereParameter, String idField, Class<?> domainClass){
+        //pattern to get the field in where clause
+        final Pattern regex = Pattern.compile("(?:\\s*)(.+?)(?:\\s*)(=|!=|>|<|\\slike|\\snot|\\sbetween\\sin|\\sis|\\severy())");
         final Matcher matcher = regex.matcher(whereParameter);
         if (matcher.find()) {
-            final Pattern replacePattern = Pattern.compile("(?:\\s*)(.+?)(?:\\s*=)", Pattern.CASE_INSENSITIVE);
-            return matcher.replaceFirst("itemName()=");
+            String fieldName = matcher.group(1);
+            boolean isFieldDeclared = ReflectionUtils.isFieldInClass(domainClass, fieldName);
+            Assert.isTrue(isFieldDeclared, "no such field in entity class : " + fieldName);
+            return replaceField(fieldName, idField, matcher);
         }
-        return whereParameter;
+        Assert.isTrue(false, "wrong parameter in where clause : " + whereParameter);
+        return null;
     }
 
-    public static String buildQueryFromQueryParameters(String queryFromValueParameter, String[] queryFromSelectParameter, String[] queryFromWhereParameter, Class<?> domainClass){
-        StringBuilder stringBuilder = new StringBuilder();
+    private static String replaceField(String fieldName, String idField, Matcher matcher) {
+            String operation = matcher.group(2);
+            if (fieldName.equals(idField)){
+                return matcher.replaceFirst("itemName()"+operation);
+            } else {
+                return matcher.replaceFirst("`"+fieldName+"`"+operation);
+            }
+    }
+
+    public static String buildQueryFromQueryParameters(String queryFromValueParameter, String[] queryFromSelectParameters, String[] queryFromWhereParameters, Class<?> domainClass){
         if(StringUtils.hasText(queryFromValueParameter)){
-            stringBuilder.append(queryFromValueParameter);
-            return stringBuilder.toString();
+            return queryFromValueParameter;
         }
-        if(StringUtils.hasText(queryFromSelectParameter[0])){
-            stringBuilder.append(createSelectClause(queryFromSelectParameter));
+
+        StringBuilder stringBuilder = new StringBuilder();
+        if(StringUtils.hasText(queryFromSelectParameters[0])){
+            stringBuilder.append(createSelectClause(queryFromSelectParameters));
         } else {
-            SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
-            stringBuilder.append("select * from `"+ entityInformation.getDomain()+"`");
+            stringBuilder.append("select * from `"+ MetadataParser.getDomain(domainClass)+"`");
         }
-        if(StringUtils.hasText(queryFromWhereParameter[0])){
-            stringBuilder.append(createWhereClause(domainClass, queryFromWhereParameter));
+
+        if(StringUtils.hasText(queryFromWhereParameters[0])){
+            stringBuilder.append(createWhereClause(domainClass, queryFromWhereParameters));
         }
+
         return stringBuilder.toString();
     }
 
