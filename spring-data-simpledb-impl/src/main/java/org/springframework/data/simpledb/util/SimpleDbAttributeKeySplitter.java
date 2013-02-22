@@ -5,7 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class SimpleDbAttributeKeySplitter {
+public final class SimpleDbAttributeKeySplitter {
+
+    private SimpleDbAttributeKeySplitter(){
+        //utility class
+    }
+
     static final String SPLIT_ATTRIBUTE_PREFIX_START = "@";
 
 

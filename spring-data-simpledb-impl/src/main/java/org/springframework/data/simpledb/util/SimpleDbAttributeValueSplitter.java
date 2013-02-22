@@ -5,7 +5,11 @@ import java.util.*;
 /**
  * Used to split, combine attribute values exceeding Simple Db Length limitation: 1024
  */
-public class SimpleDbAttributeValueSplitter {
+public final class SimpleDbAttributeValueSplitter {
+
+    private SimpleDbAttributeValueSplitter(){
+        //utility class
+    }
 
     public static final int MAX_SIMPLE_DB_ATTRIBUTE_VALUE_LENGTH = 1024;
 
@@ -64,8 +68,7 @@ public class SimpleDbAttributeValueSplitter {
     }
 
     static String combineAttributeValues(List<String> keyGroup, Map<String, String> splitAttributes) {
-        //TODO don't use natural String sort
-        Collections.sort(keyGroup);
+        Collections.sort(keyGroup, new AlphanumComparator());
 
         StringBuilder builder = new StringBuilder();
         for(String key: keyGroup){
