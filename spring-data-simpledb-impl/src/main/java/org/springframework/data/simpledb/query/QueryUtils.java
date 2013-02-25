@@ -1,18 +1,17 @@
 package org.springframework.data.simpledb.query;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
+import org.springframework.data.simpledb.util.MetadataParser;
+import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class QueryUtils {
 
@@ -118,7 +117,7 @@ public final class QueryUtils {
     private static Map<String, String> buildPlaceholderValues(Parameters parameters, String... parameterValues) {
         Map<String, String> map = new LinkedHashMap<>();
 
-        for (Iterator<Parameter> iterator = parameters.iterator(); iterator.hasNext();) {
+        for (Iterator<Parameter> iterator = parameters.iterator(); iterator.hasNext(); ) {
             Parameter eachParameter = iterator.next();
             map.put(eachParameter.getPlaceholder(), parameterValues[eachParameter.getIndex()]);
         }
@@ -168,5 +167,65 @@ public final class QueryUtils {
 
     public static boolean isCountQuery(String query) {
         return query.toLowerCase().contains("count(");
+    }
+
+    public static String createWhereClause(Class<?> domainClass, String[] whereParameters) {
+        StringBuilder query = new StringBuilder(" where ");
+        Field idField = MetadataParser.getIdField(domainClass);
+
+        for (String whereParameter : whereParameters) {
+            whereParameter = validateAndChangeFieldInParameter(whereParameter, idField.getName(), domainClass);
+            query.append(whereParameter + " and ");
+        }
+        query.delete(query.length() - 5, query.length());
+
+        return query.toString();
+
+    }
+
+    private static String validateAndChangeFieldInParameter(String whereParameter, String idField, Class<?> domainClass){
+        //pattern to get the field in where clause
+        final Pattern regex = Pattern.compile("(?:\\s*)(.+?)(?:\\s*)(=|!=|>|<|\\slike|\\snot|\\sbetween\\sin|\\sis|\\severy())");
+        final Matcher matcher = regex.matcher(whereParameter);
+        if (matcher.find()) {
+            String fieldName = matcher.group(1);
+            boolean isFieldDeclared = ReflectionUtils.isFieldInClass(domainClass, fieldName);
+            Assert.isTrue(isFieldDeclared, "no such field in entity class : " + fieldName);
+            return replaceField(fieldName, idField, matcher);
+        }
+        Assert.isTrue(false, "wrong parameter in where clause : " + whereParameter);
+        return null;
+    }
+
+    private static String replaceField(String fieldName, String idField, Matcher matcher) {
+            String operation = matcher.group(2);
+            if (fieldName.equals(idField)){
+                return matcher.replaceFirst("itemName()"+operation);
+            } else {
+                return matcher.replaceFirst("`"+fieldName+"`"+operation);
+            }
+    }
+
+    public static String buildQueryFromQueryParameters(String queryFromValueParameter, String[] queryFromSelectParameters, String[] queryFromWhereParameters, Class<?> domainClass){
+        if(StringUtils.hasText(queryFromValueParameter)){
+            return queryFromValueParameter;
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        if(StringUtils.hasText(queryFromSelectParameters[0])){
+            stringBuilder.append(createSelectClause(queryFromSelectParameters));
+        } else {
+            stringBuilder.append("select * from `"+ MetadataParser.getDomain(domainClass)+"`");
+        }
+
+        if(StringUtils.hasText(queryFromWhereParameters[0])){
+            stringBuilder.append(createWhereClause(domainClass, queryFromWhereParameters));
+        }
+
+        return stringBuilder.toString();
+    }
+
+    private static String createSelectClause(String[] queryFromSelectParameter){
+        return null;
     }
 }

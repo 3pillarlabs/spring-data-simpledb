@@ -5,7 +5,7 @@ import org.springframework.data.simpledb.util.ReflectionUtils;
 import java.util.*;
 
 /**
- * Created by: mgrozea
+ * This class convert the list of entities retrieved from db to the returned type needed by the query method
  */
 public final class SimpleDbResultConverter {
 	
