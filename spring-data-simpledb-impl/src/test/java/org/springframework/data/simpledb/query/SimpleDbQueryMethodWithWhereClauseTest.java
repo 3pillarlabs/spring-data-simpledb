@@ -1,15 +1,15 @@
 package org.springframework.data.simpledb.query;
 
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.springframework.data.repository.core.RepositoryMetadata;
-import org.springframework.data.simpledb.annotation.Query;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.data.repository.core.RepositoryMetadata;
+import org.springframework.data.simpledb.annotation.Query;
 
 public class SimpleDbQueryMethodWithWhereClauseTest {
     @Test
@@ -28,7 +28,7 @@ public class SimpleDbQueryMethodWithWhereClauseTest {
         @Query(where = {"sampleAttribute<='3'", "sampleList is ''"})
         List<SampleEntity> selectAll();
 
-        @Query(where = "item_id  ='Item_0'")
+        @Query(where = "item_id ='Item_0'")
         List<SampleEntity> selectAllChangeId();
     }
 

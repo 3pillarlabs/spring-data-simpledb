@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.simpledb.annotation.Query;
+import org.springframework.data.simpledb.query.strategy.AbstractQueryStrategy;
 import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -75,11 +76,12 @@ public class SimpleDbQueryMethod extends QueryMethod {
         String[] queryFromSelectParameter = getAnnotationValue("select", String[].class);
 
         assertCorrectAnnotatedQueryParameters(queryFromValueParameter, queryFromSelectParameter, queryFromWhereParameter);
-        return QueryUtils.buildQueryFromQueryParameters(queryFromValueParameter, queryFromSelectParameter, queryFromWhereParameter, getDomainClass());
+        return AbstractQueryStrategy.buildQueryFromQueryParameters(queryFromValueParameter, queryFromSelectParameter, queryFromWhereParameter, getDomainClass());
     }
 
     private void assertCorrectAnnotatedQueryParameters(String queryFromValueParameter, String[] queryFromSelectParameter, String[] queryFromWhereParameter){
-       if(StringUtils.hasText(queryFromValueParameter) && StringUtils.hasText(queryFromSelectParameter[0]) && StringUtils.hasText(queryFromWhereParameter[0])){
+       if(  StringUtils.hasText(queryFromValueParameter)   &&
+    		   	(StringUtils.hasText(queryFromSelectParameter[0]) || StringUtils.hasText(queryFromWhereParameter[0])) ){
            Assert.isTrue(false, "Too many parameters for query. If value parameter present, no select or where parameter");
        }
     }

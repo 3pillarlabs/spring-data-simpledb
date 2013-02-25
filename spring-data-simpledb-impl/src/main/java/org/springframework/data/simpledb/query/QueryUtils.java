@@ -1,6 +1,5 @@
 package org.springframework.data.simpledb.query;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -13,23 +12,12 @@ import java.util.regex.Pattern;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
-import org.springframework.data.simpledb.util.MetadataParser;
-import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-
-// TODO: 
-// 1. check if where clause has parameters && select has parameters && select does not have "*"
-// 	  then if those parameters don't exist in the select, throw an assertion error;
-// 2. select -
-// 3. refactoring, make some shared methods reusable between select and where features
 
 public final class QueryUtils {
 
     private static final String BIND_PARAMETER_REGEX = "(\\?)";
     private static final String SINGLE_QUOTE = "'";
-    private static final String WHERE_REGEX_PATTERN = "(?:\\s*)(.+?)(?:\\s*)(=|!=|>|<|\\slike|\\snot|\\sbetween\\sin|\\sis|\\severy())";
-    private static final String SELECT_REGEX_PATTERN = "(?:\\s*)(.+)(?:\\s*)";
 
     private QueryUtils() {
     }
@@ -181,63 +169,27 @@ public final class QueryUtils {
     public static boolean isCountQuery(String query) {
         return query.toLowerCase().contains("count(");
     }
-
-    private static String validateAndChangeFieldInParameter(String whereParameter, String idField, Class<?> domainClass){
+    
+    public static Map<String, String> createFieldNameWithRawParameter(String wherePattern, String[] rawParameters){
+        final Pattern regex = Pattern.compile(wherePattern);
+        final Map<String, String> map = new LinkedHashMap<>();
+        
+        for (String eachParameter : rawParameters) {
+        	final Matcher matcher = regex.matcher(eachParameter);
+            String fieldName = getFieldName(eachParameter,  matcher);
+            map.put(fieldName, eachParameter);
+        }
+        
+        return map;
+    }
+    
+    private static String getFieldName(String parameter, Matcher matchFieldNameInRawParameter){
         //pattern to get the field in where clause
-        final Pattern regex = Pattern.compile("(?:\\s*)(.+?)(?:\\s*)(=|!=|>|<|\\slike|\\snot|\\sbetween\\sin|\\sis|\\severy())");
-        final Matcher matcher = regex.matcher(whereParameter);
-        if (matcher.find()) {
-            String fieldName = matcher.group(1);
-            boolean isFieldDeclared = ReflectionUtils.isFieldInClass(domainClass, fieldName);
-            Assert.isTrue(isFieldDeclared, "no such field in entity class : " + fieldName);
-            return replaceField(fieldName, idField, matcher);
+        if (matchFieldNameInRawParameter.find()) {
+            String fieldName = matchFieldNameInRawParameter.group(1);
+            return fieldName;
         }
-        Assert.isTrue(false, "wrong parameter in where clause : " + whereParameter);
+        Assert.isTrue(false, "wrong parameter in where clause : " + parameter);
         return null;
-    }
-
-    private static String replaceField(String fieldName, String idField, Matcher matcher) {
-            String operation = matcher.group(2);
-            if (fieldName.equals(idField)){
-                return matcher.replaceFirst("itemName()"+operation);
-            } else {
-                return matcher.replaceFirst("`"+fieldName+"`"+operation);
-            }
-    }
-
-    public static String buildQueryFromQueryParameters(String queryFromValueParameter, String[] queryFromSelectParameters, String[] queryFromWhereParameters, Class<?> domainClass){
-        if(StringUtils.hasText(queryFromValueParameter)){
-            return queryFromValueParameter;
-        }
-
-        StringBuilder stringBuilder = new StringBuilder();
-        if(StringUtils.hasText(queryFromSelectParameters[0])){
-            stringBuilder.append(createQueryClause(queryFromSelectParameters, domainClass, "select ", ", "));
-        } else {
-            stringBuilder.append("select * from `"+ MetadataParser.getDomain(domainClass)+"`");
-        }
-
-        if(StringUtils.hasText(queryFromWhereParameters[0])){
-            stringBuilder.append(createQueryClause(queryFromWhereParameters, domainClass, "where ", " and "));
-        }
-
-        return stringBuilder.toString();
-    }
-
-    private static String createQueryClause(String[] queryClauseParameters, Class<?> domainClazz, String operationClause, String delimiter){
-        StringBuilder query = new StringBuilder(operationClause);
-        Field idField = MetadataParser.getIdField(domainClazz);
-        int idx = 1;
-        
-        for (String eachParameter : queryClauseParameters) {
-        	eachParameter = validateAndChangeFieldInParameter(eachParameter, idField.getName(), domainClazz);
-        	query.append(eachParameter);
-        	
-        	if(idx++ != queryClauseParameters.length) {
-        		query.append(delimiter);
-        	}
-        }
-        
-        return query.toString();
     }
 }

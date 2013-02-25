@@ -16,20 +16,20 @@ public class SimpleDbQueryMethodWithSelectClauseTest {
     @Test
     public void getAnnotatedQuery_should_returned_completed_select_clause_in_query() throws Exception {
         SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectAll", SampleEntity.class);
-        assertEquals("select * from `testDB.sampleEntity` where `sampleAttribute`<='3' and `sampleList` is ''", repositoryMethod.getAnnotatedQuery());
+        assertEquals("select `sampleAttribute`, `sampleList` from `testDB.sampleEntity`", repositoryMethod.getAnnotatedQuery());
     }
 
     @Test
     public void getAnnotatedQuery_should_returned_completed_select_clause_in_query_and_change_id() throws Exception {
         SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectAllChangeId", SampleEntity.class);
-        assertEquals("select * from `testDB.sampleEntity` where itemName()='Item_0'", repositoryMethod.getAnnotatedQuery());
+        assertEquals("select itemName() from `testDB.sampleEntity`", repositoryMethod.getAnnotatedQuery());
     }
 
     public interface AnnotatedQueryRepository {
-        @Query(where = {"sampleAttribute<='3'", "sampleList is ''"})
+        @Query(select = {"sampleAttribute", "sampleList"})
         List<SampleEntity> selectAll();
 
-        @Query(where = "item_id  ='Item_0'")
+        @Query(select = "item_id")
         List<SampleEntity> selectAllChangeId();
     }
 
