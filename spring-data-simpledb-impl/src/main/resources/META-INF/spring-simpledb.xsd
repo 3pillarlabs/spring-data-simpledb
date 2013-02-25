@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xsd:schema xmlns="http://www.springframework.org/schema/data/simpledb"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:tool="http://www.springframework.org/schema/tool"
+            xmlns:context="http://www.springframework.org/schema/context"
+            xmlns:repository="http://www.springframework.org/schema/data/repository"
+            targetNamespace="http://www.springframework.org/schema/data/simpledb"
+            elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xsd:import namespace="http://www.springframework.org/schema/tool" />
+    <xsd:import namespace="http://www.springframework.org/schema/context"
+                schemaLocation="http://www.springframework.org/schema/context/spring-context.xsd" />
+    <xsd:import namespace="http://www.springframework.org/schema/data/repository"
+                schemaLocation="http://www.springframework.org/schema/data/repository/spring-repository.xsd" />
+
+    <xsd:element name="repositories">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="repository:repositories">
+                    <xsd:attributeGroup ref="repository:transactional-repository-attributes" />
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+
+    <xsd:element name="config">
+        <xsd:annotation>
+            <xsd:documentation>SimpleDB specific configuration properties.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="property" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:annotation>
+                        <xsd:documentation>A name-value pair.</xsd:documentation>
+                    </xsd:annotation>
+                    <xsd:complexType>
+                        <xsd:attribute name="name" type="xsd:string" use="required"/>
+                        <xsd:attribute name="value" type="xsd:string" use="required"/>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+
+
+
+</xsd:schema>

@@ -1,0 +1,29 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.springframework.data.simpledb</groupId>
+    <artifactId>spring-data-simpledb-integration-tests</artifactId>
+
+    <parent>
+        <groupId>org.springframework.data.simpledb</groupId>
+        <artifactId>spring-data-simpledb-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+
+    <name>Spring Data SimpleDB Integration Tests</name>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.data.simpledb</groupId>
+            <artifactId>spring-data-simpledb</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
+
+
+</project>
