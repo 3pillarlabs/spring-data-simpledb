@@ -11,9 +11,6 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/**
- * Created by: mgrozea
- */
 public class SimpleDbResultConverterTest {
 
     public static final int SAMPLE_INT_VALUE = 5;
