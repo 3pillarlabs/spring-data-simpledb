@@ -69,26 +69,28 @@ public class AlphanumStringComparator implements Comparator<String>, Serializabl
      */
     private String getChunk(String s, int slength, int marker) {
         StringBuilder chunk = new StringBuilder();
-        char c = s.charAt(marker);
+
+        int charIndex = marker;
+        char c = s.charAt(charIndex);
         chunk.append(c);
-        marker++;
+        charIndex++;
         if (isDigit(c)) {
-            while (marker < slength) {
-                c = s.charAt(marker);
+            while (charIndex < slength) {
+                c = s.charAt(charIndex);
                 if (!isDigit(c)) {
                     break;
                 }
                 chunk.append(c);
-                marker++;
+                charIndex++;
             }
         } else {
-            while (marker < slength) {
-                c = s.charAt(marker);
+            while (charIndex < slength) {
+                c = s.charAt(charIndex);
                 if (isDigit(c)) {
                     break;
                 }
                 chunk.append(c);
-                marker++;
+                charIndex++;
             }
         }
         return chunk.toString();
