@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * Annotation to declare finder queries directly on repository methods.
-
+  TODO: use java doc here
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

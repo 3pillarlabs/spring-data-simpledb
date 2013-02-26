@@ -2,6 +2,7 @@ package org.springframework.data.simpledb.query;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.util.Assert;
 
+// TODO: document what the class is all about
 public final class QueryUtils {
 
     private static final String BIND_PARAMETER_REGEX = "(\\?)";
@@ -170,26 +172,26 @@ public final class QueryUtils {
         return query.toLowerCase().contains("count(");
     }
     
-    public static Map<String, String> createFieldNameWithRawParameter(String wherePattern, String[] rawParameters){
-        final Pattern regex = Pattern.compile(wherePattern);
-        final Map<String, String> map = new LinkedHashMap<>();
+    // TODO: move methods having REGEX into a separate class; RegexpUtils
+    public static Map<String, String> createFieldNameRawParameterExpression(String pattern, String[] rawParameterExpressions){
+        final Pattern regex = Pattern.compile(pattern);
+        final Map<String, String> fieldNameWithParamHash = new LinkedHashMap<>();
         
-        for (String eachParameter : rawParameters) {
-        	final Matcher matcher = regex.matcher(eachParameter);
-            String fieldName = getFieldName(eachParameter,  matcher);
-            map.put(fieldName, eachParameter);
+        for (String eachExpression : rawParameterExpressions) {
+        	final Matcher matcher = regex.matcher(eachExpression);
+            String fieldName = getFieldName(eachExpression,  matcher);
+            fieldNameWithParamHash.put(fieldName, eachExpression);
         }
         
-        return map;
+        return Collections.synchronizedMap(fieldNameWithParamHash);
     }
     
-    private static String getFieldName(String parameter, Matcher matchFieldNameInRawParameter){
-        //pattern to get the field in where clause
-        if (matchFieldNameInRawParameter.find()) {
-            String fieldName = matchFieldNameInRawParameter.group(1);
+    // TODO: inline this method
+    private static String getFieldName(String parameter, Matcher rawParameterMatcher){
+        if (rawParameterMatcher.find()) {
+            String fieldName = rawParameterMatcher.group(1);
             return fieldName;
         }
-        Assert.isTrue(false, "wrong parameter in where clause : " + parameter);
-        return null;
+        throw new IllegalArgumentException( "Parameter not found by Matcher: " + parameter + ", Matcher: " + rawParameterMatcher.toString());
     }
 }
