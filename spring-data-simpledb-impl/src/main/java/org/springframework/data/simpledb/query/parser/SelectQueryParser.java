@@ -5,8 +5,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.data.simpledb.query.RegexpUtils;
+import org.springframework.data.simpledb.util.ReflectionUtils;
 
-public class SelectQueryParser extends AbstractQueryParser {
+public class SelectQueryParser {
 	private String[] rawSelectExpressions;
 	private Class<?> domainClass;
 
@@ -16,7 +17,7 @@ public class SelectQueryParser extends AbstractQueryParser {
 		fieldNameWithParamMap = RegexpUtils.createFieldNameRawParameterExpression(PatternConstants.SELECT_PATTERN.getPattternString(), rawSelectExpressions);
 	}
 
-	@Override
+
 	protected String convertToSimpleDbExpression(String fieldName, String rawSelectExpressions, Field idField) {
 		 final Pattern regex = Pattern.compile(PatternConstants.SELECT_PATTERN.getPattternString());
     	 final Matcher matcher = regex.matcher(rawSelectExpressions);
@@ -29,8 +30,9 @@ public class SelectQueryParser extends AbstractQueryParser {
 	}
 
 	String createSelectClause() {
-		// pass the EntrySet as parameter to function
-		assertThatFieldsDeclaredInClass(domainClass);
+		//TODO pass the EntrySet as parameter to function
+		ReflectionUtils.assertThatFieldsDeclaredInClass
+		assertThatFieldsDeclaredInClass(List<String> fileds, domainClass);
 		
 		final StringBuilder builtSelectQuery = new StringBuilder()
 							.append(createQueryClause("select ", PatternConstants.SELECT_PATTERN.getPattternString(), domainClass,rawSelectExpressions,  ", "));

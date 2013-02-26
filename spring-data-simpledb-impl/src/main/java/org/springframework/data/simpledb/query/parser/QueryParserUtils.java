@@ -91,21 +91,10 @@ public class QueryParserUtils {
 		return query.toString();
 	}
 
-	protected void assertThatFieldsDeclaredInClass(Class<?> domainClazz) {
-		for (Map.Entry<String, String> eachEntry : fieldNameWithParamMap.entrySet()) {
-			boolean isFieldDeclared = ReflectionUtils.isFieldInClass(domainClazz, eachEntry.getKey());
-			Assert.isTrue(isFieldDeclared, "no such field in entity class : " + eachEntry.getKey());
-		}
-	}
 
-	protected Map<String, String> getFieldNameWithParamMap() {
+
+	Map<String, String> getFieldNameWithParamMap() {
 		return fieldNameWithParamMap;
 	}
-
-	protected void assertWhereFieldsAreInSelectClause(QueryParserUtils queryStrategy) {
-
-	}
-
-	protected abstract String convertToSimpleDbExpression(String fieldName, String rawParameter, Field idField);
 
 }
