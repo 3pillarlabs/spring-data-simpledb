@@ -2,7 +2,6 @@ package org.springframework.data.simpledb.query;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,7 +14,12 @@ import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.util.Assert;
 
-// TODO: document what the class is all about
+/**
+ *  Main Responsibility of QueryUtils is to work with: <br/>
+ *  <b>Query Strings</b> <br/> 
+ *  <b>Build Indexed-By Queries</b> <br/> 
+ *  <b>Named Queries</b> <br/>
+ */
 public final class QueryUtils {
 
     private static final String BIND_PARAMETER_REGEX = "(\\?)";
@@ -171,27 +175,5 @@ public final class QueryUtils {
     public static boolean isCountQuery(String query) {
         return query.toLowerCase().contains("count(");
     }
-    
-    // TODO: move methods having REGEX into a separate class; RegexpUtils
-    public static Map<String, String> createFieldNameRawParameterExpression(String pattern, String[] rawParameterExpressions){
-        final Pattern regex = Pattern.compile(pattern);
-        final Map<String, String> fieldNameWithParamHash = new LinkedHashMap<>();
-        
-        for (String eachExpression : rawParameterExpressions) {
-        	final Matcher matcher = regex.matcher(eachExpression);
-            String fieldName = getFieldName(eachExpression,  matcher);
-            fieldNameWithParamHash.put(fieldName, eachExpression);
-        }
-        
-        return Collections.synchronizedMap(fieldNameWithParamHash);
-    }
-    
-    // TODO: inline this method
-    private static String getFieldName(String parameter, Matcher rawParameterMatcher){
-        if (rawParameterMatcher.find()) {
-            String fieldName = rawParameterMatcher.group(1);
-            return fieldName;
-        }
-        throw new IllegalArgumentException( "Parameter not found by Matcher: " + parameter + ", Matcher: " + rawParameterMatcher.toString());
-    }
+
 }

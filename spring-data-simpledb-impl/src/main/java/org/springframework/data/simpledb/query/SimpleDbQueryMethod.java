@@ -6,7 +6,7 @@ import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.simpledb.annotation.Query;
-import org.springframework.data.simpledb.query.strategy.AbstractQueryParser;
+import org.springframework.data.simpledb.query.parser.QueryParserUtils;
 import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -67,17 +67,16 @@ public class SimpleDbQueryMethod extends QueryMethod {
 
     /**
      * Returns the query string declared in a {@link Query} annotation or {@literal null} if neither the annotation found nor the attribute was specified.
-     * TODO: extract constants for query params, move to Query
-     * @return
+     * @return a Query String
      */
     public final String getAnnotatedQuery() {
-        String valueParameter = getAnnotationValue("value", String.class);
-        String[] whereParameters = getAnnotationValue("where", String[].class);
-        String[] selectParameters = getAnnotationValue("select", String[].class);
+        String valueParameter = getAnnotationValue(Query.QueryClause.VALUE.getQueryClause(), String.class);
+        String[] whereParameters = getAnnotationValue(Query.QueryClause.WHERE.getQueryClause(), String[].class);
+        String[] selectParameters = getAnnotationValue(Query.QueryClause.SELECT.getQueryClause(), String[].class);
 
         assertNotOverlappingQueryParameters(valueParameter, selectParameters, whereParameters);
         
-        return AbstractQueryParser.buildQueryFromQueryParameters(valueParameter, selectParameters, whereParameters, getDomainClass());
+        return QueryParserUtils.buildQueryFromQueryParameters(valueParameter, selectParameters, whereParameters, getDomainClass());
     }
 
     private void assertNotOverlappingQueryParameters(String valueParameter, String[] selectParameters, String[] whereParameters){
