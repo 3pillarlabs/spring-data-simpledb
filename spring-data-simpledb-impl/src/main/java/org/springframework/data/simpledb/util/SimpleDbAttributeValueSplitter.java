@@ -68,7 +68,7 @@ public final class SimpleDbAttributeValueSplitter {
     }
 
     static String combineAttributeValues(List<String> keyGroup, Map<String, String> splitAttributes) {
-        Collections.sort(keyGroup, new AlphanumComparator());
+        Collections.sort(keyGroup, new AlphanumStringComparator());
 
         StringBuilder builder = new StringBuilder();
         for(String key: keyGroup){

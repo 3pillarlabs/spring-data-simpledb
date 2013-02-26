@@ -25,7 +25,7 @@ Setup Spring Data SimpleDB repository support:
         xmlns:simpledb="http://www.springframework.org/schema/data/simpledb"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        https://raw.github.com/ThreePillarGlobal/spring-data-simpledb/dev/spring-data-simpledb-impl/src/main/resources/META-INF/spring-simpledb.xsd?login=cmester&amp;token=0e3a2a9b21a0daa3044b09c3ecdd59d4">
+        classpath:META-INF/spring-simpledb.xsd">
     
         <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
     
@@ -61,7 +61,7 @@ If a value is specified here, at application startup Amazon SimpleDB domains are
 $DOMAIN_MANAGEMENT_POLICY possible values:
 
 * **DROP_CREATE**    -  Amazon simple db domains will be dropped and recreated at startup; recommended for testing purposes.
-* **UPDATE**	        -  Amazon simple db domains will be created only if they are not already existing.
+* **UPDATE**            -  Amazon simple db domains will be created only if they are not already existing.
 * **NONE**            -  This option implies that all domains are created in simple db manually.
 
 _Default value_: **UPDATE**
@@ -166,10 +166,12 @@ Queries are validated against method's returned type. The following query won't 
 
 When serializing fields of type List, Set or Map, a json object is created and is stored in database.
 This json object contains the actual values and also class information about the serialized field.
-Serializing/deserializing an object of type Map<Object, Object> is not supported by jackson, so no field of this type will correctly be serialized/deserialized.
+Serializing/deserializing an object of type `Map<Object, Object>` is not supported by jackson, so no field of this type will correctly be serialized/deserialized.
 (JSON object data structure is a map, a collection of name/value pairs, where the element names must be strings.)
-From the reasons mentioned about Map<String, Object>, Map<Integer, Object> are *supported*
+From the reasons mentioned about `Map<String, Object>, Map<Integer, Object>` are *supported*
 
+Amazon SimpleDB can only store values represented as string having a maximum width of 1024 characters. In the current implementation we can easily exceed this length if we serialize a long list, a long string etc. 
+To overcome this issue, the attribute values exceeding the length limit are split into **chunks** of maximum 1024 characters. Hence, an attribute **stringKey** having a value of 1030 characters long would be split into two attributes: **stringKey@1** having as value the first 1024 characters and **stringKey@2** having as value the last 6 characters. This mechanism is implemented both when serializing and deserializing the attributes.
 
 ### Primitive field conversions ###
 
@@ -195,5 +197,14 @@ A select like the following won't be a SimpleDB valid select statement and __won
 Nevertheless the following will be a valid SimpleDb select statement and __will be executed__:
 
     select customer.name from `testDb.company`
+    
+Since we've implemented the **attribute chunks** mechanism for long values, partial queries are not yet supported on chuncked attributes. For example: if attribute **customer.name** would be chunked into **customer.name@1** and **customer.name@2** the following query will return no results
+
+    select customer.name from `testDb.company`
+
+Nevertheless, querying an entire entity would correctly deserialize the chuncked attributes. Hence, the following query will work:
+
+    select * from `testDb.company`
+
 
 DEV_NOTES: Please use http://dillinger.io/ when editing this file

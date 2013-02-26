@@ -8,7 +8,7 @@
 	    http://www.springframework.org/schema/data/jpa
 	    http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
 		http://www.springframework.org/schema/data/simpledb
-		https://raw.github.com/ThreePillarGlobal/spring-data-simpledb/dev/spring-data-simpledb-impl/src/main/resources/META-INF/spring-simpledb.xsd?login=cmester&amp;token=0e3a2a9b21a0daa3044b09c3ecdd59d4">
+		classpath:META-INF/spring-simpledb.xsd">
 
     <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
 
