@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,6 @@ import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.PutAttributesRequest;
-import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 import com.amazonaws.services.simpledb.model.SelectRequest;
 import com.amazonaws.services.simpledb.model.SelectResult;
 
@@ -41,12 +39,13 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
         entity.generateIdIfNotSet();
 
-        final PutAttributesRequest putRequest = new PutAttributesRequest();
-        putRequest.setDomainName(entity.getDomain());
-        putRequest.setItemName(entity.getItemName());
-        putRequest.setAttributes(toReplaceableAttributeList(entity.serialize(), false));
+        Map<String, String> rawAttributes = entity.serialize();
+        List<PutAttributesRequest> putAttributesRequests = SimpleDbRequestBuilder.createPutAttributesRequests(entity.getDomain(), entity.getItemName(), rawAttributes);
 
-        sdb.putAttributes(putRequest);
+        for(PutAttributesRequest request: putAttributesRequests){
+            sdb.putAttributes(request);
+        }
+
         return entity.getItem();
     }
 
@@ -123,27 +122,6 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     	final SelectResult selectResult = sdb.select(new SelectRequest(query, consistentRead));
     	
     	return selectResult.getNextToken();
-    }
-    
-    private List<ReplaceableAttribute> toReplaceableAttributeList(Map<String, String> attributes, boolean replace) {
-        final List<ReplaceableAttribute> result = new ArrayList<>();
-
-        for (final Entry<String, String> entry: attributes.entrySet()) {
-        	 result.add(new ReplaceableAttribute(entry.getKey(), entry.getValue(), replace));
-        }
-
-        return result;
-    }
-
-    @SuppressWarnings("unused")
-    private List<Attribute> toAttributeList(Map<String, String> attributes) {
-        final List<Attribute> result = new ArrayList<>();
-
-        for (final Entry<String, String> entry: attributes.entrySet()) {
-        	result.add(new Attribute(entry.getKey(), entry.getValue()));
-        }
-
-        return result;
     }
 
     private void logOperation(String operation, EntityWrapper<T, ID> entity) {
