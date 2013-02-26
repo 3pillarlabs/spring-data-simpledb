@@ -3,7 +3,11 @@ package org.springframework.data.simpledb.util;
 import java.util.*;
 
 
-public class MapUtils {
+public final class MapUtils {
+
+    private MapUtils(){
+        //utility class
+    }
 
 
     /**

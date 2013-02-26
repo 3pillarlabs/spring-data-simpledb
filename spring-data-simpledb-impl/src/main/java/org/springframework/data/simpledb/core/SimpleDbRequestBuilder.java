@@ -9,7 +9,11 @@ import java.util.*;
 /**
  * Taking into account SimpleDb limitations, constructs requests that comply.
  */
-public class SimpleDbRequestBuilder {
+public final class SimpleDbRequestBuilder {
+
+    private SimpleDbRequestBuilder(){
+        //utility class
+    }
 
     private static final int MAX_NUMBER_OF_ATTRIBUTES_PER_SIMPLE_DB_REQUEST = 256;
 
