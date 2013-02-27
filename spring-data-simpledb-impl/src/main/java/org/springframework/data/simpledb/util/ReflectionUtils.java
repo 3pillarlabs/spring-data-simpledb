@@ -8,7 +8,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,7 +154,7 @@ public final class ReflectionUtils {
         return setterMethod;
     }
 
-	public static void assertThatFieldsDeclaredInClass(Set<String> fieldNames, Class<?> domainClazz) {
+	public static void assertThatFieldsDeclaredInClass(List<String> fieldNames, Class<?> domainClazz) {
 		for (String eachEntry : fieldNames) {
 			boolean isFieldDeclared = isFieldInClass(domainClazz, eachEntry);
 			Assert.isTrue(isFieldDeclared, "no such field in entity class : " + eachEntry);

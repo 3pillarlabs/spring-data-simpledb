@@ -1,8 +1,8 @@
 package org.springframework.data.simpledb.query.parser;
 
 public enum PatternConstants {
-	SELECT_PATTERN("(?:\\s*)(.+)(?:\\s*)"),
-	WHERE_PATTERN("(?:\\s*)(.+?)(?:\\s*)(=|!=|>|<|\\slike|\\snot|\\sbetween\\sin|\\sis|\\severy())");
+	SELECT_PATTERN("^(?:\\s+)?(.+?)(?:\\s+)?$"),
+	WHERE_PATTERN("^(?:\\s*)(.+?)(?:\\s*)(=|!=|>|<|like|not|between|in|is|every())(?:\\s*)(\\S+)(\\s+)?$");
 	
 	private String pattternString;
 

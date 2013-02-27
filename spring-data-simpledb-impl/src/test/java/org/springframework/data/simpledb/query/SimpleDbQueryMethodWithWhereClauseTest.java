@@ -55,14 +55,17 @@ public class SimpleDbQueryMethodWithWhereClauseTest {
     }
     
     // ------------------------------------ to remove ------------------------------------------
-	@Test public void convertToSimpleDbExpression() throws NoSuchFieldException, SecurityException {
+	@Test 
+	public void convertToSimpleDbExpression() throws NoSuchFieldException, SecurityException {
 		class Foo {
 			private String id;
 		}
 		
-		// where = {"id < 2", "id > 3", "name like gigi"} 
-		String rawSelectExpressions = "id    >    322"; 
+		// where = {"  id < 2  ", "id > 3", "name like gigi"} 
+		String rawSelectExpressions = "   name like     'gigi'   "; 
+		
 		String wherePattern = "^(?:\\s*)(.+?)(?:\\s*)(=|!=|>|<|like|not|between|in|is|every())(?:\\s*)(\\S+)(\\s+)?$";
+//		String wherePattern = "^(?:\\s+)?(.+?)(?:\\s+)?$";
 		final Pattern regex = Pattern.compile(wherePattern);
 		final Matcher matcher = regex.matcher(rawSelectExpressions);
 		Field idField = Foo.class.getDeclaredField("id");
@@ -70,9 +73,10 @@ public class SimpleDbQueryMethodWithWhereClauseTest {
 
 		// Expected: itemName()> 3
  		if (matcher.find()) {
+ 			fieldName = matcher.group(1);
  			if (idField != null && fieldName.equals(idField.getName())) {
 // 				return StringUtils.replace(rawSelectExpressions, fieldName, "itemName()");
- 				System.out.println(StringUtils.replace(rawSelectExpressions, fieldName, "itemName()"));
+ 				System.out.println(StringUtils.replace(rawSelectExpressions.trim(), fieldName, "itemName()"));
  			} else {
 // 				return StringUtils.replace(rawSelectExpressions, fieldName,  "`" + fieldName + "`");
  				System.out.println(StringUtils.replace(rawSelectExpressions, fieldName,  "`" + fieldName + "`"));

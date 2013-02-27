@@ -4,10 +4,9 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.simpledb.annotation.Query;
 import org.springframework.data.simpledb.query.RegexpUtils;
 import org.springframework.data.simpledb.util.MetadataParser;
-import org.springframework.data.simpledb.util.ReflectionUtils;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -75,13 +74,13 @@ public class QueryParserUtils {
 		}
 	}
 
-	protected String createQueryClause(String clause, String wherePattern, Class<?> domainClazz, String[] rawParameters, String delimiter) {
+	public String createQueryClause(String clause, PatternConstants queryPattern, Class<?> domainClazz, String[] rawParameters, String delimiter) {
 		StringBuilder query = new StringBuilder(clause);
 		Field idField = MetadataParser.getIdField(domainClazz);
 		int idx = 1;
 
 		for (Map.Entry<String, String> eachEntry : fieldNameWithParamMap.entrySet()) {
-			String replacedParameter = convertToSimpleDbExpression(eachEntry.getKey(), eachEntry.getValue(), idField);
+			String replacedParameter = RegexpUtils.convertToSimpleDbExpression(queryPattern, eachEntry.getValue(), idField);
 			query.append(replacedParameter);
 
 			if (idx++ != rawParameters.length) {
@@ -91,8 +90,6 @@ public class QueryParserUtils {
 
 		return query.toString();
 	}
-
-
 
 	Map<String, String> getFieldNameWithParamMap() {
 		return fieldNameWithParamMap;

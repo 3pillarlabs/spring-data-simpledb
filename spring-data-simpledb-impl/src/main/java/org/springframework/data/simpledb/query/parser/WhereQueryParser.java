@@ -24,23 +24,6 @@ public class WhereQueryParser extends QueryParserUtils{
 	 return createQueryClause(" where ", PatternConstants.WHERE_PATTERN.getPattternString(), domainClass, parameters, " and ");
 }
 
-	@Override
-	protected String convertToSimpleDbExpression(String fieldName, String rawParameterExpression, Field idField) {
-		final Pattern regex = Pattern.compile(PatternConstants.WHERE_PATTERN.getPattternString());
-		final Matcher matcher = regex.matcher(rawParameterExpression);
-
-		if (matcher.find()) {
-			String operator = matcher.group(2);
-			if (idField != null && fieldName.equals(idField.getName())) {
-				return matcher.replaceFirst("itemName()" + operator);
-			} else {
-				return matcher.replaceFirst("`" + fieldName + "`" + operator);
-			}
-		}
-		
-		throw new IllegalArgumentException("wrong parameter in where clause : " + rawParameterExpression);
-	}
-    
     @Override
     protected void assertWhereFieldsAreInSelectClause(QueryParserUtils queryStrategy) {
     	if(queryStrategy != null){
