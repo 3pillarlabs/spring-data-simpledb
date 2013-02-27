@@ -4,9 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import com.amazonaws.services.simpledb.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
@@ -14,6 +12,12 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 import org.springframework.util.Assert;
 
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
+import com.amazonaws.services.simpledb.model.Attribute;
+import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
+import com.amazonaws.services.simpledb.model.Item;
+import com.amazonaws.services.simpledb.model.PutAttributesRequest;
+import com.amazonaws.services.simpledb.model.SelectRequest;
+import com.amazonaws.services.simpledb.model.SelectResult;
 
 /**
  *
@@ -47,7 +51,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     @Override
     public void deleteItem(String domainName, String itemName) {
-        LOGGER.info("Delete Domain\"{}\" ItemName \"{}\"\"", domainName, itemName);
+        LOGGER.info("Delete Domain\"{}\" ItemName \"{}\"", domainName, itemName);
         Assert.notNull(domainName, "Domain name should not be null");
         Assert.notNull(itemName, "Item name should not be null");
         sdb.deleteAttributes(new DeleteAttributesRequest(domainName, itemName));
@@ -55,7 +59,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     @Override
     public T readItem(SimpleDbEntityInformation<T, ID> entityInformation, ID id, boolean consistentRead) {
-        LOGGER.info("Read ItemName \"{}\"\"", id);
+        LOGGER.info("Read ItemName \"{}\"", id);
         List<ID> ids = new ArrayList<>();
         {
             ids.add(id);
@@ -71,14 +75,26 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     @Override
      public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, String query, boolean consistentRead) {
-        LOGGER.info("Find All Domain \"{}\"\" isConsistent=\"{}\"\"", entityInformation.getDomain(), consistentRead);
+        LOGGER.info("Find All Domain \"{}\" isConsistent=\"{}\"", entityInformation.getDomain(), consistentRead);
         final SelectResult selectResult = sdb.select(new SelectRequest(query, consistentRead));
         return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
+    }
+    
+    @Override
+    public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, String query, String nextToken, boolean consistentRead) {
+    	LOGGER.info("Find All Domain \"{}\" isConsistent=\"{}\", with token!", entityInformation.getDomain(), consistentRead);
+    	
+    	SelectRequest selectRequest = new SelectRequest(query, consistentRead);
+    	selectRequest.setNextToken(nextToken);
+    	
+		final SelectResult selectResult = sdb.select(selectRequest);
+    	
+		return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
     }
 
     @Override
     public long count(SimpleDbEntityInformation entityInformation, boolean consistentRead) {
-        LOGGER.info("Count items from domain \"{}\"\" isConsistent=\"{}\"\"", entityInformation.getDomain(), consistentRead);
+        LOGGER.info("Count items from domain \"{}\" isConsistent=\"{}\"", entityInformation.getDomain(), consistentRead);
         return count(new QueryBuilder(entityInformation).withCount().toString(), consistentRead);
     }
 
@@ -98,7 +114,17 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         return 0;
     }
 
+    @Override
+    public String getNextToken(String query, boolean consistentRead) {
+    	LOGGER.info("Get next token for query: " + query);
+    	/* TODO: assert for the existence of 'limit' in the query */
+    	
+    	final SelectResult selectResult = sdb.select(new SelectRequest(query, consistentRead));
+    	
+    	return selectResult.getNextToken();
+    }
+
     private void logOperation(String operation, EntityWrapper<T, ID> entity) {
-        LOGGER.info(operation + " \"{}\" ItemName \"{}\"\"", entity.getDomain(), entity.getItemName());
+        LOGGER.info(operation + " \"{}\" ItemName \"{}\"", entity.getDomain(), entity.getItemName());
     }
 }

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
+import org.springframework.util.Assert;
 
 public class QueryBuilder<T, ID extends Serializable> {
 
@@ -29,7 +30,13 @@ public class QueryBuilder<T, ID extends Serializable> {
         query.append("select count(*) from ").append(quote(entityInformation.getDomain()));
         return this;
     }
-
+    
+    public QueryBuilder with(final int limit) {
+        query.append(" limit ").append(limit);
+        
+        return this;
+    }
+    
     public QueryBuilder with(Iterable iterable) {
         Iterator<ID> iterator = iterable.iterator();
         appendWhereOrEndClause(query);
@@ -65,13 +72,14 @@ public class QueryBuilder<T, ID extends Serializable> {
                 throw new IllegalArgumentException("SimpleDb does not support multiple sorting");
             }
         }
-        if (pageable.getPageSize() > 0) {
-            query.append(" limit ").append(pageable.getPageSize());
+
+        if(pageable.getPageSize() > 0) {
+        	with(pageable.getPageSize());
         }
 
         return this;
     }
-
+    
     @Override
     public String toString() {
         //TODO change itemName() to ID field from domain object

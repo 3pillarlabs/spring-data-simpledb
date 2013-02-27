@@ -20,5 +20,9 @@ public interface SimpleDbOperations<T, ID extends Serializable> {
 
     List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, String query, boolean consistentRead);
 
+    List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, String query, String nextToken, boolean consistentRead);
+    
     long count(String query, boolean consistentRead);
+    
+    String getNextToken(final String query, boolean consistentRead);
 }

@@ -1,5 +1,6 @@
 package org.springframework.data.simpledb.sample.simpledb.repository.query;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,11 @@ public class AnnotatedSingleResultQueryTest {
     @Autowired
     AnnotatedSingleResultQueryRepository repository;
 
+    @After
+    public void tearDown() {
+    	repository.deleteAll();
+    }
+    
     @Test
     public void customLongCount_should_return_the_number_of_users_represented_as_Long() {
         List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
