@@ -3,13 +3,17 @@ package org.springframework.data.simpledb.query;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.simpledb.annotation.Query;
+import org.springframework.util.StringUtils;
 
 public class SimpleDbQueryMethodWithWhereClauseTest {
     @Test
@@ -49,4 +53,32 @@ public class SimpleDbQueryMethodWithWhereClauseTest {
         when(repositoryMetadata.getReturnedDomainClass(testMethod)).thenReturn((Class) entityClass);
         return new SimpleDbQueryMethod(testMethod, repositoryMetadata);
     }
+    
+    // ------------------------------------ to remove ------------------------------------------
+	@Test public void convertToSimpleDbExpression() throws NoSuchFieldException, SecurityException {
+		class Foo {
+			private String id;
+		}
+		
+		// where = {"id < 2", "id > 3", "name like gigi"} 
+		String rawSelectExpressions = "id    >    322"; 
+		String wherePattern = "^(?:\\s*)(.+?)(?:\\s*)(=|!=|>|<|like|not|between|in|is|every())(?:\\s*)(\\S+)(\\s+)?$";
+		final Pattern regex = Pattern.compile(wherePattern);
+		final Matcher matcher = regex.matcher(rawSelectExpressions);
+		Field idField = Foo.class.getDeclaredField("id");
+		String fieldName = "id";
+
+		// Expected: itemName()> 3
+ 		if (matcher.find()) {
+ 			if (idField != null && fieldName.equals(idField.getName())) {
+// 				return StringUtils.replace(rawSelectExpressions, fieldName, "itemName()");
+ 				System.out.println(StringUtils.replace(rawSelectExpressions, fieldName, "itemName()"));
+ 			} else {
+// 				return StringUtils.replace(rawSelectExpressions, fieldName,  "`" + fieldName + "`");
+ 				System.out.println(StringUtils.replace(rawSelectExpressions, fieldName,  "`" + fieldName + "`"));
+ 			}
+ 		} else {
+ 			throw new IllegalArgumentException("FAIL");
+ 		}
+	}
 }

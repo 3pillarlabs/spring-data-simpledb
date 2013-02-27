@@ -36,6 +36,7 @@ public class QueryParserUtils {
 		assertMatchingSelectAndWhereClauses(rawSelectParameters, rawWhereParameters);
 
 		StringBuilder stringBuilder = new StringBuilder();
+		
 		appendSelectClause(stringBuilder, rawSelectParameters, domainClass);
 		appendFromClause(stringBuilder, domainClass);
 		appendWhereClauseIfPresent(stringBuilder, rawWhereParameters, domainClass);

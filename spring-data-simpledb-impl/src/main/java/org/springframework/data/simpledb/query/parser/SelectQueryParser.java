@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import org.springframework.data.simpledb.query.RegexpUtils;
 import org.springframework.data.simpledb.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 public class SelectQueryParser {
 	private String[] rawSelectExpressions;
@@ -22,11 +23,29 @@ public class SelectQueryParser {
 		 final Pattern regex = Pattern.compile(PatternConstants.SELECT_PATTERN.getPattternString());
     	 final Matcher matcher = regex.matcher(rawSelectExpressions);
     	 
-		if (idField != null && fieldName.equals(idField.getName())) {
-			return matcher.replaceFirst("itemName()");
-		} else {
-			return matcher.replaceFirst("`" + fieldName + "`");
+ 		if (matcher.find()) {
+ 			if (idField != null && fieldName.equals(idField.getName())) {
+ 				return StringUtils.replace(rawSelectExpressions, fieldName, "itemName()");
+ 			} else {
+ 				return StringUtils.replace(rawSelectExpressions, fieldName,  "`" + fieldName + "`");
+ 			}
+ 		}
+	}
+
+	protected String convertToSimpleDbExpression(String fieldName, String rawParameterExpression, Field idField) {
+		final Pattern regex = Pattern.compile(PatternConstants.WHERE_PATTERN.getPattternString());
+		final Matcher matcher = regex.matcher(rawParameterExpression);
+
+		if (matcher.find()) {
+			String operator = matcher.group(2);
+			if (idField != null && fieldName.equals(idField.getName())) {
+				return matcher.replaceFirst("itemName()" + operator);
+			} else {
+				return matcher.replaceFirst("`" + fieldName + "`" + operator);
+			}
 		}
+		
+		throw new IllegalArgumentException("wrong parameter in where clause : " + rawParameterExpression);
 	}
 
 	String createSelectClause() {
