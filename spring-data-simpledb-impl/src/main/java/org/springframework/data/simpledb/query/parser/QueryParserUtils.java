@@ -1,12 +1,13 @@
 package org.springframework.data.simpledb.query.parser;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.simpledb.annotation.Query;
 import org.springframework.data.simpledb.query.RegexpUtils;
 import org.springframework.data.simpledb.util.MetadataParser;
+import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -15,16 +16,8 @@ import org.springframework.util.StringUtils;
  * <br/>
  */
 public class QueryParserUtils {
-
-	/**
-	 * This hash is used as a shared data structure, holding the fieldName and
-	 * it's corresponding rawParameterExpression The use-case of this
-	 * Map<FieldName, RawParameter> is for validating that the parameters within
-	 * the WHERE clause should appear as parameters also in the SELECT clause It
-	 * is represented as a synchronized Map Instance
-	 */
-
-	protected Map<String, String> fieldNameWithParamMap;
+	
+	private QueryParserUtils(){}
 
 	public static String buildQueryFromQueryParameters(String valueParameter, String[] rawSelectParameters, String[] rawWhereParameters,
 			Class<?> domainClass) {
@@ -32,7 +25,7 @@ public class QueryParserUtils {
 			return valueParameter;
 		}
 
-		assertMatchingSelectAndWhereClauses(rawSelectParameters, rawWhereParameters);
+		assertParametersInQuery(rawSelectParameters, rawWhereParameters, domainClass);
 
 		StringBuilder stringBuilder = new StringBuilder();
 		
@@ -45,8 +38,7 @@ public class QueryParserUtils {
 
 	private static void appendWhereClauseIfPresent(StringBuilder stringBuilder, String[] rawWhereParameters, Class<?> domainClass) {
 		if (StringUtils.hasText(rawWhereParameters[0])) {
-			WhereQueryParser whereQuery = new WhereQueryParser(rawWhereParameters, domainClass);
-			stringBuilder.append(whereQuery.createWhereClause());
+			stringBuilder.append(createQueryClause(" where ", PatternConstants.WHERE_PATTERN, domainClass, rawWhereParameters, " and "));
 		}
 	}
 
@@ -55,32 +47,49 @@ public class QueryParserUtils {
 	}
 
 	private static void appendSelectClause(StringBuilder stringBuilder, String[] rawSelectParameters, Class<?> domainClass) {
-		SelectQueryParser selectQuery = null;
 		if (StringUtils.hasText(rawSelectParameters[0])) {
-			selectQuery = new SelectQueryParser(rawSelectParameters, domainClass);
-			stringBuilder.append(selectQuery.createSelectClause());
+			stringBuilder.append(createQueryClause("select ", PatternConstants.SELECT_PATTERN, domainClass, rawSelectParameters, ", "));
 		} else {
 			stringBuilder.append("select *");
 		}
 	}
+	
+	private static void assertParametersInQuery(String[] rawSelectExpresions, String[] rawWhereExpresions, Class<?> domainClass){
+		List<String> whereFieldNames = Collections.emptyList();
+		List<String> selectFieldNames = Collections.emptyList();
+		if (StringUtils.hasText(rawWhereExpresions[0])) {
+			whereFieldNames = RegexpUtils.createFieldNameList(PatternConstants.WHERE_PATTERN.getPattternString(), rawWhereExpresions);
+			ReflectionUtils.assertThatFieldsDeclaredInClass(whereFieldNames, domainClass);
+		}
+		
+		if (StringUtils.hasText(rawSelectExpresions[0])) {
+			selectFieldNames = RegexpUtils.createFieldNameList(PatternConstants.SELECT_PATTERN.getPattternString(), rawSelectExpresions);
+			ReflectionUtils.assertThatFieldsDeclaredInClass(selectFieldNames, domainClass);
+		}
+		
+		assertMatchingSelectAndWhereClauses(selectFieldNames, whereFieldNames);	
+				
+	}
 
-	private static void assertMatchingSelectAndWhereClauses(String[] rawSelectExpresions, String[] rawWhereExpresions) {
-		List<String> selectFieldNames = RegexpUtils.createFieldNameList(PatternConstants.SELECT_PATTERN.getPattternString(), rawSelectExpresions);
-		List<String> whereFieldNames = RegexpUtils.createFieldNameList(PatternConstants.WHERE_PATTERN.getPattternString(), rawWhereExpresions);
+	private static void assertMatchingSelectAndWhereClauses(List<String> selectFieldNames, List<String> whereFieldNames) {
+		if (selectFieldNames.isEmpty()){
+			return;
+		}
 		for (String whereFieldName : whereFieldNames) {
 			if (!selectFieldNames.contains(whereFieldName)) {
 				throw new IllegalArgumentException("Select clause does not contain parameter from where clause:" + whereFieldName);
 			}
 		}
+		
 	}
 
-	public String createQueryClause(String clause, PatternConstants queryPattern, Class<?> domainClazz, String[] rawParameters, String delimiter) {
+	public static String createQueryClause(String clause, PatternConstants queryPattern, Class<?> domainClazz, String[] rawParameters, String delimiter) {
 		StringBuilder query = new StringBuilder(clause);
 		Field idField = MetadataParser.getIdField(domainClazz);
 		int idx = 1;
 
-		for (Map.Entry<String, String> eachEntry : fieldNameWithParamMap.entrySet()) {
-			String replacedParameter = RegexpUtils.convertToSimpleDbExpression(queryPattern, eachEntry.getValue(), idField);
+		for (String rawParameter : rawParameters) {
+			String replacedParameter = RegexpUtils.convertToSimpleDbExpression(queryPattern, rawParameter, idField);
 			query.append(replacedParameter);
 
 			if (idx++ != rawParameters.length) {
@@ -89,10 +98,6 @@ public class QueryParserUtils {
 		}
 
 		return query.toString();
-	}
-
-	Map<String, String> getFieldNameWithParamMap() {
-		return fieldNameWithParamMap;
 	}
 
 }
