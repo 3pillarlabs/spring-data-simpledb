@@ -165,7 +165,7 @@ We support pagination by extending the **PagingAndSortingRepository** which prov
         Page<SimpleDbUser> findAll(Pageable pageable);
     }
 
-Moreover, any custom annotate query in can be paginated by simply adding a **Pagealbe** parameter to the query method's signature. The parameter must be the last one and the method's return type can be only `Page<T>` or `List<T>`. The following example depicts a few different query methods:
+Moreover, any custom annotated query can be paginated by simply adding a **Pagealbe** parameter to the query method's signature. The parameter must be placed after the mandatory parameters and the method's return type can be only `Page<T>` or `List<T>`. The following example depicts a few different query methods:
 
     @Query(value = "select * from `testDB.simpleDbUser` where primitiveField > ?")
     Page<SimpleDbUser> findUsers(float primitiveField, Pageable page);

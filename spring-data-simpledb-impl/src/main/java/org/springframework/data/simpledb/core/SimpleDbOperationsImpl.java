@@ -143,19 +143,19 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         Assert.isTrue(pageable.getPageSize() > 0);
         
     	List<T> resultsList;
-    	String queryWithPagesizeLimit = new QueryBuilder(query).with(pageable).toString();
+    	String queryWithPageSizeLimit = new QueryBuilder(query).with(pageable).toString();
 
     	if(pageable.getPageNumber() != 1) {
     		String pageOffsetToken = getPageOffsetToken(pageable, entityInformation, query, consistentRead);
 
     		if(pageOffsetToken != null && ! pageOffsetToken.isEmpty()) {
-    			resultsList = find(entityInformation, queryWithPagesizeLimit, pageOffsetToken, consistentRead);
+    			resultsList = find(entityInformation, queryWithPageSizeLimit, pageOffsetToken, consistentRead);
     		} else {
-    			resultsList = Collections.EMPTY_LIST;
+    			resultsList = Collections.emptyList();
     		}
 
     	} else {
-    		resultsList = find(entityInformation, queryWithPagesizeLimit, consistentRead);
+    		resultsList = find(entityInformation, queryWithPageSizeLimit, consistentRead);
     	}
 
     	final String countQuery = new QueryBuilder(query, true).toString();

@@ -3,7 +3,6 @@ package org.springframework.data.simpledb.query.executions;
 import java.io.Serializable;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.query.QueryUtils;
 import org.springframework.data.simpledb.query.SimpleDbQueryMethod;
@@ -33,13 +32,7 @@ public abstract class AbstractSimpleDbQueryExecution {
 		SimpleDbQueryRunner queryRunner;
 		
 		if(queryMethod.isPagedQuery()) {
-			Pageable pageable = null;
-			
-			for(Object value: values) {
-				if(Pageable.class.isAssignableFrom(value.getClass())) {
-					pageable = (Pageable)value;
-				}
-			}
+			final Pageable pageable = getPageableParamValue(values);
 			
 			queryRunner = new SimpleDbQueryRunner(simpledbOperations, domainClass, query, pageable);
 		} else {
@@ -48,6 +41,18 @@ public abstract class AbstractSimpleDbQueryExecution {
         
         return doExecute(repositoryQuery, queryRunner);
     }
+
+	private Pageable getPageableParamValue(Object[] values) {
+		Pageable pageable = null;
+		
+		for(Object value: values) {
+			if(Pageable.class.isAssignableFrom(value.getClass())) {
+				pageable = (Pageable)value;
+			}
+		}
+		
+		return pageable;
+	}
     
     protected abstract Object doExecute(SimpleDbRepositoryQuery query, SimpleDbQueryRunner queryRunner);
     
