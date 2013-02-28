@@ -57,12 +57,19 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
     protected AbstractSimpleDbQueryExecution getExecution() {
         String query = method.getAnnotatedQuery();
         assertNotHavingNestedQueryParameters(query);
-        if(method.isCollectionQuery()){
+        
+        if(method.isPagedQuery()) {
+        	/* 
+        	 * Paged query must be checked first because the checking is done based
+        	 * on parameter types in the query method's signature, while the rest of the
+        	 * checks are based on the method's return type
+        	 */
+        	
+        	return new PagedResultExecution(simpledbOperations);
+        } if(method.isCollectionQuery()){
             return new MultipleResultExecution(simpledbOperations);
         } else if (method.isModifyingQuery()){
             throw new IllegalArgumentException("Modifying query not supported. Please use repository methods for update operations.");
-        } else if (method.isPageQuery()){
-            throw new IllegalArgumentException("Not implemented");
         } else {
             return new SingleResultExecution(simpledbOperations);
         }

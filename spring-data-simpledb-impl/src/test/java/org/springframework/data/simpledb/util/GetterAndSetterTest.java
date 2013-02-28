@@ -33,10 +33,10 @@ public class GetterAndSetterTest {
         SampleBean sampleBean = new SampleBean();
         sampleBean.withoutGetterAndSetter = "simple-db";
 
-        EntityWrapper<SampleBean, String> sdbEntity = new EntityWrapper<>(this.<SampleBean>readEntityInformation(SampleBean.class), sampleBean);
+        EntityWrapper<SampleBean, String> sdbEntity = new EntityWrapper<SampleBean, String>(this.<SampleBean>readEntityInformation(SampleBean.class), sampleBean);
         final Map<String, String> attributes = sdbEntity.serialize();
 
-        final EntityWrapper<SampleBean, String> convertedEntity = new EntityWrapper<>(this.<SampleBean>readEntityInformation(SampleBean.class));
+        final EntityWrapper<SampleBean, String> convertedEntity = new EntityWrapper<SampleBean, String>(this.<SampleBean>readEntityInformation(SampleBean.class));
         convertedEntity.deserialize(attributes);
 
         assertThat(convertedEntity.getItem().withoutGetterAndSetter, is("simple-db"));

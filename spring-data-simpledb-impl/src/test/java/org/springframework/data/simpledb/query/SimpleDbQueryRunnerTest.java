@@ -16,7 +16,7 @@ public class SimpleDbQueryRunnerTest {
 		
 		SimpleDbOperations<SampleEntity, String> simpleDbOperations = Mockito.mock(SimpleDbOperations.class);
 		
-		List<SampleEntity> sampleMultipleResults = new ArrayList<>();
+		List<SampleEntity> sampleMultipleResults = new ArrayList<SampleEntity>();
 		sampleMultipleResults.add(new SampleEntity());
 		sampleMultipleResults.add(new SampleEntity());
 		

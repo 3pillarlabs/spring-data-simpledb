@@ -16,7 +16,7 @@ public abstract class AbstractSimpleFieldWrapper<T, ID extends Serializable> ext
 
     @Override
     public final Map<String, String> serialize(String prefix){
-        final Map<String, String> result = new HashMap<>();
+        final Map<String, String> result = new HashMap<String, String>();
         result.put(prefix.isEmpty() ? getFieldName() : prefix + "." + getFieldName(), serializeValue());
         
         return result;

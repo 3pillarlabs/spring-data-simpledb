@@ -159,7 +159,7 @@ public class QueryUtilsNamedQueryTest {
 	private Parameters getMockParameters(String[] placeHolders, Class[] clazzes) {
 		Parameters mockParameters = Mockito.mock(Parameters.class);
 
-		List<Parameter> parameters = new ArrayList<>(placeHolders.length);
+		List<Parameter> parameters = new ArrayList<Parameter>(placeHolders.length);
 		for(int idx = 0; idx < placeHolders.length; ++idx) {
 			parameters.add(getMockParameter(placeHolders[idx], idx, clazzes[idx]));
 		}

@@ -28,7 +28,11 @@ public final class ReflectionUtils {
             Assert.notNull(getterMethod, "No getter found for: " + fieldName);
             return getterMethod.invoke(obj);
 
-        } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        } catch ( IllegalAccessException  e) {
+            throw new MappingException("Could not call getter for field " + fieldName + " in class:  " + obj.getClass(), e);
+        } catch (InvocationTargetException e) {
+            throw new MappingException("Could not call getter for field " + fieldName + " in class:  " + obj.getClass(), e);
+        } catch (IllegalArgumentException e){
             throw new MappingException("Could not call getter for field " + fieldName + " in class:  " + obj.getClass(), e);
         }
     }
@@ -39,7 +43,11 @@ public final class ReflectionUtils {
             Assert.notNull(setterMethod, "No setter found for: " + fieldName);
             setterMethod.invoke(obj, fieldValue);
 
-        } catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        } catch ( IllegalAccessException e) {
+            throw new MappingException("Could not call getter for field " + fieldName + " in class:  " + obj.getClass(), e);
+        } catch (InvocationTargetException e) {
+            throw new MappingException("Could not call getter for field " + fieldName + " in class:  " + obj.getClass(), e);
+        } catch (IllegalArgumentException e){
             throw new MappingException("Could not call getter for field " + fieldName + " in class:  " + obj.getClass(), e);
         }
     }

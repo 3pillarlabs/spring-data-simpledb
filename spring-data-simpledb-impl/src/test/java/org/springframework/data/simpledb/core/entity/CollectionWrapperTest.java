@@ -22,14 +22,14 @@ public class CollectionWrapperTest {
     @Test
     public void serialize_deserialize_sets_of_core_types() {
         SampleCoreCollection sampleCollection = new SampleCoreCollection();
-        sampleCollection.setSetOfIntegers( new HashSet<>(Arrays.asList(Integer.valueOf(20), Integer.valueOf(12))));
-        sampleCollection.setHashSetOfFloats(new HashSet<>(Arrays.asList(Float.valueOf(23f), Float.valueOf(32f))));
+        sampleCollection.setSetOfIntegers( new HashSet<Integer>(Arrays.asList(Integer.valueOf(20), Integer.valueOf(12))));
+        sampleCollection.setHashSetOfFloats(new HashSet<Float>(Arrays.asList(Float.valueOf(23f), Float.valueOf(32f))));
 
-        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
+        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<SampleCoreCollection, String>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
-        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
+        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<SampleCoreCollection, String>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
         convertedEntity.deserialize(attributes);
 
         assertTrue(sampleCollection.equals(convertedEntity.getItem()));
@@ -39,13 +39,13 @@ public class CollectionWrapperTest {
     @Test
     public void serialize_deserialize_lists_of_core_types() {
         SampleCoreCollection sampleCollection = new SampleCoreCollection();
-        sampleCollection.setListOfBytes(new ArrayList<>(Arrays.asList(Byte.valueOf("123"), Byte.valueOf("23"))));
+        sampleCollection.setListOfBytes(new ArrayList<Byte>(Arrays.asList(Byte.valueOf("123"), Byte.valueOf("23"))));
 
-        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
+        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<SampleCoreCollection, String>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
-        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
+        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<SampleCoreCollection, String>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
         convertedEntity.deserialize(attributes);
 
         assertTrue(sampleCollection.equals(convertedEntity.getItem()));
@@ -60,11 +60,11 @@ public class CollectionWrapperTest {
         user.setName("Simple");
         sampleCollection.getListOfObjects().add(user);
 
-        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
+        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<SampleCoreCollection, String>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
-        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
+        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<SampleCoreCollection, String>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
         convertedEntity.deserialize(attributes);
 
         assertTrue(sampleCollection.equals(convertedEntity.getItem()));
@@ -74,13 +74,13 @@ public class CollectionWrapperTest {
     @Test
     public void serialize_deserialize_collection_instantiated_as_arrayList_of_core_types() {
         SampleCoreCollection sampleCollection = new SampleCoreCollection();
-        sampleCollection.setCollectionOfLongs(new ArrayList<>(Arrays.asList(Long.valueOf("123"), Long.valueOf("23"))));
+        sampleCollection.setCollectionOfLongs(new ArrayList<Long>(Arrays.asList(Long.valueOf("123"), Long.valueOf("23"))));
 
-        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
+        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<SampleCoreCollection, String>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
-        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
+        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<SampleCoreCollection, String>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
         convertedEntity.deserialize(attributes);
 
         assertTrue(sampleCollection.equals(convertedEntity.getItem()));
@@ -91,11 +91,11 @@ public class CollectionWrapperTest {
     public void deserialize_should_return_null_for_not_instantiated_collections() {
         SampleCoreCollection sampleCollection = new SampleCoreCollection();
 
-        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
+        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<SampleCoreCollection, String>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), sampleCollection);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
-        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
+        final EntityWrapper<SampleCoreCollection, String> convertedEntity = new EntityWrapper<SampleCoreCollection, String>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class));
         convertedEntity.deserialize(attributes);
 
         assertTrue(sampleCollection.equals(convertedEntity.getItem()));
@@ -112,7 +112,7 @@ public class CollectionWrapperTest {
         collection.setSetOfIntegers(new HashSet<Integer>());
 
         /* ----------------------- Serialize Representation ------------------------ */
-        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), collection);
+        EntityWrapper<SampleCoreCollection, String> sdbEntity = new EntityWrapper<SampleCoreCollection, String>(this.<SampleCoreCollection>readEntityInformation(SampleCoreCollection.class), collection);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         assertTrue(attributes.size() == 5);

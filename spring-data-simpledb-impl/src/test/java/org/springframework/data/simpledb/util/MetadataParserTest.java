@@ -113,7 +113,7 @@ public class MetadataParserTest {
 		private double doublePrimitive;
 		private boolean booleanPrimitive;
 
-		@Attributes Map<String, String> someUsefullAttributes = new HashMap<>();
+		@Attributes Map<String, String> someUsefullAttributes = new HashMap<String, String>();
 
        public int getShouldBeTransient() {
            return shouldBeTransient;

@@ -23,11 +23,11 @@ public class MapWrapperTest {
         simpleMap.getMapOfByte().put(Byte.valueOf("1"), Byte.valueOf("1"));
 
 
-        EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
+        EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
-        final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class));
+        final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<SampleCoreMap, String>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class));
         convertedEntity.deserialize(attributes);
 
         SampleCoreMap returnedMap = convertedEntity.getItem();
@@ -42,11 +42,11 @@ public class MapWrapperTest {
         simpleMap.setMapOfStrings( new HashMap<String, String>());
         simpleMap.getMapOfStrings().put("first", "firstValue");
 
-        EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
+        EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
-        final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class));
+        final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<SampleCoreMap, String>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class));
         convertedEntity.deserialize(attributes);
 
         assertTrue(simpleMap.equals(convertedEntity.getItem()));
@@ -57,11 +57,11 @@ public class MapWrapperTest {
     @Test public void deserialize_should_return_null_for_not_instantiated_maps() {
         SampleCoreMap simpleMap = new SampleCoreMap();
 
-        EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
+        EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
-        final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class));
+        final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<SampleCoreMap, String>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class));
         convertedEntity.deserialize(attributes);
 
         assertTrue(simpleMap.equals(convertedEntity.getItem()));
@@ -77,7 +77,7 @@ public class MapWrapperTest {
         simpleMap.getMapOfByte().put(Byte.valueOf("1"), Byte.valueOf("1"));
 
         /* ----------------------- Serialize Representation ------------------------ */
-        EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
+        EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         assertTrue(attributes.size() == 2);

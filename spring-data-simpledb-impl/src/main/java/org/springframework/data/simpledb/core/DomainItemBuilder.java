@@ -16,7 +16,7 @@ import com.amazonaws.services.simpledb.model.SelectResult;
 public class DomainItemBuilder<T, ID extends Serializable> {
 
     public List<T> populateDomainItems(SimpleDbEntityInformation<T, ID> entityInformation, SelectResult selectResult) {
-        final List<T> allItems = new ArrayList<>();
+        final List<T> allItems = new ArrayList<T>();
 
         for (Item item : selectResult.getItems()) {
             allItems.add(buildDomainItem(entityInformation, item));
@@ -36,7 +36,7 @@ public class DomainItemBuilder<T, ID extends Serializable> {
     }
 
     private Map<String, String> convertSimpleDbAttributes(List<Attribute> simpleDbAttributes) {
-        final Map<String, String> attributes = new HashMap<>();
+        final Map<String, String> attributes = new HashMap<String, String>();
 
         for (Attribute attr : simpleDbAttributes) {
             attributes.put(attr.getName(), attr.getValue());

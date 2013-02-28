@@ -27,7 +27,7 @@ public class DomainItemBuilderTest {
         Item sampleItem = new Item(SAMPLE_ITEM_NAME, new ArrayList<Attribute>());
         SimpleDbEntityInformation<SimpleDbSampleEntity, String> entityInformation = SimpleDbSampleEntity.entityInformation();
 
-        domainItemBuilder = new DomainItemBuilder<>();
+        domainItemBuilder = new DomainItemBuilder<SimpleDbSampleEntity, String>();
         SimpleDbSampleEntity returnedDomainEntity = domainItemBuilder.buildDomainItem(entityInformation, sampleItem);
 
         assertEquals(SAMPLE_ITEM_NAME, returnedDomainEntity.getItemName());
@@ -35,13 +35,13 @@ public class DomainItemBuilderTest {
 
     @Test
     public void buildDomainItem_should_convert_attributes() {
-        List<Attribute> attributeList = new ArrayList<>();
+        List<Attribute> attributeList = new ArrayList<Attribute>();
         attributeList.add(new Attribute("booleanField", "" + SAMPLE_BOOLEAN_ATT_VALUE));
         
         Item sampleItem = new Item(SAMPLE_ITEM_NAME, attributeList);
         SimpleDbEntityInformation<SimpleDbSampleEntity, String> entityInformation = SimpleDbSampleEntity.entityInformation();
 
-        domainItemBuilder = new DomainItemBuilder<>();
+        domainItemBuilder = new DomainItemBuilder<SimpleDbSampleEntity, String>();
         SimpleDbSampleEntity returnedDomainEntity = domainItemBuilder.buildDomainItem(entityInformation, sampleItem);
 
         assertTrue(returnedDomainEntity.getBooleanField() == SAMPLE_BOOLEAN_ATT_VALUE);

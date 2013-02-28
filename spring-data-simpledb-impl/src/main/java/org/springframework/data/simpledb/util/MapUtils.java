@@ -17,12 +17,12 @@ public final class MapUtils {
      * @return
      */
     public static List<Map<String, String>> splitToChunksOfSize(Map<String, String> rawMap, int chunkSize) {
-        List<Map<String, String>> mapChunks = new LinkedList<>();
+        List<Map<String, String>> mapChunks = new LinkedList<Map<String, String>>();
 
 
         Set<Map.Entry<String, String>> rawEntries = rawMap.entrySet();
 
-        Map<String, String> currentChunk = new LinkedHashMap<>();
+        Map<String, String> currentChunk = new LinkedHashMap<String, String>();
         int rawEntryIndex = 0;
         for (Map.Entry<String, String> rawEntry : rawEntries) {
 
@@ -30,7 +30,7 @@ public final class MapUtils {
                 if (currentChunk.size() > 0) {
                     mapChunks.add(currentChunk);
                 }
-                currentChunk = new LinkedHashMap<>();
+                currentChunk = new LinkedHashMap<String, String>();
             }
 
             currentChunk.put(rawEntry.getKey(), rawEntry.getValue());

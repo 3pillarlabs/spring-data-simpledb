@@ -1,6 +1,7 @@
 package org.springframework.data.simpledb.query;
 
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
@@ -14,6 +15,7 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -142,5 +144,25 @@ public class SimpleDbQueryMethod extends QueryMethod {
             return returnType;
         }
     }
-
+    
+    /**
+     * @return whether or not the query method contains a {@link Pageable} parameter in its signature.
+     */
+    public boolean isPagedQuery() {
+    	boolean isPaged = false;
+    	
+    	final Iterator<Parameter> it = getParameters().iterator();
+    	
+    	while(it.hasNext()) {
+    		final Parameter param = it.next();
+    		
+    		if(Pageable.class.isAssignableFrom(param.getType())) {
+    			isPaged = true;
+    			break;
+    		}
+    	}
+    	
+    	return isPaged;
+    }
+    
 }

@@ -23,11 +23,11 @@ public class CoreTypeWrapperTest {
 		coreType.longField = Long.valueOf(1000L);
 
 		/* ----------------------- Serialize Representation ------------------------ */
-		EntityWrapper<SampleCoreType, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreType>readEntityInformation(SampleCoreType.class), coreType);
+		EntityWrapper<SampleCoreType, String> sdbEntity = new EntityWrapper<SampleCoreType, String>(this.<SampleCoreType>readEntityInformation(SampleCoreType.class), coreType);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		/* ----------------------- De-serialize Representation ------------------------ */
-		final EntityWrapper<SampleCoreType, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreType>readEntityInformation(SampleCoreType.class));
+		final EntityWrapper<SampleCoreType, String> convertedEntity = new EntityWrapper<SampleCoreType, String>(this.<SampleCoreType>readEntityInformation(SampleCoreType.class));
 		convertedEntity.deserialize(attributes);
 
 		assertTrue(coreType.equals(convertedEntity.getItem()));
@@ -39,11 +39,11 @@ public class CoreTypeWrapperTest {
 		SampleCoreType coreType = new SampleCoreType();
 
 		/* ----------------------- Serialize Representation ------------------------ */
-		EntityWrapper<SampleCoreType, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreType>readEntityInformation(SampleCoreType.class), coreType);
+		EntityWrapper<SampleCoreType, String> sdbEntity = new EntityWrapper<SampleCoreType, String>(this.<SampleCoreType>readEntityInformation(SampleCoreType.class), coreType);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		/* ----------------------- De-serialize Representation ------------------------ */
-		final EntityWrapper<SampleCoreType, String> convertedEntity = new EntityWrapper<>(this.<SampleCoreType>readEntityInformation(SampleCoreType.class));
+		final EntityWrapper<SampleCoreType, String> convertedEntity = new EntityWrapper<SampleCoreType, String>(this.<SampleCoreType>readEntityInformation(SampleCoreType.class));
 		convertedEntity.deserialize(attributes);
 
 		assertTrue(coreType.equals(convertedEntity.getItem()));
@@ -61,7 +61,7 @@ public class CoreTypeWrapperTest {
 		coreType.dateField = Calendar.getInstance().getTime();
 
 		/* ----------------------- Serialize Representation ------------------------ */
-		EntityWrapper<SampleCoreType, String> sdbEntity = new EntityWrapper<>(this.<SampleCoreType>readEntityInformation(SampleCoreType.class), coreType);
+		EntityWrapper<SampleCoreType, String> sdbEntity = new EntityWrapper<SampleCoreType, String>(this.<SampleCoreType>readEntityInformation(SampleCoreType.class), coreType);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		assertTrue(attributes.size() == 3);
