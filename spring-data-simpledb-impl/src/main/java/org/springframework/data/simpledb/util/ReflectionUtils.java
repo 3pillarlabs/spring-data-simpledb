@@ -1,14 +1,18 @@
 package org.springframework.data.simpledb.util;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.util.Assert;
-
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.*;
-import java.util.List;
 
 public final class ReflectionUtils {
 
@@ -150,5 +154,11 @@ public final class ReflectionUtils {
         return setterMethod;
     }
 
+	public static void assertThatFieldsDeclaredInClass(List<String> fieldNames, Class<?> domainClazz) {
+		for (String eachEntry : fieldNames) {
+			boolean isFieldDeclared = isFieldInClass(domainClazz, eachEntry);
+			Assert.isTrue(isFieldDeclared, "no such field in entity class : " + eachEntry);
+		}
+	}
 
 }

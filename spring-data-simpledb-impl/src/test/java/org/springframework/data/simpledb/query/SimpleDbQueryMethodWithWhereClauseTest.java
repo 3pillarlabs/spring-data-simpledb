@@ -21,7 +21,7 @@ public class SimpleDbQueryMethodWithWhereClauseTest {
     @Test
     public void getAnnotatedQuery_should_change_id_in_where_clause() throws Exception {
         SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectChangeId", SampleEntity.class);
-        assertEquals("select * from `testDB.sampleEntity` where itemName()='Item_0'", repositoryMethod.getAnnotatedQuery());
+        assertEquals("select * from `testDB.sampleEntity` where itemName() ='Item_0'", repositoryMethod.getAnnotatedQuery());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -49,4 +49,5 @@ public class SimpleDbQueryMethodWithWhereClauseTest {
         when(repositoryMetadata.getReturnedDomainClass(testMethod)).thenReturn((Class) entityClass);
         return new SimpleDbQueryMethod(testMethod, repositoryMetadata);
     }
+    
 }
