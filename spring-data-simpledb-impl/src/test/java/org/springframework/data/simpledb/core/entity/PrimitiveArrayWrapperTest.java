@@ -18,11 +18,11 @@ public class PrimitiveArrayWrapperTest {
         SamplePrimitivesArray primitivesArray = new SamplePrimitivesArray();
         primitivesArray.longPrimitives = new long[]{123L, 234L, 345L};
 
-        EntityWrapper<SamplePrimitivesArray, String> sdbEntity = new EntityWrapper<>(this.<SamplePrimitivesArray>readEntityInformation(SamplePrimitivesArray.class), primitivesArray);
+        EntityWrapper<SamplePrimitivesArray, String> sdbEntity = new EntityWrapper<SamplePrimitivesArray, String>(this.<SamplePrimitivesArray>readEntityInformation(SamplePrimitivesArray.class), primitivesArray);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         /* convert back */
-        final EntityWrapper<SamplePrimitivesArray, String> convertedEntity = new EntityWrapper<>(this.<SamplePrimitivesArray>readEntityInformation(SamplePrimitivesArray.class));
+        final EntityWrapper<SamplePrimitivesArray, String> convertedEntity = new EntityWrapper<SamplePrimitivesArray, String>(this.<SamplePrimitivesArray>readEntityInformation(SamplePrimitivesArray.class));
         convertedEntity.deserialize(attributes);
 
         assertTrue(primitivesArray.equals(convertedEntity.getItem()));
@@ -35,11 +35,11 @@ public class PrimitiveArrayWrapperTest {
         SamplePrimitivesArray primitivesArray = new SamplePrimitivesArray();
 
         /* ----------------------- Serialize Representation ------------------------ */
-        EntityWrapper<SamplePrimitivesArray, String> sdbEntity = new EntityWrapper<>(this.<SamplePrimitivesArray>readEntityInformation(SamplePrimitivesArray.class), primitivesArray);
+        EntityWrapper<SamplePrimitivesArray, String> sdbEntity = new EntityWrapper<SamplePrimitivesArray, String>(this.<SamplePrimitivesArray>readEntityInformation(SamplePrimitivesArray.class), primitivesArray);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         /* ----------------------- De-serialize Representation ------------------------ */
-        final EntityWrapper<SamplePrimitivesArray, String> convertedEntity = new EntityWrapper<>(this.<SamplePrimitivesArray>readEntityInformation(SamplePrimitivesArray.class));
+        final EntityWrapper<SamplePrimitivesArray, String> convertedEntity = new EntityWrapper<SamplePrimitivesArray, String>(this.<SamplePrimitivesArray>readEntityInformation(SamplePrimitivesArray.class));
         convertedEntity.deserialize(attributes);
 
         assertTrue(primitivesArray.equals(convertedEntity.getItem()));
@@ -56,7 +56,7 @@ public class PrimitiveArrayWrapperTest {
         primitivesArray.longPrimitives = new long[]{300L, 400L, 500L};
 
         /* ----------------------- Serialize Representation ------------------------ */
-        EntityWrapper<SamplePrimitivesArray, String> sdbEntity = new EntityWrapper<>(this.<SamplePrimitivesArray>readEntityInformation(SamplePrimitivesArray.class), primitivesArray);
+        EntityWrapper<SamplePrimitivesArray, String> sdbEntity = new EntityWrapper<SamplePrimitivesArray, String>(this.<SamplePrimitivesArray>readEntityInformation(SamplePrimitivesArray.class), primitivesArray);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         assertTrue(attributes.size() == 1);

@@ -17,7 +17,7 @@ public class SimpleDbResultConverterTest {
 
     @Test
     public void filterNamedAttributesAsList_should_return_list_of_named_attributes() throws Exception {
-        List<SampleEntity> entities = new ArrayList<>();
+        List<SampleEntity> entities = new ArrayList<SampleEntity>();
         SampleEntity entity = new SampleEntity();
         entity.setSampleAttribute(SAMPLE_INT_VALUE);
         entities.add(entity);
@@ -33,7 +33,7 @@ public class SimpleDbResultConverterTest {
 
     @Test
     public void filterNamedAttributesAsList_should_work_for_list_attributes() throws Exception {
-        List<SampleEntity> entities = new ArrayList<>();
+        List<SampleEntity> entities = new ArrayList<SampleEntity>();
         SampleEntity entity = new SampleEntity();
         entity.setSampleList(new ArrayList<Integer>());
         entities.add(entity);
@@ -51,7 +51,7 @@ public class SimpleDbResultConverterTest {
 
     @Test(expected = MappingException.class)
     public void filterNamedAttributesAsList_should_not_return_list_of_named_attributes_for_wrong_att() throws Exception {
-        List<SampleEntity> entities = new ArrayList<>();
+        List<SampleEntity> entities = new ArrayList<SampleEntity>();
         SampleEntity entity = new SampleEntity();
         entities.add(entity);
 
@@ -61,7 +61,7 @@ public class SimpleDbResultConverterTest {
 
     @Test
     public void filterNamedAttributesAsSet_should_return_Set_of_named_attributes() throws Exception {
-        List<SampleEntity> entities = new ArrayList<>();
+        List<SampleEntity> entities = new ArrayList<SampleEntity>();
         SampleEntity entity = new SampleEntity();
         entity.setSampleAttribute(SAMPLE_INT_VALUE);
         entities.add(entity);
@@ -78,7 +78,7 @@ public class SimpleDbResultConverterTest {
 
     @Test
     public void toListOfListOfObject_should_return_List_of_Lists_containing_requested_attributes(){
-        List<SampleEntity> entities = new ArrayList<>();
+        List<SampleEntity> entities = new ArrayList<SampleEntity>();
         SampleEntity entity = new SampleEntity();
         entity.setSampleAttribute(SAMPLE_INT_VALUE);
         entity.setSampleList(new ArrayList<Integer>());

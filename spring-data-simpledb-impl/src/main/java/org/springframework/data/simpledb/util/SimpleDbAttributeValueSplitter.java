@@ -15,7 +15,7 @@ public final class SimpleDbAttributeValueSplitter {
 
 
     public static Map<String, String> splitAttributeValuesWithExceedingLengths(Map<String, String> rawAttributes){
-        Map<String, String> splitAttributes = new LinkedHashMap<>();
+        Map<String, String> splitAttributes = new LinkedHashMap<String, String>();
 
         Set<Map.Entry<String,String>> rawEntries = rawAttributes.entrySet();
 
@@ -31,7 +31,7 @@ public final class SimpleDbAttributeValueSplitter {
     }
 
     private static Map<String, String> splitAttributeWithExceedingValue(String initialAttributeKey, String initialAttributeValue) {
-        Map<String, String> splitAttributes = new LinkedHashMap<>();
+        Map<String, String> splitAttributes = new LinkedHashMap<String, String>();
         List<String> splitValues = splitExceedingValue(initialAttributeValue);
         int i = 0;
         for(String splitValue: splitValues){
@@ -44,7 +44,7 @@ public final class SimpleDbAttributeValueSplitter {
     }
 
     private static List<String> splitExceedingValue(String attributeValue) {
-        List<String> splitValues = new LinkedList<>();
+        List<String> splitValues = new LinkedList<String>();
         int length = attributeValue.length();
         for (int i = 0; i < length; i += MAX_SIMPLE_DB_ATTRIBUTE_VALUE_LENGTH) {
             splitValues.add(attributeValue.substring(i, Math.min(length, i + MAX_SIMPLE_DB_ATTRIBUTE_VALUE_LENGTH)));
@@ -53,7 +53,7 @@ public final class SimpleDbAttributeValueSplitter {
     }
 
     public static Map<String, String> combineAttributeValuesWithExceedingLengths(Map<String,String> splitAttributes){
-        Map<String, String> raw = new LinkedHashMap<>();
+        Map<String, String> raw = new LinkedHashMap<String, String>();
         List<List<String>> attributeKeyGroups = SimpleDbAttributeKeySplitter.getAttributeKeyGroups(splitAttributes.keySet());
         for(List<String> keyGroup: attributeKeyGroups){
             if(keyGroup.size() == 1){

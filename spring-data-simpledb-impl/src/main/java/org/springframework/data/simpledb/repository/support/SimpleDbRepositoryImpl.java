@@ -125,7 +125,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 
     @Override
     public <S extends T> List<S> save(Iterable<S> entities, boolean consistentRead) {
-        List<S> result = new ArrayList<>();
+        List<S> result = new ArrayList<S>();
         if (entities == null) {
             return result;
         }

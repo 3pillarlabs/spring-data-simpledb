@@ -64,7 +64,7 @@ public class JsonMarshallerTest {
     public void marshal_should_marshal_Object_as_lists() throws IOException {
 
         // Prepare
-        List<User> listOfUsers = new LinkedList<>();
+        List<User> listOfUsers = new LinkedList<User>();
         User sampleUser = createSampleUser();
         listOfUsers.add(sampleUser);
         Object object = listOfUsers;
@@ -82,7 +82,7 @@ public class JsonMarshallerTest {
 
     @Test
     public void should_marshal_unmarshal_maps_of_Strings(){
-        Map<String, String> map = new LinkedHashMap<>();
+        Map<String, String> map = new LinkedHashMap<String, String>();
         map.put("TestKey", "Test Value");
 
         String marsahledMap = marshaller.marshall(map);

@@ -34,7 +34,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     public SimpleDbOperationsImpl(AmazonSimpleDB sdb) {
         this.sdb = sdb;
-        domainItemBuilder = new DomainItemBuilder<>();
+        domainItemBuilder = new DomainItemBuilder<T, ID>();
     }
 
     @Override
@@ -64,7 +64,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     @Override
     public T readItem(SimpleDbEntityInformation<T, ID> entityInformation, ID id, boolean consistentRead) {
         LOGGER.info("Read ItemName \"{}\"", id);
-        List<ID> ids = new ArrayList<>();
+        List<ID> ids = new ArrayList<ID>();
         {
             ids.add(id);
         }
@@ -162,7 +162,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     	
     	Long totalCount = count(countQuery, consistentRead);
 
-    	return new PageImpl<>(resultsList, pageable, totalCount);
+    	return new PageImpl<T>(resultsList, pageable, totalCount);
     }
 
     private void logOperation(String operation, EntityWrapper<T, ID> entity) {

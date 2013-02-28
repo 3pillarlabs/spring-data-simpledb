@@ -115,7 +115,7 @@ public final class MetadataParser {
     }
 
     public static List<Field> getSupportedFields(Object object) {
-        List<Field> supportedFields = new ArrayList<>();
+        List<Field> supportedFields = new ArrayList<Field>();
 
         for (Field field : object.getClass().getDeclaredFields()) {
 
@@ -144,7 +144,7 @@ public final class MetadataParser {
     }
 
     public static List<Field> getNestedDomainFields(Object object) {
-        final List<Field> fieldList = new ArrayList<>();
+        final List<Field> fieldList = new ArrayList<Field>();
 
         for (Field field : object.getClass().getDeclaredFields()) {
             if (isNestedDomainField(field, object)) {

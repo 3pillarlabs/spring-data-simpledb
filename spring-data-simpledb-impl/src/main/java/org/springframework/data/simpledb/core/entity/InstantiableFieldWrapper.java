@@ -17,8 +17,10 @@ public abstract class InstantiableFieldWrapper<T, ID extends Serializable> exten
 		try {
 			newInstance = getField().getType().newInstance();
 			getField().set(getParentEntity(), newInstance);
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (InstantiationException e) {
 			throw new MappingException("Could not instantiate object", e);
-		}
-	}
+		} catch (IllegalAccessException e) {
+            throw new MappingException("Could not instantiate object", e);
+        }
+    }
 }

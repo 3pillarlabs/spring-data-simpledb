@@ -46,7 +46,7 @@ public class ObjectFieldWrapperTest {
 
         AClass aDomainObject = new AClass();
 
-        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
+        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         assertEquals(0, attributes.size());
@@ -58,10 +58,10 @@ public class ObjectFieldWrapperTest {
 
         AClass aDomainObject = new AClass();
 
-        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
+        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
         final Map<String, String> attributes = sdbEntity.serialize();
 
-        EntityWrapper<AClass, String> newSdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class));
+        EntityWrapper<AClass, String> newSdbEntity = new EntityWrapper<AClass, String>(this.<AClass>readEntityInformation(AClass.class));
         newSdbEntity.deserialize(attributes);
         AClass returnedEntity = newSdbEntity.getItem();
 
@@ -79,7 +79,7 @@ public class ObjectFieldWrapperTest {
         aDomainObject.setObject(aJSONObject);
 
 
-        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
+        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         assertNotNull(attributes);
@@ -100,11 +100,11 @@ public class ObjectFieldWrapperTest {
         aDomainObject.setObject(aJSONObject);
 
 
-        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
+        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
         final Map<String, String> attributes = sdbEntity.serialize();
 
 
-        EntityWrapper<AClass, String> newSdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class));
+        EntityWrapper<AClass, String> newSdbEntity = new EntityWrapper<AClass, String>(this.<AClass>readEntityInformation(AClass.class));
         newSdbEntity.deserialize(attributes);
 
         AClass returnedEntity = newSdbEntity.getItem();

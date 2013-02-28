@@ -126,7 +126,7 @@ public final class QueryUtils {
 	}
 
 	private static Map<String, String> buildPlaceholderValues(Parameters parameters, Object... parameterValues) {
-		Map<String, String> map = new LinkedHashMap<>();
+		Map<String, String> map = new LinkedHashMap<String, String>();
 
 		for (Iterator<Parameter> iterator = parameters.iterator(); iterator.hasNext(); ) {
 			Parameter eachParameter = iterator.next();
@@ -173,7 +173,7 @@ public final class QueryUtils {
 	}
 
 	public static List<String> getQueryPartialFieldNames(String query) {
-		List<String> result = new ArrayList<>();
+		List<String> result = new ArrayList<String>();
 		String[] vals = query.split(",|\\s");
 		boolean isSelect = false;
 		for (String val : vals) {

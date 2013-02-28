@@ -17,7 +17,7 @@ public class RegexpUtils {
     
     public static List<String> createFieldNameList(String pattern, String[] rawParameterExpressions){
         final Pattern regex = Pattern.compile(pattern);
-        final List<String> list = new ArrayList<>();
+        final List<String> list = new ArrayList<String>();
         
         for (String eachExpression : rawParameterExpressions) {
         	final Matcher rawParameterMatcher = regex.matcher(eachExpression);
