@@ -31,31 +31,31 @@ public final class FieldWrapperFactory {
 	}
 	
 	private static <T, ID extends Serializable> PrimitiveSimpleFieldWrapper<T, ID> createPrimitiveFieldWrapper(final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
-		return new PrimitiveSimpleFieldWrapper<>(field, parent, isNewParent);
+		return new PrimitiveSimpleFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 	
 	private static <T, ID extends Serializable> CoreSimpleFieldWrapper<T, ID> createCoreFieldWrapper(final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
-		return new CoreSimpleFieldWrapper<>(field, parent, isNewParent);
+		return new CoreSimpleFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 	
 	private static <T, ID extends Serializable> ArraySimpleFieldWrapper<T, ID> createArrayFieldWrapper(final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
-		return new ArraySimpleFieldWrapper<>(field, parent, isNewParent);
+		return new ArraySimpleFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 
 	private static <T, ID extends Serializable> CollectionSimpleFieldWrapper<T, ID> createCollectionFieldWrapper(final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
-		return new CollectionSimpleFieldWrapper<>(field, parent, isNewParent);
+		return new CollectionSimpleFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 	
 	private static <T, ID extends Serializable> NestedEntityFieldWrapper<T, ID> createNestedEntityFieldWrapper(final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
-		return new NestedEntityFieldWrapper<>(field, parent, isNewParent);
+		return new NestedEntityFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 	
 	private static <T, ID extends Serializable> MapSimpleFieldWrapper<T, ID> createMapFieldWrapper(final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
-		return new MapSimpleFieldWrapper<>(field, parent, isNewParent);
+		return new MapSimpleFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 	
 	private static <T, ID extends Serializable> ObjectSimpleFieldWrapper<T, ID> createObjectFieldWrapper(final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
-		return new ObjectSimpleFieldWrapper<>(field, parent, isNewParent);
+		return new ObjectSimpleFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 
 }

@@ -18,7 +18,7 @@ public class EntityWrapper<T, ID extends Serializable> {
     private final SimpleDbEntityInformation<T, ?> entityInformation;
 
     /* field wrappers */
-    private final Map<String, AbstractFieldWrapper<T, ID>> wrappedFields = new HashMap<>();
+    private final Map<String, AbstractFieldWrapper<T, ID>> wrappedFields = new HashMap<String, AbstractFieldWrapper<T, ID>>();
 
     private T item;
 
@@ -35,7 +35,9 @@ public class EntityWrapper<T, ID extends Serializable> {
             this.item = entityInformation.getJavaType().newInstance();
 
             createFieldWrappers(true);
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException e) {
+            throw new MappingException("Could not instantiate object", e);
+        } catch (IllegalAccessException e) {
             throw new MappingException("Could not instantiate object", e);
         }
     }
@@ -76,7 +78,9 @@ public class EntityWrapper<T, ID extends Serializable> {
             idField = item.getClass().getDeclaredField(entityInformation.getItemNameFieldName(item));
             idField.setAccessible(Boolean.TRUE);
             idField.set(item, itemName);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (NoSuchFieldException e) {
+            throw new MappingException("Could not set id field", e);
+        } catch (IllegalAccessException e) {
             throw new MappingException("Could not set id field", e);
         }
     }
@@ -86,7 +90,7 @@ public class EntityWrapper<T, ID extends Serializable> {
     }
 
     public Map<String, String> serialize(final String fieldNamePrefix) {
-        final Map<String, String> result = new HashMap<>();
+        final Map<String, String> result = new HashMap<String, String>();
 
         for (final AbstractFieldWrapper<T, ID> wrappedField : wrappedFields.values()) {
             if(wrappedField.getFieldValue() != null) {
@@ -118,7 +122,7 @@ public class EntityWrapper<T, ID extends Serializable> {
 
             AbstractFieldWrapper<T, ID> fieldWrapper = getWrapper(fieldName);
 
-            Map<String, String> fieldAttributes = new LinkedHashMap<>();
+            Map<String, String> fieldAttributes = new LinkedHashMap<String, String>();
             fieldAttributes.put(fieldName, simpleField.getValue());
 
             Object convertedValue = fieldWrapper.deserialize(fieldAttributes);

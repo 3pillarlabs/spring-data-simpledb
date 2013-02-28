@@ -15,7 +15,7 @@ public final class RandomValueGenerator {
 
     public static long[] generateArrayOfSize(int size){
         final long[] longPrimitiveArray = new long[size];
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < size; i++) {
             longPrimitiveArray[i] = i;
         }
         return longPrimitiveArray;

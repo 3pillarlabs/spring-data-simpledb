@@ -9,12 +9,16 @@ import java.util.*;
 /**
  * Taking into account SimpleDb limitations, constructs requests that comply.
  */
-public class SimpleDbRequestBuilder {
+public final class SimpleDbRequestBuilder {
+
+    private SimpleDbRequestBuilder(){
+        //utility class
+    }
 
     private static final int MAX_NUMBER_OF_ATTRIBUTES_PER_SIMPLE_DB_REQUEST = 256;
 
     public static List<PutAttributesRequest> createPutAttributesRequests(String domain, String itemName, Map<String, String> rawAttributes) {
-        List<PutAttributesRequest> putAttributesRequests = new LinkedList<>();
+        List<PutAttributesRequest> putAttributesRequests = new LinkedList<PutAttributesRequest>();
 
         List<Map<String, String>> attributeChunks = MapUtils.splitToChunksOfSize(rawAttributes, MAX_NUMBER_OF_ATTRIBUTES_PER_SIMPLE_DB_REQUEST);
 
@@ -41,7 +45,7 @@ public class SimpleDbRequestBuilder {
 
 
     private static List<ReplaceableAttribute> toReplaceableAttributeList(Map<String, String> attributes, boolean replace) {
-        final List<ReplaceableAttribute> result = new ArrayList<>();
+        final List<ReplaceableAttribute> result = new ArrayList<ReplaceableAttribute>();
 
         for (final Map.Entry<String, String> entry : attributes.entrySet()) {
             result.add(new ReplaceableAttribute(entry.getKey(), entry.getValue(), replace));

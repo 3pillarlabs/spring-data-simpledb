@@ -24,12 +24,12 @@ public final class SimpleDbAttributeKeySplitter {
     }
 
     public static List<List<String>> getAttributeKeyGroups(Set<String> attributeKeys) {
-        List<List<String>> attributeKeyGroups = new LinkedList<>();
+        List<List<String>> attributeKeyGroups = new LinkedList<List<String>>();
 
         for(String attributeKey: attributeKeys){
             if(!attributeKey.contains(SPLIT_ATTRIBUTE_PREFIX_START)) {
                 //simple attribute
-                List<String> simpleAttributeGroup = new ArrayList<>();
+                List<String> simpleAttributeGroup = new ArrayList<String>();
                 simpleAttributeGroup.add(attributeKey);
                 attributeKeyGroups.add(simpleAttributeGroup);
             } else {
@@ -45,7 +45,7 @@ public final class SimpleDbAttributeKeySplitter {
 
 
     private static List<String> getAttributesStartingWith(String groupPrefix, Set<String> attributeKeys) {
-        List<String> ret = new LinkedList<>();
+        List<String> ret = new LinkedList<String>();
         for(String key: attributeKeys){
             if(key.startsWith(groupPrefix)){
                 ret.add(key);

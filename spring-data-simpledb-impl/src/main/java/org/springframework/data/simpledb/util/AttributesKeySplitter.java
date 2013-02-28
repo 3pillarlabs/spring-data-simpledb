@@ -15,13 +15,13 @@ public final class AttributesKeySplitter {
 	}
 	
     public static Map<String, Map<String, String>> splitNestedAttributeKeys(Map<String, String> attributes) {
-        final Map<String, Map<String, String>> nestedFieldAttributes = new HashMap<>();
+        final Map<String, Map<String, String>> nestedFieldAttributes = new HashMap<String, Map<String, String>>();
         
         for (final Map.Entry<String, String> entry : attributes.entrySet()) {
             final String key = entry.getKey();
 
             if (key.contains(".")) {
-                Map<String, String> nestedFieldValues = new HashMap<>();
+                Map<String, String> nestedFieldValues = new HashMap<String, String>();
                 int prefixIndex = key.indexOf('.');
                 final String nestedFieldName = key.substring(0, prefixIndex);
                 final String subField = key.substring(prefixIndex + 1);
@@ -40,7 +40,7 @@ public final class AttributesKeySplitter {
 
     public static Map<String, String> splitSimpleAttributesKeys(Map<String, String> attributes) {
 
-        Map<String, String> primitiveAttributes = new LinkedHashMap<>();
+        Map<String, String> primitiveAttributes = new LinkedHashMap<String, String>();
 
         for (final Map.Entry<String, String> entry : attributes.entrySet()) {
             if (isSimpleKey(entry.getKey())) {

@@ -70,7 +70,7 @@ public class EntityWrapperTest {
         entity.setStringField("string");
         entity.setDoubleWrapper(Double.valueOf("2323.32d"));
 
-        EntityWrapper<SampleEntity, String> sdbEntity = new EntityWrapper<>(this.<SampleEntity>readEntityInformation(SampleEntity.class), entity);
+        EntityWrapper<SampleEntity, String> sdbEntity = new EntityWrapper<SampleEntity, String>(this.<SampleEntity>readEntityInformation(SampleEntity.class), entity);
 
         assertNotNull(sdbEntity);
 
@@ -123,7 +123,7 @@ public class EntityWrapperTest {
             }
         }
 
-        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomain);
+        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(this.<AClass>readEntityInformation(AClass.class), aDomain);
         final Map<String, String> attributes = sdbEntity.serialize();
 
         assertNotNull(attributes);
@@ -150,11 +150,11 @@ public class EntityWrapperTest {
             }
         }
 
-        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class), aDomain);
+        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(this.<AClass>readEntityInformation(AClass.class), aDomain);
         final Map<String, String> attributes = sdbEntity.serialize();
 
 		/* convert back */
-        final EntityWrapper<AClass, String> convertedEntity = new EntityWrapper<>(this.<AClass>readEntityInformation(AClass.class));
+        final EntityWrapper<AClass, String> convertedEntity = new EntityWrapper<AClass, String>(this.<AClass>readEntityInformation(AClass.class));
         convertedEntity.deserialize(attributes);
 
         assertTrue(aDomain.equals(convertedEntity.getItem()));

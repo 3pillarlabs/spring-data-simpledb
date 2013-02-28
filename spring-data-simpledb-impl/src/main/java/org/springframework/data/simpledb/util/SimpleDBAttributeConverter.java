@@ -41,7 +41,7 @@ public final class SimpleDBAttributeConverter {
     public static List<String> encodePrimitiveArray(final Object primitiveCollectionFieldValues) {
         Assert.notNull(primitiveCollectionFieldValues);
 
-        final List<String> attributeValues = new ArrayList<>();
+        final List<String> attributeValues = new ArrayList<String>();
         final int primitiveCollLength = Array.getLength(primitiveCollectionFieldValues);
 
         for (int idx = 0; idx < primitiveCollLength; idx++) {

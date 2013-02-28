@@ -22,7 +22,7 @@ public class SimpleDbAttributeValueSplitterTest {
 
     @Test
     public void splitAttributeValuesWithExceedingLengths_should_detect_long_attributes() throws Exception {
-        Map<String, String> rawAttributes = new LinkedHashMap<>();
+        Map<String, String> rawAttributes = new LinkedHashMap<String, String>();
         rawAttributes.put(SAMPLE_ATT_NAME, STRING_OF_MAX_SIMPLE_DB_LENGTH + "c");
 
         Map<String, String> splitAttributes = SimpleDbAttributeValueSplitter.splitAttributeValuesWithExceedingLengths(rawAttributes);
@@ -34,7 +34,7 @@ public class SimpleDbAttributeValueSplitterTest {
 
     @Test
     public void splitAttributeValuesWithExceedingLengths_should_not_split_short_attributes() throws Exception {
-        Map<String, String> rawAttributes = new LinkedHashMap<>();
+        Map<String, String> rawAttributes = new LinkedHashMap<String, String>();
         rawAttributes.put(SAMPLE_ATT_NAME, "shortValue");
 
         Map<String, String> splitAttributes = SimpleDbAttributeValueSplitter.splitAttributeValuesWithExceedingLengths(rawAttributes);
@@ -47,7 +47,7 @@ public class SimpleDbAttributeValueSplitterTest {
 
     @Test
     public void splitAttributeValues_should_be_recombined() throws Exception {
-        Map<String, String> rawAttributes = new LinkedHashMap<>();
+        Map<String, String> rawAttributes = new LinkedHashMap<String, String>();
         rawAttributes.put(SAMPLE_ATT_NAME, STRING_OF_MAX_SIMPLE_DB_LENGTH + "c");
 
         Map<String, String> splitAttributes = SimpleDbAttributeValueSplitter.splitAttributeValuesWithExceedingLengths(rawAttributes);
@@ -60,12 +60,12 @@ public class SimpleDbAttributeValueSplitterTest {
 
     @Test
     public void combineAttributeValue_should_return_initial_value() {
-        Map<String, String> splitAttributes = new HashMap<>();
+        Map<String, String> splitAttributes = new HashMap<String, String>();
         splitAttributes.put(SimpleDbAttributeKeySplitter.convertKey("key", 2), "value2");
         splitAttributes.put(SimpleDbAttributeKeySplitter.convertKey("key", 1), "value1");
         splitAttributes.put(SimpleDbAttributeKeySplitter.convertKey("key", 3), "value3");
 
-        List<String> keyGroup = new ArrayList<>(splitAttributes.keySet());
+        List<String> keyGroup = new ArrayList<String>(splitAttributes.keySet());
 
         String rawAttributeValue = SimpleDbAttributeValueSplitter.combineAttributeValues(keyGroup, splitAttributes);
         assertEquals("value1" + "value2" + "value3", rawAttributeValue);
@@ -74,14 +74,14 @@ public class SimpleDbAttributeValueSplitterTest {
 
     @Test
     public void combineAttributeValue_should_return_initial_value_for_large_chunk_numbers() {
-        Map<String, String> splitAttributes = new HashMap<>();
+        Map<String, String> splitAttributes = new HashMap<String, String>();
         StringBuilder expectedCombinedStringBuilder = new StringBuilder();
         for(int i = 0; i < 25; i++){
             splitAttributes.put(SimpleDbAttributeKeySplitter.convertKey("key", i), "value" +i);
             expectedCombinedStringBuilder.append("value"+i);
         }
 
-        List<String> keyGroup = new ArrayList<>(splitAttributes.keySet());
+        List<String> keyGroup = new ArrayList<String>(splitAttributes.keySet());
 
         String rawAttributeValue = SimpleDbAttributeValueSplitter.combineAttributeValues(keyGroup, splitAttributes);
 

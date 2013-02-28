@@ -22,7 +22,9 @@ public class CoreSimpleFieldWrapper<T, ID extends Serializable> extends Abstract
     public Object deserializeValue(String value) {
         try {
             return SimpleDBAttributeConverter.decodeToFieldOfType(value, getField().getType());
-        } catch (IllegalArgumentException | ParseException e) {
+        } catch (IllegalArgumentException e) {
+            throw new MappingException("Could not map attributes", e);
+        } catch (ParseException e) {
             throw new MappingException("Could not map attributes", e);
         }
     }

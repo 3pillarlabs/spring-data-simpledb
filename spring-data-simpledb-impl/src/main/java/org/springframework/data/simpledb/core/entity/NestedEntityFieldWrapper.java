@@ -28,7 +28,7 @@ public class NestedEntityFieldWrapper<T, ID extends Serializable> extends Abstra
 
 	@Override
 	public Map<String, String> serialize(String prefix) {
-		final Map<String, String> result = new HashMap<>();
+		final Map<String, String> result = new HashMap<String, String>();
 
 		final String nestedEntityFieldName = getFieldName();
 		final String nestedEntityAttributePrefix = prefix.isEmpty() ? nestedEntityFieldName : prefix + "." + nestedEntityFieldName;
@@ -57,9 +57,11 @@ public class NestedEntityFieldWrapper<T, ID extends Serializable> extends Abstra
 
 		try {
 			getField().set(getParentEntity(), wrappedNestedEntity.getItem());
-		} catch (IllegalArgumentException | IllegalAccessException e) {
+		} catch (IllegalArgumentException e) {
 			throw new MappingException("Could not instantiate object", e);
-		}
-	}
+		} catch (IllegalAccessException e) {
+            throw new MappingException("Could not instantiate object", e);
+        }
+    }
 
 }

@@ -2,8 +2,6 @@ package org.springframework.data.simpledb.util;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,14 +33,16 @@ public enum FieldType {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-			return field.getType().isPrimitive();
+			return SupportedCoreTypes.PRIMITIVE_TYPES.isOfType(field.getType());
 		}
 	},
 
 	CORE_TYPE {
 		@Override
 		boolean isOfType(Field field) {
-			return isOfType(field, SUPPORTED_CORE_TYPES) && ! isOfType(field, ID, ATTRIBUTES);
+			final boolean isCoreType = SupportedCoreTypes.CORE_TYPES.isOfType(field.getType());
+			
+			return isCoreType && ! isOfType(field, ID, ATTRIBUTES);
 		}
 	},
 
@@ -57,7 +57,9 @@ public enum FieldType {
 	PRIMITIVE_ARRAY {
 		@Override
 		boolean isOfType(Field field) {
-			return isOfType(field, SUPPORTED_PRIMITIVE_ARRAYS);
+			final boolean isPrimitiveArrayType = SupportedCoreTypes.PRIMITIVE_ARRAYS.isOfType(field.getType());
+			
+			return isPrimitiveArrayType;
 		}
 	},
 
@@ -89,28 +91,6 @@ public enum FieldType {
 
 	abstract boolean isOfType(Field field);
 	
-	private static final Set<Class<?>> SUPPORTED_CORE_TYPES = new HashSet<Class<?>>();
-	static {
-		SUPPORTED_CORE_TYPES.add(Boolean.class);
-		SUPPORTED_CORE_TYPES.add(Number.class);
-		SUPPORTED_CORE_TYPES.add(Character.class);
-		SUPPORTED_CORE_TYPES.add(String.class);
-		SUPPORTED_CORE_TYPES.add(Date.class);
-	}
-
-	private static final Set<Class<?>> SUPPORTED_PRIMITIVE_ARRAYS = new HashSet<Class<?>>();
-	static {
-		SUPPORTED_PRIMITIVE_ARRAYS.add(boolean[].class);
-		SUPPORTED_PRIMITIVE_ARRAYS.add(long[].class);
-		SUPPORTED_PRIMITIVE_ARRAYS.add(short[].class);
-		SUPPORTED_PRIMITIVE_ARRAYS.add(int[].class);
-		SUPPORTED_PRIMITIVE_ARRAYS.add(byte[].class);
-		SUPPORTED_PRIMITIVE_ARRAYS.add(float[].class);
-		SUPPORTED_PRIMITIVE_ARRAYS.add(double[].class);
-		SUPPORTED_PRIMITIVE_ARRAYS.add(char[].class);
-	}
-
-
     public static FieldType[] getSerializableFieldTypes(){
         return new FieldType[]{
                 FieldType.PRIMITIVE,
@@ -122,18 +102,17 @@ public enum FieldType {
                 FieldType.OBJECT};
     }
 	
-	static boolean isOfType(final Field field, final Set<Class<?>> supportedTypes) {
-		Assert.notNull(field);
-
-		final Class<?> type = field.getType();
-
+	static boolean isOfType(final Class<?> fieldType, final Set<Class<?>> supportedTypes) {
+		Assert.notNull(fieldType);
+		
 		for (Class<?> clazz: supportedTypes) {
-			if (type == clazz || clazz.isAssignableFrom(type)) {
+			if (fieldType == clazz || clazz.isAssignableFrom(fieldType)) {
 				return true;
 			}
 		}
 
 		return false;
+
 	}
 	
 	static boolean isOfType(final Field field, final FieldType... fieldTypes) {

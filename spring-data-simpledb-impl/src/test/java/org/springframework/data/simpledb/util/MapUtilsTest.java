@@ -20,7 +20,7 @@ public class MapUtilsTest {
     public void splitToChunksOfSize_should_split_entries_exceeding_size() throws Exception {
 
 
-        Map<String, String> attributes = new LinkedHashMap<>();
+        Map<String, String> attributes = new LinkedHashMap<String, String>();
         for (int i=0; i < SAMPLE_MAP_SIZE + 100; i++){
             attributes.put("Key: " + i, "Value: " + i);
         }

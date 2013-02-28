@@ -22,12 +22,10 @@ public class SimpleDBLimitationsTest {
     @Autowired
 	BasicSimpleDbUserRepository repository;
 
-	@After
+    @After
 	public void tearDown() {
 		repository.deleteAll();
 	}
-
-
 
 	@Test
 	public void should_persist_max_simple_db_length_characters_long_string() {

@@ -1,11 +1,13 @@
 package org.springframework.data.simpledb.query;
 
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.simpledb.annotation.Query;
+import org.springframework.data.simpledb.query.parser.QueryParserUtils;
 import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -13,6 +15,7 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -66,20 +69,21 @@ public class SimpleDbQueryMethod extends QueryMethod {
 
     /**
      * Returns the query string declared in a {@link Query} annotation or {@literal null} if neither the annotation found nor the attribute was specified.
-     *
-     * @return
+     * @return a Query String
      */
     public final String getAnnotatedQuery() {
-        String queryFromValueParameter = getAnnotationValue("value", String.class);
-        String[] queryFromWhereParameter = getAnnotationValue("where", String[].class);
-        String[] queryFromSelectParameter = getAnnotationValue("select", String[].class);
+        String valueParameter = getAnnotationValue(Query.QueryClause.VALUE.getQueryClause(), String.class);
+        String[] whereParameters = getAnnotationValue(Query.QueryClause.WHERE.getQueryClause(), String[].class);
+        String[] selectParameters = getAnnotationValue(Query.QueryClause.SELECT.getQueryClause(), String[].class);
 
-        assertCorrectAnnotatedQueryParameters(queryFromValueParameter, queryFromSelectParameter, queryFromWhereParameter);
-        return QueryUtils.buildQueryFromQueryParameters(queryFromValueParameter, queryFromSelectParameter, queryFromWhereParameter, getDomainClass());
+        assertNotOverlappingQueryParameters(valueParameter, selectParameters, whereParameters);
+        
+        return QueryParserUtils.buildQueryFromQueryParameters(valueParameter, selectParameters, whereParameters, getDomainClass());
     }
 
-    private void assertCorrectAnnotatedQueryParameters(String queryFromValueParameter, String[] queryFromSelectParameter, String[] queryFromWhereParameter){
-       if(StringUtils.hasText(queryFromValueParameter) && StringUtils.hasText(queryFromSelectParameter[0]) && StringUtils.hasText(queryFromWhereParameter[0])){
+    private void assertNotOverlappingQueryParameters(String valueParameter, String[] selectParameters, String[] whereParameters){
+       if(  StringUtils.hasText(valueParameter)   &&
+    		   	(StringUtils.hasText(selectParameters[0]) || StringUtils.hasText(whereParameters[0])) ){
            Assert.isTrue(false, "Too many parameters for query. If value parameter present, no select or where parameter");
        }
     }
@@ -140,5 +144,25 @@ public class SimpleDbQueryMethod extends QueryMethod {
             return returnType;
         }
     }
-
+    
+    /**
+     * @return whether or not the query method contains a {@link Pageable} parameter in its signature.
+     */
+    public boolean isPagedQuery() {
+    	boolean isPaged = false;
+    	
+    	final Iterator<Parameter> it = getParameters().iterator();
+    	
+    	while(it.hasNext()) {
+    		final Parameter param = it.next();
+    		
+    		if(Pageable.class.isAssignableFrom(param.getType())) {
+    			isPaged = true;
+    			break;
+    		}
+    	}
+    	
+    	return isPaged;
+    }
+    
 }

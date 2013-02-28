@@ -30,14 +30,14 @@ public class SimpleDbUserBuilder {
             user.setNestedEntity(nestedEntity);
 
 
-            List<String> sampleJSONList = new LinkedList<>();
+            List<String> sampleJSONList = new LinkedList<String>();
             sampleJSONList.add("JSON");
 
             user.setObjectField(sampleJSONList);
 
             user.setObjectList( buildListOfObjects());
 
-            Map<String, JSONCompatibleClass> map = new HashMap<>();
+            Map<String, JSONCompatibleClass> map = new HashMap<String, JSONCompatibleClass>();
             JSONCompatibleClass json = new JSONCompatibleClass();
             json.setName("Tom");
             map.put("Tom", json);
@@ -55,7 +55,7 @@ public class SimpleDbUserBuilder {
     }
 
     public static List<SimpleDbUser> createListOfItems(int length) {
-        List<SimpleDbUser> list = new ArrayList<>();
+        List<SimpleDbUser> list = new ArrayList<SimpleDbUser>();
 
         for (int i = 0; i < length; i++) {
             String itemName = "Item_" + i;

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -126,7 +125,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 
     @Override
     public <S extends T> List<S> save(Iterable<S> entities, boolean consistentRead) {
-        List<S> result = new ArrayList<>();
+        List<S> result = new ArrayList<S>();
         if (entities == null) {
             return result;
         }
@@ -151,7 +150,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
     }
 
     public List<T> findAll(Iterable<ID> ids, boolean consistentRead) {
-        return operations.find(entityInformation, new QueryBuilder(entityInformation).with(ids), consistentRead);
+        return operations.find(entityInformation, new QueryBuilder(entityInformation).withIds(ids), consistentRead);
     }
 
     public List<T> findAll(Sort sort, boolean consistentRead) {
@@ -159,12 +158,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
     }
 
     public Page<T> findAll(Pageable pageable, boolean consistentRead) {
-        if (null == pageable) {
-            return new PageImpl<>(findAll(consistentRead));
-        }
-        Long count = count(consistentRead);
-        List<T> list = operations.find(entityInformation, new QueryBuilder(entityInformation).with(pageable), consistentRead);
-        return new PageImpl<>(list, pageable, count);
+    	return operations.executePagedQuery(entityInformation, new QueryBuilder(entityInformation).toString(), pageable, consistentRead);
     }
 
     public long count(boolean consistentRead) {
