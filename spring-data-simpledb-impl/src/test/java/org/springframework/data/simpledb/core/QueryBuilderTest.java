@@ -40,8 +40,7 @@ public class QueryBuilderTest {
     @Test
     public void should_include_count_clause_if_requested() throws Exception {
 
-        QueryBuilder builder = new QueryBuilder(SimpleDbSampleEntity.entityInformation());
-        builder.withCount();
+        QueryBuilder builder = new QueryBuilder(SimpleDbSampleEntity.entityInformation(), true);
 
         String returnedQuery = builder.toString();
 
@@ -54,7 +53,7 @@ public class QueryBuilderTest {
     public void should_include_limited_items_if_requested() throws Exception {
 
         QueryBuilder builder = new QueryBuilder(SimpleDbSampleEntity.entityInformation());
-        builder.with(Arrays.asList(new String[]{"id1", "id2"}));
+        builder.withIds(Arrays.asList(new String[]{"id1", "id2"}));
 
         String returnedQuery = builder.toString();
 

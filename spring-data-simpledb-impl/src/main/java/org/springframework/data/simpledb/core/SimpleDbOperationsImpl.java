@@ -2,11 +2,15 @@ package org.springframework.data.simpledb.core;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.util.Assert;
@@ -64,7 +68,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         {
             ids.add(id);
         }
-        List<T> results = find(entityInformation, new QueryBuilder(entityInformation).with(ids), consistentRead);
+        List<T> results = find(entityInformation, new QueryBuilder(entityInformation).withIds(ids), consistentRead);
         return results.size() == 1 ? results.get(0) : null;
     }
 
@@ -80,8 +84,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
     }
     
-    @Override
-    public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, String query, String nextToken, boolean consistentRead) {
+    private List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, String query, String nextToken, boolean consistentRead) {
     	LOGGER.info("Find All Domain \"{}\" isConsistent=\"{}\", with token!", entityInformation.getDomain(), consistentRead);
     	
     	SelectRequest selectRequest = new SelectRequest(query, consistentRead);
@@ -95,7 +98,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     @Override
     public long count(SimpleDbEntityInformation entityInformation, boolean consistentRead) {
         LOGGER.info("Count items from domain \"{}\" isConsistent=\"{}\"", entityInformation.getDomain(), consistentRead);
-        return count(new QueryBuilder(entityInformation).withCount().toString(), consistentRead);
+        return count(new QueryBuilder(entityInformation, true).toString(), consistentRead);
     }
 
     @Override
@@ -114,14 +117,52 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         return 0;
     }
 
-    @Override
-    public String getNextToken(String query, boolean consistentRead) {
+    private String getNextToken(String query, boolean consistentRead) {
     	LOGGER.info("Get next token for query: " + query);
-    	/* TODO: assert for the existence of 'limit' in the query */
+    	
+    	Assert.isTrue(query.contains("limit"), "Only queries with limit have a next token!");
     	
     	final SelectResult selectResult = sdb.select(new SelectRequest(query, consistentRead));
     	
     	return selectResult.getNextToken();
+    }
+    
+    private String getPageOffsetToken(final Pageable pageable, SimpleDbEntityInformation<T, ID> entityInformation, String query, boolean consistentRead) {
+    	int previousPageNumber = pageable.getPageNumber() - 1;
+		int endOfPreviousPageLimit = previousPageNumber * pageable.getPageSize();
+		
+		final String countQuery = new QueryBuilder(query, true).withLimit(endOfPreviousPageLimit).toString();
+    	
+    	return getNextToken(countQuery, consistentRead);
+    }
+    
+    @Override
+    public Page<T> executePagedQuery(SimpleDbEntityInformation<T, ID> entityInformation, String query, Pageable pageable, boolean consistentRead) {
+        Assert.notNull(pageable);
+        Assert.isTrue(pageable.getPageNumber() > 0);
+        Assert.isTrue(pageable.getPageSize() > 0);
+        
+    	List<T> resultsList;
+    	String queryWithPagesizeLimit = new QueryBuilder(query).with(pageable).toString();
+
+    	if(pageable.getPageNumber() != 1) {
+    		String pageOffsetToken = getPageOffsetToken(pageable, entityInformation, query, consistentRead);
+
+    		if(pageOffsetToken != null && ! pageOffsetToken.isEmpty()) {
+    			resultsList = find(entityInformation, queryWithPagesizeLimit, pageOffsetToken, consistentRead);
+    		} else {
+    			resultsList = Collections.EMPTY_LIST;
+    		}
+
+    	} else {
+    		resultsList = find(entityInformation, queryWithPagesizeLimit, consistentRead);
+    	}
+
+    	final String countQuery = new QueryBuilder(query, true).toString();
+    	
+    	Long totalCount = count(countQuery, consistentRead);
+
+    	return new PageImpl<>(resultsList, pageable, totalCount);
     }
 
     private void logOperation(String operation, EntityWrapper<T, ID> entity) {

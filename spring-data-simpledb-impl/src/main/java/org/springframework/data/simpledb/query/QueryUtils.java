@@ -145,12 +145,6 @@ public final class QueryUtils {
 	static void validateBindParametersCount(Parameters parameters, Object... parameterValues) {
 		int numOfParameters = parameters.getNumberOfParameters();
 
-		for(Object value: parameterValues) {
-			if(Pageable.class.isAssignableFrom(value.getClass()) || Sort.class.isAssignableFrom(value.getClass())) {
-				numOfParameters -= 1;
-			}
-		}
-
 		if (numOfParameters != parameterValues.length) {
 			throw new MappingException("Wrong Number of Parameters to bind in Query! Parameter Values size=" + parameterValues.length + ", Method Bind Parameters size=" + numOfParameters);
 		}

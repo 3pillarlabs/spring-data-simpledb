@@ -158,7 +158,20 @@ Queries are validated against method's returned type. The following query won't 
     List<String> customSelectAllWrongReturnType();
 
 
+### Paging ###
+We support pagination by extending the **PagingAndSortingRepository** which provides a `Page<T> findAll(Pagealbe pageable)` method. Otherwise, you can also define the findAll method in any repository. The following repository defines the findAll paged query:
 
+    public interface MyRepository extends Repository<SimpleDbUser, String> {
+        Page<SimpleDbUser> findAll(Pageable pageable);
+    }
+
+Moreover, any custom annotate query in can be paginated by simply adding a **Pagealbe** parameter to the query method's signature. The parameter must be the last one and the method's return type can be only `Page<T>` or `List<T>`. The following example depicts a few different query methods:
+
+    @Query(value = "select * from `testDB.simpleDbUser` where primitiveField > ?")
+    Page<SimpleDbUser> findUsers(float primitiveField, Pageable page);
+
+    @Query(value = "select * from `testDB.simpleDbUser` where primitiveField > ?")
+    List<SimpleDbUser> findUsersList(float primitiveField, Pageable page);
 
 ## Known Limitations ##
 
@@ -185,10 +198,11 @@ Since nested object fields are stored in SimpleDb as multiple Items
     public class Company {
         private Customer customer;
     }
-    will be stored in SimpleDb as a list of attributes for each customer field:
-    customer.name
-    customer.age
-    ...
+    
+will be stored in SimpleDb as a list of attributes for each customer field:
+- customer.name
+- customer.age
+etc.
 
 A select like the following won't be a SimpleDB valid select statement and __won't be executed__:
 
@@ -206,5 +220,10 @@ Nevertheless, querying an entire entity would correctly deserialize the chuncked
 
     select * from `testDb.company`
 
+### Paging
+Currently, paginating partial annotated queries will return a collection of the queried entity instead of a collection of the queried partial fields. The following example is a valid partial query and each item in the collection will have the itemName and the requested partial fields populated with values. All the other fields will be empty.
+
+    @Query(value = "select primitiveField from `testDB.simpleDbUser`")
+    List<SimpleDbUser> pagedPartialQuery(Pageable page);
 
 DEV_NOTES: Please use http://dillinger.io/ when editing this file

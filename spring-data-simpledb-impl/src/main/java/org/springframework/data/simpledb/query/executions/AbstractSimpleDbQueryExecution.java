@@ -2,6 +2,8 @@ package org.springframework.data.simpledb.query.executions;
 
 import java.io.Serializable;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.query.QueryUtils;
 import org.springframework.data.simpledb.query.SimpleDbQueryMethod;
@@ -23,9 +25,27 @@ public abstract class AbstractSimpleDbQueryExecution {
     public Object execute(SimpleDbRepositoryQuery repositoryQuery, Object[] values) {
         Assert.notNull(repositoryQuery);
         Assert.notNull(values);
+        
         String query = QueryUtils.bindQueryParameters(repositoryQuery, values);
-        Class<?> domainClass = ((SimpleDbQueryMethod) repositoryQuery.getQueryMethod()).getDomainClazz();
-        SimpleDbQueryRunner queryRunner = new SimpleDbQueryRunner(simpledbOperations, domainClass, query);
+        SimpleDbQueryMethod queryMethod = (SimpleDbQueryMethod)repositoryQuery.getQueryMethod();
+		Class<?> domainClass = queryMethod.getDomainClazz();
+        
+		SimpleDbQueryRunner queryRunner;
+		
+		if(queryMethod.isPagedQuery()) {
+			Pageable pageable = null;
+			
+			for(Object value: values) {
+				if(Pageable.class.isAssignableFrom(value.getClass())) {
+					pageable = (Pageable)value;
+				}
+			}
+			
+			queryRunner = new SimpleDbQueryRunner(simpledbOperations, domainClass, query, pageable);
+		} else {
+			queryRunner = new SimpleDbQueryRunner(simpledbOperations, domainClass, query);			
+		}
+        
         return doExecute(repositoryQuery, queryRunner);
     }
     

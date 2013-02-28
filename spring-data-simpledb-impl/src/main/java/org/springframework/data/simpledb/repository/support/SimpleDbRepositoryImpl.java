@@ -17,11 +17,9 @@ package org.springframework.data.simpledb.repository.support;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -148,50 +146,19 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
     }
 
     public List<T> findAll(boolean consistentRead) {
-        return operations.find(entityInformation, new QueryBuilder<>(entityInformation), consistentRead);
+        return operations.find(entityInformation, new QueryBuilder(entityInformation), consistentRead);
     }
 
     public List<T> findAll(Iterable<ID> ids, boolean consistentRead) {
-        return operations.find(entityInformation, new QueryBuilder<>(entityInformation).with(ids), consistentRead);
+        return operations.find(entityInformation, new QueryBuilder(entityInformation).withIds(ids), consistentRead);
     }
 
     public List<T> findAll(Sort sort, boolean consistentRead) {
-        return operations.find(entityInformation, new QueryBuilder<>(entityInformation).with(sort), consistentRead);
+        return operations.find(entityInformation, new QueryBuilder(entityInformation).with(sort), consistentRead);
     }
 
     public Page<T> findAll(Pageable pageable, boolean consistentRead) {
-        Assert.notNull(pageable);
-        Assert.isTrue(pageable.getPageNumber() > 0);
-        Assert.isTrue(pageable.getPageSize() > 0);
-        
-        List<T> resultsList;
-        String queryWithPagesizeLimit = new QueryBuilder<>(entityInformation).with(pageable).toString();
-        
-        if(pageable.getPageNumber() != 1) {
-	        String pageOffsetToken = getPageOffsetToken(pageable);
-	        
-	        if(pageOffsetToken != null && ! pageOffsetToken.isEmpty()) {
-	        	resultsList = operations.find(entityInformation, queryWithPagesizeLimit, pageOffsetToken, consistentRead);
-	        } else {
-	        	resultsList = Collections.EMPTY_LIST;
-	        }
-	        
-        } else {
-        	resultsList = operations.find(entityInformation, queryWithPagesizeLimit, consistentRead);
-        }
-        
-        Long totalCount = count(consistentRead);
-        
-        return new PageImpl<>(resultsList, pageable, totalCount);
-    }
-    
-    private String getPageOffsetToken(final Pageable pageable) {
-    	int previousPageNumber = pageable.getPageNumber() - 1;
-		int endOfPreviousPageLimit = previousPageNumber * pageable.getPageSize();
-		
-		final String query = new QueryBuilder<>(entityInformation).withCount().with(endOfPreviousPageLimit).toString();
-    	
-    	return operations.getNextToken(query, consistentRead);
+    	return operations.executePagedQuery(entityInformation, new QueryBuilder(entityInformation).toString(), pageable, consistentRead);
     }
 
     public long count(boolean consistentRead) {
