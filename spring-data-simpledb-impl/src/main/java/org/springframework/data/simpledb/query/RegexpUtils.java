@@ -12,8 +12,6 @@ public final class RegexpUtils {
     
 	private RegexpUtils() { }
 	
-    private static final String BACKTICK = "`";
-
 	public static List<String> createFieldNameList(String pattern, String[] rawParameterExpressions){
         final List<String> fieldNameList = new ArrayList<String>();
         
@@ -37,7 +35,8 @@ public final class RegexpUtils {
 			if (idField != null && fieldName.equals(idField.getName())) {
 				 return rawExpression.trim().replaceFirst(fieldName, "itemName()");
 			} else {
-				 return rawExpression.trim().replaceFirst(fieldName, BACKTICK + fieldName + BACKTICK);
+				 return rawExpression.trim().replaceFirst(fieldName, 
+						 PatternConstants.BACKTICK_CHAR.getPattternString() + fieldName + PatternConstants.BACKTICK_CHAR.getPattternString());
 			}
 		} else {
 			throw new IllegalArgumentException("Usage: Wrong Parameter In Query Clause : " + rawExpression + ", select = {\"id\", \"name\"} for SELECT stmt, and where = {\"name\" = 3}" );

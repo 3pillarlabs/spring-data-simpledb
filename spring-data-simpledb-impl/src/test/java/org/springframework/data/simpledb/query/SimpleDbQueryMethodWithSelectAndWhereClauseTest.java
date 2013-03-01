@@ -15,7 +15,9 @@ public class SimpleDbQueryMethodWithSelectAndWhereClauseTest {
     @Test
     public void getAnnotatedQuery_should_returned_completed_where_clause_in_query() throws Exception {
         SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectPartialFieldsWithWhereClause", SampleEntity.class);
-        String expectedResult = "select itemName(), `sampleAttribute` from `testDB.sampleEntity` where `sampleAttribute`<='3' and itemName() = `5`";
+        
+//        @Query(select = {"item_id", "sampleAttribute"}, where = "sampleAttribute<='3' or item_id = `5`")
+        String expectedResult = "select itemName(), `sampleAttribute` from `testDB.sampleEntity` where `sampleAttribute`<='3' or itemName() = `5`";
         assertEquals(expectedResult, repositoryMethod.getAnnotatedQuery());
     }
     
@@ -53,22 +55,22 @@ public class SimpleDbQueryMethodWithSelectAndWhereClauseTest {
     }
 
     public interface AnnotatedQueryRepository {
-        @Query(select = {"item_id", "sampleAttribute"}, where = {"sampleAttribute<='3'", "item_id = `5`"})
+        @Query(select = {"item_id", "sampleAttribute"}, where = "sampleAttribute<='3' or item_id = `5`")
         List<SampleEntity> selectPartialFieldsWithWhereClause();
         
-        @Query(value = "select *", where = {"sampleAttribute<='3'", "sampleList is ''"})
+        @Query(value = "select *", where = "sampleAttribute<='3' and sampleList is ''")
         List<SampleEntity> selectAllWrongParameter();
         
-        @Query(select = {"item_id"}, where = {"sampleAttribute<='3'", "item_id = `5`"})
+        @Query(select = {"item_id"}, where = "sampleAttribute<='3' and item_id = `5`")
         List<SampleEntity> selectParamInWhereNotPresentInSelect();
         
-        @Query(select = {"item_id"}, where = {""})
+        @Query(select = {"item_id"}, where = "")
         List<SampleEntity> selectWithEmptyWhereClause();
         
-        @Query(select = {"item_id"}, where = {"item_id >= `3`", "item_id <= `5`"})
+        @Query(select = {"item_id"}, where = "item_id >= `3` and item_id <= `5`")
         List<SampleEntity> whereTricky();
         
-        @Query(select = {"item_id", "item_id" }, where = {"item_id >= `3`", "item_id <= `5`"})
+        @Query(select = {"item_id", "item_id" }, where = "item_id >= `3` and item_id <= `5`")
         List<SampleEntity> selectTricky();
         
     }

@@ -21,18 +21,22 @@ public abstract class AbstractSimpleDbQueryExecution {
         this.simpledbOperations = simpleDbOperations;
     }
 
-    public Object execute(SimpleDbRepositoryQuery repositoryQuery, Object[] values) {
+    public Object execute(SimpleDbRepositoryQuery repositoryQuery, Object[] parameterValues) {
         Assert.notNull(repositoryQuery);
-        Assert.notNull(values);
+        Assert.notNull(parameterValues);
         
-        String query = QueryUtils.bindQueryParameters(repositoryQuery, values);
+        // Demeter's Law
+		QueryUtils.validateBindParametersCount(repositoryQuery.getQueryParameters(), parameterValues);
+		QueryUtils.validateBindParametersTypes(repositoryQuery.getQueryParameters(), parameterValues);
+		
         SimpleDbQueryMethod queryMethod = (SimpleDbQueryMethod)repositoryQuery.getQueryMethod();
 		Class<?> domainClass = queryMethod.getDomainClazz();
+        String query = QueryUtils.bindQueryParameters(repositoryQuery, domainClass, parameterValues);
         
 		SimpleDbQueryRunner queryRunner;
 		
 		if(queryMethod.isPagedQuery()) {
-			final Pageable pageable = getPageableParamValue(values);
+			final Pageable pageable = getPageableParamValue(parameterValues);
 			
 			queryRunner = new SimpleDbQueryRunner(simpledbOperations, domainClass, query, pageable);
 		} else {
@@ -41,7 +45,7 @@ public abstract class AbstractSimpleDbQueryExecution {
         
         return doExecute(repositoryQuery, queryRunner);
     }
-
+    
 	private Pageable getPageableParamValue(Object[] values) {
 		Pageable pageable = null;
 		

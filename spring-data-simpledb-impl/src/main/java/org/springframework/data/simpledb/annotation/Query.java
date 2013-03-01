@@ -8,7 +8,7 @@ import java.lang.annotation.*;
  *  Query Annotation used in Repository Metadata, can have three Types of Parameters <br/>
  *  <p><b>value</b>: if value annotation is present, query string should be correct and well formatted </p>
  * <p><b>select</b>: contains selective attributes, can be independent of the "where" clause; the Domain is inferred at runtime based on Repository-Metadata</p>
- * <p><b>where</b>: contains filtering attributes, can be independent of the "select" clause; the Domain is inferred at runtime based on Repository-Metadata</p>
+ * <p><b>where</b>: contains the WHERE clause, might contain parameter placeholders </p>
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -20,7 +20,7 @@ public @interface Query {
      * Defines the SimpleDb query to be executed when the annotated method is called.
      */
     String value() default "";
-    String[] where() default "";
+    String where() default "";
     String[] select() default "";
 
     public enum QueryClause {

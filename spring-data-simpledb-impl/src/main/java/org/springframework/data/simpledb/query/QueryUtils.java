@@ -10,11 +10,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
+import org.springframework.data.simpledb.query.parser.PatternConstants;
+import org.springframework.data.simpledb.util.MetadataParser;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 import org.springframework.data.simpledb.util.SupportedCoreTypes;
 
@@ -33,12 +33,9 @@ public final class QueryUtils {
 	private QueryUtils() {
 	}
 
-	public static String bindQueryParameters(SimpleDbRepositoryQuery query, Object... parameterValues) {
+	public static String bindQueryParameters(SimpleDbRepositoryQuery query, Class<?> domainClazz, Object... parameterValues) {
 		final String rawQuery = query.getAnnotatedQuery();
 		String completedQuery = null;
-
-		validateBindParametersCount(query.getQueryMethod().getParameters(), parameterValues);
-		validateBindParametersTypes(query.getQueryMethod().getParameters(), parameterValues);
 
 		if (hasNamedParameter(query)) {
 			completedQuery = bindNamedParameters(query, parameterValues);
@@ -49,10 +46,10 @@ public final class QueryUtils {
 		} else {
 			completedQuery = rawQuery;
 		}
-
-		return completedQuery;
+		
+		return escapeQueryAttributes(completedQuery, MetadataParser.getIdField(domainClazz).getName());
 	}
-
+	
 	public static boolean hasNamedParameter(SimpleDbRepositoryQuery query) {
 		for (Parameter param : query.getQueryMethod().getParameters()) {
 			if (param.isNamedParameter()) {
@@ -66,6 +63,54 @@ public final class QueryUtils {
 		final Pattern regexPattern = Pattern.compile(BIND_PARAMETER_REGEX);
 		final Matcher matcher = regexPattern.matcher(query);
 		return matcher.find();
+	}
+	
+	public static void validateBindParametersCount(Parameters parameters, Object... parameterValues) {
+		int numOfParameters = parameters.getNumberOfParameters();
+
+		if (numOfParameters != parameterValues.length) {
+			throw new MappingException("Wrong Number of Parameters to bind in Query! Parameter Values size=" + parameterValues.length + ", Method Bind Parameters size=" + numOfParameters);
+		}
+	}
+
+	/**
+	 * Supported types: primitives & core java types (Date, primitive arrays, primitive wrappers) 
+	 */
+	public static void validateBindParametersTypes(Parameters parameters, Object... parameterValues) {
+		final Iterator<Parameter> it = parameters.iterator();
+
+		while(it.hasNext()) {
+			final Parameter param = it.next();
+			final Class<?> paramType = param.getType();
+
+			if(! (param.isSpecialParameter() || SupportedCoreTypes.isSupported(paramType))) {
+				throw(new IllegalArgumentException("Type " + paramType + " not supported as an annotated query parameter!"));
+			}
+		}
+	}
+
+	public static List<String> getQueryPartialFieldNames(String query) {
+		List<String> result = new ArrayList<String>();
+		String[] vals = query.split(",|\\s");
+		boolean isSelect = false;
+		for (String val : vals) {
+			String trimVal = val.trim();
+
+			if (trimVal.toLowerCase().contains("from")) {
+				break;
+			}
+			if (isSelect && trimVal.length() > 0) {
+				result.add(val.trim());
+			}
+			if (trimVal.toLowerCase().contains("select")) {
+				isSelect = true;
+			}
+		}
+		return result;
+	}
+
+	public static boolean isCountQuery(String query) {
+		return query.toLowerCase().contains("count(");
 	}
 
 	static String bindNamedParameters(SimpleDbRepositoryQuery query, Object... parameterValues) {
@@ -81,13 +126,13 @@ public final class QueryUtils {
 
 		return replaceParameterHolders(rawQuery, parameterPlaceholderValues);
 	}
-
+	
 	static String bindIndexPositionParameters(String queryString, Object... values) {
 
 		final Pattern pattern = Pattern.compile(BIND_PARAMETER_REGEX);
 		final StringBuilder builder = new StringBuilder();
 
-		final List<String> dividedQuery = Arrays.asList(queryString.split(pattern.toString()));
+		final List<String> dividedQuery = Arrays.asList(queryString.trim().split(pattern.toString()));
 		int idx = 0;
 
 		try {
@@ -148,51 +193,24 @@ public final class QueryUtils {
 		return buffer.toString();
 	}
 
-	static void validateBindParametersCount(Parameters parameters, Object... parameterValues) {
-		int numOfParameters = parameters.getNumberOfParameters();
+    private static String escapeQueryAttributes(String rawQuery, String idFieldName) {
+    	String escapedQuery = rawQuery.replaceAll(idFieldName, "itemName()");
+    	return insertBackticksOnRawParameters(escapedQuery);
+    }
 
-		if (numOfParameters != parameterValues.length) {
-			throw new MappingException("Wrong Number of Parameters to bind in Query! Parameter Values size=" + parameterValues.length + ", Method Bind Parameters size=" + numOfParameters);
+	private static String insertBackticksOnRawParameters(String rawQuery) {
+		String returnedQuery = rawQuery;
+		Pattern pattern = Pattern.compile(PatternConstants.UN_ESCAPED_BACKTICKED_PARAMS.getPattternString());
+		Matcher matcher = pattern.matcher(rawQuery);
+		
+		while(matcher.find()) {
+			returnedQuery = returnedQuery.replaceFirst(matcher.group(1), "`" + matcher.group(1) + "`");
 		}
-	}
-
-	/**
-	 * Supported types: primitives & core java types (Date, primitive arrays, primitive wrappers) 
-	 */
-	static void validateBindParametersTypes(Parameters parameters, Object... parameterValues) {
-		final Iterator<Parameter> it = parameters.iterator();
-
-		while(it.hasNext()) {
-			final Parameter param = it.next();
-			final Class<?> paramType = param.getType();
-
-			if(! (param.isSpecialParameter() || SupportedCoreTypes.isSupported(paramType))) {
-				throw(new IllegalArgumentException("Type " + paramType + " not supported as an annotated query parameter!"));
-			}
+		
+		if(!insertBackticksOnRawParameters(returnedQuery).isEmpty()) {
+			throw new IllegalArgumentException("INVALID Query Parameters!");
 		}
-	}
-
-	public static List<String> getQueryPartialFieldNames(String query) {
-		List<String> result = new ArrayList<String>();
-		String[] vals = query.split(",|\\s");
-		boolean isSelect = false;
-		for (String val : vals) {
-			String trimVal = val.trim();
-
-			if (trimVal.toLowerCase().contains("from")) {
-				break;
-			}
-			if (isSelect && trimVal.length() > 0) {
-				result.add(val.trim());
-			}
-			if (trimVal.toLowerCase().contains("select")) {
-				isSelect = true;
-			}
-		}
-		return result;
-	}
-
-	public static boolean isCountQuery(String query) {
-		return query.toLowerCase().contains("count(");
+		
+		return returnedQuery;
 	}
 }

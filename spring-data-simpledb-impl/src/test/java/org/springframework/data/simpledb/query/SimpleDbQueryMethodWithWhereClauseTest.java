@@ -15,7 +15,7 @@ public class SimpleDbQueryMethodWithWhereClauseTest {
     @Test
     public void getAnnotatedQuery_should_returned_completed_where_clause_in_query() throws Exception {
         SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectWithWhereClause", SampleEntity.class);
-        assertEquals("select * from `testDB.sampleEntity` where `sampleAttribute`<='3' and `sampleList` is ''", repositoryMethod.getAnnotatedQuery());
+        assertEquals("select * from `testDB.sampleEntity` where `sampleAttribute`<='3' or `sampleList` is ''", repositoryMethod.getAnnotatedQuery());
     }
 
     @Test
@@ -31,7 +31,7 @@ public class SimpleDbQueryMethodWithWhereClauseTest {
     }
 
     public interface AnnotatedQueryRepository {
-        @Query(where = {"sampleAttribute<='3'", "sampleList is ''"})
+        @Query(where = "sampleAttribute<='3' or sampleList is ''")
         List<SampleEntity> selectWithWhereClause();
 
         @Query(where = "item_id ='Item_0'")
