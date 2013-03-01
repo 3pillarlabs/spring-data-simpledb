@@ -1,21 +1,20 @@
 package org.springframework.data.simpledb.query.parser;
 
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.List;
-
-import org.springframework.data.simpledb.annotation.Query;
 import org.springframework.data.simpledb.query.RegexpUtils;
 import org.springframework.data.simpledb.util.MetadataParser;
 import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Acts as a Parser for Building the Custom Query based on the given
  * {@link Query} parameters<br/>
  * <br/>
  */
-public class QueryParserUtils {
+public final class QueryParserUtils {
 	
 	private QueryParserUtils(){}
 
