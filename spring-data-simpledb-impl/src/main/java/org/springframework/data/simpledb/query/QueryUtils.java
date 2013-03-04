@@ -1,22 +1,15 @@
 
 package org.springframework.data.simpledb.query;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
-import org.springframework.data.simpledb.query.parser.PatternConstants;
-import org.springframework.data.simpledb.util.MetadataParser;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 import org.springframework.data.simpledb.util.SupportedCoreTypes;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *  Main Responsibility of QueryUtils is to work with: <br/>
@@ -47,7 +40,7 @@ public final class QueryUtils {
 			completedQuery = rawQuery;
 		}
 		
-		return escapeQueryAttributes(completedQuery, MetadataParser.getIdField(domainClazz).getName());
+		return completedQuery;
 	}
 	
 	public static boolean hasNamedParameter(SimpleDbRepositoryQuery query) {
@@ -193,24 +186,14 @@ public final class QueryUtils {
 		return buffer.toString();
 	}
 
-    private static String escapeQueryAttributes(String rawQuery, String idFieldName) {
-    	String escapedQuery = rawQuery.replaceAll(idFieldName, "itemName()");
-    	return insertBackticksOnRawParameters(escapedQuery);
-    }
+    public static String escapeQueryAttributes(String rawQuery, String idFieldName) {
+    	String escapedQuery = rawQuery.replaceAll("\\s" + idFieldName + "\\s", " itemName() ");
 
-	private static String insertBackticksOnRawParameters(String rawQuery) {
-		String returnedQuery = rawQuery;
-		Pattern pattern = Pattern.compile(PatternConstants.UN_ESCAPED_BACKTICKED_PARAMS.getPattternString());
-		Matcher matcher = pattern.matcher(rawQuery);
-		
-		while(matcher.find()) {
-			returnedQuery = returnedQuery.replaceFirst(matcher.group(1), "`" + matcher.group(1) + "`");
-		}
-		
-		if(!insertBackticksOnRawParameters(returnedQuery).isEmpty()) {
-			throw new IllegalArgumentException("INVALID Query Parameters!");
-		}
-		
-		return returnedQuery;
-	}
+        if(escapedQuery.endsWith(idFieldName)) {
+            escapedQuery = escapedQuery.substring(0, escapedQuery.length() - idFieldName.length());
+            escapedQuery += "itemName()";
+        }
+
+        return escapedQuery;
+    }
 }

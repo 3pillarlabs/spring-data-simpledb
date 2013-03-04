@@ -29,4 +29,6 @@ public interface AnnotatedQueryRepository extends PagingAndSortingRepository<Sim
     @Query(value = "select * from `testDB.simpleDbUser`")
     List<String> customSelectAllWrongReturnType();
 
+    @Query(where = "itemName = 'Item_0'")
+    List<SimpleDbUser> customSelectWithWhereClause();
 }

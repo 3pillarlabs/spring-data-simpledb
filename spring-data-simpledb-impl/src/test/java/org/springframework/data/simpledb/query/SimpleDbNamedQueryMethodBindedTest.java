@@ -25,7 +25,7 @@ public class SimpleDbNamedQueryMethodBindedTest {
 	@Test public void buildQueryConditionsWithParameters_should_work_with_the_same_placeholder_values_as_fieldkeys() throws Exception {
 //        @Query(select = {"item_id", "sampleAttribute"}, where = "sampleAttribute<=:sampleAttribute and item_id = :item_id")
 
-		final String expectedQuery = "select itemName(), `sampleAttribute` from `testDB.sampleEntity` where sampleAttribute<='3' and item_id = '5'";
+		final String expectedQuery = "select item_id, sampleAttribute from `testDB.sampleEntity` where sampleAttribute<='3' and item_id = '5'";
 		
 		SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectWithEqualPlaceholders", SampleEntity.class);
 		final String toProcessRawQuery = repositoryMethod.getAnnotatedQuery();
@@ -40,7 +40,7 @@ public class SimpleDbNamedQueryMethodBindedTest {
 	@Test public void buildQueryConditionsWithParameters_should_work_with_different_placeholder_values_as_fieldkeys() throws Exception {
         // @Query(select = {"item_id", "sampleAttribute"}, where = "sampleAttribute<=:attribute and item_id = :item")
 
-		final String expectedQuery = "select itemName(), `sampleAttribute` from `testDB.sampleEntity` where sampleAttribute<='3' and item_id = '5'";
+		final String expectedQuery = "select item_id, sampleAttribute from `testDB.sampleEntity` where sampleAttribute<='3' and item_id = '5'";
 		
 		SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectWithDifferentPlaceholders", SampleEntity.class);
 		final String toProcessRawQuery = repositoryMethod.getAnnotatedQuery();
@@ -59,7 +59,7 @@ public class SimpleDbNamedQueryMethodBindedTest {
 		final int age = 5;
     	final String convertedAge = SimpleDBAttributeConverter.encode(age);
 
-		final String expectedQuery = "select itemName(), `sampleAttribute` from `testDB.sampleEntity` where sampleAttribute<='3' and item_id = '" + convertedAge + "'";
+		final String expectedQuery = "select item_id, sampleAttribute from `testDB.sampleEntity` where sampleAttribute<='3' and item_id = '" + convertedAge + "'";
 		
 		SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectWithDifferentPlaceholders", SampleEntity.class);
 		final String toProcessRawQuery = repositoryMethod.getAnnotatedQuery();

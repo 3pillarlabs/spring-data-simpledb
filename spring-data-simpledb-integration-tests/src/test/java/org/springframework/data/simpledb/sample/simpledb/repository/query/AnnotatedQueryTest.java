@@ -28,12 +28,6 @@ public class AnnotatedQueryTest {
     @Autowired
     AnnotatedQueryRepository repository;
 
-    @Before
-    public void setUp() {
-        testUsers = SimpleDbUserBuilder.createListOfItems(3);
-        repository.save(testUsers);
-    }
-
     @After
     public void tearDown() {
         repository.deleteAll();
@@ -41,18 +35,24 @@ public class AnnotatedQueryTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void customSelectAllWrongReturnType_should_fail_wrong_returned_collection_generic_type() {
-        List<String> result = repository.customSelectAllWrongReturnType();
+        repository.customSelectAllWrongReturnType();
     }
 
 
     @Test
     public void customSelectWithNamedParamsQuery_should_return_a_list_a_list_of() {
+        List<SimpleDbUser> entities = SimpleDbUserBuilder.createListOfItems(3);
+        repository.save(entities);
+
         List<SimpleDbUser> result = repository.customSelectWithNamedParamsQuery(String.valueOf(0.01f), String.valueOf("Item_1"));
         assertNotNull(result);
     }
 
     @Test
     public void customSelectWithIndexedParams_should_return_a_list_of() {
+        List<SimpleDbUser> entities = SimpleDbUserBuilder.createListOfItems(3);
+        repository.save(entities);
+
         List<SimpleDbUser> result = repository.customSelectWithIndexedParams(String.valueOf("tes_string$"), String.valueOf(0.01f));
         assertNotNull(result);
     }
@@ -94,4 +94,16 @@ public class AnnotatedQueryTest {
     }
 
 
+    @Test
+    public void custom_select_with_where_clause_should_work() {
+        SimpleDbUser entity = SimpleDbUserBuilder.createUserWithSampleAttributes("Item_0");
+        repository.save(entity);
+
+        List<SimpleDbUser> result = repository.customSelectWithWhereClause();
+        assertEquals(1, result.size()); //one row
+
+        //one column
+        SimpleDbUser simpelDbUser = result.get(0);
+        assertEquals("Item_0", simpelDbUser.getItemName());
+    }
 }

@@ -3,7 +3,6 @@ package org.springframework.data.simpledb.query.parser;
 import java.lang.reflect.Field;
 
 import org.springframework.data.simpledb.annotation.Query;
-import org.springframework.data.simpledb.query.RegexpUtils;
 import org.springframework.data.simpledb.util.MetadataParser;
 import org.springframework.util.StringUtils;
 
@@ -32,14 +31,12 @@ public class QueryParserUtils {
 		return stringBuilder.toString();
 	}
 
-	public static String createQueryClause(String clause, PatternConstants queryPattern, Class<?> domainClazz, String[] rawParameters, String delimiter) {
+	public static String createQueryClause(String clause, String[] rawParameters, String delimiter) {
 		StringBuilder query = new StringBuilder(clause);
-		Field idField = MetadataParser.getIdField(domainClazz);
 		int idx = 1;
 
 		for (String rawParameter : rawParameters) {
-			String replacedParameter = RegexpUtils.convertToSimpleDbExpression(queryPattern, rawParameter, idField);
-			query.append(replacedParameter);
+			query.append(rawParameter);
 
 			if (idx++ != rawParameters.length) {
 				query.append(delimiter);
@@ -61,7 +58,7 @@ public class QueryParserUtils {
 
 	private static void appendSelectClause(StringBuilder stringBuilder, String[] rawSelectParameters, Class<?> domainClass) {
 		if (StringUtils.hasText(rawSelectParameters[0])) {
-			stringBuilder.append(createQueryClause("select ", PatternConstants.SELECT_PATTERN, domainClass, rawSelectParameters, ", "));
+			stringBuilder.append(createQueryClause("select ", rawSelectParameters, ", "));
 		} else {
 			stringBuilder.append("select *");
 		}

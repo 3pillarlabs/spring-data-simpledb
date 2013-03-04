@@ -26,7 +26,7 @@ public class SimpleDbIndexByQueryMethodBindedTest {
     	final String toProcessParsedQuery = queryMethofd.getAnnotatedQuery();
     	
 //	     @Query(select = {"item_id", "sampleAttribute"}, where = "sampleAttribute<=? and item_id = ? ")
-        final String expectedQuery = "select itemName(), `sampleAttribute` from `testDB.sampleEntity` where `sampleAttribute`<='" + convertedAge + "' and item_id = '" + email + "'";
+        final String expectedQuery = "select item_id, sampleAttribute from `testDB.sampleEntity` where `sampleAttribute`<='" + convertedAge + "' and item_id = '" + email + "'";
         
         final String resultedQuery = QueryUtils.bindIndexPositionParameters(toProcessParsedQuery, age, email);
         
