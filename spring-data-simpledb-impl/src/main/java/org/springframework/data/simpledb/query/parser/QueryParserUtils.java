@@ -1,7 +1,5 @@
 package org.springframework.data.simpledb.query.parser;
 
-import java.lang.reflect.Field;
-
 import org.springframework.data.simpledb.annotation.Query;
 import org.springframework.data.simpledb.util.MetadataParser;
 import org.springframework.util.StringUtils;
@@ -11,7 +9,7 @@ import org.springframework.util.StringUtils;
  * {@link Query} parameters<br/>
  * <br/>
  */
-public class QueryParserUtils {
+public final class QueryParserUtils {
 	
 	private QueryParserUtils(){}
 
