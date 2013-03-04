@@ -36,7 +36,7 @@ public class PagingAndSortingSimpleDbUserRepositoryTest {
     	final List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
     	repository.save(testUsers);
     	
-        Iterable<SimpleDbUser> findAll = repository.findAll(new Sort(new Order(Sort.Direction.DESC,"itemName()")));
+        Iterable<SimpleDbUser> findAll = repository.findAll(new Sort(new Order(Sort.Direction.DESC,"itemName")));
 
         assertEquals(testUsers.get(testUsers.size()-1).getItemName(),findAll.iterator().next().getItemName());
     }

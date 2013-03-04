@@ -106,7 +106,7 @@
         </module>
         <module name="UnusedImports">
             <property name="severity" value="info"/>
-            <property name="processJavadoc" value="false"/>
+            <property name="processJavadoc" value="true"/>
         </module>
         <module name="SimplifyBooleanExpression">
             <property name="severity" value="warning"/>

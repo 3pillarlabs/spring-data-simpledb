@@ -1,13 +1,13 @@
 package org.springframework.data.simpledb.sample.simpledb.repository.query;
 
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.simpledb.annotation.Query;
 import org.springframework.data.simpledb.sample.simpledb.domain.JSONCompatibleClass;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
-
-import java.util.List;
-import java.util.Set;
 
 public interface AnnotatedQueryRepository extends PagingAndSortingRepository<SimpleDbUser, String> {
 
@@ -32,4 +32,6 @@ public interface AnnotatedQueryRepository extends PagingAndSortingRepository<Sim
     @Query(value = "select * where itemName()='Item_0'")
     List<SimpleDbUser> malformedQuery();
     
+    @Query(where = "itemName = 'Item_0'")
+    List<SimpleDbUser> customSelectWithWhereClause();
 }
