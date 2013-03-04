@@ -66,6 +66,7 @@
     </build>
     <modules>
         <module>spring-data-simpledb-impl</module>
+        <module>spring-data-simpledb-parser</module>
         <module>spring-data-simpledb-integration-tests</module>
     </modules>
 

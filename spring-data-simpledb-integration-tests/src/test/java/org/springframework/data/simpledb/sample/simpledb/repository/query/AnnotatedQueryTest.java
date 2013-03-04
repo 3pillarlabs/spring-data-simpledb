@@ -1,23 +1,23 @@
 package org.springframework.data.simpledb.sample.simpledb.repository.query;
 
-import junit.framework.Assert;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.List;
+import java.util.Set;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.simpledb.core.InvalidSimpleDBQueryException;
 import org.springframework.data.simpledb.sample.simpledb.domain.JSONCompatibleClass;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.List;
-import java.util.Set;
-
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-consistent-repository-context.xml")
@@ -93,5 +93,8 @@ public class AnnotatedQueryTest {
         assertEquals(1, columns.size()); //one row
     }
 
-
+    @Test(expected = InvalidSimpleDBQueryException.class)
+    public void malformedQuery_should_throw_exception() {
+    		repository.malformedQuery();
+    }
 }

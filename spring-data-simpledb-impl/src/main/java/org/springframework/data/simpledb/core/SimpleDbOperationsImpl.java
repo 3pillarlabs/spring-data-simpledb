@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
+import org.springframework.data.simpledb.parser.SimpleDBParser;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.util.Assert;
 
@@ -80,12 +81,17 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     @Override
      public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, String query, boolean consistentRead) {
         LOGGER.info("Find All Domain \"{}\" isConsistent=\"{}\"", entityInformation.getDomain(), consistentRead);
+        
+        validateSelectQuery(query);
+        
         final SelectResult selectResult = sdb.select(new SelectRequest(query, consistentRead));
         return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
     }
     
     private List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, String query, String nextToken, boolean consistentRead) {
     	LOGGER.info("Find All Domain \"{}\" isConsistent=\"{}\", with token!", entityInformation.getDomain(), consistentRead);
+    	
+    	validateSelectQuery(query);
     	
     	SelectRequest selectRequest = new SelectRequest(query, consistentRead);
     	selectRequest.setNextToken(nextToken);
@@ -104,6 +110,9 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     @Override
     public long count(String query, boolean consistentRead){
         LOGGER.info("Count items for query "+query);
+        
+        validateSelectQuery(query);
+        
         final SelectResult selectResult = sdb.select(new SelectRequest(query, consistentRead));
         for (Item item : selectResult.getItems()) {
             if (item.getName().equals("Domain")) {
@@ -167,5 +176,17 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     private void logOperation(String operation, EntityWrapper<T, ID> entity) {
         LOGGER.info(operation + " \"{}\" ItemName \"{}\"", entity.getDomain(), entity.getItemName());
+    }
+    
+    /*
+     * Validate a custom query before sending the request to the DB. 
+     */
+    private void validateSelectQuery(final String selectQuery) {
+    		final SimpleDBParser parser = new SimpleDBParser(selectQuery);
+    		try {
+    			parser.selectQuery();
+    		} catch (Exception e) {
+    			throw new InvalidSimpleDBQueryException("The following query is an invalid SimpleDB query: " + selectQuery, e);
+    		}
     }
 }
