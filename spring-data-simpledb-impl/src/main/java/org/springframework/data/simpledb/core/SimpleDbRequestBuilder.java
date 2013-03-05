@@ -28,8 +28,6 @@ public final class SimpleDbRequestBuilder {
         }
 
         return putAttributesRequests;
-
-
     }
 
     private static PutAttributesRequest createPutAttributesRequest(String domain, String itemName, Map<String, String> chunk) {
@@ -37,10 +35,9 @@ public final class SimpleDbRequestBuilder {
         putRequest.setDomainName(domain);
         putRequest.setItemName(itemName);
 
-        List<ReplaceableAttribute> simpleDbAttributes = toReplaceableAttributeList(chunk, false);
+        List<ReplaceableAttribute> simpleDbAttributes = toReplaceableAttributeList(chunk, true);
         putRequest.setAttributes(simpleDbAttributes);
         return putRequest;
-
     }
 
 

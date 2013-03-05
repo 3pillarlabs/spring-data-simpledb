@@ -77,7 +77,7 @@ public class MetadataParserTest {
 
 	@Test
 	public void getPrimitiveFields_should_return_list_of_primitives_bypassing_ID_Attributes_and_Transient() throws Exception {
-		List<Field> returnedPrimitives = MetadataParser.getSupportedFields(new SampleDeclaredPrimitives());
+		List<Field> returnedPrimitives = MetadataParser.getSupportedFields(SampleDeclaredPrimitives.class);
 
 		assertTrue(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("intPrimitive")));
 		assertTrue(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("longPrimitive")));
@@ -91,7 +91,7 @@ public class MetadataParserTest {
 	
 	@Test
 	public void getPrimitiveFields_should_return_list_of_primitives_bypassing_ID_by_convention() throws Exception {
-		List<Field> returnedPrimitivesConvention = MetadataParser.getSupportedFields(new SampleDeclaredPrimitivesConventionId());
+		List<Field> returnedPrimitivesConvention = MetadataParser.getSupportedFields(SampleDeclaredPrimitivesConventionId.class);
 
 		assertFalse(returnedPrimitivesConvention.contains(SampleDeclaredPrimitivesConventionId.class.getDeclaredField("id"))) ;
 		assertTrue(returnedPrimitivesConvention.contains(SampleDeclaredPrimitivesConventionId.class.getDeclaredField("intPrimitive"))) ;

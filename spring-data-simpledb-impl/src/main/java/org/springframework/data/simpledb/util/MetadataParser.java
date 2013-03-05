@@ -114,24 +114,24 @@ public final class MetadataParser {
         return null;
     }
 
-    public static List<Field> getSupportedFields(Object object) {
+    public static List<Field> getSupportedFields(Class<?> clazz) {
         List<Field> supportedFields = new ArrayList<Field>();
 
-        for (Field field : object.getClass().getDeclaredFields()) {
+        for (Field field: clazz.getDeclaredFields()) {
 
-            if (isSerializableFieldForObject(object, field)) {
-
+            if (isSerializableFieldForObject(clazz, field)) {
                 supportedFields.add(field);
             }
         }
+        
         return supportedFields;
     }
 
-    private static boolean isSerializableFieldForObject(Object object, Field field) {
-        return ReflectionUtils.hasDeclaredGetterAndSetter(field, object.getClass())
+    private static boolean isSerializableFieldForObject(Class<?> clazz, Field field) {
+        return ReflectionUtils.hasDeclaredGetterAndSetter(field, clazz)
                 && FieldTypeIdentifier.isSerializableField(field)
                 && !hasUnsupportedAnnotations(field)
-                && !isIdForObject(field, object);
+                && !isIdForDomainClass(field, clazz);
     }
 
 
@@ -139,8 +139,8 @@ public final class MetadataParser {
         return (field.getAnnotation(Attributes.class) != null) || (field.getAnnotation(Transient.class) != null);
     }
 
-    private static boolean isIdForObject(Field field, Object object) {
-        return field.equals(MetadataParser.getIdField(object));
+    private static boolean isIdForDomainClass(Field field, Class<?> clazz) {
+        return field.equals(MetadataParser.getIdField(clazz));
     }
 
     public static List<Field> getNestedDomainFields(Object object) {
