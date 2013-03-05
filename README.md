@@ -135,8 +135,7 @@ SimpleDb native queries can be run using a custom **@Query** annotation.
 
 Parameters can be bound to queries using  **@Param** annotation or by their position in method's signature if **?** are presents in queries.
 
-Queries may return Single Values or Multiple values.
-
+Queries may return Single Values or Multiple values. 
 Is it possible for instance to select individual fields of a given Entity, by specifying the field name in the select condition.
 
     @Query(value = "select primitiveField from `testDB.simpleDbUser`")
@@ -157,6 +156,38 @@ Queries are validated against method's returned type. The following query won't 
     @Query(value = "select * from `testDB.simpleDbUser`")
     List<String> customSelectAllWrongReturnType();
 
+####@Query annotation ####
+
+Query annotation may have the fallowing parameters:
+
+* value
+* select
+* where
+
+A query annotation can contain: 
+
+ * only the value parameter 
+ * a select parameter
+ * a where parameter
+ * a select and where parameter. 
+
+Any other combinations are invalid.
+
+A query annotation with a value parameters must contain a valid simple db query.
+
+    @Query(value = "select * from `testDB.simpleDbUser`")
+
+A query with only a select parameter must contain a valid array of fields, and the domain name will be completed using the repository metadata.
+
+    @Query(select = {"sampleAttribute", "sampleList"})
+A query with only where parameter must contain a string containing a valid simpleDb where condition. This query will be generated as a "select * from 'domainName' " fallowed by given where condition.
+
+    @Query(where = "sampleAttribute<='3' or sampleName like '%test'")
+A query with select and where parameters must contain an array of fields for select parameter and a string representing a correct simpleDb condition for where parameter.
+
+    @Query(select = {"item_id"}, where = "item_id >= `3` and item_id <= `5`")
+The field representing the id of the entity will be replace in select and where clauses with itemName() before the query is executed.
+    
 
 ### Paging ###
 We support pagination by extending the **PagingAndSortingRepository** which provides a `Page<T> findAll(Pagealbe pageable)` method. Otherwise, you can also define the findAll method in any repository. The following repository defines the findAll paged query:
