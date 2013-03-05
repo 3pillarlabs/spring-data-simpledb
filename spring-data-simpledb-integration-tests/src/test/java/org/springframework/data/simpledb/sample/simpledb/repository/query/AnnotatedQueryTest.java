@@ -1,23 +1,22 @@
 package org.springframework.data.simpledb.sample.simpledb.repository.query;
 
-import junit.framework.Assert;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.List;
+import java.util.Set;
+
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.simpledb.core.InvalidSimpleDBQueryException;
 import org.springframework.data.simpledb.sample.simpledb.domain.JSONCompatibleClass;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.List;
-import java.util.Set;
-
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-consistent-repository-context.xml")
@@ -28,12 +27,6 @@ public class AnnotatedQueryTest {
     @Autowired
     AnnotatedQueryRepository repository;
 
-    @Before
-    public void setUp() {
-        testUsers = SimpleDbUserBuilder.createListOfItems(3);
-        repository.save(testUsers);
-    }
-
     @After
     public void tearDown() {
         repository.deleteAll();
@@ -41,18 +34,24 @@ public class AnnotatedQueryTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void customSelectAllWrongReturnType_should_fail_wrong_returned_collection_generic_type() {
-        List<String> result = repository.customSelectAllWrongReturnType();
+        repository.customSelectAllWrongReturnType();
     }
 
 
     @Test
     public void customSelectWithNamedParamsQuery_should_return_a_list_a_list_of() {
+        List<SimpleDbUser> entities = SimpleDbUserBuilder.createListOfItems(3);
+        repository.save(entities);
+
         List<SimpleDbUser> result = repository.customSelectWithNamedParamsQuery(String.valueOf(0.01f), String.valueOf("Item_1"));
         assertNotNull(result);
     }
 
     @Test
     public void customSelectWithIndexedParams_should_return_a_list_of() {
+        List<SimpleDbUser> entities = SimpleDbUserBuilder.createListOfItems(3);
+        repository.save(entities);
+
         List<SimpleDbUser> result = repository.customSelectWithIndexedParams(String.valueOf("tes_string$"), String.valueOf(0.01f));
         assertNotNull(result);
     }
@@ -93,5 +92,21 @@ public class AnnotatedQueryTest {
         assertEquals(1, columns.size()); //one row
     }
 
+    @Test
+    public void custom_select_with_where_clause_should_work() {
+    	SimpleDbUser entity = SimpleDbUserBuilder.createUserWithSampleAttributes("Item_0");
+    	repository.save(entity);
 
+    	List<SimpleDbUser> result = repository.customSelectWithWhereClause();
+    	assertEquals(1, result.size()); //one row
+
+    	//one column
+    	SimpleDbUser simpelDbUser = result.get(0);
+    	assertEquals("Item_0", simpelDbUser.getItemName());
+    }
+
+    @Test(expected = InvalidSimpleDBQueryException.class)
+    public void malformedQuery_should_throw_exception() {
+    	repository.malformedQuery();
+    }
 }

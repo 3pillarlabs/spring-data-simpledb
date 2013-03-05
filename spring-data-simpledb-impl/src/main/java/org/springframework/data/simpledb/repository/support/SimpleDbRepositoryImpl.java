@@ -15,10 +15,6 @@
  */
 package org.springframework.data.simpledb.repository.support;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,6 +26,10 @@ import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.repository.SimpleDbPagingAndSortingRepository;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.util.Assert;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @org.springframework.stereotype.Repository
 public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements PagingAndSortingRepository<T, ID>, SimpleDbPagingAndSortingRepository<T, ID> {
@@ -115,12 +115,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
     @Override
     public <S extends T> S save(S entity, boolean consistentRead) {
         EntityWrapper sdbEntity = new EntityWrapper(entityInformation, entity);
-        S result = (S) operations.updateItem(sdbEntity);
-        if (!consistentRead) {
-            return result;
-        } else {
-            return (S) findOne(entityInformation.getId(entity), true);
-        }
+        return (S)operations.updateItem(sdbEntity);
     }
 
     @Override

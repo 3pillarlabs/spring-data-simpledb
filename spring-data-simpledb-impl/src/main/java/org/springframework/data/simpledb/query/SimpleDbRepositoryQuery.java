@@ -2,6 +2,7 @@ package org.springframework.data.simpledb.query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
@@ -36,6 +37,10 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
     @Override
     public QueryMethod getQueryMethod() {
         return method;
+    }
+    
+    public Parameters getQueryParameters() {
+    	return method.getParameters();
     }
 
     /**

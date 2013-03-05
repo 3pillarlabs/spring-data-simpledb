@@ -12,7 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
+import org.springframework.data.simpledb.parser.SimpleDBParser;
+import org.springframework.data.simpledb.query.QueryUtils;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
+import org.springframework.data.simpledb.util.MetadataParser;
 import org.springframework.util.Assert;
 
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
@@ -42,7 +45,9 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         logOperation("Update", entity);
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
         entity.generateIdIfNotSet();
-
+        
+        deleteItem(entity.getDomain(), entity.getItemName());
+        
         Map<String, String> rawAttributes = entity.serialize();
         List<PutAttributesRequest> putAttributesRequests = SimpleDbRequestBuilder.createPutAttributesRequests(entity.getDomain(), entity.getItemName(), rawAttributes);
 
@@ -80,19 +85,32 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     @Override
      public List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, String query, boolean consistentRead) {
         LOGGER.info("Find All Domain \"{}\" isConsistent=\"{}\"", entityInformation.getDomain(), consistentRead);
-        final SelectResult selectResult = sdb.select(new SelectRequest(query, consistentRead));
+        
+        validateSelectQuery(query);
+        
+        final String escapedQuery = getEscapedQuery(query, entityInformation);
+        final SelectResult selectResult = sdb.select(new SelectRequest(escapedQuery, consistentRead));
+        
         return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
     }
-    
+
+    private String getEscapedQuery(String query, SimpleDbEntityInformation<T, ID> entityInformation) {
+        return QueryUtils.escapeQueryAttributes(query, MetadataParser.getIdField(entityInformation.getJavaType()).getName());
+    }
+
     private List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, String query, String nextToken, boolean consistentRead) {
     	LOGGER.info("Find All Domain \"{}\" isConsistent=\"{}\", with token!", entityInformation.getDomain(), consistentRead);
-    	
-    	SelectRequest selectRequest = new SelectRequest(query, consistentRead);
+
+    	validateSelectQuery(query);
+
+    	final String escapedQuery = getEscapedQuery(query, entityInformation);
+    	SelectRequest selectRequest = new SelectRequest(escapedQuery, consistentRead);
+
     	selectRequest.setNextToken(nextToken);
-    	
-		final SelectResult selectResult = sdb.select(selectRequest);
-    	
-		return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
+
+    	final SelectResult selectResult = sdb.select(selectRequest);
+
+    	return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
     }
 
     @Override
@@ -101,9 +119,13 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         return count(new QueryBuilder(entityInformation, true).toString(), consistentRead);
     }
 
+    // TODO: escape bounded query with itemName() for every item_id
     @Override
     public long count(String query, boolean consistentRead){
         LOGGER.info("Count items for query "+query);
+        
+        validateSelectQuery(query);
+        
         final SelectResult selectResult = sdb.select(new SelectRequest(query, consistentRead));
         for (Item item : selectResult.getItems()) {
             if (item.getName().equals("Domain")) {
@@ -126,12 +148,13 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     	
     	return selectResult.getNextToken();
     }
-    
+
     private String getPageOffsetToken(final Pageable pageable, SimpleDbEntityInformation<T, ID> entityInformation, String query, boolean consistentRead) {
     	int previousPageNumber = pageable.getPageNumber() - 1;
 		int endOfPreviousPageLimit = previousPageNumber * pageable.getPageSize();
-		
-		final String countQuery = new QueryBuilder(query, true).withLimit(endOfPreviousPageLimit).toString();
+
+      final String escapedQuery = getEscapedQuery(query, entityInformation);
+		final String countQuery = new QueryBuilder(escapedQuery, true).withLimit(endOfPreviousPageLimit).toString();
     	
     	return getNextToken(countQuery, consistentRead);
     }
@@ -141,12 +164,14 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         Assert.notNull(pageable);
         Assert.isTrue(pageable.getPageNumber() > 0);
         Assert.isTrue(pageable.getPageSize() > 0);
-        
+
+        final String escapedQuery = getEscapedQuery(query, entityInformation);
+
     	List<T> resultsList;
-    	String queryWithPageSizeLimit = new QueryBuilder(query).with(pageable).toString();
+    	String queryWithPageSizeLimit = new QueryBuilder(escapedQuery).with(pageable).toString();
 
     	if(pageable.getPageNumber() != 1) {
-    		String pageOffsetToken = getPageOffsetToken(pageable, entityInformation, query, consistentRead);
+    		String pageOffsetToken = getPageOffsetToken(pageable, entityInformation, escapedQuery, consistentRead);
 
     		if(pageOffsetToken != null && ! pageOffsetToken.isEmpty()) {
     			resultsList = find(entityInformation, queryWithPageSizeLimit, pageOffsetToken, consistentRead);
@@ -158,7 +183,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
     		resultsList = find(entityInformation, queryWithPageSizeLimit, consistentRead);
     	}
 
-    	final String countQuery = new QueryBuilder(query, true).toString();
+    	final String countQuery = new QueryBuilder(escapedQuery, true).toString();
     	
     	Long totalCount = count(countQuery, consistentRead);
 
@@ -167,5 +192,17 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
     private void logOperation(String operation, EntityWrapper<T, ID> entity) {
         LOGGER.info(operation + " \"{}\" ItemName \"{}\"", entity.getDomain(), entity.getItemName());
+    }
+    
+    /*
+     * Validate a custom query before sending the request to the DB. 
+     */
+    private void validateSelectQuery(final String selectQuery) {
+    		final SimpleDBParser parser = new SimpleDBParser(selectQuery);
+    		try {
+    			parser.selectQuery();
+    		} catch (Exception e) {
+    			throw new InvalidSimpleDBQueryException("The following query is an invalid SimpleDB query: " + selectQuery, e);
+    		}
     }
 }

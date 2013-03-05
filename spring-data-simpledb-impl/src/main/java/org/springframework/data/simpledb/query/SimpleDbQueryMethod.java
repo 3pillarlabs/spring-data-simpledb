@@ -1,5 +1,11 @@
 package org.springframework.data.simpledb.query;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Iterator;
+import java.util.List;
+
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -11,12 +17,6 @@ import org.springframework.data.simpledb.query.parser.QueryParserUtils;
 import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * SimpleDB specific extension of {@link org.springframework.data.repository.query.QueryMethod}. <br/>
@@ -73,19 +73,10 @@ public class SimpleDbQueryMethod extends QueryMethod {
      */
     public final String getAnnotatedQuery() {
         String valueParameter = getAnnotationValue(Query.QueryClause.VALUE.getQueryClause(), String.class);
-        String[] whereParameters = getAnnotationValue(Query.QueryClause.WHERE.getQueryClause(), String[].class);
+        String whereParameters = getAnnotationValue(Query.QueryClause.WHERE.getQueryClause(), String.class);
         String[] selectParameters = getAnnotationValue(Query.QueryClause.SELECT.getQueryClause(), String[].class);
 
-        assertNotOverlappingQueryParameters(valueParameter, selectParameters, whereParameters);
-        
         return QueryParserUtils.buildQueryFromQueryParameters(valueParameter, selectParameters, whereParameters, getDomainClass());
-    }
-
-    private void assertNotOverlappingQueryParameters(String valueParameter, String[] selectParameters, String[] whereParameters){
-       if(  StringUtils.hasText(valueParameter)   &&
-    		   	(StringUtils.hasText(selectParameters[0]) || StringUtils.hasText(whereParameters[0])) ){
-           Assert.isTrue(false, "Too many parameters for query. If value parameter present, no select or where parameter");
-       }
     }
 
     /**

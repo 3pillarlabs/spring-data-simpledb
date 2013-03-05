@@ -16,7 +16,7 @@ public class GetterAndSetterTest {
 
     @Test public void hasDeclaredGetterAndSetter_should_retrieve_only_fields_with_declared_getters_and_setters() {
 
-        List<Field> declaredFieldsWithAccessorsAndMutators = MetadataParser.getSupportedFields(new SampleBean());
+        List<Field> declaredFieldsWithAccessorsAndMutators = MetadataParser.getSupportedFields(SampleBean.class);
 
         assertThat(declaredFieldsWithAccessorsAndMutators.size(), is(1));
 

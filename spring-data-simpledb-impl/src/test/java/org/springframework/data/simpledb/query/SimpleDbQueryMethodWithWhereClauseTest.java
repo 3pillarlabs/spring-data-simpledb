@@ -15,30 +15,27 @@ public class SimpleDbQueryMethodWithWhereClauseTest {
     @Test
     public void getAnnotatedQuery_should_returned_completed_where_clause_in_query() throws Exception {
         SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectWithWhereClause", SampleEntity.class);
-        assertEquals("select * from `testDB.sampleEntity` where `sampleAttribute`<='3' and `sampleList` is ''", repositoryMethod.getAnnotatedQuery());
+
+//        @Query(where = "sampleAttribute<='3' or sampleList is ''")
+        final String expectedQuery = "select * from `testDB.sampleEntity` where sampleAttribute<='3' or sampleList is ''";
+
+        assertEquals(expectedQuery, repositoryMethod.getAnnotatedQuery());
     }
 
     @Test
     public void getAnnotatedQuery_should_change_id_in_where_clause() throws Exception {
         SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectChangeId", SampleEntity.class);
-        assertEquals("select * from `testDB.sampleEntity` where itemName() ='Item_0'", repositoryMethod.getAnnotatedQuery());
-    }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void getAnnotatedQuery_should_fail_for_tricky_where_clauses() throws Exception {
-        SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectTrickyWhereClause", SampleEntity.class);
-        repositoryMethod.getAnnotatedQuery();
+        final String expectedQuery = "select * from `testDB.sampleEntity` where item_id ='Item_0'";
+        assertEquals(expectedQuery, repositoryMethod.getAnnotatedQuery());
     }
 
     public interface AnnotatedQueryRepository {
-        @Query(where = {"sampleAttribute<='3'", "sampleList is ''"})
+        @Query(where = "sampleAttribute<='3' or sampleList is ''")
         List<SampleEntity> selectWithWhereClause();
 
         @Query(where = "item_id ='Item_0'")
         List<SampleEntity> selectChangeId();
-        
-        @Query(where = "sampleAttribute'")
-        List<SampleEntity> selectTrickyWhereClause();
     }
 
     private SimpleDbQueryMethod prepareQueryMethodToTest(String methodName, Class<?> entityClass) throws Exception {

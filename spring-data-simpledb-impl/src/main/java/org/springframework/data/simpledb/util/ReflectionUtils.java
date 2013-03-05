@@ -109,9 +109,9 @@ public final class ReflectionUtils {
             Class<?> secondTypeClass = (Class<?>)secondRawType;
 
             if(firstTypeClass.isAssignableFrom(secondTypeClass)){
-                firstType = ((ParameterizedType) firstType).getActualTypeArguments()[0];
-                secondType = ((ParameterizedType) secondType).getActualTypeArguments()[0];
-                return isSameConcreteType(firstType, secondType);
+                Type firstTypeArgument = ((ParameterizedType) firstType).getActualTypeArguments()[0];
+                Type secondTypeArgument = ((ParameterizedType) secondType).getActualTypeArguments()[0];
+                return isSameConcreteType(firstTypeArgument, secondTypeArgument);
             }
             return false;
         } else {
