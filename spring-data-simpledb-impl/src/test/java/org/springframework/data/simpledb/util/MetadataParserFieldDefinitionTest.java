@@ -16,7 +16,7 @@ public class MetadataParserFieldDefinitionTest {
 
     @Test
     public void getSupportedFields_should_return_list_of_primitives_wrappers() throws Exception {
-        List<Field> returnedPrimitiveWrappers = MetadataParser.getSupportedFields(new SamplePrimitivesWrapper());
+        List<Field> returnedPrimitiveWrappers = MetadataParser.getSupportedFields(SamplePrimitivesWrapper.class);
 
 
         assertFalse(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("id"))) ;

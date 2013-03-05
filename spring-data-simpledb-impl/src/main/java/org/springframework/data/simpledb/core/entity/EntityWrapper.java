@@ -43,7 +43,7 @@ public class EntityWrapper<T, ID extends Serializable> {
     }
 
     private void createFieldWrappers(final boolean isNew) {
-        for (final Field field : MetadataParser.getSupportedFields(item)) {
+        for (final Field field: MetadataParser.getSupportedFields(entityInformation.getJavaType())) {
               if(!FieldTypeIdentifier.isOfType(field, FieldType.ID, FieldType.ATTRIBUTES)) {
                 wrappedFields.put(field.getName(), FieldWrapperFactory.createFieldWrapper(field, this, isNew));
             }

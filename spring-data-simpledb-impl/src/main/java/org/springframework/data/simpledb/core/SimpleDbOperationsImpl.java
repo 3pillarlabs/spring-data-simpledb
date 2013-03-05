@@ -45,7 +45,9 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
         logOperation("Update", entity);
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
         entity.generateIdIfNotSet();
-
+        
+        deleteItem(entity.getDomain(), entity.getItemName());
+        
         Map<String, String> rawAttributes = entity.serialize();
         List<PutAttributesRequest> putAttributesRequests = SimpleDbRequestBuilder.createPutAttributesRequests(entity.getDomain(), entity.getItemName(), rawAttributes);
 
