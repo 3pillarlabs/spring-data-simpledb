@@ -11,25 +11,25 @@ import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 
 public interface AnnotatedQueryRepository extends PagingAndSortingRepository<SimpleDbUser, String> {
 
-    @Query("select * from `testDB.simpleDbUser` where Item_1 = :item1 and primitiveField = :primitiveField")
+    @Query(where = "Item_1 = :item1 and primitiveField = :primitiveField")
     List<SimpleDbUser> customSelectWithNamedParamsQuery(@Param(value="primitiveField") String primitiveField, @Param(value="item1") String coreField);
 
-    @Query("select * from `testDB.simpleDbUser` where coreField = ? and primitiveField = ?")
+    @Query(where = "coreField = ? and primitiveField = ?")
     List<SimpleDbUser> customSelectWithIndexedParams(String coreField, String primitiveField);
 
-    @Query(value = "select coreField from `testDB.simpleDbUser` where itemName()='Item_0'")
+    @Query(select = "coreField", where= "itemName()='Item_0'")
     List<List<Object>> selectCoreFields();
 
-    @Query(value = "SELECT objectList FROM `testDB.simpleDbUser` where itemName()='Item_0'")
+    @Query(select = "objectList", where = "itemName()='Item_0'")
     List<JSONCompatibleClass> partialObjectListSelect();
 
-    @Query(value = "select primitiveField from `testDB.simpleDbUser`")
+    @Query(select = "primitiveField")
     Set<Float> primitiveFieldSelect();
 
-    @Query(value = "select * from `testDB.simpleDbUser`")
+    @Query
     List<String> customSelectAllWrongReturnType();
 
-    @Query(value = "select * where itemName()='Item_0'")
+    @Query(where = "itemName()='Item_0' ' ")
     List<SimpleDbUser> malformedQuery();
     
     @Query(where = "itemName = 'Item_0'")

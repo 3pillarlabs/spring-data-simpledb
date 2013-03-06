@@ -10,16 +10,16 @@ import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 
 public interface PagedAnnotatedQueryRepository extends CrudRepository<SimpleDbUser, String> {
 	
-    @Query(value = "select * from `testDB.simpleDbUser` where primitiveField > ?")
+    @Query(where = "primitiveField > ?")
     Page<SimpleDbUser> findUsersWithPrimitiveFieldHigherThan(float primitiveField, Pageable page);
 
-    @Query(value = "select * from `testDB.simpleDbUser` where primitiveField > ?")
+    @Query(where = "primitiveField > ?")
     List<SimpleDbUser> findUserListWithPrimitiveFieldHigherThan(float primitiveField, Pageable page);
     
-    @Query(value = "select * from `not.valid.db`")
+    @Query(where = "someMissingField > ? ?")
     Page<SimpleDbUser> invalidQuery(Pageable page);
     
-    @Query(value = "select primitiveField from `testDB.simpleDbUser` where primitiveField > ?")
+    @Query(select = "primitiveField", where = "primitiveField > ?")
     List<SimpleDbUser> pagedPartialQuery(float primitiveField, Pageable page);
 
 }
