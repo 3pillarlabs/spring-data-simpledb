@@ -13,90 +13,88 @@ import static org.junit.Assert.assertTrue;
 
 public class SimpleDbResultConverterTest {
 
-    public static final int SAMPLE_INT_VALUE = 5;
+	public static final int SAMPLE_INT_VALUE = 5;
 
-    @Test
-    public void filterNamedAttributesAsList_should_return_list_of_named_attributes() throws Exception {
-        List<SampleEntity> entities = new ArrayList<SampleEntity>();
-        SampleEntity entity = new SampleEntity();
-        entity.setSampleAttribute(SAMPLE_INT_VALUE);
-        entities.add(entity);
+	@Test
+	public void filterNamedAttributesAsList_should_return_list_of_named_attributes() throws Exception {
+		List<SampleEntity> entities = new ArrayList<SampleEntity>();
+		SampleEntity entity = new SampleEntity();
+		entity.setSampleAttribute(SAMPLE_INT_VALUE);
+		entities.add(entity);
 
-        List<Object> filteredAttributes = SimpleDbResultConverter.filterNamedAttributesAsList(entities, "sampleAttribute");
+		List<Object> filteredAttributes = SimpleDbResultConverter.filterNamedAttributesAsList(entities,
+				"sampleAttribute");
 
-        assertEquals(1, filteredAttributes.size());
+		assertEquals(1, filteredAttributes.size());
 
-        Object firstElement = filteredAttributes.get(0);
+		Object firstElement = filteredAttributes.get(0);
 
-        assertEquals(SAMPLE_INT_VALUE, firstElement);
-    }
+		assertEquals(SAMPLE_INT_VALUE, firstElement);
+	}
 
-    @Test
-    public void filterNamedAttributesAsList_should_work_for_list_attributes() throws Exception {
-        List<SampleEntity> entities = new ArrayList<SampleEntity>();
-        SampleEntity entity = new SampleEntity();
-        entity.setSampleList(new ArrayList<Integer>());
-        entities.add(entity);
+	@Test
+	public void filterNamedAttributesAsList_should_work_for_list_attributes() throws Exception {
+		List<SampleEntity> entities = new ArrayList<SampleEntity>();
+		SampleEntity entity = new SampleEntity();
+		entity.setSampleList(new ArrayList<Integer>());
+		entities.add(entity);
 
-        List<Object> filteredAttributes = SimpleDbResultConverter.filterNamedAttributesAsList(entities, "sampleList");
+		List<Object> filteredAttributes = SimpleDbResultConverter.filterNamedAttributesAsList(entities, "sampleList");
 
-        assertEquals(1, filteredAttributes.size());
+		assertEquals(1, filteredAttributes.size());
 
-        Object firstElement = filteredAttributes.get(0);
+		Object firstElement = filteredAttributes.get(0);
 
-        assertTrue(firstElement instanceof List);
-    }
+		assertTrue(firstElement instanceof List);
+	}
 
+	@Test(expected = MappingException.class)
+	public void filterNamedAttributesAsList_should_not_return_list_of_named_attributes_for_wrong_att() throws Exception {
+		List<SampleEntity> entities = new ArrayList<SampleEntity>();
+		SampleEntity entity = new SampleEntity();
+		entities.add(entity);
 
+		SimpleDbResultConverter.filterNamedAttributesAsList(entities, "wrongAttribute");
+	}
 
-    @Test(expected = MappingException.class)
-    public void filterNamedAttributesAsList_should_not_return_list_of_named_attributes_for_wrong_att() throws Exception {
-        List<SampleEntity> entities = new ArrayList<SampleEntity>();
-        SampleEntity entity = new SampleEntity();
-        entities.add(entity);
+	@Test
+	public void filterNamedAttributesAsSet_should_return_Set_of_named_attributes() throws Exception {
+		List<SampleEntity> entities = new ArrayList<SampleEntity>();
+		SampleEntity entity = new SampleEntity();
+		entity.setSampleAttribute(SAMPLE_INT_VALUE);
+		entities.add(entity);
 
-        SimpleDbResultConverter.filterNamedAttributesAsList(entities, "wrongAttribute");
-    }
+		Set<Object> filteredAttributes = SimpleDbResultConverter
+				.filterNamedAttributesAsSet(entities, "sampleAttribute");
 
+		assertEquals(1, filteredAttributes.size());
 
-    @Test
-    public void filterNamedAttributesAsSet_should_return_Set_of_named_attributes() throws Exception {
-        List<SampleEntity> entities = new ArrayList<SampleEntity>();
-        SampleEntity entity = new SampleEntity();
-        entity.setSampleAttribute(SAMPLE_INT_VALUE);
-        entities.add(entity);
+		Object firstElement = filteredAttributes.iterator().next();
 
-        Set<Object> filteredAttributes = SimpleDbResultConverter.filterNamedAttributesAsSet(entities, "sampleAttribute");
+		assertEquals(SAMPLE_INT_VALUE, firstElement);
+	}
 
-        assertEquals(1, filteredAttributes.size());
+	@Test
+	public void toListOfListOfObject_should_return_List_of_Lists_containing_requested_attributes() {
+		List<SampleEntity> entities = new ArrayList<SampleEntity>();
+		SampleEntity entity = new SampleEntity();
+		entity.setSampleAttribute(SAMPLE_INT_VALUE);
+		entity.setSampleList(new ArrayList<Integer>());
+		entities.add(entity);
 
-        Object firstElement = filteredAttributes.iterator().next();
+		List<String> attributes = Arrays.asList("sampleAttribute", "sampleList");
 
-        assertEquals(SAMPLE_INT_VALUE, firstElement);
-    }
+		List<List<Object>> filteredAttributes = SimpleDbResultConverter.toListOfListOfObject(entities, attributes);
 
+		// one row
+		assertEquals(1, filteredAttributes.size());
 
-    @Test
-    public void toListOfListOfObject_should_return_List_of_Lists_containing_requested_attributes(){
-        List<SampleEntity> entities = new ArrayList<SampleEntity>();
-        SampleEntity entity = new SampleEntity();
-        entity.setSampleAttribute(SAMPLE_INT_VALUE);
-        entity.setSampleList(new ArrayList<Integer>());
-        entities.add(entity);
+		// two columns
+		List<Object> columns = filteredAttributes.get(0);
+		assertEquals(2, columns.size());
 
-        List<String> attributes = Arrays.asList("sampleAttribute", "sampleList");
+		assertEquals(SAMPLE_INT_VALUE, columns.get(0));
 
-        List<List<Object>> filteredAttributes = SimpleDbResultConverter.toListOfListOfObject(entities, attributes);
-
-        //one row
-        assertEquals(1, filteredAttributes.size());
-
-        //two columns
-        List<Object> columns = filteredAttributes.get(0);
-        assertEquals(2, columns.size());
-
-        assertEquals(SAMPLE_INT_VALUE, columns.get(0));
-
-    }
+	}
 
 }

@@ -17,10 +17,11 @@ public class NestedEntityFieldWrapper<T, ID extends Serializable> extends Abstra
 	public NestedEntityFieldWrapper(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
 		super(field, parent, isNewParent);
 
-		final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(getField().getType());
+		final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(getField()
+				.getType());
 
 		/* if it was already created in createNewInstance */
-		if(! isNewParent) {
+		if(!isNewParent) {
 			/* recursive call */
 			wrappedNestedEntity = new EntityWrapper(entityMetadata, getFieldValue());
 		}
@@ -31,7 +32,8 @@ public class NestedEntityFieldWrapper<T, ID extends Serializable> extends Abstra
 		final Map<String, String> result = new HashMap<String, String>();
 
 		final String nestedEntityFieldName = getFieldName();
-		final String nestedEntityAttributePrefix = prefix.isEmpty() ? nestedEntityFieldName : prefix + "." + nestedEntityFieldName;
+		final String nestedEntityAttributePrefix = prefix.isEmpty() ? nestedEntityFieldName : prefix + "."
+				+ nestedEntityFieldName;
 
 		/* recursive call */
 		final Map<String, String> serializedNestedEntity = wrappedNestedEntity.serialize(nestedEntityAttributePrefix);
@@ -41,27 +43,26 @@ public class NestedEntityFieldWrapper<T, ID extends Serializable> extends Abstra
 		return result;
 	}
 
-
 	@Override
 	public Object deserialize(Map<String, String> values) {
 		/* recursive call */
 		return wrappedNestedEntity.deserialize(values);
 	}
 
-
 	@Override
 	public void createInstance() {
 		/* instantiation is handled by the EntityWrapper */
-		final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(getField().getType());
+		final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(getField()
+				.getType());
 		wrappedNestedEntity = new EntityWrapper(entityMetadata);
 
 		try {
 			getField().set(getParentEntity(), wrappedNestedEntity.getItem());
-		} catch (IllegalArgumentException e) {
+		} catch(IllegalArgumentException e) {
 			throw new MappingException("Could not instantiate object", e);
-		} catch (IllegalAccessException e) {
-            throw new MappingException("Could not instantiate object", e);
-        }
-    }
+		} catch(IllegalAccessException e) {
+			throw new MappingException("Could not instantiate object", e);
+		}
+	}
 
 }

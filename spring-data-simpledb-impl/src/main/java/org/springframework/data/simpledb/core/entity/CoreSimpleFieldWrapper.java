@@ -13,20 +13,20 @@ public class CoreSimpleFieldWrapper<T, ID extends Serializable> extends Abstract
 		super(field, parent, isNewParent);
 	}
 
-    @Override
-    public String serializeValue() {
-        return SimpleDBAttributeConverter.encode(this.getFieldValue());
-    }
+	@Override
+	public String serializeValue() {
+		return SimpleDBAttributeConverter.encode(this.getFieldValue());
+	}
 
-    @Override
-    public Object deserializeValue(String value) {
-        try {
-            return SimpleDBAttributeConverter.decodeToFieldOfType(value, getField().getType());
-        } catch (IllegalArgumentException e) {
-            throw new MappingException("Could not map attributes", e);
-        } catch (ParseException e) {
-            throw new MappingException("Could not map attributes", e);
-        }
-    }
+	@Override
+	public Object deserializeValue(String value) {
+		try {
+			return SimpleDBAttributeConverter.decodeToFieldOfType(value, getField().getType());
+		} catch(IllegalArgumentException e) {
+			throw new MappingException("Could not map attributes", e);
+		} catch(ParseException e) {
+			throw new MappingException("Could not map attributes", e);
+		}
+	}
 
 }

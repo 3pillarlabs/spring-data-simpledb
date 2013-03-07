@@ -8,13 +8,12 @@ public class FieldTypeIdentifier {
 		/* utility class */
 	}
 
+	public static boolean isSerializableField(Field field) {
+		return isOfType(field, FieldType.getSerializableFieldTypes());
+	}
 
-    public static boolean isSerializableField(Field field){
-        return isOfType(field, FieldType.getSerializableFieldTypes());
-    }
-
-    public static boolean isOfType(final Field field, FieldType... fieldTypes) {
-		for(final FieldType fieldType: fieldTypes) {
+	public static boolean isOfType(final Field field, FieldType... fieldTypes) {
+		for(final FieldType fieldType : fieldTypes) {
 			if(fieldType.isOfType(field)) {
 				return true;
 			}
@@ -22,7 +21,7 @@ public class FieldTypeIdentifier {
 
 		return false;
 	}
-	
+
 	public static FieldType getFieldType(final Field field) {
 		if(FieldType.ID.isOfType(field)) {
 			return FieldType.ID;
@@ -41,7 +40,7 @@ public class FieldTypeIdentifier {
 		} else if(FieldType.NESTED_ENTITY.isOfType(field)) {
 			return FieldType.NESTED_ENTITY;
 		}
-		
+
 		return FieldType.OBJECT;
 	}
 

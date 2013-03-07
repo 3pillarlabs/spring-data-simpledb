@@ -9,14 +9,14 @@
     <name>Parent Spring Data SimpleDB</name>
     <url>http://maven.apache.org</url>
     <build>
-        <plugins>
+         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>${java.compiler.version}</source>
+                    <target>${java.compiler.version}</target>
                 </configuration>
             </plugin>
 
@@ -51,28 +51,78 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <configLocation>CheckstyleSonar.xml</configLocation>
+                    <configLocation>etc/CheckstyleSonar.xml</configLocation>
                     <maxAllowedViolations>1</maxAllowedViolations>
                     <violationSeverity>info</violationSeverity>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
-
                 </configuration>
-
-
-            </plugin>
-
+				</plugin>
+							 
+			    <!-- FindBugs -->
+			    <plugin>
+       				 <groupId>org.codehaus.mojo</groupId>
+       				 <artifactId>findbugs-maven-plugin</artifactId>
+       				 <!-- Uses FindBugs version 2.0.1 -->
+       				 <version>2.5.2</version>
+       				 <executions>
+						<execution>
+					    <goals>
+							<goal>check</goal>
+						 </goals>
+						</execution>
+					</executions>
+					<configuration>
+						    <includeFilterFile>${basedir}/../etc/FindbugsSonar.xml</includeFilterFile>
+						    <excludeFilterFile>${basedir}/../etc/FindbugsSonarExclude.xml</excludeFilterFile>
+						    <effort>Max</effort>
+        					<threshold>High</threshold>
+        					<includeTests>false</includeTests>          					  					
+                    </configuration>       				 
+     			 </plugin>
+     			 
+			     <!--PMD-->
+		        <plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-pmd-plugin</artifactId>
+					<!-- Uses PMD version 4.3 -->
+					<version>2.7.1</version>
+					<executions>
+        				  <execution>
+        				      <phase>process-sources</phase>
+           				       <goals>
+             				        <goal>check</goal>              				                   				       
+           				       </goals>           				      
+        				 </execution>
+          			</executions>		
+          			<configuration>
+         				 <targetJdk>${java.compiler.version}</targetJdk>
+         				 <rulesets>
+						     <ruleset>${basedir}/../etc/PMDSonar.xml</ruleset>							           
+                         </rulesets>
+                         <failurePriority>3</failurePriority>
+                         <verbose>true</verbose>
+                         <includeTests>false</includeTests> 
+          				 <excludeRoots>
+            				 <excludeRoot>src/generated/java</excludeRoot>
+          				 </excludeRoots>
+          			</configuration> 				
+				</plugin>   		  
         </plugins>
     </build>
+    
+   
+ 
     <modules>
         <module>spring-data-simpledb-impl</module>
-        <module>spring-data-simpledb-parser</module>
-        <module>spring-data-simpledb-integration-tests</module>
+        <module>spring-data-simpledb-parser</module>    
+        <module>spring-data-simpledb-integration-tests</module>    
     </modules>
 
     <properties>
         <spring.version>3.2.0.RELEASE</spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.compiler.version>1.6</java.compiler.version>
     </properties>
 
     <dependencies>

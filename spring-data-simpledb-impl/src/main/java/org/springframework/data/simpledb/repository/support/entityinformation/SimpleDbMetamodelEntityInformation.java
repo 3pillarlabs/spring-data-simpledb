@@ -21,17 +21,20 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * Implementation of {@link org.springframework.data.repository.core.EntityInformation} that uses JPA {@link javax.persistence.metamodel.Metamodel}
- * to find the domain class' id field.
- *
+ * Implementation of {@link org.springframework.data.repository.core.EntityInformation} that uses JPA
+ * {@link javax.persistence.metamodel.Metamodel} to find the domain class' id field.
+ * 
  * @author Oliver Gierke
  */
-public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> extends SimpleDbEntityInformationSupport<T, ID> {
+public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> extends
+		SimpleDbEntityInformationSupport<T, ID> {
 
 	/**
-	 * Creates a new {@link org.springframework.data.jpa.repository.support.JpaMetamodelEntityInformation} for the given domain class and {@link javax.persistence.metamodel.Metamodel}.
-	 *
-	 * @param domainClass must not be {@literal null}.
+	 * Creates a new {@link org.springframework.data.jpa.repository.support.JpaMetamodelEntityInformation} for the given
+	 * domain class and {@link javax.persistence.metamodel.Metamodel}.
+	 * 
+	 * @param domainClass
+	 *            must not be {@literal null}.
 	 */
 	public SimpleDbMetamodelEntityInformation(Class<T> domainClass) {
 
@@ -41,51 +44,49 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see org.springframework.data.repository.core.EntityInformation#getId(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
-    @Override
+	@Override
 	public ID getId(T entity) {
-        return (ID) MetadataParser.getItemName(entity);
+		return (ID) MetadataParser.getItemName(entity);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 *
-	 * @see
-	 * org.springframework.data.repository.support.EntityInformation#getIdType()
+	 * 
+	 * @see org.springframework.data.repository.support.EntityInformation#getIdType()
 	 */
 	@SuppressWarnings("unchecked")
-    @Override
+	@Override
 	public Class<ID> getIdType() {
 		return (Class<ID>) String.class;
 	}
 
+	@Override
+	public String getDomain() {
+		return MetadataParser.getDomain(getJavaType());
+	}
 
-    @Override
-    public String getDomain() {
-        return MetadataParser.getDomain(getJavaType());
-    }
+	@Override
+	public String getItemName(T entity) {
+		return MetadataParser.getItemName(entity);
+	}
 
-    @Override
-    public String getItemName(T entity) {
-        return MetadataParser.getItemName(entity);
-    }
+	@Override
+	public Map<String, String> getAttributes(T entity) {
+		return MetadataParser.getAttributes(entity);
+	}
 
-    @Override
-    public Map<String, String> getAttributes(T entity) {
-        return MetadataParser.getAttributes(entity);
-    }
+	@Override
+	public String getItemNameFieldName(T entity) {
+		return MetadataParser.getIdField(entity).getName();
+	}
 
-    @Override
-    public String getItemNameFieldName(T entity) {
-    	return MetadataParser.getIdField(entity).getName();
-    }
-
-
-    @Override
-    public String getAttributesFieldName(T entity) {
-    	return MetadataParser.getAttributesField(entity).getName();
-    }
+	@Override
+	public String getAttributesFieldName(T entity) {
+		return MetadataParser.getAttributesField(entity).getName();
+	}
 
 }

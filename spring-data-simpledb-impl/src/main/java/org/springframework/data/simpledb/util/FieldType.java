@@ -12,6 +12,7 @@ import org.springframework.util.Assert;
 public enum FieldType {
 
 	ID {
+
 		private static final String FIELD_NAME_DEFAULT_ID = "id";
 
 		@Override
@@ -22,6 +23,7 @@ public enum FieldType {
 	},
 
 	ATTRIBUTES {
+
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
@@ -30,6 +32,7 @@ public enum FieldType {
 	},
 
 	PRIMITIVE {
+
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
@@ -38,15 +41,17 @@ public enum FieldType {
 	},
 
 	CORE_TYPE {
+
 		@Override
 		boolean isOfType(Field field) {
 			final boolean isCoreType = SupportedCoreTypes.CORE_TYPES.isOfType(field.getType());
-			
-			return isCoreType && ! isOfType(field, ID, ATTRIBUTES);
+
+			return isCoreType && !isOfType(field, ID, ATTRIBUTES);
 		}
 	},
 
 	COLLECTION {
+
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
@@ -55,58 +60,54 @@ public enum FieldType {
 	},
 
 	PRIMITIVE_ARRAY {
+
 		@Override
 		boolean isOfType(Field field) {
 			final boolean isPrimitiveArrayType = SupportedCoreTypes.PRIMITIVE_ARRAYS.isOfType(field.getType());
-			
+
 			return isPrimitiveArrayType;
 		}
 	},
 
-    MAP {
-        @Override
-        boolean isOfType(Field field) {
-            Assert.notNull(field);
-            return Map.class.isAssignableFrom(field.getType());
-        }
-    },
+	MAP {
 
-    OBJECT {
-        @Override
-        boolean isOfType(Field field) {
-            Assert.notNull(field);
-            return field.getType().equals(Object.class);
-        }
-    },
-
-	NESTED_ENTITY {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-			return ! isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, COLLECTION, PRIMITIVE_ARRAY, MAP, OBJECT);
+			return Map.class.isAssignableFrom(field.getType());
+		}
+	},
+
+	OBJECT {
+
+		@Override
+		boolean isOfType(Field field) {
+			Assert.notNull(field);
+			return field.getType().equals(Object.class);
+		}
+	},
+
+	NESTED_ENTITY {
+
+		@Override
+		boolean isOfType(Field field) {
+			Assert.notNull(field);
+			return !isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, COLLECTION, PRIMITIVE_ARRAY, MAP, OBJECT);
 		}
 	};
 
-
-
 	abstract boolean isOfType(Field field);
-	
-    public static FieldType[] getSerializableFieldTypes(){
-        return new FieldType[]{
-                FieldType.PRIMITIVE,
-                FieldType.CORE_TYPE,
-                FieldType.NESTED_ENTITY,
-                FieldType.COLLECTION,
-                FieldType.PRIMITIVE_ARRAY,
-                FieldType.MAP,
-                FieldType.OBJECT};
-    }
-	
+
+	public static FieldType[] getSerializableFieldTypes() {
+		return new FieldType[] { FieldType.PRIMITIVE, FieldType.CORE_TYPE, FieldType.NESTED_ENTITY,
+				FieldType.COLLECTION, FieldType.PRIMITIVE_ARRAY, FieldType.MAP, FieldType.OBJECT };
+	}
+
 	static boolean isOfType(final Class<?> fieldType, final Set<Class<?>> supportedTypes) {
 		Assert.notNull(fieldType);
-		
-		for (Class<?> clazz: supportedTypes) {
-			if (fieldType == clazz || clazz.isAssignableFrom(fieldType)) {
+
+		for(Class<?> clazz : supportedTypes) {
+			if(fieldType == clazz || clazz.isAssignableFrom(fieldType)) {
 				return true;
 			}
 		}
@@ -114,9 +115,9 @@ public enum FieldType {
 		return false;
 
 	}
-	
+
 	static boolean isOfType(final Field field, final FieldType... fieldTypes) {
-		for(final FieldType fieldType: fieldTypes) {
+		for(final FieldType fieldType : fieldTypes) {
 			if(fieldType.isOfType(field)) {
 				return true;
 			}

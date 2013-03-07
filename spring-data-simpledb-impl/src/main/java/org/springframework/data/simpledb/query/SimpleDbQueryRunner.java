@@ -16,59 +16,69 @@ import org.springframework.util.Assert;
  */
 public class SimpleDbQueryRunner {
 
-    private final SimpleDbOperations<?, Serializable> simpledbOperations;
-    private final Class<?> domainClass;
-    private final String query;
+	private final SimpleDbOperations<?, Serializable> simpledbOperations;
+	private final Class<?> domainClass;
+	private final String query;
 	private Pageable pageable;
 
-    public SimpleDbQueryRunner(SimpleDbOperations<?, Serializable> simpledbOperations, Class<?> domainClass, String query) {
-        this.simpledbOperations = simpledbOperations;
-        this.domainClass = domainClass;
-        this.query = query;
-    }
-    
-    public SimpleDbQueryRunner(SimpleDbOperations<?, Serializable> simpledbOperations, Class<?> domainClass, String query, Pageable pageable) {
-    	this(simpledbOperations, domainClass, query);
-    	
-    	Assert.notNull(pageable);
-        Assert.isTrue(pageable.getPageNumber() > 0);
-        Assert.isTrue(pageable.getPageSize() > 0);
-    	
+	public SimpleDbQueryRunner(SimpleDbOperations<?, Serializable> simpledbOperations, Class<?> domainClass,
+			String query) {
+		this.simpledbOperations = simpledbOperations;
+		this.domainClass = domainClass;
+		this.query = query;
+	}
+
+	public SimpleDbQueryRunner(SimpleDbOperations<?, Serializable> simpledbOperations, Class<?> domainClass,
+			String query, Pageable pageable) {
+		this(simpledbOperations, domainClass, query);
+
+		Assert.notNull(pageable);
+		Assert.isTrue(pageable.getPageNumber() > 0);
+		Assert.isTrue(pageable.getPageSize() > 0);
+
 		this.pageable = pageable;
-    }
-    
-    public List<?> executeQuery() {
-        SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
-        final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
-        return simpledbOperations.find(entityInformation, query, consistentRead);
-    }
+	}
 
-    public Object executeSingleResultQuery() {
-        List<?> returnListFromDb = executeQuery();
-        Assert.isTrue(returnListFromDb.size() == 1, "Select statement doesn't return only one entity :" + query);
-        return returnListFromDb.get(0);
-    }
+	public List<?> executeQuery() {
+		SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
+		final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
+		return simpledbOperations.find(entityInformation, query, consistentRead);
+	}
 
-    public long executeCount() {
-        final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
-        return simpledbOperations.count(query, consistentRead);
-    }
+	public Object executeSingleResultQuery() {
+		List<?> returnListFromDb = executeQuery();
+		
+		return getSingleResult(returnListFromDb);
+	}
 
-    public List<String> getRequestedQueryFieldNames() {
-        return QueryUtils.getQueryPartialFieldNames(query);
-    }
+	Object getSingleResult(List<?> returnListFromDb) {
+		Assert.isTrue(returnListFromDb.size() <= 1,
+				"Select statement should return only one entity from database, returned elements size="
+						+ returnListFromDb.size() + ", for Query=" + query);
+		
+		return returnListFromDb.size() > 0 ? returnListFromDb.get(0) : null;
+	}
 
-    public String getSingleQueryFieldName() {
-        List<String> queryFieldNames = getRequestedQueryFieldNames();
-        Assert.isTrue(queryFieldNames.size() == 1);
-        return queryFieldNames.get(0);
-    }
-    
-    public Page<?> executePagedQuery() {
-    	final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
-    	SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
-    	
-    	return simpledbOperations.executePagedQuery(entityInformation, query, pageable, consistentRead);
-    }
-    
+	public long executeCount() {
+		final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
+		return simpledbOperations.count(query, consistentRead);
+	}
+
+	public List<String> getRequestedQueryFieldNames() {
+		return QueryUtils.getQueryPartialFieldNames(query);
+	}
+
+	public String getSingleQueryFieldName() {
+		List<String> queryFieldNames = getRequestedQueryFieldNames();
+		Assert.isTrue(queryFieldNames.size() == 1);
+		return queryFieldNames.get(0);
+	}
+
+	public Page<?> executePagedQuery() {
+		final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
+		SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
+
+		return simpledbOperations.executePagedQuery(entityInformation, query, pageable, consistentRead);
+	}
+
 }

@@ -24,58 +24,65 @@ import org.springframework.data.repository.config.XmlRepositoryConfigurationSour
 import org.springframework.data.simpledb.repository.support.SimpleDbRepositoryFactoryBean;
 import org.w3c.dom.Element;
 
-
 /**
- * Responsibilities - provide repository factory bean
- *                  - read additional properties
- *                  - create root beans to be used by all instantiated repositories
- *
+ * Responsibilities - provide repository factory bean - read additional properties - create root beans to be used by all
+ * instantiated repositories
+ * 
  * See JpaRepositoryConfigExtension
  */
 public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationExtensionSupport {
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.data.repository.config14.RepositoryConfigurationExtension#getRepositoryInterface()
+	 */
+	@Override
+	public String getRepositoryFactoryClassName() {
+		return SimpleDbRepositoryFactoryBean.class.getName();
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.config14.RepositoryConfigurationExtension#getRepositoryInterface()
-     */
-    @Override
-    public String getRepositoryFactoryClassName() {
-        return SimpleDbRepositoryFactoryBean.class.getName();
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.data.repository.config14.RepositoryConfigurationExtensionSupport#getModulePrefix()
+	 */
+	@Override
+	protected String getModulePrefix() {
+		// not for now. used for named queries
+		return "simpleDb";
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.config14.RepositoryConfigurationExtensionSupport#getModulePrefix()
-     */
-    @Override
-    protected String getModulePrefix() {
-        //not for now. used for named queries
-        return "simpleDb";
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.data.repository.config14.RepositoryConfigurationExtensionSupport#postProcess(org.springframework
+	 * .beans.factory.support.BeanDefinitionBuilder,
+	 * org.springframework.data.repository.config14.XmlRepositoryConfigurationSource)
+	 */
+	@Override
+	public void postProcess(BeanDefinitionBuilder builder, XmlRepositoryConfigurationSource config) {
+		Element element = config.getElement();
+		ParsingUtils.setPropertyReference(builder, element, "simpledb-template-ref", "simpleDbOperations");
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.config14.RepositoryConfigurationExtensionSupport#postProcess(org.springframework.beans.factory.support.BeanDefinitionBuilder, org.springframework.data.repository.config14.XmlRepositoryConfigurationSource)
-     */
-    @Override
-    public void postProcess(BeanDefinitionBuilder builder, XmlRepositoryConfigurationSource config) {
-        Element element = config.getElement();
-        ParsingUtils.setPropertyReference(builder, element, "simpledb-template-ref", "simpleDbOperations");
+	}
 
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport#postProcess(org.springframework
+	 * .beans.factory.support.BeanDefinitionBuilder,
+	 * org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource)
+	 */
+	@Override
+	public void postProcess(BeanDefinitionBuilder builder, AnnotationRepositoryConfigurationSource config) {
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport#postProcess(org.springframework.beans.factory.support.BeanDefinitionBuilder, org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource)
-     */
-    @Override
-    public void postProcess(BeanDefinitionBuilder builder, AnnotationRepositoryConfigurationSource config) {
-
-        AnnotationAttributes attributes = config.getAttributes();
+		AnnotationAttributes attributes = config.getAttributes();
 
 		builder.addPropertyReference("simpleDbOperations", attributes.getString("simpledbTemplateRef"));
 
-    }
+	}
 
 }

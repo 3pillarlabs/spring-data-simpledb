@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-repository-context.xml")
-//@Ignore(value = "work in progress")
+// @Ignore(value = "work in progress")
 public class BasicSimpleDbUserRepositoryTest {
 
 	@Autowired
@@ -41,12 +41,12 @@ public class BasicSimpleDbUserRepositoryTest {
 
 	private void incrementalWaitFindOne(final String itemName) {
 		new IncrementalWait<SimpleDbUser>() {
+
 			@Override
 			public SimpleDbUser execute() {
 				return repository.findOne(itemName);
 			}
 		}.untilResponseNotNull();
 	}
-
 
 }

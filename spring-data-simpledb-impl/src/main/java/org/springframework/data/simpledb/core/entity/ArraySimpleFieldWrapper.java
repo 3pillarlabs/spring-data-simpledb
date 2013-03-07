@@ -11,24 +11,23 @@ public class ArraySimpleFieldWrapper<T, ID extends Serializable> extends Abstrac
 		super(field, parent, isNewParent);
 	}
 
+	@Override
+	public String serializeValue() {
+		if(getFieldValue() != null) {
+			return JsonMarshaller.getInstance().marshall(getFieldValue());
+		}
 
-    @Override
-    public String serializeValue() {
-        if(getFieldValue() != null) {
-            return JsonMarshaller.getInstance().marshall(getFieldValue());
-        }
-        
-        return null;
-    }
+		return null;
+	}
 
-    @Override
-    public Object deserializeValue(String value) {
-        Object jsonArray = null;
-        
-        if (value != null) {
-            jsonArray = JsonMarshaller.getInstance().unmarshall(value, getField().getType());
-        }
-        
-    	return jsonArray;
-    }
+	@Override
+	public Object deserializeValue(String value) {
+		Object jsonArray = null;
+
+		if(value != null) {
+			jsonArray = JsonMarshaller.getInstance().unmarshall(value, getField().getType());
+		}
+
+		return jsonArray;
+	}
 }

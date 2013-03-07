@@ -2,47 +2,45 @@ package org.springframework.data.simpledb.util;
 
 import java.util.*;
 
-
 public final class MapUtils {
 
-    private MapUtils(){
-        //utility class
-    }
+	private MapUtils() {
+		// utility class
+	}
 
+	/**
+	 * Splits rawMap's entries into a number of chunk maps of max chunkSize elements
+	 * 
+	 * @param rawMap
+	 * @param chunkSize
+	 * @return
+	 */
+	public static List<Map<String, String>> splitToChunksOfSize(Map<String, String> rawMap, int chunkSize) {
+		List<Map<String, String>> mapChunks = new LinkedList<Map<String, String>>();
 
-    /**
-     * Splits rawMap's entries into a number of chunk maps of max chunkSize elements
-     * @param rawMap
-     * @param chunkSize
-     * @return
-     */
-    public static List<Map<String, String>> splitToChunksOfSize(Map<String, String> rawMap, int chunkSize) {
-        List<Map<String, String>> mapChunks = new LinkedList<Map<String, String>>();
+		Set<Map.Entry<String, String>> rawEntries = rawMap.entrySet();
 
+		Map<String, String> currentChunk = new LinkedHashMap<String, String>();
+		int rawEntryIndex = 0;
+		for(Map.Entry<String, String> rawEntry : rawEntries) {
 
-        Set<Map.Entry<String, String>> rawEntries = rawMap.entrySet();
+			if(rawEntryIndex % chunkSize == 0) {
+				if(currentChunk.size() > 0) {
+					mapChunks.add(currentChunk);
+				}
+				currentChunk = new LinkedHashMap<String, String>();
+			}
 
-        Map<String, String> currentChunk = new LinkedHashMap<String, String>();
-        int rawEntryIndex = 0;
-        for (Map.Entry<String, String> rawEntry : rawEntries) {
+			currentChunk.put(rawEntry.getKey(), rawEntry.getValue());
 
-            if (rawEntryIndex % chunkSize == 0) {
-                if (currentChunk.size() > 0) {
-                    mapChunks.add(currentChunk);
-                }
-                currentChunk = new LinkedHashMap<String, String>();
-            }
+			rawEntryIndex++;
 
-            currentChunk.put(rawEntry.getKey(), rawEntry.getValue());
+			if(rawEntryIndex == rawMap.size()) {
+				// finished iterating
+				mapChunks.add(currentChunk);
+			}
+		}
 
-            rawEntryIndex++;
-
-            if (rawEntryIndex == rawMap.size()) {
-                //finished iterating
-                mapChunks.add(currentChunk);
-            }
-        }
-
-        return mapChunks;
-    }
+		return mapChunks;
+	}
 }

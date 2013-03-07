@@ -18,6 +18,7 @@
         <simpledb:property name="domainManagementPolicy" value="drop_create"/>
         <simpledb:property name="domainPrefix" value="testDB"/>
         <simpledb:property name="consistentRead" value="true"/>
+        <simpledb:property name="dev" value="true"/>
     </simpledb:config>
 
 </beans>

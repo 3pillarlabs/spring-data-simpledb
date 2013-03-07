@@ -14,126 +14,127 @@ import org.springframework.data.simpledb.util.*;
 
 public class EntityWrapper<T, ID extends Serializable> {
 
-    /* entity metadata */
-    private final SimpleDbEntityInformation<T, ?> entityInformation;
+	/* entity metadata */
+	private final SimpleDbEntityInformation<T, ?> entityInformation;
 
-    /* field wrappers */
-    private final Map<String, AbstractFieldWrapper<T, ID>> wrappedFields = new HashMap<String, AbstractFieldWrapper<T, ID>>();
+	/* field wrappers */
+	private final Map<String, AbstractFieldWrapper<T, ID>> wrappedFields = new HashMap<String, AbstractFieldWrapper<T, ID>>();
 
-    private T item;
+	private T item;
 
-    public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation, T item) {
-        this.entityInformation = entityInformation;
-        this.item = item;
+	public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation, T item) {
+		this.entityInformation = entityInformation;
+		this.item = item;
 
-        createFieldWrappers(false);
-    }
+		createFieldWrappers(false);
+	}
 
-    public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation) {
-        this.entityInformation = entityInformation;
-        try {
-            this.item = entityInformation.getJavaType().newInstance();
+	public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation) {
+		this.entityInformation = entityInformation;
+		try {
+			this.item = entityInformation.getJavaType().newInstance();
 
-            createFieldWrappers(true);
-        } catch (InstantiationException e) {
-            throw new MappingException("Could not instantiate object", e);
-        } catch (IllegalAccessException e) {
-            throw new MappingException("Could not instantiate object", e);
-        }
-    }
+			createFieldWrappers(true);
+		} catch(InstantiationException e) {
+			throw new MappingException("Could not instantiate object", e);
+		} catch(IllegalAccessException e) {
+			throw new MappingException("Could not instantiate object", e);
+		}
+	}
 
-    private void createFieldWrappers(final boolean isNew) {
-        for (final Field field: MetadataParser.getSupportedFields(entityInformation.getJavaType())) {
-              if(!FieldTypeIdentifier.isOfType(field, FieldType.ID, FieldType.ATTRIBUTES)) {
-                wrappedFields.put(field.getName(), FieldWrapperFactory.createFieldWrapper(field, this, isNew));
-            }
-        }
-    }
+	private void createFieldWrappers(final boolean isNew) {
+		for(final Field field : MetadataParser.getSupportedFields(entityInformation.getJavaType())) {
+			if(!FieldTypeIdentifier.isOfType(field, FieldType.ID, FieldType.ATTRIBUTES)) {
+				wrappedFields.put(field.getName(), FieldWrapperFactory.createFieldWrapper(field, this, isNew));
+			}
+		}
+	}
 
-    public String getDomain() {
-        return entityInformation.getDomain();
-    }
+	public String getDomain() {
+		return entityInformation.getDomain();
+	}
 
-    public String getItemName() {
-        return entityInformation.getItemName(item);
-    }
+	public String getItemName() {
+		return entityInformation.getItemName(item);
+	}
 
-    public Map<String, String> getAttributes() {
-        return entityInformation.getAttributes(item);
-    }
+	public Map<String, String> getAttributes() {
+		return entityInformation.getAttributes(item);
+	}
 
-    public T getItem() {
-        return item;
-    }
+	public T getItem() {
+		return item;
+	}
 
-    public void generateIdIfNotSet() {
-        if (entityInformation.getItemName(item) == null) {
-            setId(UUID.randomUUID().toString());
-        }
-    }
+	public void generateIdIfNotSet() {
+		if(entityInformation.getItemName(item) == null) {
+			setId(UUID.randomUUID().toString());
+		}
+	}
 
-    public void setId(String itemName) {
-        final Field idField;
-        try {
-            idField = item.getClass().getDeclaredField(entityInformation.getItemNameFieldName(item));
-            idField.setAccessible(Boolean.TRUE);
-            idField.set(item, itemName);
-        } catch (NoSuchFieldException e) {
-            throw new MappingException("Could not set id field", e);
-        } catch (IllegalAccessException e) {
-            throw new MappingException("Could not set id field", e);
-        }
-    }
+	public void setId(String itemName) {
+		final Field idField;
+		try {
+			idField = item.getClass().getDeclaredField(entityInformation.getItemNameFieldName(item));
+			idField.setAccessible(Boolean.TRUE);
+			idField.set(item, itemName);
+		} catch(NoSuchFieldException e) {
+			throw new MappingException("Could not set id field", e);
+		} catch(IllegalAccessException e) {
+			throw new MappingException("Could not set id field", e);
+		}
+	}
 
-    public Map<String, String> serialize() {
-        return serialize("");
-    }
+	public Map<String, String> serialize() {
+		return serialize("");
+	}
 
-    public Map<String, String> serialize(final String fieldNamePrefix) {
-        final Map<String, String> result = new HashMap<String, String>();
+	public Map<String, String> serialize(final String fieldNamePrefix) {
+		final Map<String, String> result = new HashMap<String, String>();
 
-        for (final AbstractFieldWrapper<T, ID> wrappedField : wrappedFields.values()) {
-            if(wrappedField.getFieldValue() != null) {
-                result.putAll(wrappedField.serialize(fieldNamePrefix));
-            }
-        }
+		for(final AbstractFieldWrapper<T, ID> wrappedField : wrappedFields.values()) {
+			if(wrappedField.getFieldValue() != null) {
+				result.putAll(wrappedField.serialize(fieldNamePrefix));
+			}
+		}
 
-        return SimpleDbAttributeValueSplitter.splitAttributeValuesWithExceedingLengths(result);
-    }
+		return SimpleDbAttributeValueSplitter.splitAttributeValuesWithExceedingLengths(result);
+	}
 
-    public Object deserialize(final Map<String, String> attributes) {
-        Map<String, String> rawAttributes = SimpleDbAttributeValueSplitter.combineAttributeValuesWithExceedingLengths(attributes);
+	public Object deserialize(final Map<String, String> attributes) {
+		Map<String, String> rawAttributes = SimpleDbAttributeValueSplitter
+				.combineAttributeValuesWithExceedingLengths(attributes);
 
-        final Map<String, Map<String, String>> nestedFields = AttributesKeySplitter.splitNestedAttributeKeys(rawAttributes);
+		final Map<String, Map<String, String>> nestedFields = AttributesKeySplitter
+				.splitNestedAttributeKeys(rawAttributes);
 
-        for (final Entry<String, Map<String, String>> nestedField : nestedFields.entrySet()) {
-    		/* call deserialize field with Map<String, String> */
-            final String fieldName = nestedField.getKey();
-            final Map<String, String> fieldAttributes = nestedField.getValue();
-            AbstractFieldWrapper<T, ID> fieldWrapper = getWrapper(fieldName);
+		for(final Entry<String, Map<String, String>> nestedField : nestedFields.entrySet()) {
+			/* call deserialize field with Map<String, String> */
+			final String fieldName = nestedField.getKey();
+			final Map<String, String> fieldAttributes = nestedField.getValue();
+			AbstractFieldWrapper<T, ID> fieldWrapper = getWrapper(fieldName);
 
-            Object convertedValue = fieldWrapper.deserialize(fieldAttributes);
-            fieldWrapper.setFieldValue(convertedValue);
-        }
+			Object convertedValue = fieldWrapper.deserialize(fieldAttributes);
+			fieldWrapper.setFieldValue(convertedValue);
+		}
 
-        final Map<String, String> simpleFields = AttributesKeySplitter.splitSimpleAttributesKeys(rawAttributes);
-        for (final Entry<String, String> simpleField : simpleFields.entrySet()) {
-            final String fieldName = simpleField.getKey();
+		final Map<String, String> simpleFields = AttributesKeySplitter.splitSimpleAttributesKeys(rawAttributes);
+		for(final Entry<String, String> simpleField : simpleFields.entrySet()) {
+			final String fieldName = simpleField.getKey();
 
-            AbstractFieldWrapper<T, ID> fieldWrapper = getWrapper(fieldName);
+			AbstractFieldWrapper<T, ID> fieldWrapper = getWrapper(fieldName);
 
-            Map<String, String> fieldAttributes = new LinkedHashMap<String, String>();
-            fieldAttributes.put(fieldName, simpleField.getValue());
+			Map<String, String> fieldAttributes = new LinkedHashMap<String, String>();
+			fieldAttributes.put(fieldName, simpleField.getValue());
 
-            Object convertedValue = fieldWrapper.deserialize(fieldAttributes);
-            fieldWrapper.setFieldValue(convertedValue);
-        }
+			Object convertedValue = fieldWrapper.deserialize(fieldAttributes);
+			fieldWrapper.setFieldValue(convertedValue);
+		}
 
-        return getItem();
-    }
+		return getItem();
+	}
 
-
-    private AbstractFieldWrapper<T, ID> getWrapper(String fieldName){
-        return wrappedFields.get(fieldName);
-    }
+	private AbstractFieldWrapper<T, ID> getWrapper(String fieldName) {
+		return wrappedFields.get(fieldName);
+	}
 }

@@ -1,0 +1,14 @@
+<atlassian-ide-plugin>
+  <project-configuration>
+    <servers>
+      <jira>
+        <server-id>697c3756-35bb-4e9d-a503-299a491ba573</server-id>
+        <name>SDSDB</name>
+        <url>https://helpdesk.threepillar.net/jira</url>
+        <shared>false</shared>
+      </jira>
+    </servers>
+    <fisheye-project-path>SDSDB</fisheye-project-path>
+    <default-jira-server>697c3756-35bb-4e9d-a503-299a491ba573</default-jira-server>
+  </project-configuration>
+</atlassian-ide-plugin>

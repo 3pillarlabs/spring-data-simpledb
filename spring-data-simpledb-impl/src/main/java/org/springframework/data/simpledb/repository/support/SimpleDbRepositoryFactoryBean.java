@@ -12,24 +12,27 @@ import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 
 /**
- * Constructs additional elements needed by the repository factory i.e. EntityManager for JPA, Some SimpleDbOperationsImpl client class Returns repository creation factory.
+ * Constructs additional elements needed by the repository factory i.e. EntityManager for JPA, Some
+ * SimpleDbOperationsImpl client class Returns repository creation factory.
  */
-public class SimpleDbRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> extends RepositoryFactoryBeanSupport<T, S, ID> {
+public class SimpleDbRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> extends
+		RepositoryFactoryBeanSupport<T, S, ID> {
 
-    @Override
-    protected RepositoryFactorySupport createRepositoryFactory() {
-        AmazonSimpleDB sdb = new AmazonSimpleDBClient(new AWSCredentials() {
-            @Override
-            public String getAWSAccessKeyId() {
-                return SimpleDbConfig.getInstance().getAccessID();
-            }
+	@Override
+	protected RepositoryFactorySupport createRepositoryFactory() {
+		AmazonSimpleDB sdb = new AmazonSimpleDBClient(new AWSCredentials() {
 
-            @Override
-            public String getAWSSecretKey() {
-                return SimpleDbConfig.getInstance().getSecretKey();
-            }
-        });
+			@Override
+			public String getAWSAccessKeyId() {
+				return SimpleDbConfig.getInstance().getAccessID();
+			}
 
-        return new SimpleDbRepositoryFactory(sdb, SimpleDbConfig.getInstance());
-    }
+			@Override
+			public String getAWSSecretKey() {
+				return SimpleDbConfig.getInstance().getSecretKey();
+			}
+		});
+
+		return new SimpleDbRepositoryFactory(sdb, SimpleDbConfig.getInstance());
+	}
 }

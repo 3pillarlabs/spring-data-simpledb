@@ -8,7 +8,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 
 /**
- *
+ * 
  * @author fchis
  */
 public interface PagingAndSortingUserRepository extends PagingAndSortingRepository<SimpleDbUser, String> {

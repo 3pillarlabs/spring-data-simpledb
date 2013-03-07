@@ -10,14 +10,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JsonUnknownPropertyHandler extends DeserializationProblemHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(JsonUnknownPropertyHandler.class);
 
-    @Override
-    public boolean handleUnknownProperty(DeserializationContext ctxt, JsonDeserializer<?> deserializer, Object beanOrClass, String propertyName) throws IOException {
-        JsonParser jsonParser = ctxt.getParser();
-        LOG.warn("Unknown Json property: " + propertyName);
-        jsonParser.skipChildren();
+	private static final Logger LOG = LoggerFactory.getLogger(JsonUnknownPropertyHandler.class);
 
-        return true;
-    }
+	@Override
+	public boolean handleUnknownProperty(DeserializationContext ctxt, JsonDeserializer<?> deserializer,
+			Object beanOrClass, String propertyName) throws IOException {
+		JsonParser jsonParser = ctxt.getParser();
+		LOG.warn("Unknown Json property: " + propertyName);
+		jsonParser.skipChildren();
+
+		return true;
+	}
 }

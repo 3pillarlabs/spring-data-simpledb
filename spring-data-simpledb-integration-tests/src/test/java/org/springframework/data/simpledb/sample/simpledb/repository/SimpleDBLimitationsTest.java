@@ -18,11 +18,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = "classpath:simpledb-consistent-repository-context.xml")
 public class SimpleDBLimitationsTest {
 
-    public static final int MAX_SIMPLE_DB_ATTRIBUTE_LENGTH = 1024;
-    @Autowired
+	public static final int MAX_SIMPLE_DB_ATTRIBUTE_LENGTH = 1024;
+	@Autowired
 	BasicSimpleDbUserRepository repository;
 
-    @After
+	@After
 	public void tearDown() {
 		repository.deleteAll();
 	}
@@ -44,28 +44,28 @@ public class SimpleDBLimitationsTest {
 		assertEquals(user.getCoreField(), foundUser.getCoreField());
 	}
 
-    @Test
+	@Test
 	public void should_persist_strings_longer_than_max_simple_db_length_chars() {
 		String itemName = "FirstItem";
 
 		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
 
-        user.setCoreField(RandomValueGenerator.generateStringOfLength(MAX_SIMPLE_DB_ATTRIBUTE_LENGTH + 1));
+		user.setCoreField(RandomValueGenerator.generateStringOfLength(MAX_SIMPLE_DB_ATTRIBUTE_LENGTH + 1));
 
 		repository.save(user);
 
-        SimpleDbUser foundUser = repository.findOne(user.getItemName());
+		SimpleDbUser foundUser = repository.findOne(user.getItemName());
 
-        assertNotNull(foundUser);
-        assertEquals(MAX_SIMPLE_DB_ATTRIBUTE_LENGTH+1, foundUser.getCoreField().length());
-        assertEquals(user.getCoreField(), foundUser.getCoreField());
+		assertNotNull(foundUser);
+		assertEquals(MAX_SIMPLE_DB_ATTRIBUTE_LENGTH + 1, foundUser.getCoreField().length());
+		assertEquals(user.getCoreField(), foundUser.getCoreField());
 	}
 
 	/* max 256 attributes in a amazon simpleDB request */
 	@Test
 	public void should_persist_array_serialized_into_string_longer_than_max_simple_db_length_chars() {
 		String itemName = "FirstItem";
-        int longArraySize = 512;
+		int longArraySize = 512;
 
 		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
 
@@ -73,12 +73,11 @@ public class SimpleDBLimitationsTest {
 		user.setPrimitiveArrayField(longPrimitiveArray);
 
 		repository.save(user);
-		
+
 		final SimpleDbUser foundUser = repository.findOne(user.getItemName());
 		assertNotNull(foundUser);
-        assertEquals(longArraySize, foundUser.getPrimitiveArrayField().length);
-        assertTrue(Arrays.equals(user.getPrimitiveArrayField(), foundUser.getPrimitiveArrayField()));
+		assertEquals(longArraySize, foundUser.getPrimitiveArrayField().length);
+		assertTrue(Arrays.equals(user.getPrimitiveArrayField(), foundUser.getPrimitiveArrayField()));
 	}
-
 
 }

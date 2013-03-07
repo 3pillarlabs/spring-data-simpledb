@@ -2,22 +2,22 @@ package org.springframework.data.simpledb.util;
 
 public final class StringUtil {
 
-    private StringUtil() {
-        //utility class
-    }
+	private StringUtil() {
+		// utility class
+	}
 
-    public static String toLowerFirstChar(String source) {
-        if (source == null) {
-            return null;
-        }
+	public static String toLowerFirstChar(String source) {
+		if(source == null) {
+			return null;
+		}
 
-        if (source.length() == 1) {
-            return source.toLowerCase();
-        } else {
-            String rest = source.substring(1);
-            String start = String.valueOf(source.charAt(0));
-            return start.toLowerCase() + rest;
-        }
-    }
+		if(source.length() == 1) {
+			return source.toLowerCase();
+		} else {
+			String rest = source.substring(1);
+			String start = String.valueOf(source.charAt(0));
+			return start.toLowerCase() + rest;
+		}
+	}
 
 }

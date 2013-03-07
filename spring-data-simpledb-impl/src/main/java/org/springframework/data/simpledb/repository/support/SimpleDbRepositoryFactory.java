@@ -17,73 +17,69 @@ import com.amazonaws.services.simpledb.AmazonSimpleDB;
 
 /**
  * SimpleDB specific generic repository factory.
- *
+ * 
  * See JpaRepositoryFactory
  */
 public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 
-    private SimpleDbOperations<?, Serializable> simpledbOperations;
-    private DomainManager domainManager;
+	private SimpleDbOperations<?, Serializable> simpledbOperations;
+	private DomainManager domainManager;
 
-    public SimpleDbRepositoryFactory(AmazonSimpleDB sdb, SimpleDbConfig config) {
-        this.domainManager = new DomainManager(sdb, config.getDomainManagementPolicy());
+	public SimpleDbRepositoryFactory(AmazonSimpleDB sdb, SimpleDbConfig config) {
+		this.domainManager = new DomainManager(sdb, config.getDomainManagementPolicy());
 
-        this.simpledbOperations = new SimpleDbOperationsImpl(sdb);
+		this.simpledbOperations = new SimpleDbOperationsImpl(sdb);
 
-    }
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.core.support.RepositoryFactorySupport#getTargetRepository(org.springframework.data.repository.core.RepositoryMetadata)
-     */
-    @Override
-    protected Object getTargetRepository(RepositoryMetadata metadata) {
-        SimpleDbEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.data.repository.core.support.RepositoryFactorySupport#getTargetRepository(org.springframework
+	 * .data.repository.core.RepositoryMetadata)
+	 */
+	@Override
+	protected Object getTargetRepository(RepositoryMetadata metadata) {
+		SimpleDbEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());
 
-        domainManager.manageDomain(entityInformation.getDomain());
+		domainManager.manageDomain(entityInformation.getDomain());
 
-        SimpleDbRepositoryImpl<?, ?> repo = new SimpleDbRepositoryImpl(entityInformation, simpledbOperations);
+		SimpleDbRepositoryImpl<?, ?> repo = new SimpleDbRepositoryImpl(entityInformation, simpledbOperations);
 
-        return repo;
-    }
+		return repo;
+	}
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.springframework.data.repository.support.RepositoryFactorySupport#
-     * getRepositoryBaseClass()
-     */
-    @Override
-    protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
-        return SimpleDbRepositoryImpl.class;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.data.repository.support.RepositoryFactorySupport# getRepositoryBaseClass()
+	 */
+	@Override
+	protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
+		return SimpleDbRepositoryImpl.class;
+	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.data.repository.support.RepositoryFactorySupport# getQueryLookupStrategy
+	 * (org.springframework.data.repository.query.QueryLookupStrategy.Key)
+	 */
+	@Override
+	protected QueryLookupStrategy getQueryLookupStrategy(QueryLookupStrategy.Key key) {
+		return SimpleDbQueryLookupStrategy.create(simpledbOperations, key);
+	}
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.springframework.data.repository.support.RepositoryFactorySupport#
-     * getQueryLookupStrategy
-     * (org.springframework.data.repository.query.QueryLookupStrategy.Key)
-     */
-    @Override
-    protected QueryLookupStrategy getQueryLookupStrategy(QueryLookupStrategy.Key key) {
-        return SimpleDbQueryLookupStrategy.create(simpledbOperations, key);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.data.repository.support.RepositoryFactorySupport# getEntityInformation(java.lang.Class)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T, ID extends Serializable> SimpleDbEntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.springframework.data.repository.support.RepositoryFactorySupport#
-     * getEntityInformation(java.lang.Class)
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T, ID extends Serializable> SimpleDbEntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
-
-        return (SimpleDbEntityInformation<T, ID>) SimpleDbEntityInformationSupport.getMetadata(domainClass);
-    }
+		return (SimpleDbEntityInformation<T, ID>) SimpleDbEntityInformationSupport.getMetadata(domainClass);
+	}
 }
