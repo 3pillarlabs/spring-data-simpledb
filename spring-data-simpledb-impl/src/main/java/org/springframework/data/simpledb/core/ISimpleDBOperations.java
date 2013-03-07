@@ -8,9 +8,6 @@ import org.springframework.data.domain.Pageable;
 
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 
-/**
- * Interface that specifies a basic set of SimpleDB operations.
- */
 public interface ISimpleDBOperations {
 	
 	/**

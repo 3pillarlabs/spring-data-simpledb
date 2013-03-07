@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.simpledb.config.SimpleDbConfig;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
@@ -17,18 +16,21 @@ import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 public class SimpleDBTemplate implements ISimpleDBOperations {
 
 	private AmazonSimpleDBClient sdb;
+	private boolean consistentRead;
 
 	public SimpleDBTemplate(final String accessID, final String secretKey, final boolean consistentRead) {
+		this.consistentRead = consistentRead;
+		
 		sdb = new AmazonSimpleDBClient(new AWSCredentials() {
 
 			@Override
 			public String getAWSAccessKeyId() {
-				return SimpleDbConfig.getInstance().getAccessID();
+				return accessID;
 			}
 
 			@Override
 			public String getAWSSecretKey() {
-				return SimpleDbConfig.getInstance().getSecretKey();
+				return secretKey;
 			}
 		});
 	}

@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-with-template-context.xml")
-public class SimpleDBInjectionTest {
+public class SimpleDBTemplateInjectionTest {
 
 	@Autowired
 	@Qualifier("simpleDBTemplate1")
