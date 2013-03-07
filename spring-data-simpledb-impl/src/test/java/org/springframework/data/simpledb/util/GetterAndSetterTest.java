@@ -14,58 +14,60 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 
 public class GetterAndSetterTest {
 
-    @Test public void hasDeclaredGetterAndSetter_should_retrieve_only_fields_with_declared_getters_and_setters() {
+	@Test
+	public void hasDeclaredGetterAndSetter_should_retrieve_only_fields_with_declared_getters_and_setters() {
 
-        List<Field> declaredFieldsWithAccessorsAndMutators = MetadataParser.getSupportedFields(SampleBean.class);
+		List<Field> declaredFieldsWithAccessorsAndMutators = MetadataParser.getSupportedFields(SampleBean.class);
 
-        assertThat(declaredFieldsWithAccessorsAndMutators.size(), is(1));
+		assertThat(declaredFieldsWithAccessorsAndMutators.size(), is(1));
 
-        Field supportedField = declaredFieldsWithAccessorsAndMutators.get(0);
+		Field supportedField = declaredFieldsWithAccessorsAndMutators.get(0);
 
-        assertThat(supportedField.getName(), is("withGetterAndSetter"));
-        assertThat(ReflectionUtils.hasDeclaredGetterAndSetter(supportedField, SampleBean.class), is(true));
-    }
+		assertThat(supportedField.getName(), is("withGetterAndSetter"));
+		assertThat(ReflectionUtils.hasDeclaredGetterAndSetter(supportedField, SampleBean.class), is(true));
+	}
 
+	@Test(expected = AssertionError.class)
+	public void retrieveGetter_and_retrieveSetter_From_returns_NULL_when_field_doesnt_declared_getter_and_setter() {
+		SampleBean sampleBean = new SampleBean();
+		sampleBean.withoutGetterAndSetter = "simple-db";
 
+		EntityWrapper<SampleBean, String> sdbEntity = new EntityWrapper<SampleBean, String>(
+				this.<SampleBean> readEntityInformation(SampleBean.class), sampleBean);
+		final Map<String, String> attributes = sdbEntity.serialize();
 
-    @Test(expected = AssertionError.class)
-    public void retrieveGetter_and_retrieveSetter_From_returns_NULL_when_field_doesnt_declared_getter_and_setter() {
-        SampleBean sampleBean = new SampleBean();
-        sampleBean.withoutGetterAndSetter = "simple-db";
+		final EntityWrapper<SampleBean, String> convertedEntity = new EntityWrapper<SampleBean, String>(
+				this.<SampleBean> readEntityInformation(SampleBean.class));
+		convertedEntity.deserialize(attributes);
 
-        EntityWrapper<SampleBean, String> sdbEntity = new EntityWrapper<SampleBean, String>(this.<SampleBean>readEntityInformation(SampleBean.class), sampleBean);
-        final Map<String, String> attributes = sdbEntity.serialize();
+		assertThat(convertedEntity.getItem().withoutGetterAndSetter, is("simple-db"));
+	}
 
-        final EntityWrapper<SampleBean, String> convertedEntity = new EntityWrapper<SampleBean, String>(this.<SampleBean>readEntityInformation(SampleBean.class));
-        convertedEntity.deserialize(attributes);
+	private <E> SimpleDbEntityInformation<E, String> readEntityInformation(Class<E> clazz) {
+		return (SimpleDbEntityInformation<E, String>) SimpleDbEntityInformationSupport.<E> getMetadata(clazz);
+	}
 
-        assertThat(convertedEntity.getItem().withoutGetterAndSetter, is("simple-db"));
-    }
+	public static class SampleBean {
 
-    private <E> SimpleDbEntityInformation<E, String> readEntityInformation(Class<E> clazz) {
-        return (SimpleDbEntityInformation<E, String>) SimpleDbEntityInformationSupport.<E>getMetadata(clazz);
-    }
+		private String withoutGetterAndSetter;
+		private Integer withGetterAndSetter;
+		private Boolean onlyWithGetter;
+		private Double onlyWithSetter;
 
-    public static class SampleBean {
-        private String withoutGetterAndSetter;
-        private Integer withGetterAndSetter;
-        private Boolean onlyWithGetter;
-        private Double onlyWithSetter;
+		public Integer getWithGetterAndSetter() {
+			return withGetterAndSetter;
+		}
 
-        public Integer getWithGetterAndSetter() {
-            return withGetterAndSetter;
-        }
+		public void setWithGetterAndSetter(Integer withGetterAndSetter) {
+			this.withGetterAndSetter = withGetterAndSetter;
+		}
 
-        public void setWithGetterAndSetter(Integer withGetterAndSetter) {
-            this.withGetterAndSetter = withGetterAndSetter;
-        }
+		public Boolean getOnlyWithGetter() {
+			return onlyWithGetter;
+		}
 
-        public Boolean getOnlyWithGetter() {
-            return onlyWithGetter;
-        }
-
-        public void setOnlyWithSetter(Double onlyWithSetter) {
-            this.onlyWithSetter = onlyWithSetter;
-        }
-    }
+		public void setOnlyWithSetter(Double onlyWithSetter) {
+			this.onlyWithSetter = onlyWithSetter;
+		}
+	}
 }

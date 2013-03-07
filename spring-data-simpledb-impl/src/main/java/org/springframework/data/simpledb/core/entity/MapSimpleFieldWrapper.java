@@ -25,7 +25,7 @@ public class MapSimpleFieldWrapper<T, ID extends Serializable> extends AbstractS
 	public Object deserializeValue(String value) {
 		Map<?, ?> jsonCollection = null;
 
-		if (value != null) {
+		if(value != null) {
 			jsonCollection = (Map<?, ?>) JsonMarshaller.getInstance().unmarshall(value, getField().getType());
 		}
 

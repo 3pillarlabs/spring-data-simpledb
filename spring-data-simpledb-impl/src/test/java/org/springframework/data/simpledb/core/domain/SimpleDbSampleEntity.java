@@ -9,39 +9,40 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 
 public class SimpleDbSampleEntity {
 
-    @Id
-    private String itemName;
+	@Id
+	private String itemName;
 
-    private boolean booleanField;
-    
-    @Attributes
-    private Map<String, String> atts;
+	private boolean booleanField;
 
+	@Attributes
+	private Map<String, String> atts;
 
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
-    }
-    public String getItemName() {
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
+	}
+
+	public String getItemName() {
 		return itemName;
 	}
-    
-    public boolean getBooleanField() {
+
+	public boolean getBooleanField() {
 		return booleanField;
 	}
-    public void setBooleanField(boolean booleanField) {
+
+	public void setBooleanField(boolean booleanField) {
 		this.booleanField = booleanField;
 	}
 
+	public void setAtts(Map<String, String> atts) {
+		this.atts = atts;
+	}
 
-    public void setAtts(Map<String, String> atts) {
-        this.atts = atts;
-    }
-    public Map<String, String> getAtts() {
+	public Map<String, String> getAtts() {
 		return atts;
 	}
 
-
-    public static SimpleDbEntityInformation<SimpleDbSampleEntity, String> entityInformation(){
-        return (SimpleDbEntityInformation<SimpleDbSampleEntity, String>) SimpleDbEntityInformationSupport.getMetadata(SimpleDbSampleEntity.class);
-    }
+	public static SimpleDbEntityInformation<SimpleDbSampleEntity, String> entityInformation() {
+		return (SimpleDbEntityInformation<SimpleDbSampleEntity, String>) SimpleDbEntityInformationSupport
+				.getMetadata(SimpleDbSampleEntity.class);
+	}
 }

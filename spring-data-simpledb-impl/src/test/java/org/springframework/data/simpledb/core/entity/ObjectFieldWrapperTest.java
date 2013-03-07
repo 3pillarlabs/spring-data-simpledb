@@ -12,112 +12,108 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 
 public class ObjectFieldWrapperTest {
 
+	private static final String SAMPLE_STRING_VALUE = "foo";
 
-    private static final String SAMPLE_STRING_VALUE = "foo";
+	public static class AClass {
 
+		private Object object = null;
 
-    public static class AClass {
-        private Object object = null;
+		public Object getObject() {
+			return object;
+		}
 
-        public Object getObject() {
-            return object;
-        }
+		public void setObject(Object object) {
+			this.object = object;
+		}
+	}
 
-        public void setObject(Object object) {
-            this.object = object;
-        }
-    }
+	public static class JSONCompatibleClass {
 
-    public static class JSONCompatibleClass {
-        private String name;
+		private String name;
 
-        public String getName() {
-            return name;
-        }
+		public String getName() {
+			return name;
+		}
 
-        public void setName(String name) {
-            this.name = name;
-        }
-    }
+		public void setName(String name) {
+			this.name = name;
+		}
+	}
 
+	@Test
+	public void should_not_serialize_null_Object_fields_as_attribute_keys() {
 
-    @Test
-    public void should_not_serialize_null_Object_fields_as_attribute_keys() {
+		AClass aDomainObject = new AClass();
 
-        AClass aDomainObject = new AClass();
+		EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(
+				this.<AClass> readEntityInformation(AClass.class), aDomainObject);
+		final Map<String, String> attributes = sdbEntity.serialize();
 
-        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
-        final Map<String, String> attributes = sdbEntity.serialize();
+		assertEquals(0, attributes.size());
+	}
 
-        assertEquals(0, attributes.size());
-    }
+	@Test
+	public void should_deserialize_serialized_null_Object_fields() {
 
+		AClass aDomainObject = new AClass();
 
-    @Test
-    public void should_deserialize_serialized_null_Object_fields() {
+		EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(
+				this.<AClass> readEntityInformation(AClass.class), aDomainObject);
+		final Map<String, String> attributes = sdbEntity.serialize();
 
-        AClass aDomainObject = new AClass();
+		EntityWrapper<AClass, String> newSdbEntity = new EntityWrapper<AClass, String>(
+				this.<AClass> readEntityInformation(AClass.class));
+		newSdbEntity.deserialize(attributes);
+		AClass returnedEntity = newSdbEntity.getItem();
 
-        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
-        final Map<String, String> attributes = sdbEntity.serialize();
+		assertEquals(null, returnedEntity.getObject());
+	}
 
-        EntityWrapper<AClass, String> newSdbEntity = new EntityWrapper<AClass, String>(this.<AClass>readEntityInformation(AClass.class));
-        newSdbEntity.deserialize(attributes);
-        AClass returnedEntity = newSdbEntity.getItem();
+	@Test
+	public void should_serialize_Object_fields_to_JSON() {
 
-        assertEquals(null, returnedEntity.getObject());
-    }
+		AClass aDomainObject = new AClass();
+		JSONCompatibleClass aJSONObject = new JSONCompatibleClass();
+		aJSONObject.setName(SAMPLE_STRING_VALUE);
 
+		aDomainObject.setObject(aJSONObject);
 
-    @Test
-    public void should_serialize_Object_fields_to_JSON() {
+		EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(
+				this.<AClass> readEntityInformation(AClass.class), aDomainObject);
+		final Map<String, String> attributes = sdbEntity.serialize();
 
-        AClass aDomainObject = new AClass();
-        JSONCompatibleClass aJSONObject = new JSONCompatibleClass();
-        aJSONObject.setName(SAMPLE_STRING_VALUE);
+		assertNotNull(attributes);
 
-        aDomainObject.setObject(aJSONObject);
+		String serializedValue = attributes.values().iterator().next();
 
+		assertTrue(serializedValue.contains(SAMPLE_STRING_VALUE));
+	}
 
-        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
-        final Map<String, String> attributes = sdbEntity.serialize();
+	@Test
+	public void should_deserialize_JSON_to_Object_field() {
 
-        assertNotNull(attributes);
+		AClass aDomainObject = new AClass();
+		JSONCompatibleClass aJSONObject = new JSONCompatibleClass();
+		aJSONObject.setName(SAMPLE_STRING_VALUE);
 
+		aDomainObject.setObject(aJSONObject);
 
-        String serializedValue = attributes.values().iterator().next();
+		EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(
+				this.<AClass> readEntityInformation(AClass.class), aDomainObject);
+		final Map<String, String> attributes = sdbEntity.serialize();
 
-        assertTrue(serializedValue.contains(SAMPLE_STRING_VALUE));
-    }
+		EntityWrapper<AClass, String> newSdbEntity = new EntityWrapper<AClass, String>(
+				this.<AClass> readEntityInformation(AClass.class));
+		newSdbEntity.deserialize(attributes);
 
-    @Test
-    public void should_deserialize_JSON_to_Object_field() {
+		AClass returnedEntity = newSdbEntity.getItem();
+		JSONCompatibleClass deserializedJSONObject = (JSONCompatibleClass) returnedEntity.getObject();
 
-        AClass aDomainObject = new AClass();
-        JSONCompatibleClass aJSONObject = new JSONCompatibleClass();
-        aJSONObject.setName(SAMPLE_STRING_VALUE);
+		assertEquals(aJSONObject.getName(), deserializedJSONObject.getName());
 
-        aDomainObject.setObject(aJSONObject);
+	}
 
-
-        EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(this.<AClass>readEntityInformation(AClass.class), aDomainObject);
-        final Map<String, String> attributes = sdbEntity.serialize();
-
-
-        EntityWrapper<AClass, String> newSdbEntity = new EntityWrapper<AClass, String>(this.<AClass>readEntityInformation(AClass.class));
-        newSdbEntity.deserialize(attributes);
-
-        AClass returnedEntity = newSdbEntity.getItem();
-        JSONCompatibleClass deserializedJSONObject = (JSONCompatibleClass) returnedEntity.getObject();
-
-        assertEquals(aJSONObject.getName(), deserializedJSONObject.getName());
-
-
-    }
-
-
-    private <E> SimpleDbEntityInformation<E, String> readEntityInformation(Class<E> clazz) {
-        return (SimpleDbEntityInformation<E, String>) SimpleDbEntityInformationSupport.<E>getMetadata(clazz);
-    }
+	private <E> SimpleDbEntityInformation<E, String> readEntityInformation(Class<E> clazz) {
+		return (SimpleDbEntityInformation<E, String>) SimpleDbEntityInformationSupport.<E> getMetadata(clazz);
+	}
 }
-

@@ -16,7 +16,8 @@ import org.junit.Test;
 
 public class SimpleDBAttributeConverterTest {
 
-    static class SampleEntity {
+	static class SampleEntity {
+
 		int intField;
 		float floatField;
 		double doubleField;
@@ -43,15 +44,16 @@ public class SimpleDBAttributeConverterTest {
 		domainEntity.booleanField = true;
 		domainEntity.dateField = new Date(200);
 	}
-	
+
 	private String toDomainFieldPrimitive(String value, Class<?> clazz) throws ParseException {
 		return SimpleDBAttributeConverter.decodeToFieldOfType(value, clazz).toString();
 	}
 
-	private String toSimpleDBAttributeValue(SampleEntity domainEntity, String fieldName) throws IllegalAccessException, NoSuchFieldException {
-        return SimpleDBAttributeConverter.encode(domainEntity.getClass().getDeclaredField(fieldName).get(domainEntity));
-    }
-	
+	private String toSimpleDBAttributeValue(SampleEntity domainEntity, String fieldName) throws IllegalAccessException,
+			NoSuchFieldException {
+		return SimpleDBAttributeConverter.encode(domainEntity.getClass().getDeclaredField(fieldName).get(domainEntity));
+	}
+
 	@Test
 	public void toDomainFieldPrimitive_int_test() throws Exception {
 		/* test positive */
@@ -149,124 +151,129 @@ public class SimpleDBAttributeConverterTest {
 		assertNotNull(convertedValue);
 		assertTrue(Boolean.parseBoolean(toDomainFieldPrimitive(convertedValue, Boolean.class)) == domainEntity.booleanField);
 	}
-	
+
 	/* ********************* individually test converter methods ********************** */
-    @Test
-    public void test_encode_int_value_number_of_digits() {
-        int x = 1, numberOfDigits = 11;
-        BigDecimal bdx = new BigDecimal(x);
-        String encoded = AmazonSimpleDBUtil.encodeRealNumberRange(bdx, numberOfDigits, new BigDecimal(Integer.MIN_VALUE).negate());
-        assertEquals(numberOfDigits, encoded.length());
-        
-        x = 1;
-        numberOfDigits = 20;
-        bdx = new BigDecimal(x);
-        encoded = AmazonSimpleDBUtil.encodeRealNumberRange(bdx, numberOfDigits, new BigDecimal(Integer.MIN_VALUE).negate());
-        
-        assertEquals(numberOfDigits, encoded.length());
-    }
+	@Test
+	public void test_encode_int_value_number_of_digits() {
+		int x = 1, numberOfDigits = 11;
+		BigDecimal bdx = new BigDecimal(x);
+		String encoded = AmazonSimpleDBUtil.encodeRealNumberRange(bdx, numberOfDigits,
+				new BigDecimal(Integer.MIN_VALUE).negate());
+		assertEquals(numberOfDigits, encoded.length());
 
-    @Test
-    public void test_encode_and_decode_long() {
-        long x;
+		x = 1;
+		numberOfDigits = 20;
+		bdx = new BigDecimal(x);
+		encoded = AmazonSimpleDBUtil.encodeRealNumberRange(bdx, numberOfDigits,
+				new BigDecimal(Integer.MIN_VALUE).negate());
 
-        x = 209323021234234498L;
-        encodeAndDecode(x);
+		assertEquals(numberOfDigits, encoded.length());
+	}
 
-        x = Long.MAX_VALUE;
-        encodeAndDecode(x);
+	@Test
+	public void test_encode_and_decode_long() {
+		long x;
 
-        x = Long.MIN_VALUE;
-        encodeAndDecode(x);
-    }
+		x = 209323021234234498L;
+		encodeAndDecode(x);
 
-    @Test
-    public void test_encode_and_decode_double() {
-        double x;
+		x = Long.MAX_VALUE;
+		encodeAndDecode(x);
 
-        x = 500.0;
-        encodeAndDecode(x);
+		x = Long.MIN_VALUE;
+		encodeAndDecode(x);
+	}
 
-        x = 20932304234498.039;
-        encodeAndDecode(x);
+	@Test
+	public void test_encode_and_decode_double() {
+		double x;
 
-        x = Double.MAX_VALUE;
-        encodeAndDecode(x);
+		x = 500.0;
+		encodeAndDecode(x);
 
-        /* Does not work
-        x = Double.MIN_VALUE;
-        encodeAndDecode(x); */
+		x = 20932304234498.039;
+		encodeAndDecode(x);
 
-        x = -209323021234234498.902938903849082349;
-        encodeAndDecode(x);
-    }
+		x = Double.MAX_VALUE;
+		encodeAndDecode(x);
 
-    @Test
-    public void test_encode_and_decode_big_decimal() {
-        BigDecimal x;
+		/*
+		 * Does not work x = Double.MIN_VALUE; encodeAndDecode(x);
+		 */
 
-        x = new BigDecimal("20932304234498.039");
-        encodeAndDecode(x);
+		x = -209323021234234498.902938903849082349;
+		encodeAndDecode(x);
+	}
 
-        x = new BigDecimal("-209323021234234498.902938903849082349");
-        encodeAndDecode(x);
-    }
+	@Test
+	public void test_encode_and_decode_big_decimal() {
+		BigDecimal x;
 
-    @Test
-    public void toSimpleDBAttributeValues_should_return_an_string_representation_of_concatenated_array_elements() throws ParseException {
-        final int[] expectedIntArray = {1, 2, 3, 4};
-        final List<String> simpleDBValues = Arrays.asList("1", "2", "3", "4");
+		x = new BigDecimal("20932304234498.039");
+		encodeAndDecode(x);
 
-        Object returnedPrimitiveCol = SimpleDBAttributeConverter.decodeToPrimitiveArray(simpleDBValues, int.class);
-        int arrayLength = Array.getLength(returnedPrimitiveCol);
+		x = new BigDecimal("-209323021234234498.902938903849082349");
+		encodeAndDecode(x);
+	}
 
-        for (int idx = 0; idx < arrayLength; idx++) {
-            assertEquals(expectedIntArray[idx], Array.get(returnedPrimitiveCol, idx));
-        }
-    }
+	@Test
+	public void toSimpleDBAttributeValues_should_return_an_string_representation_of_concatenated_array_elements()
+			throws ParseException {
+		final int[] expectedIntArray = { 1, 2, 3, 4 };
+		final List<String> simpleDBValues = Arrays.asList("1", "2", "3", "4");
 
-    @Test
-    public void encode_decode_primitive_arrays() throws ParseException {
-        int[] someInts = {1, 2, 3, 4};
+		Object returnedPrimitiveCol = SimpleDBAttributeConverter.decodeToPrimitiveArray(simpleDBValues, int.class);
+		int arrayLength = Array.getLength(returnedPrimitiveCol);
 
-       List<String> returnedMappedAttributeValues = SimpleDBAttributeConverter.encodePrimitiveArray(someInts);
+		for(int idx = 0; idx < arrayLength; idx++) {
+			assertEquals(expectedIntArray[idx], Array.get(returnedPrimitiveCol, idx));
+		}
+	}
 
-        Object returnedPrimitiveCol = SimpleDBAttributeConverter.decodeToPrimitiveArray(returnedMappedAttributeValues, int.class);
-        int arrayLength = Array.getLength(returnedPrimitiveCol);
+	@Test
+	public void encode_decode_primitive_arrays() throws ParseException {
+		int[] someInts = { 1, 2, 3, 4 };
 
-        for (int idx = 0; idx < arrayLength; idx++) {
-            assertEquals(someInts[idx], Array.get(returnedPrimitiveCol, idx));
-        }
-    }
+		List<String> returnedMappedAttributeValues = SimpleDBAttributeConverter.encodePrimitiveArray(someInts);
 
-    @Test public void encode_decode_core_type() throws ParseException{
-        Object date = new Date(1);
-        String encodedDate = SimpleDBAttributeConverter.encode(date);
-        Object decodedDate = SimpleDBAttributeConverter.decodeToFieldOfType(encodedDate, Date.class);
+		Object returnedPrimitiveCol = SimpleDBAttributeConverter.decodeToPrimitiveArray(returnedMappedAttributeValues,
+				int.class);
+		int arrayLength = Array.getLength(returnedPrimitiveCol);
 
-        assertEquals(date, decodedDate);
-    }
+		for(int idx = 0; idx < arrayLength; idx++) {
+			assertEquals(someInts[idx], Array.get(returnedPrimitiveCol, idx));
+		}
+	}
 
-    private void encodeAndDecode(double x) {
-        encodeAndDecode(new BigDecimal(x));
-    }
+	@Test
+	public void encode_decode_core_type() throws ParseException {
+		Object date = new Date(1);
+		String encodedDate = SimpleDBAttributeConverter.encode(date);
+		Object decodedDate = SimpleDBAttributeConverter.decodeToFieldOfType(encodedDate, Date.class);
 
-    private void encodeAndDecode(long x) {
-        String encoded;
-        BigDecimal bgdecoded;
-        BigDecimal bdx = new BigDecimal(x);
+		assertEquals(date, decodedDate);
+	}
 
-        encoded = AmazonSimpleDBUtil.encodeRealNumberRange(bdx, 20, new BigDecimal(Long.MIN_VALUE).negate());
-        bgdecoded = AmazonSimpleDBUtil.decodeRealNumberRange(encoded, new BigDecimal(Long.MIN_VALUE).negate());
+	private void encodeAndDecode(double x) {
+		encodeAndDecode(new BigDecimal(x));
+	}
 
-        assertEquals(bdx, bgdecoded);
-    }
+	private void encodeAndDecode(long x) {
+		String encoded;
+		BigDecimal bgdecoded;
+		BigDecimal bdx = new BigDecimal(x);
 
-    private void encodeAndDecode(BigDecimal bdx) {
-        String encoded;
-        BigDecimal bgdecoded;
-        encoded = AmazonSimpleDBUtil.encodeRealNumberRange(bdx, 20, 20, new BigDecimal(Long.MIN_VALUE).negate());
-        bgdecoded = AmazonSimpleDBUtil.decodeRealNumberRange(encoded, 20, new BigDecimal(Long.MIN_VALUE).negate());
-        assertTrue(bdx.compareTo(bgdecoded) == 0);
-    }
+		encoded = AmazonSimpleDBUtil.encodeRealNumberRange(bdx, 20, new BigDecimal(Long.MIN_VALUE).negate());
+		bgdecoded = AmazonSimpleDBUtil.decodeRealNumberRange(encoded, new BigDecimal(Long.MIN_VALUE).negate());
+
+		assertEquals(bdx, bgdecoded);
+	}
+
+	private void encodeAndDecode(BigDecimal bdx) {
+		String encoded;
+		BigDecimal bgdecoded;
+		encoded = AmazonSimpleDBUtil.encodeRealNumberRange(bdx, 20, 20, new BigDecimal(Long.MIN_VALUE).negate());
+		bgdecoded = AmazonSimpleDBUtil.decodeRealNumberRange(encoded, 20, new BigDecimal(Long.MIN_VALUE).negate());
+		assertTrue(bdx.compareTo(bgdecoded) == 0);
+	}
 }

@@ -7,54 +7,50 @@ import java.util.Set;
 
 public final class SimpleDbAttributeKeySplitter {
 
-    private SimpleDbAttributeKeySplitter(){
-        //utility class
-    }
+	private SimpleDbAttributeKeySplitter() {
+		// utility class
+	}
 
-    static final String SPLIT_ATTRIBUTE_PREFIX_START = "@";
+	static final String SPLIT_ATTRIBUTE_PREFIX_START = "@";
 
+	public static String convertKey(String rawKey, int chunkIndex) {
+		return rawKey + SPLIT_ATTRIBUTE_PREFIX_START + chunkIndex;
+	}
 
-    public static String convertKey(String rawKey, int chunkIndex){
-        return rawKey + SPLIT_ATTRIBUTE_PREFIX_START + chunkIndex;
-    }
+	public static String getKeyGroupSourceAttributeName(List<String> attributeKeyGroup) {
+		String firstAttribute = attributeKeyGroup.get(0);
+		return firstAttribute.substring(0, firstAttribute.indexOf(SPLIT_ATTRIBUTE_PREFIX_START));
+	}
 
-    public static String getKeyGroupSourceAttributeName(List<String> attributeKeyGroup) {
-        String firstAttribute = attributeKeyGroup.get(0);
-        return  firstAttribute.substring(0, firstAttribute.indexOf(SPLIT_ATTRIBUTE_PREFIX_START));
-    }
+	public static List<List<String>> getAttributeKeyGroups(Set<String> attributeKeys) {
+		List<List<String>> attributeKeyGroups = new LinkedList<List<String>>();
 
-    public static List<List<String>> getAttributeKeyGroups(Set<String> attributeKeys) {
-        List<List<String>> attributeKeyGroups = new LinkedList<List<String>>();
+		for(String attributeKey : attributeKeys) {
+			if(!attributeKey.contains(SPLIT_ATTRIBUTE_PREFIX_START)) {
+				// simple attribute
+				List<String> simpleAttributeGroup = new ArrayList<String>();
+				simpleAttributeGroup.add(attributeKey);
+				attributeKeyGroups.add(simpleAttributeGroup);
+			} else {
+				// many attributes exist
+				String groupPrefix = attributeKey.substring(0, attributeKey.indexOf(SPLIT_ATTRIBUTE_PREFIX_START));
+				List<String> attributeKeyGroup = getAttributesStartingWith(groupPrefix, attributeKeys);
+				attributeKeyGroups.add(attributeKeyGroup);
+			}
+		}
 
-        for(String attributeKey: attributeKeys){
-            if(!attributeKey.contains(SPLIT_ATTRIBUTE_PREFIX_START)) {
-                //simple attribute
-                List<String> simpleAttributeGroup = new ArrayList<String>();
-                simpleAttributeGroup.add(attributeKey);
-                attributeKeyGroups.add(simpleAttributeGroup);
-            } else {
-                //many attributes exist
-                String groupPrefix = attributeKey.substring(0, attributeKey.indexOf(SPLIT_ATTRIBUTE_PREFIX_START));
-                List<String> attributeKeyGroup = getAttributesStartingWith(groupPrefix, attributeKeys);
-                attributeKeyGroups.add(attributeKeyGroup);
-            }
-        }
+		return attributeKeyGroups;
+	}
 
-        return attributeKeyGroups;
-    }
+	private static List<String> getAttributesStartingWith(String groupPrefix, Set<String> attributeKeys) {
+		List<String> ret = new LinkedList<String>();
+		for(String key : attributeKeys) {
+			if(key.startsWith(groupPrefix)) {
+				ret.add(key);
+			}
+		}
 
-
-    private static List<String> getAttributesStartingWith(String groupPrefix, Set<String> attributeKeys) {
-        List<String> ret = new LinkedList<String>();
-        for(String key: attributeKeys){
-            if(key.startsWith(groupPrefix)){
-                ret.add(key);
-            }
-        }
-
-        return ret;
-    }
-
-
+		return ret;
+	}
 
 }

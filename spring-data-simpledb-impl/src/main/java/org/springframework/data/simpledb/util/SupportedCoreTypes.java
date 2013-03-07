@@ -9,7 +9,7 @@ import org.springframework.util.Assert;
 public enum SupportedCoreTypes {
 
 	PRIMITIVE_TYPES {
-		
+
 		@Override
 		public boolean isOfType(Class<?> clazz) {
 			return clazz.isPrimitive();
@@ -31,7 +31,7 @@ public enum SupportedCoreTypes {
 	};
 
 	public abstract boolean isOfType(final Class<?> clazz);
-	
+
 	public static boolean isSupported(final Class<?> clazz) {
 		return PRIMITIVE_TYPES.isOfType(clazz) || CORE_TYPES.isOfType(clazz) || PRIMITIVE_ARRAYS.isOfType(clazz);
 	}
@@ -39,8 +39,8 @@ public enum SupportedCoreTypes {
 	static boolean isOfType(final Class<?> clazz, final Set<Class<?>> supportedTypes) {
 		Assert.notNull(clazz);
 
-		for (Class<?> supportedClazz: supportedTypes) {
-			if (clazz == supportedClazz || supportedClazz.isAssignableFrom(clazz)) {
+		for(Class<?> supportedClazz : supportedTypes) {
+			if(clazz == supportedClazz || supportedClazz.isAssignableFrom(clazz)) {
 				return true;
 			}
 		}

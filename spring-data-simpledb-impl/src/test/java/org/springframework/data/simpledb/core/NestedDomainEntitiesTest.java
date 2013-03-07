@@ -15,6 +15,7 @@ public class NestedDomainEntitiesTest {
 
 	@SuppressWarnings("unused")
 	static class AClass {
+
 		@Id
 		private String id;
 

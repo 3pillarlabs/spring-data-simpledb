@@ -21,17 +21,20 @@ import org.springframework.data.repository.core.support.AbstractEntityInformatio
 import org.springframework.util.Assert;
 
 /**
- * Base class for {@link org.springframework.data.jpa.repository.support.JpaEntityInformation} implementations to share common method implementations.
- *
+ * Base class for {@link org.springframework.data.jpa.repository.support.JpaEntityInformation} implementations to share
+ * common method implementations.
+ * 
  * @author Oliver Gierke
  */
-public abstract class SimpleDbEntityInformationSupport<T, ID extends Serializable> extends AbstractEntityInformation<T, ID>
-		implements SimpleDbEntityInformation<T, ID> {
+public abstract class SimpleDbEntityInformationSupport<T, ID extends Serializable> extends
+		AbstractEntityInformation<T, ID> implements SimpleDbEntityInformation<T, ID> {
 
 	/**
-	 * Creates a new {@link org.springframework.data.jpa.repository.support.JpaEntityInformationSupport} with the given domain class.
-	 *
-	 * @param domainClass must not be {@literal null}.
+	 * Creates a new {@link org.springframework.data.jpa.repository.support.JpaEntityInformationSupport} with the given
+	 * domain class.
+	 * 
+	 * @param domainClass
+	 *            must not be {@literal null}.
 	 */
 	public SimpleDbEntityInformationSupport(Class<T> domainClass) {
 
@@ -39,9 +42,11 @@ public abstract class SimpleDbEntityInformationSupport<T, ID extends Serializabl
 	}
 
 	/**
-	 * Creates a {@link org.springframework.data.jpa.repository.support.JpaEntityInformation} for the given domain class and {@link javax.persistence.EntityManager}.
+	 * Creates a {@link org.springframework.data.jpa.repository.support.JpaEntityInformation} for the given domain class
+	 * and {@link javax.persistence.EntityManager}.
 	 * 
-	 * @param domainClass must not be {@literal null}.
+	 * @param domainClass
+	 *            must not be {@literal null}.
 	 * @return
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -51,6 +56,5 @@ public abstract class SimpleDbEntityInformationSupport<T, ID extends Serializabl
 
 		return new SimpleDbMetamodelEntityInformation(domainClass);
 	}
-
 
 }

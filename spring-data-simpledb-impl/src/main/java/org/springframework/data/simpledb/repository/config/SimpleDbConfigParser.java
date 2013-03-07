@@ -13,46 +13,48 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class SimpleDbConfigParser implements BeanDefinitionParser {
-    @Override
-    public BeanDefinition parse(Element element, ParserContext parserContext) {
 
-        SimpleDbConfig config = SimpleDbConfig.getInstance();
-        config.setAccessID(readProperty(element, "accessID"));
-        config.setSecretKey(readProperty(element, "secretKey"));
-        config.setDomainManagementPolicy(readProperty(element, "domainManagementPolicy"));
-        config.setDomainPrefix(readProperty(element, "domainPrefix"));
-        config.setDevDomainPrefix(Boolean.valueOf(readProperty(element, "dev")) ? readHostname() : null);
-        config.setConsistentRead(readProperty(element, "consistentRead"));
+	@Override
+	public BeanDefinition parse(Element element, ParserContext parserContext) {
 
-        return null;
-    }
+		SimpleDbConfig config = SimpleDbConfig.getInstance();
+		config.setAccessID(readProperty(element, "accessID"));
+		config.setSecretKey(readProperty(element, "secretKey"));
+		config.setDomainManagementPolicy(readProperty(element, "domainManagementPolicy"));
+		config.setDomainPrefix(readProperty(element, "domainPrefix"));
+		config.setDevDomainPrefix(Boolean.valueOf(readProperty(element, "dev")) ? readHostname() : null);
+		config.setConsistentRead(readProperty(element, "consistentRead"));
 
-    private String readProperty(Element element , String propertyName) {
-        NodeList childNodes = element.getChildNodes();
+		return null;
+	}
 
-        for (int i=0; i< childNodes.getLength(); i++){
-            Node item = childNodes.item(i);
-            NamedNodeMap attributes = item.getAttributes();
-            if(attributes != null){
-                Node name = attributes.getNamedItem("name");
-                Node value = attributes.getNamedItem("value");
+	private String readProperty(Element element, String propertyName) {
+		NodeList childNodes = element.getChildNodes();
 
-                if(name.getNodeValue().equals(propertyName)){
-                    return value.getNodeValue();
-                }
-            }
-        }
-        return null;
+		for(int i = 0; i < childNodes.getLength(); i++) {
+			Node item = childNodes.item(i);
+			NamedNodeMap attributes = item.getAttributes();
+			if(attributes != null) {
+				Node name = attributes.getNamedItem("name");
+				Node value = attributes.getNamedItem("value");
 
-    }
-    
-    private String readHostname() {
+				if(name.getNodeValue().equals(propertyName)) {
+					return value.getNodeValue();
+				}
+			}
+		}
+		return null;
+
+	}
+
+	private String readHostname() {
 		InetAddress address = null;
-		
+
 		try {
 			address = InetAddress.getLocalHost();
-		} catch(UnknownHostException e) { }
-		
+		} catch(UnknownHostException e) {
+		}
+
 		return "dev_" + address.getHostName().replaceAll("\\W+", "_");
 	}
 }

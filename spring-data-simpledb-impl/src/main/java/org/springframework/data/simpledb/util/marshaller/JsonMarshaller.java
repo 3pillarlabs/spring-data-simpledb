@@ -15,45 +15,43 @@ import org.springframework.util.Assert;
  */
 public final class JsonMarshaller {
 
-    private static JsonMarshaller instance;
-    private ObjectMapper jsonMapper;
+	private static JsonMarshaller instance;
+	private ObjectMapper jsonMapper;
 
-    private JsonMarshaller() {
-        JsonFactory factory = new JsonFactory();
-        jsonMapper = new ObjectMapper(factory);
-        JsonUnknownPropertyHandler jsonUnknownPropertyHandler = new JsonUnknownPropertyHandler();
-        jsonMapper.getDeserializationConfig().addHandler(jsonUnknownPropertyHandler);
-        jsonMapper.registerModule(new MrBeanModule());
-    }
+	private JsonMarshaller() {
+		JsonFactory factory = new JsonFactory();
+		jsonMapper = new ObjectMapper(factory);
+		JsonUnknownPropertyHandler jsonUnknownPropertyHandler = new JsonUnknownPropertyHandler();
+		jsonMapper.getDeserializationConfig().addHandler(jsonUnknownPropertyHandler);
+		jsonMapper.registerModule(new MrBeanModule());
+	}
 
-    public static JsonMarshaller getInstance() {
-        if (instance == null) {
-            instance = new JsonMarshaller();
-        }
+	public static JsonMarshaller getInstance() {
+		if(instance == null) {
+			instance = new JsonMarshaller();
+		}
 
-        return instance;
-    }
+		return instance;
+	}
 
-    public <T> T unmarshall(String jsonString, Class<?> objectType) {
-        Assert.notNull(jsonString);
-        try {
-            return (T) jsonMapper.readValue(jsonString, objectType);
-        } catch (IOException e) {
-            throw new MappingException("Could not unmarshall object : " + jsonString, e);
-        }
-    }
+	public <T> T unmarshall(String jsonString, Class<?> objectType) {
+		Assert.notNull(jsonString);
+		try {
+			return (T) jsonMapper.readValue(jsonString, objectType);
+		} catch(IOException e) {
+			throw new MappingException("Could not unmarshall object : " + jsonString, e);
+		}
+	}
 
-
-    public <T> String marshall(T input) {
-        Assert.notNull(input);
-        jsonMapper = new ObjectMapper().setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
-        jsonMapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.NON_FINAL, "@class");
-        try {
-            return jsonMapper.writeValueAsString(input);
-        } catch (Exception e) {
-            throw new MappingException(e.getMessage(), e);
-        }
-    }
-
+	public <T> String marshall(T input) {
+		Assert.notNull(input);
+		jsonMapper = new ObjectMapper().setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
+		jsonMapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.NON_FINAL, "@class");
+		try {
+			return jsonMapper.writeValueAsString(input);
+		} catch(Exception e) {
+			throw new MappingException(e.getMessage(), e);
+		}
+	}
 
 }

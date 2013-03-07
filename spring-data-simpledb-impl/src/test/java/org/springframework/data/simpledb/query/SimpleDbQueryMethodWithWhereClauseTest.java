@@ -12,39 +12,41 @@ import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.simpledb.annotation.Query;
 
 public class SimpleDbQueryMethodWithWhereClauseTest {
-    @Test
-    public void getAnnotatedQuery_should_returned_completed_where_clause_in_query() throws Exception {
-        SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectWithWhereClause", SampleEntity.class);
 
-//        @Query(where = "sampleAttribute<='3' or sampleList is ''")
-        final String expectedQuery = "select * from `testDB.sampleEntity` where sampleAttribute<='3' or sampleList is ''";
+	@Test
+	public void getAnnotatedQuery_should_returned_completed_where_clause_in_query() throws Exception {
+		SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectWithWhereClause", SampleEntity.class);
 
-        assertEquals(expectedQuery, repositoryMethod.getAnnotatedQuery());
-    }
+		// @Query(where = "sampleAttribute<='3' or sampleList is ''")
+		final String expectedQuery = "select * from `testDB.sampleEntity` where sampleAttribute<='3' or sampleList is ''";
 
-    @Test
-    public void getAnnotatedQuery_should_change_id_in_where_clause() throws Exception {
-        SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectChangeId", SampleEntity.class);
+		assertEquals(expectedQuery, repositoryMethod.getAnnotatedQuery());
+	}
 
-        final String expectedQuery = "select * from `testDB.sampleEntity` where item_id ='Item_0'";
-        assertEquals(expectedQuery, repositoryMethod.getAnnotatedQuery());
-    }
+	@Test
+	public void getAnnotatedQuery_should_change_id_in_where_clause() throws Exception {
+		SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectChangeId", SampleEntity.class);
 
-    public interface AnnotatedQueryRepository {
-        @Query(where = "sampleAttribute<='3' or sampleList is ''")
-        List<SampleEntity> selectWithWhereClause();
+		final String expectedQuery = "select * from `testDB.sampleEntity` where item_id ='Item_0'";
+		assertEquals(expectedQuery, repositoryMethod.getAnnotatedQuery());
+	}
 
-        @Query(where = "item_id ='Item_0'")
-        List<SampleEntity> selectChangeId();
-    }
+	public interface AnnotatedQueryRepository {
 
-    private SimpleDbQueryMethod prepareQueryMethodToTest(String methodName, Class<?> entityClass) throws Exception {
-        RepositoryMetadata repositoryMetadata = Mockito.mock(RepositoryMetadata.class);
-        when(repositoryMetadata.getDomainType()).thenReturn((Class) entityClass);
+		@Query(where = "sampleAttribute<='3' or sampleList is ''")
+		List<SampleEntity> selectWithWhereClause();
 
-        Method testMethod = AnnotatedQueryRepository.class.getMethod(methodName);
-        when(repositoryMetadata.getReturnedDomainClass(testMethod)).thenReturn((Class) entityClass);
-        return new SimpleDbQueryMethod(testMethod, repositoryMetadata);
-    }
-    
+		@Query(where = "item_id ='Item_0'")
+		List<SampleEntity> selectChangeId();
+	}
+
+	private SimpleDbQueryMethod prepareQueryMethodToTest(String methodName, Class<?> entityClass) throws Exception {
+		RepositoryMetadata repositoryMetadata = Mockito.mock(RepositoryMetadata.class);
+		when(repositoryMetadata.getDomainType()).thenReturn((Class) entityClass);
+
+		Method testMethod = AnnotatedQueryRepository.class.getMethod(methodName);
+		when(repositoryMetadata.getReturnedDomainClass(testMethod)).thenReturn((Class) entityClass);
+		return new SimpleDbQueryMethod(testMethod, repositoryMetadata);
+	}
+
 }

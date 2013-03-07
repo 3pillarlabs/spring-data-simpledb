@@ -12,26 +12,24 @@ public class CollectionSimpleFieldWrapper<T, ID extends Serializable> extends Ab
 		super(field, parent, isNewParent);
 	}
 
+	@Override
+	public String serializeValue() {
+		if(getFieldValue() != null) {
+			return JsonMarshaller.getInstance().marshall(getFieldValue());
+		}
 
-    @Override
-    public String serializeValue() {
-        if(getFieldValue() != null) {
-            return JsonMarshaller.getInstance().marshall(getFieldValue());
-        }
+		return null;
 
-        return null;
+	}
 
-    }
+	@Override
+	public Object deserializeValue(String value) {
+		Collection<?> jsonCollection = null;
+		if(value != null) {
+			jsonCollection = (Collection<?>) JsonMarshaller.getInstance().unmarshall(value, getField().getType());
+		}
 
-
-    @Override
-    public Object deserializeValue(String value) {
-        Collection<?> jsonCollection = null;
-        if (value != null) {
-            jsonCollection = (Collection<?>) JsonMarshaller.getInstance().unmarshall(value, getField().getType());
-        }
-        
-        return jsonCollection;
-    }
+		return jsonCollection;
+	}
 
 }

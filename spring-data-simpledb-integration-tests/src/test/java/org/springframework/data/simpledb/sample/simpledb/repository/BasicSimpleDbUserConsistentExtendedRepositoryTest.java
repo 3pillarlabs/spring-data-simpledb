@@ -15,43 +15,42 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-repository-context.xml")
-//@Ignore(value = "work in progress")
+// @Ignore(value = "work in progress")
 public class BasicSimpleDbUserConsistentExtendedRepositoryTest {
 
-    @Autowired
-    SimpleDbUserRepositoryConsistent repository;
+	@Autowired
+	SimpleDbUserRepositoryConsistent repository;
 
+	@After
+	public void tearDown() {
+		// may fail
+		repository.deleteAll(true);
+	}
 
-    @After
-    public void tearDown() {
-        //may fail
-        repository.deleteAll(true);
-    }
+	@Test
+	public void consistent_find_should_return_updated_item_with_no_delay() {
+		String itemName = "FirstItem";
 
-    @Test
-    public void consistent_find_should_return_updated_item_with_no_delay() {
-        String itemName = "FirstItem";
+		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
+		repository.save(user, true);
 
-        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
-        repository.save(user, true);
-
-        SimpleDbUser findOneResult = repository.findOne(itemName, true);
+		SimpleDbUser findOneResult = repository.findOne(itemName, true);
 		assertNotNull(findOneResult);
 
-        repository.delete(itemName, true);
-        assertNull(repository.findOne(itemName, true));
-    }
+		repository.delete(itemName, true);
+		assertNull(repository.findOne(itemName, true));
+	}
 
-    @Test
-    public void consistent_count_should_return_total_number_of_item_with_no_delay() {
-        String itemName = "FirstItem";
+	@Test
+	public void consistent_count_should_return_total_number_of_item_with_no_delay() {
+		String itemName = "FirstItem";
 
-        SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
-        repository.save(user, true);
-        assertEquals(1, repository.count(true));
+		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
+		repository.save(user, true);
+		assertEquals(1, repository.count(true));
 
-        repository.delete(itemName, true);
-        assertEquals(0, repository.count(true));
-    }
+		repository.delete(itemName, true);
+		assertEquals(0, repository.count(true));
+	}
 
 }

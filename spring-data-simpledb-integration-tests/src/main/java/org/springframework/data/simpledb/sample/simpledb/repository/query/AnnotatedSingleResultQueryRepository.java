@@ -6,21 +6,21 @@ import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 
 interface AnnotatedSingleResultQueryRepository extends PagingAndSortingRepository<SimpleDbUser, String> {
 
-    @Query(select = "count(*)")
-    Long customLongCount();
+	@Query(select = "count(*)")
+	Long customLongCount();
 
-    @Query(select = "count(*)")
-    long customlongCount();
+	@Query(select = "count(*)")
+	long customlongCount();
 
-    @Query(select = "count(*)")
-    int customIntCount();
+	@Query(select = "count(*)")
+	int customIntCount();
 
-    @Query(where = "itemName()='Item_0'")
-    SimpleDbUser customSelectOneUser();
+	@Query(where = "itemName()='Item_0'")
+	SimpleDbUser customSelectOneUser();
 
-    @Query
-    SimpleDbUser customFailSelectOneUser();
+	@Query
+	SimpleDbUser customFailSelectOneUser();
 
-    @Query(select = "primitiveField", where = "itemName()='Item_0'")
-    float partialPrimitiveFieldSelect();
+	@Query(select = "primitiveField", where = "itemName()='Item_0'")
+	float partialPrimitiveFieldSelect();
 }

@@ -23,50 +23,50 @@ public class PagedResultExecutionTest {
 
 	@Test
 	public void doExecute_should_return_Page_type() throws Exception {
-        final SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectAllIntoPage", SampleEntity.class);
-        final PagedResultExecution execution = new PagedResultExecution(null);
-        
-        final SimpleDbRepositoryQuery query = new SimpleDbRepositoryQuery(repositoryMethod, null);
-        
-        final SimpleDbQueryRunner queryRunner = Mockito.mock(SimpleDbQueryRunner.class);
-        when(queryRunner.executePagedQuery()).thenReturn(new PageImpl(new ArrayList()));
+		final SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectAllIntoPage", SampleEntity.class);
+		final PagedResultExecution execution = new PagedResultExecution(null);
 
-        final Object result = execution.doExecute(query, queryRunner);
-        
-        assertTrue(Page.class.isAssignableFrom(result.getClass()));
+		final SimpleDbRepositoryQuery query = new SimpleDbRepositoryQuery(repositoryMethod, null);
+
+		final SimpleDbQueryRunner queryRunner = Mockito.mock(SimpleDbQueryRunner.class);
+		when(queryRunner.executePagedQuery()).thenReturn(new PageImpl(new ArrayList()));
+
+		final Object result = execution.doExecute(query, queryRunner);
+
+		assertTrue(Page.class.isAssignableFrom(result.getClass()));
 	}
-	
+
 	@Test
 	public void doExecute_should_return_List_type() throws Exception {
-        final SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectAllIntoList", SampleEntity.class);
-        final PagedResultExecution execution = new PagedResultExecution(null);
-        
-        final SimpleDbRepositoryQuery query = new SimpleDbRepositoryQuery(repositoryMethod, null);
+		final SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectAllIntoList", SampleEntity.class);
+		final PagedResultExecution execution = new PagedResultExecution(null);
 
-        final SimpleDbQueryRunner queryRunner = Mockito.mock(SimpleDbQueryRunner.class);
-        when(queryRunner.executePagedQuery()).thenReturn(new PageImpl(new ArrayList()));
-        
-        final Object result = execution.doExecute(query, queryRunner);
-        
-        assertTrue(List.class.isAssignableFrom(result.getClass()));
+		final SimpleDbRepositoryQuery query = new SimpleDbRepositoryQuery(repositoryMethod, null);
+
+		final SimpleDbQueryRunner queryRunner = Mockito.mock(SimpleDbQueryRunner.class);
+		when(queryRunner.executePagedQuery()).thenReturn(new PageImpl(new ArrayList()));
+
+		final Object result = execution.doExecute(query, queryRunner);
+
+		assertTrue(List.class.isAssignableFrom(result.getClass()));
 	}
-	
-    public interface PagedAnnotatedQueryRepository {
 
-        @Query(value = "select * from `testDB.simpleDbUser`")
-        Page<SampleEntity> selectAllIntoPage(Pageable pageable);
-    	
-        @Query(value = "select * from `testDB.simpleDbUser`")
-        List<SampleEntity> selectAllIntoList(Pageable pageable);
+	public interface PagedAnnotatedQueryRepository {
 
-    }
-	
-    private SimpleDbQueryMethod prepareQueryMethodToTest(String methodName, Class<?> entityClass) throws Exception{
-        RepositoryMetadata repositoryMetadata = Mockito.mock(RepositoryMetadata.class);
-        when(repositoryMetadata.getDomainType()).thenReturn((Class)entityClass);
-        Method testMethod = PagedAnnotatedQueryRepository.class.getMethod(methodName, Pageable.class);
-        when(repositoryMetadata.getReturnedDomainClass(testMethod)).thenReturn((Class)entityClass);
-        
-        return new SimpleDbQueryMethod(testMethod, repositoryMetadata);
-    }
+		@Query(value = "select * from `testDB.simpleDbUser`")
+		Page<SampleEntity> selectAllIntoPage(Pageable pageable);
+
+		@Query(value = "select * from `testDB.simpleDbUser`")
+		List<SampleEntity> selectAllIntoList(Pageable pageable);
+
+	}
+
+	private SimpleDbQueryMethod prepareQueryMethodToTest(String methodName, Class<?> entityClass) throws Exception {
+		RepositoryMetadata repositoryMetadata = Mockito.mock(RepositoryMetadata.class);
+		when(repositoryMetadata.getDomainType()).thenReturn((Class) entityClass);
+		Method testMethod = PagedAnnotatedQueryRepository.class.getMethod(methodName, Pageable.class);
+		when(repositoryMetadata.getReturnedDomainClass(testMethod)).thenReturn((Class) entityClass);
+
+		return new SimpleDbQueryMethod(testMethod, repositoryMetadata);
+	}
 }

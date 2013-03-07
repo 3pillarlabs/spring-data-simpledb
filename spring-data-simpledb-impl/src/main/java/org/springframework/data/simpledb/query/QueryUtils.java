@@ -1,4 +1,3 @@
-
 package org.springframework.data.simpledb.query;
 
 import org.springframework.data.mapping.model.MappingException;
@@ -12,12 +11,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *  Main Responsibility of QueryUtils is to work with: <br/>
- *  <b>Query Strings</b> <br/> 
- *  <b>Build Indexed-By Queries</b> <br/> 
- *  <b>Named Queries</b> <br/>
+ * Main Responsibility of QueryUtils is to work with: <br/>
+ * <b>Query Strings</b> <br/>
+ * <b>Build Indexed-By Queries</b> <br/>
+ * <b>Named Queries</b> <br/>
  */
- 
+
 public final class QueryUtils {
 
 	private static final String BIND_PARAMETER_REGEX = "(\\?)";
@@ -26,26 +25,27 @@ public final class QueryUtils {
 	private QueryUtils() {
 	}
 
-	public static String bindQueryParameters(SimpleDbRepositoryQuery query, Class<?> domainClazz, Object... parameterValues) {
+	public static String bindQueryParameters(SimpleDbRepositoryQuery query, Class<?> domainClazz,
+			Object... parameterValues) {
 		final String rawQuery = query.getAnnotatedQuery();
 		String completedQuery = null;
 
-		if (hasNamedParameter(query)) {
+		if(hasNamedParameter(query)) {
 			completedQuery = bindNamedParameters(query, parameterValues);
 
-		} else if (hasBindParameter(rawQuery)) {
+		} else if(hasBindParameter(rawQuery)) {
 			completedQuery = bindIndexPositionParameters(rawQuery, parameterValues);
 
 		} else {
 			completedQuery = rawQuery;
 		}
-		
+
 		return completedQuery;
 	}
-	
+
 	public static boolean hasNamedParameter(SimpleDbRepositoryQuery query) {
-		for (Parameter param : query.getQueryMethod().getParameters()) {
-			if (param.isNamedParameter()) {
+		for(Parameter param : query.getQueryMethod().getParameters()) {
+			if(param.isNamedParameter()) {
 				return Boolean.TRUE;
 			}
 		}
@@ -57,17 +57,18 @@ public final class QueryUtils {
 		final Matcher matcher = regexPattern.matcher(query);
 		return matcher.find();
 	}
-	
+
 	public static void validateBindParametersCount(Parameters parameters, Object... parameterValues) {
 		int numOfParameters = parameters.getNumberOfParameters();
 
-		if (numOfParameters != parameterValues.length) {
-			throw new MappingException("Wrong Number of Parameters to bind in Query! Parameter Values size=" + parameterValues.length + ", Method Bind Parameters size=" + numOfParameters);
+		if(numOfParameters != parameterValues.length) {
+			throw new MappingException("Wrong Number of Parameters to bind in Query! Parameter Values size="
+					+ parameterValues.length + ", Method Bind Parameters size=" + numOfParameters);
 		}
 	}
 
 	/**
-	 * Supported types: primitives & core java types (Date, primitive arrays, primitive wrappers) 
+	 * Supported types: primitives & core java types (Date, primitive arrays, primitive wrappers)
 	 */
 	public static void validateBindParametersTypes(Parameters parameters, Object... parameterValues) {
 		final Iterator<Parameter> it = parameters.iterator();
@@ -76,8 +77,9 @@ public final class QueryUtils {
 			final Parameter param = it.next();
 			final Class<?> paramType = param.getType();
 
-			if(! (param.isSpecialParameter() || SupportedCoreTypes.isSupported(paramType))) {
-				throw(new IllegalArgumentException("Type " + paramType + " not supported as an annotated query parameter!"));
+			if(!(param.isSpecialParameter() || SupportedCoreTypes.isSupported(paramType))) {
+				throw (new IllegalArgumentException("Type " + paramType
+						+ " not supported as an annotated query parameter!"));
 			}
 		}
 	}
@@ -86,16 +88,16 @@ public final class QueryUtils {
 		List<String> result = new ArrayList<String>();
 		String[] vals = query.split(",|\\s");
 		boolean isSelect = false;
-		for (String val : vals) {
+		for(String val : vals) {
 			String trimVal = val.trim();
 
-			if (trimVal.toLowerCase().contains("from")) {
+			if(trimVal.toLowerCase().contains("from")) {
 				break;
 			}
-			if (isSelect && trimVal.length() > 0) {
+			if(isSelect && trimVal.length() > 0) {
 				result.add(val.trim());
 			}
-			if (trimVal.toLowerCase().contains("select")) {
+			if(trimVal.toLowerCase().contains("select")) {
 				isSelect = true;
 			}
 		}
@@ -119,7 +121,7 @@ public final class QueryUtils {
 
 		return replaceParameterHolders(rawQuery, parameterPlaceholderValues);
 	}
-	
+
 	static String bindIndexPositionParameters(String queryString, Object... values) {
 
 		final Pattern pattern = Pattern.compile(BIND_PARAMETER_REGEX);
@@ -129,12 +131,15 @@ public final class QueryUtils {
 		int idx = 0;
 
 		try {
-			for (Iterator<String> iterator = dividedQuery.iterator(); iterator.hasNext(); ++idx) {
-				builder.append(iterator.next()).append(SINGLE_QUOTE).append(SimpleDBAttributeConverter.encode(values[idx])).append(SINGLE_QUOTE);
+			for(Iterator<String> iterator = dividedQuery.iterator(); iterator.hasNext(); ++idx) {
+				builder.append(iterator.next()).append(SINGLE_QUOTE)
+						.append(SimpleDBAttributeConverter.encode(values[idx])).append(SINGLE_QUOTE);
 			}
 
-		} catch (RuntimeException e) {
-			throw new MappingException("Invalid Query! Number of binding parameters in method must match number of query binding parameters", e);
+		} catch(RuntimeException e) {
+			throw new MappingException(
+					"Invalid Query! Number of binding parameters in method must match number of query binding parameters",
+					e);
 		}
 
 		return builder.toString();
@@ -143,16 +148,17 @@ public final class QueryUtils {
 	private static String replaceParameterHolders(String rawQuery, Map<String, String> parameterPlaceholderValues) {
 		final StringBuilder completedQueryBuilder = new StringBuilder();
 
-		for (int idx = 0; idx < rawQuery.length(); ++idx) {
+		for(int idx = 0; idx < rawQuery.length(); ++idx) {
 			String parameterPlaceholder = null;
 
-			if (rawQuery.charAt(idx) == ':') {
+			if(rawQuery.charAt(idx) == ':') {
 				parameterPlaceholder = readUntilChar(rawQuery, idx, ' ');
 			}
 
-			if (parameterPlaceholderValues.containsKey(parameterPlaceholder)) {
+			if(parameterPlaceholderValues.containsKey(parameterPlaceholder)) {
 
-				completedQueryBuilder.append(SINGLE_QUOTE).append(parameterPlaceholderValues.get(parameterPlaceholder)).append(SINGLE_QUOTE + " ");
+				completedQueryBuilder.append(SINGLE_QUOTE).append(parameterPlaceholderValues.get(parameterPlaceholder))
+						.append(SINGLE_QUOTE + " ");
 				idx += parameterPlaceholder.length();
 
 			} else {
@@ -166,9 +172,10 @@ public final class QueryUtils {
 	private static Map<String, String> buildPlaceholderValues(Parameters parameters, Object... parameterValues) {
 		Map<String, String> map = new LinkedHashMap<String, String>();
 
-		for (Iterator<Parameter> iterator = parameters.iterator(); iterator.hasNext(); ) {
+		for(Iterator<Parameter> iterator = parameters.iterator(); iterator.hasNext();) {
 			Parameter eachParameter = iterator.next();
-			map.put(eachParameter.getPlaceholder(), SimpleDBAttributeConverter.encode(parameterValues[eachParameter.getIndex()]));
+			map.put(eachParameter.getPlaceholder(),
+					SimpleDBAttributeConverter.encode(parameterValues[eachParameter.getIndex()]));
 		}
 		return map;
 	}
@@ -177,23 +184,24 @@ public final class QueryUtils {
 		StringBuilder buffer = new StringBuilder();
 
 		try {
-			for (int i = rawQuery.indexOf(rawQuery.charAt(idx), idx); i <= rawQuery.length() && rawQuery.charAt(i) != endChar; ++i) {
+			for(int i = rawQuery.indexOf(rawQuery.charAt(idx), idx); i <= rawQuery.length()
+					&& rawQuery.charAt(i) != endChar; ++i) {
 				buffer.append(rawQuery.charAt(i));
 			}
-		} catch (StringIndexOutOfBoundsException stringOOBound) {
+		} catch(StringIndexOutOfBoundsException stringOOBound) {
 			// Query String is ended
 		}
 		return buffer.toString();
 	}
 
-    public static String escapeQueryAttributes(String rawQuery, String idFieldName) {
-    	String escapedQuery = rawQuery.replaceAll("\\s" + idFieldName + "\\s", " itemName() ");
+	public static String escapeQueryAttributes(String rawQuery, String idFieldName) {
+		String escapedQuery = rawQuery.replaceAll("\\s" + idFieldName + "\\s", " itemName() ");
 
-        if(escapedQuery.endsWith(idFieldName)) {
-            escapedQuery = escapedQuery.substring(0, escapedQuery.length() - idFieldName.length());
-            escapedQuery += "itemName()";
-        }
+		if(escapedQuery.endsWith(idFieldName)) {
+			escapedQuery = escapedQuery.substring(0, escapedQuery.length() - idFieldName.length());
+			escapedQuery += "itemName()";
+		}
 
-        return escapedQuery;
-    }
+		return escapedQuery;
+	}
 }

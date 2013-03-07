@@ -18,158 +18,156 @@ import org.springframework.stereotype.Component;
 @Component
 public final class MetadataParser {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MetadataParser.class);
-    public static final String FIELD_NAME_DEFAULT_ID = "id";
+	private static final Logger LOGGER = LoggerFactory.getLogger(MetadataParser.class);
+	public static final String FIELD_NAME_DEFAULT_ID = "id";
 
-    private MetadataParser() {
-        //Utility class
-    }
+	private MetadataParser() {
+		// Utility class
+	}
 
-    /**
-     * Domain name are computed based on class names: UserJob -> user_job
-     *
-     * @param clazz
-     * @return
-     */
-    public static String getDomain(Class<?> clazz) {
-        StringBuilder ret = new StringBuilder();
+	/**
+	 * Domain name are computed based on class names: UserJob -> user_job
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	public static String getDomain(Class<?> clazz) {
+		StringBuilder ret = new StringBuilder();
 
-        String domainPrefix = getDomainPrefix(clazz);
-        if (domainPrefix != null) {
-            ret.append(domainPrefix);
-            ret.append(".");
-        }
+		String domainPrefix = getDomainPrefix(clazz);
+		if(domainPrefix != null) {
+			ret.append(domainPrefix);
+			ret.append(".");
+		}
 
-        String camelCaseString = clazz.getSimpleName();
+		String camelCaseString = clazz.getSimpleName();
 
-        ret.append(StringUtil.toLowerFirstChar(camelCaseString));
+		ret.append(StringUtil.toLowerFirstChar(camelCaseString));
 
-        return ret.toString();
-    }
+		return ret.toString();
+	}
 
-    public static String getItemName(Object object) {
-        Field idField = getIdField(object);
+	public static String getItemName(Object object) {
+		Field idField = getIdField(object);
 
-        if (idField != null) {
-            try {
-                idField.setAccessible(true);
-                return (String) idField.get(object);
-            } catch (IllegalAccessException e) {
-                throw new MappingException("Could not read simpleDb id field", e);
-            }
-        }
+		if(idField != null) {
+			try {
+				idField.setAccessible(true);
+				return (String) idField.get(object);
+			} catch(IllegalAccessException e) {
+				throw new MappingException("Could not read simpleDb id field", e);
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    public static Field getIdField(Object object) {
-        return getIdField(object.getClass());
-    }
+	public static Field getIdField(Object object) {
+		return getIdField(object.getClass());
+	}
 
-    public static Field getIdField(Class<?> clazz) {
-        Field idField = null;
+	public static Field getIdField(Class<?> clazz) {
+		Field idField = null;
 
-        for (Field f : clazz.getDeclaredFields()) {
-            //named id or annotated with Id
-            if (f.getName().equals(FIELD_NAME_DEFAULT_ID) || f.getAnnotation(Id.class) != null) {
-                if (idField != null) {
-                    throw new MappingException("Multiple id fields detected for class " + clazz.getName());
-                }
-                idField = f;
-            }
+		for(Field f : clazz.getDeclaredFields()) {
+			// named id or annotated with Id
+			if(f.getName().equals(FIELD_NAME_DEFAULT_ID) || f.getAnnotation(Id.class) != null) {
+				if(idField != null) {
+					throw new MappingException("Multiple id fields detected for class " + clazz.getName());
+				}
+				idField = f;
+			}
 
-        }
+		}
 
-        return idField;
-    }
+		return idField;
+	}
 
-    @SuppressWarnings("unchecked")
-    public static Map<String, String> getAttributes(Object object) {
-        Class<?> clazz = object.getClass();
-        for (Field f : clazz.getDeclaredFields()) {
-            Attributes attributes = f.getAnnotation(Attributes.class);
-            if (attributes != null) {
-                try {
-                    f.setAccessible(true);
-                    return (Map<String, String>) f.get(object);
-                } catch (IllegalAccessException e) {
-                    LOGGER.error("Could not read simpleDb attributes", e);
-                }
-            }
-        }
+	@SuppressWarnings("unchecked")
+	public static Map<String, String> getAttributes(Object object) {
+		Class<?> clazz = object.getClass();
+		for(Field f : clazz.getDeclaredFields()) {
+			Attributes attributes = f.getAnnotation(Attributes.class);
+			if(attributes != null) {
+				try {
+					f.setAccessible(true);
+					return (Map<String, String>) f.get(object);
+				} catch(IllegalAccessException e) {
+					LOGGER.error("Could not read simpleDb attributes", e);
+				}
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    public static Field getAttributesField(Object object) {
-        Class<?> clazz = object.getClass();
-        for (Field f : clazz.getDeclaredFields()) {
-            //annotated with Attributes
-            Attributes attributes = f.getAnnotation(Attributes.class);
-            if (attributes != null) {
-                return f;
-            }
-        }
+	public static Field getAttributesField(Object object) {
+		Class<?> clazz = object.getClass();
+		for(Field f : clazz.getDeclaredFields()) {
+			// annotated with Attributes
+			Attributes attributes = f.getAnnotation(Attributes.class);
+			if(attributes != null) {
+				return f;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    public static List<Field> getSupportedFields(Class<?> clazz) {
-        List<Field> supportedFields = new ArrayList<Field>();
+	public static List<Field> getSupportedFields(Class<?> clazz) {
+		List<Field> supportedFields = new ArrayList<Field>();
 
-        for (Field field: clazz.getDeclaredFields()) {
+		for(Field field : clazz.getDeclaredFields()) {
 
-            if (isSerializableFieldForObject(clazz, field)) {
-                supportedFields.add(field);
-            }
-        }
-        
-        return supportedFields;
-    }
+			if(isSerializableFieldForObject(clazz, field)) {
+				supportedFields.add(field);
+			}
+		}
 
-    private static boolean isSerializableFieldForObject(Class<?> clazz, Field field) {
-        return ReflectionUtils.hasDeclaredGetterAndSetter(field, clazz)
-                && FieldTypeIdentifier.isSerializableField(field)
-                && !hasUnsupportedAnnotations(field)
-                && !isIdForDomainClass(field, clazz);
-    }
+		return supportedFields;
+	}
 
+	private static boolean isSerializableFieldForObject(Class<?> clazz, Field field) {
+		return ReflectionUtils.hasDeclaredGetterAndSetter(field, clazz)
+				&& FieldTypeIdentifier.isSerializableField(field) && !hasUnsupportedAnnotations(field)
+				&& !isIdForDomainClass(field, clazz);
+	}
 
-    private static boolean hasUnsupportedAnnotations(Field field) {
-        return (field.getAnnotation(Attributes.class) != null) || (field.getAnnotation(Transient.class) != null);
-    }
+	private static boolean hasUnsupportedAnnotations(Field field) {
+		return (field.getAnnotation(Attributes.class) != null) || (field.getAnnotation(Transient.class) != null);
+	}
 
-    private static boolean isIdForDomainClass(Field field, Class<?> clazz) {
-        return field.equals(MetadataParser.getIdField(clazz));
-    }
+	private static boolean isIdForDomainClass(Field field, Class<?> clazz) {
+		return field.equals(MetadataParser.getIdField(clazz));
+	}
 
-    public static List<Field> getNestedDomainFields(Object object) {
-        final List<Field> fieldList = new ArrayList<Field>();
+	public static List<Field> getNestedDomainFields(Object object) {
+		final List<Field> fieldList = new ArrayList<Field>();
 
-        for (Field field : object.getClass().getDeclaredFields()) {
-            if (isNestedDomainField(field, object)) {
-                fieldList.add(field);
-            }
-        }
-        return fieldList;
-    }
+		for(Field field : object.getClass().getDeclaredFields()) {
+			if(isNestedDomainField(field, object)) {
+				fieldList.add(field);
+			}
+		}
+		return fieldList;
+	}
 
-    public static boolean isNestedDomainField(Field field, Object object) {
-        return FieldTypeIdentifier.isOfType(field, FieldType.NESTED_ENTITY);
-    }
+	public static boolean isNestedDomainField(Field field, Object object) {
+		return FieldTypeIdentifier.isOfType(field, FieldType.NESTED_ENTITY);
+	}
 
-    private static String getDomainPrefix(Class<?> clazz) {
-        SimpleDbConfig configInstance = SimpleDbConfig.getInstance();
-        
-        if(configInstance.getDevDomainPrefix() != null) {
-        	return configInstance.getDevDomainPrefix();
-        }
-        
-        DomainPrefix domainPrefix = (DomainPrefix) clazz.getAnnotation(DomainPrefix.class);
-        if (domainPrefix != null) {
-            return domainPrefix.value();
-        }
+	private static String getDomainPrefix(Class<?> clazz) {
+		SimpleDbConfig configInstance = SimpleDbConfig.getInstance();
 
-        return SimpleDbConfig.getInstance().getDomainPrefix();
-    }
+		if(configInstance.getDevDomainPrefix() != null) {
+			return configInstance.getDevDomainPrefix();
+		}
+
+		DomainPrefix domainPrefix = (DomainPrefix) clazz.getAnnotation(DomainPrefix.class);
+		if(domainPrefix != null) {
+			return domainPrefix.value();
+		}
+
+		return SimpleDbConfig.getInstance().getDomainPrefix();
+	}
 }

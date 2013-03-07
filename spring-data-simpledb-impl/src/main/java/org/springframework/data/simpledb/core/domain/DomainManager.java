@@ -14,58 +14,53 @@ import com.amazonaws.services.simpledb.model.ListDomainsResult;
 
 public class DomainManager {
 
-    private final AmazonSimpleDB sdb;
-    private final DomainManagementPolicy policy;
+	private final AmazonSimpleDB sdb;
+	private final DomainManagementPolicy policy;
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(DomainManager.class);
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DomainManager.class);
+	public DomainManager(AmazonSimpleDB sdb, String domainUpdatePolicy) {
+		Assert.notNull(sdb);
+		this.sdb = sdb;
 
+		if(domainUpdatePolicy == null) {
+			policy = DomainManagementPolicy.NONE;
+			LOGGER.warn("Domain management policy not configured. Using NONE");
+		} else {
+			policy = DomainManagementPolicy.valueOf(domainUpdatePolicy.toUpperCase());
+		}
 
-    public DomainManager(AmazonSimpleDB sdb, String domainUpdatePolicy) {
-        Assert.notNull(sdb);
-        this.sdb = sdb;
+		LOGGER.debug("Read domain management policy: {}", policy);
+	}
 
+	public void manageDomain(String domainName) {
+		if(policy == DomainManagementPolicy.NONE) {
+			return;
+		} else if(policy == DomainManagementPolicy.UPDATE) {
+			createDomain(domainName);
+		} else if(policy == DomainManagementPolicy.DROP_CREATE) {
+			dropDomain(domainName);
+			createDomain(domainName);
+		}
 
-        if(domainUpdatePolicy == null){
-            policy = DomainManagementPolicy.NONE;
-            LOGGER.warn("Domain management policy not configured. Using NONE");
-        } else {
-            policy = DomainManagementPolicy.valueOf(domainUpdatePolicy.toUpperCase());
-        }
+	}
 
-        LOGGER.debug("Read domain management policy: {}", policy);
-    }
+	public void dropDomain(String domainName) {
+		LOGGER.debug("Dropping domain: {}", domainName);
+		DeleteDomainRequest request = new DeleteDomainRequest(domainName);
+		sdb.deleteDomain(request);
+	}
 
+	private void createDomain(String domainName) {
+		LOGGER.debug("Creating domain: {}", domainName);
+		CreateDomainRequest request = new CreateDomainRequest(domainName);
+		sdb.createDomain(request);
+	}
 
-    public void manageDomain(String domainName){
-        if(policy == DomainManagementPolicy.NONE){
-            return;
-        } else if(policy == DomainManagementPolicy.UPDATE) {
-            createDomain(domainName);
-        } else if (policy == DomainManagementPolicy.DROP_CREATE){
-            dropDomain(domainName);
-            createDomain(domainName);
-        }
-
-    }
-
-    public void dropDomain(String domainName) {
-        LOGGER.debug("Dropping domain: {}", domainName);
-        DeleteDomainRequest request = new DeleteDomainRequest(domainName);
-        sdb.deleteDomain(request);
-    }
-
-    private void createDomain(String domainName) {
-        LOGGER.debug("Creating domain: {}", domainName);
-        CreateDomainRequest request = new CreateDomainRequest(domainName);
-        sdb.createDomain(request);
-    }
-
-    public boolean exists(String domainName){
-        ListDomainsResult listDomainsResult = sdb.listDomains(new ListDomainsRequest());
-        List<String> domainNames = listDomainsResult.getDomainNames();
-        return  domainNames.contains(domainName);
-    }
-
+	public boolean exists(String domainName) {
+		ListDomainsResult listDomainsResult = sdb.listDomains(new ListDomainsRequest());
+		List<String> domainNames = listDomainsResult.getDomainNames();
+		return domainNames.contains(domainName);
+	}
 
 }

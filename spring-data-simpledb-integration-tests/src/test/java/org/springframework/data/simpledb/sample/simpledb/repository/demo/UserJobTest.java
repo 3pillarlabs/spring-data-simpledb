@@ -16,31 +16,31 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = "classpath:simpledb-consistent-repository-context.xml")
 public class UserJobTest {
 
-    @Autowired
-    private UserJobRepository userJobRepository;
+	@Autowired
+	private UserJobRepository userJobRepository;
 
-    @After
-    public void tearDown() {
-        userJobRepository.deleteAll();
-    }
+	@After
+	public void tearDown() {
+		userJobRepository.deleteAll();
+	}
 
-    @Test
-    public void on_update_should_delete_attributes() {
-        Source source = new Source();
-        source.setToken("sample attribute");
+	@Test
+	public void on_update_should_delete_attributes() {
+		Source source = new Source();
+		source.setToken("sample attribute");
 
-        UserJob userJob = new UserJob();
-        userJob.setSource(source);
-        userJob.setStringField("test");
+		UserJob userJob = new UserJob();
+		userJob.setSource(source);
+		userJob.setStringField("test");
 
-        userJob = userJobRepository.save(userJob);
+		userJob = userJobRepository.save(userJob);
 
-        userJob.setSource(null);
+		userJob.setSource(null);
 
-        userJob = userJobRepository.save(userJob);
-        
-        final UserJob foundUserJob = userJobRepository.findOne(userJob.getItemId());
-        
-        assertNull(foundUserJob.getSource().getToken());
-    }
+		userJob = userJobRepository.save(userJob);
+
+		final UserJob foundUserJob = userJobRepository.findOne(userJob.getItemId());
+
+		assertNull(foundUserJob.getSource().getToken());
+	}
 }

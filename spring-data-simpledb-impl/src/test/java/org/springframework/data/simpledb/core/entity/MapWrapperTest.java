@@ -15,113 +15,117 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 
 public class MapWrapperTest {
 
+	@Test
+	public void maps_of_byte_keys_are_converted_back_as_maps_of_String_keys() {
+		SampleCoreMap simpleMap = new SampleCoreMap();
+		simpleMap.setMapOfByte(new HashMap<Byte, Byte>());
+		simpleMap.getMapOfByte().put(Byte.valueOf("1"), Byte.valueOf("1"));
 
-    @Test
-    public void maps_of_byte_keys_are_converted_back_as_maps_of_String_keys() {
-        SampleCoreMap simpleMap = new SampleCoreMap();
-        simpleMap.setMapOfByte(new HashMap<Byte, Byte>());
-        simpleMap.getMapOfByte().put(Byte.valueOf("1"), Byte.valueOf("1"));
+		EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(
+				this.<SampleCoreMap> readEntityInformation(SampleCoreMap.class), simpleMap);
+		final Map<String, String> attributes = sdbEntity.serialize();
 
+		/* convert back */
+		final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<SampleCoreMap, String>(
+				this.<SampleCoreMap> readEntityInformation(SampleCoreMap.class));
+		convertedEntity.deserialize(attributes);
 
-        EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
-        final Map<String, String> attributes = sdbEntity.serialize();
+		SampleCoreMap returnedMap = convertedEntity.getItem();
+		assertEquals(returnedMap.getMapOfByte().keySet().iterator().next(), "1");
+	}
 
-        /* convert back */
-        final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<SampleCoreMap, String>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class));
-        convertedEntity.deserialize(attributes);
+	@Test
+	public void serialize_deserialize_map_of_strings() {
+		SampleCoreMap simpleMap = new SampleCoreMap();
+		simpleMap.setMapOfStrings(new HashMap<String, String>());
+		simpleMap.getMapOfStrings().put("first", "firstValue");
 
-        SampleCoreMap returnedMap = convertedEntity.getItem();
-        assertEquals(returnedMap.getMapOfByte().keySet().iterator().next(),"1");
-    }
+		EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(
+				this.<SampleCoreMap> readEntityInformation(SampleCoreMap.class), simpleMap);
+		final Map<String, String> attributes = sdbEntity.serialize();
 
+		/* convert back */
+		final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<SampleCoreMap, String>(
+				this.<SampleCoreMap> readEntityInformation(SampleCoreMap.class));
+		convertedEntity.deserialize(attributes);
 
+		assertTrue(simpleMap.equals(convertedEntity.getItem()));
 
-    @Test
-    public void serialize_deserialize_map_of_strings() {
-        SampleCoreMap simpleMap = new SampleCoreMap();
-        simpleMap.setMapOfStrings( new HashMap<String, String>());
-        simpleMap.getMapOfStrings().put("first", "firstValue");
+	}
 
-        EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
-        final Map<String, String> attributes = sdbEntity.serialize();
+	@Test
+	public void deserialize_should_return_null_for_not_instantiated_maps() {
+		SampleCoreMap simpleMap = new SampleCoreMap();
 
-        /* convert back */
-        final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<SampleCoreMap, String>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class));
-        convertedEntity.deserialize(attributes);
+		EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(
+				this.<SampleCoreMap> readEntityInformation(SampleCoreMap.class), simpleMap);
+		final Map<String, String> attributes = sdbEntity.serialize();
 
-        assertTrue(simpleMap.equals(convertedEntity.getItem()));
+		/* convert back */
+		final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<SampleCoreMap, String>(
+				this.<SampleCoreMap> readEntityInformation(SampleCoreMap.class));
+		convertedEntity.deserialize(attributes);
 
-    }
+		assertTrue(simpleMap.equals(convertedEntity.getItem()));
 
+	}
 
-    @Test public void deserialize_should_return_null_for_not_instantiated_maps() {
-        SampleCoreMap simpleMap = new SampleCoreMap();
+	@Test
+	public void serialize_should_return_attribute_name_key() {
+		SampleCoreMap simpleMap = new SampleCoreMap();
+		simpleMap.setMapOfStrings(new HashMap<String, String>());
+		simpleMap.getMapOfStrings().put("first", "firstValue");
+		simpleMap.setMapOfByte(new HashMap<Byte, Byte>());
+		simpleMap.getMapOfByte().put(Byte.valueOf("1"), Byte.valueOf("1"));
 
-        EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
-        final Map<String, String> attributes = sdbEntity.serialize();
+		/* ----------------------- Serialize Representation ------------------------ */
+		EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(
+				this.<SampleCoreMap> readEntityInformation(SampleCoreMap.class), simpleMap);
+		final Map<String, String> attributes = sdbEntity.serialize();
 
-        /* convert back */
-        final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<SampleCoreMap, String>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class));
-        convertedEntity.deserialize(attributes);
+		assertTrue(attributes.size() == 2);
 
-        assertTrue(simpleMap.equals(convertedEntity.getItem()));
+		for(String attributeName : AttributeUtil
+				.<SampleCoreMap> getAttributeNamesThroughReflection(SampleCoreMap.class)) {
+			assertTrue(attributes.containsKey(attributeName));
+		}
 
-    }
+	}
 
-    @Test
-    public void serialize_should_return_attribute_name_key() {
-        SampleCoreMap simpleMap = new SampleCoreMap();
-        simpleMap.setMapOfStrings( new HashMap<String, String>());
-        simpleMap.getMapOfStrings().put("first", "firstValue");
-        simpleMap.setMapOfByte(new HashMap<Byte, Byte>());
-        simpleMap.getMapOfByte().put(Byte.valueOf("1"), Byte.valueOf("1"));
+	private <E> SimpleDbEntityInformation<E, String> readEntityInformation(Class<E> clazz) {
+		return (SimpleDbEntityInformation<E, String>) SimpleDbEntityInformationSupport.<E> getMetadata(clazz);
+	}
 
-        /* ----------------------- Serialize Representation ------------------------ */
-        EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(this.<SampleCoreMap>readEntityInformation(SampleCoreMap.class), simpleMap);
-        final Map<String, String> attributes = sdbEntity.serialize();
+	public static class SampleCoreMap {
 
-        assertTrue(attributes.size() == 2);
+		private Map<String, String> mapOfStrings;
+		private Map<Byte, Byte> mapOfByte;
 
-        for(String attributeName : AttributeUtil.<SampleCoreMap>getAttributeNamesThroughReflection(SampleCoreMap.class)) {
-            assertTrue(attributes.containsKey(attributeName));
-        }
+		public Map<String, String> getMapOfStrings() {
+			return mapOfStrings;
+		}
 
-    }
+		public void setMapOfStrings(Map<String, String> mapOfStrings) {
+			this.mapOfStrings = mapOfStrings;
+		}
 
-    private <E> SimpleDbEntityInformation<E, String> readEntityInformation(Class<E> clazz) {
-        return (SimpleDbEntityInformation<E, String>) SimpleDbEntityInformationSupport.<E>getMetadata(clazz);
-    }
+		public Map<Byte, Byte> getMapOfByte() {
+			return mapOfByte;
+		}
 
-    public static class SampleCoreMap {
-        private Map<String, String> mapOfStrings;
-        private Map<Byte, Byte> mapOfByte;
+		public void setMapOfByte(Map<Byte, Byte> mapOfByte) {
+			this.mapOfByte = mapOfByte;
+		}
 
-        public Map<String, String> getMapOfStrings() {
-            return mapOfStrings;
-        }
+		@Override
+		public boolean equals(Object o) {
+			return EqualsBuilder.reflectionEquals(this, o);
+		}
 
-        public void setMapOfStrings(Map<String, String> mapOfStrings) {
-            this.mapOfStrings = mapOfStrings;
-        }
-
-        public Map<Byte, Byte> getMapOfByte() {
-            return mapOfByte;
-        }
-
-        public void setMapOfByte(Map<Byte, Byte> mapOfByte) {
-            this.mapOfByte = mapOfByte;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            return EqualsBuilder.reflectionEquals(this, o);
-        }
-
-        @Override
-        public int hashCode() {
-            return HashCodeBuilder.reflectionHashCode(this);
-        }
-    }
-
+		@Override
+		public int hashCode() {
+			return HashCodeBuilder.reflectionHashCode(this);
+		}
+	}
 
 }

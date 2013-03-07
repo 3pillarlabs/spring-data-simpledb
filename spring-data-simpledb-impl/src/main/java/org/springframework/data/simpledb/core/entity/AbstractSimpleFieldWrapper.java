@@ -9,37 +9,34 @@ import org.springframework.util.Assert;
 
 public abstract class AbstractSimpleFieldWrapper<T, ID extends Serializable> extends AbstractFieldWrapper<T, ID> {
 
-    protected AbstractSimpleFieldWrapper(Field field, EntityWrapper<T, ID> parentWrapper, boolean isNewParent) {
-        super(field, parentWrapper, isNewParent);
-    }
+	protected AbstractSimpleFieldWrapper(Field field, EntityWrapper<T, ID> parentWrapper, boolean isNewParent) {
+		super(field, parentWrapper, isNewParent);
+	}
 
+	@Override
+	public final Map<String, String> serialize(String prefix) {
+		final Map<String, String> result = new HashMap<String, String>();
+		result.put(prefix.isEmpty() ? getFieldName() : prefix + "." + getFieldName(), serializeValue());
 
-    @Override
-    public final Map<String, String> serialize(String prefix){
-        final Map<String, String> result = new HashMap<String, String>();
-        result.put(prefix.isEmpty() ? getFieldName() : prefix + "." + getFieldName(), serializeValue());
-        
-        return result;
-    }
+		return result;
+	}
 
-    public abstract String serializeValue();
+	public abstract String serializeValue();
 
+	@Override
+	public final Object deserialize(final Map<String, String> attributes) {
+		Assert.isTrue(attributes.size() == 1);
 
-    @Override
-    public final Object deserialize(final Map<String, String> attributes) {
-        Assert.isTrue(attributes.size() == 1);
-        
-        String attributeValue = attributes.values().iterator().next();
-        Assert.notNull(attributeValue);
-        
-        return deserializeValue(attributeValue);
-    }
+		String attributeValue = attributes.values().iterator().next();
+		Assert.notNull(attributeValue);
 
-    public abstract Object deserializeValue(final String value);
+		return deserializeValue(attributeValue);
+	}
 
+	public abstract Object deserializeValue(final String value);
 
-    @Override
-    public final void createInstance() {
-        //Only applies to NestedEntities
-    }
+	@Override
+	public final void createInstance() {
+		// Only applies to NestedEntities
+	}
 }

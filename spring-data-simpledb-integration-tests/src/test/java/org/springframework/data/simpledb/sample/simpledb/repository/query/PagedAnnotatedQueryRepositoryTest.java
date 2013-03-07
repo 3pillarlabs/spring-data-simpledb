@@ -37,7 +37,8 @@ public class PagedAnnotatedQueryRepositoryTest {
 
 		final int pageNumber = 1;
 		final int pageSize = 1;
-		final Page<SimpleDbUser> page = repository.findUsersWithPrimitiveFieldHigherThan(1.0f, new PageRequest(pageNumber, pageSize));
+		final Page<SimpleDbUser> page = repository.findUsersWithPrimitiveFieldHigherThan(1.0f, new PageRequest(
+				pageNumber, pageSize));
 
 		assertNotNull(page);
 
@@ -52,20 +53,22 @@ public class PagedAnnotatedQueryRepositoryTest {
 
 		final int pageNumber = 2;
 		final int pageSize = 2;
-		final List<SimpleDbUser> results = repository.findUserListWithPrimitiveFieldHigherThan(1f, new PageRequest(pageNumber, pageSize));
+		final List<SimpleDbUser> results = repository.findUserListWithPrimitiveFieldHigherThan(1f, new PageRequest(
+				pageNumber, pageSize));
 
-		//4 and 5
+		// 4 and 5
 		assertEquals(2, results.size());
 		SimpleDbUser firstResult = results.get(0);
 		assertThat(firstResult.getPrimitiveField(), is(4f));
 	}
-	
+
 	@Test
 	public void paged_request_should_work_for_no_elements() {
 		final int pageNumber = 1;
 		final int pageSize = 1;
-		final Page<SimpleDbUser> page = repository.findUsersWithPrimitiveFieldHigherThan(1.0f, new PageRequest(pageNumber, pageSize));
-		
+		final Page<SimpleDbUser> page = repository.findUsersWithPrimitiveFieldHigherThan(1.0f, new PageRequest(
+				pageNumber, pageSize));
+
 		assertNotNull(page);
 		assertEquals(0, page.getTotalElements());
 		assertEquals(0, page.getTotalPages());
@@ -73,7 +76,7 @@ public class PagedAnnotatedQueryRepositoryTest {
 		assertEquals(0, page.getNumberOfElements());
 		assertNotNull(page.getContent());
 	}
-	
+
 	@Test(expected = Exception.class)
 	public void paged_request_for_invalid_query_should_throw_exception() {
 		final int pageNumber = 1;
@@ -92,19 +95,19 @@ public class PagedAnnotatedQueryRepositoryTest {
 		assertEquals(2, results.size());
 		SimpleDbUser firstResult = results.get(0);
 		assertThat(firstResult.getPrimitiveField(), is(4f));
-		
+
 		assertNotNull(firstResult.getItemName());
-		
+
 		/* the rest of the fields should be empty */
 		assertNull(firstResult.getCoreField());
 		assertNull(firstResult.getCoreTypeList());
 		assertNull(firstResult.getObjectField());
 	}
-	
-	private void saveUsersWithPrimitiveFields(float[] primitiveFields){
+
+	private void saveUsersWithPrimitiveFields(float[] primitiveFields) {
 		List<SimpleDbUser> users = SimpleDbUserBuilder.createListOfItems(primitiveFields.length);
 		int i = 0;
-		for(SimpleDbUser user: users){
+		for(SimpleDbUser user : users) {
 			user.setPrimitiveField(primitiveFields[i]);
 			repository.save(user);
 			i++;
