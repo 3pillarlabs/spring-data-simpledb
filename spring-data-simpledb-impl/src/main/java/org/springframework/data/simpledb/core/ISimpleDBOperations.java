@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.amazonaws.services.simpledb.AmazonSimpleDB;
+
 /**
  * Interface that specifies a basic set of SimpleDB operations.
  */
@@ -19,6 +21,8 @@ public interface ISimpleDBOperations {
 	 */
 	String getDomainName(Class<?> entityClass);
 
+	AmazonSimpleDB getDB();
+	
 	<T> T createOrUpdateItem(T entity);
 
 	void deleteItem(String domainName, String itemName);
