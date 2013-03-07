@@ -102,7 +102,10 @@
                          </rulesets>
                          <failurePriority>3</failurePriority>
                          <verbose>true</verbose>
-                         <includeTests>false</includeTests>  
+                         <includeTests>false</includeTests> 
+          				 <excludeRoots>
+            				 <excludeRoot>src/generated/java</excludeRoot>
+          				 </excludeRoots>
           			</configuration> 				
 				</plugin>   		  
         </plugins>
