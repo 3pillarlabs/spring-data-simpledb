@@ -56,7 +56,7 @@ public class DomainManagerTest {
         DomainManager manager = new DomainManager(AmazonSimpleDBClientFactory.getTestClient(), null);
         manager.manageDomain("test_domain_none");
 
-        assertTrue(manager.exists("test_domain_none"));
+        assertFalse(manager.exists("test_domain_none"));
     }
 
 
