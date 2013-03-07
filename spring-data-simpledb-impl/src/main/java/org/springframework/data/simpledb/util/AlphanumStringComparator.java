@@ -10,6 +10,7 @@ import java.util.Comparator;
  */
 public class AlphanumStringComparator implements Comparator<String>, Serializable {
 
+	private static final long serialVersionUID = 1L;
 	public static final int START_NUMBER_CHAR = 48;
 	public static final int END_NUMBER_CHAR = 57;
 
