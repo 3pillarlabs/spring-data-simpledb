@@ -1,5 +1,8 @@
 package org.springframework.data.simpledb.repository.config;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
@@ -18,6 +21,7 @@ public class SimpleDbConfigParser implements BeanDefinitionParser {
         config.setSecretKey(readProperty(element, "secretKey"));
         config.setDomainManagementPolicy(readProperty(element, "domainManagementPolicy"));
         config.setDomainPrefix(readProperty(element, "domainPrefix"));
+        config.setDevDomainPrefix(Boolean.valueOf(readProperty(element, "dev")) ? readHostname() : null);
         config.setConsistentRead(readProperty(element, "consistentRead"));
 
         return null;
@@ -41,4 +45,14 @@ public class SimpleDbConfigParser implements BeanDefinitionParser {
         return null;
 
     }
+    
+    private String readHostname() {
+		InetAddress address = null;
+		
+		try {
+			address = InetAddress.getLocalHost();
+		} catch(UnknownHostException e) { }
+		
+		return "dev_" + address.getHostName().replaceAll("\\W+", "_");
+	}
 }

@@ -159,6 +159,12 @@ public final class MetadataParser {
     }
 
     private static String getDomainPrefix(Class<?> clazz) {
+        SimpleDbConfig configInstance = SimpleDbConfig.getInstance();
+        
+        if(configInstance.getDevDomainPrefix() != null) {
+        	return configInstance.getDevDomainPrefix();
+        }
+        
         DomainPrefix domainPrefix = (DomainPrefix) clazz.getAnnotation(DomainPrefix.class);
         if (domainPrefix != null) {
             return domainPrefix.value();

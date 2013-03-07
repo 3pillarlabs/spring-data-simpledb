@@ -7,6 +7,7 @@ public final class SimpleDbConfig {
     private String domainManagementPolicy;
     private String consistentRead;
     private String domainPrefix;
+    private String devDomainPrefix;
 
     private static SimpleDbConfig instance;
 
@@ -66,4 +67,13 @@ public final class SimpleDbConfig {
     public void setDomainPrefix(String domainPrefix) {
         this.domainPrefix = domainPrefix;
     }
+
+
+	public String getDevDomainPrefix() {
+		return devDomainPrefix;
+	}
+
+	public void setDevDomainPrefix(String devDomainPrefix) {
+		this.devDomainPrefix = devDomainPrefix;
+	}
 }
