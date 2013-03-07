@@ -16,7 +16,9 @@ import org.springframework.util.Assert;
 
 public final class ReflectionUtils {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ReflectionUtils.class);
+    private static final String METHOD_SETTER = "setter";
+	private static final String METHOD_GETTER = "getter";
+	private static final Logger LOG = LoggerFactory.getLogger(ReflectionUtils.class);
 
     private ReflectionUtils() {
         //utility class
@@ -26,16 +28,19 @@ public final class ReflectionUtils {
         try {
             Method getterMethod = retrieveGetterFrom(obj.getClass(), fieldName);
             Assert.notNull(getterMethod, "No getter found for: " + fieldName);
+           
             return getterMethod.invoke(obj);
 
         } catch ( IllegalAccessException  e) {
-            throw new MappingException("Could not call getter for field " + fieldName + " in class:  " + obj.getClass(), e);
+        	throw toMappingException(e, METHOD_GETTER, fieldName, obj);
         } catch (InvocationTargetException e) {
-            throw new MappingException("Could not call getter for field " + fieldName + " in class:  " + obj.getClass(), e);
+        	throw toMappingException(e, METHOD_GETTER, fieldName, obj);
         } catch (IllegalArgumentException e){
-            throw new MappingException("Could not call getter for field " + fieldName + " in class:  " + obj.getClass(), e);
+        	throw toMappingException(e, METHOD_GETTER, fieldName, obj);
         }
     }
+    
+
 
     public static void callSetter(Object obj, String fieldName, Object fieldValue) {
         try {
@@ -44,11 +49,11 @@ public final class ReflectionUtils {
             setterMethod.invoke(obj, fieldValue);
 
         } catch ( IllegalAccessException e) {
-            throw new MappingException("Could not call getter for field " + fieldName + " in class:  " + obj.getClass(), e);
+        	throw toMappingException(e, METHOD_SETTER, fieldName, obj);
         } catch (InvocationTargetException e) {
-            throw new MappingException("Could not call getter for field " + fieldName + " in class:  " + obj.getClass(), e);
+        	throw toMappingException(e, METHOD_SETTER, fieldName, obj);
         } catch (IllegalArgumentException e){
-            throw new MappingException("Could not call getter for field " + fieldName + " in class:  " + obj.getClass(), e);
+        	throw toMappingException(e, METHOD_SETTER, fieldName, obj);
         }
     }
 
@@ -168,5 +173,9 @@ public final class ReflectionUtils {
 			Assert.isTrue(isFieldDeclared, "no such field in entity class : " + eachEntry);
 		}
 	}
+	
+    private static MappingException toMappingException(Exception cause, String accessMethod, String fieldName, Object fieldObject){
+        return new MappingException("Could not call "+accessMethod+" for field " + fieldName + " in class:  " + fieldObject.getClass(), cause);
+    }
 
 }

@@ -22,9 +22,9 @@ public final class QueryParserUtils {
 
 		StringBuilder stringBuilder = new StringBuilder();
 		
-		appendSelectClause(stringBuilder, rawSelectParameters, domainClass);
+		appendSelectClause(stringBuilder, rawSelectParameters);
 		appendFromClause(stringBuilder, domainClass);
-		appendWhereClauseIfPresent(stringBuilder, rawWhereParameters, domainClass);
+		appendWhereClauseIfPresent(stringBuilder, rawWhereParameters);
 
 		return stringBuilder.toString();
 	}
@@ -44,7 +44,7 @@ public final class QueryParserUtils {
 		return query.toString();
 	}
 	
-	private static void appendWhereClauseIfPresent(StringBuilder stringBuilder, String rawWhereParameters, Class<?> domainClass) {
+	private static void appendWhereClauseIfPresent(StringBuilder stringBuilder, String rawWhereParameters) {
 		if (StringUtils.hasText(rawWhereParameters)) {
 			stringBuilder.append(" where " + rawWhereParameters);
 		}
@@ -54,7 +54,7 @@ public final class QueryParserUtils {
 		stringBuilder.append(" from `" + MetadataParser.getDomain(domainClass) + "`");
 	}
 
-	private static void appendSelectClause(StringBuilder stringBuilder, String[] rawSelectParameters, Class<?> domainClass) {
+	private static void appendSelectClause(StringBuilder stringBuilder, String[] rawSelectParameters) {
 		if (StringUtils.hasText(rawSelectParameters[0])) {
 			stringBuilder.append(createQueryClause("select ", rawSelectParameters, ", "));
 		} else {
