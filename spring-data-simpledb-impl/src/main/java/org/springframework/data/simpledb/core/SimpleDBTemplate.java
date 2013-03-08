@@ -16,11 +16,8 @@ import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 public class SimpleDBTemplate implements ISimpleDBOperations {
 
 	private AmazonSimpleDBClient sdb;
-	private boolean consistentRead;
 
-	public SimpleDBTemplate(final String accessID, final String secretKey, final boolean consistentRead) {
-		this.consistentRead = consistentRead;
-		
+	public SimpleDBTemplate(final String accessID, final String secretKey) {
 		sdb = new AmazonSimpleDBClient(new AWSCredentials() {
 
 			@Override
