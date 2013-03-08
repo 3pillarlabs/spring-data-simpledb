@@ -49,11 +49,11 @@ public class DomainManagerTest {
 	}
 
 	@Test
-	public void manageDomains_with_UPDATE_should_use_default_NONE_policy() {
+	public void manageDomains_with_UPDATE_should_use_default_UPDATE_policy() {
 		DomainManager manager = new DomainManager(AmazonSimpleDBClientFactory.getTestClient(), null);
-		manager.manageDomain("test_domain_none");
+		manager.manageDomain("test_domain_default_update");
 
-		assertFalse(manager.exists("test_domain_none"));
+		assertTrue(manager.exists("test_domain_default_update"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
