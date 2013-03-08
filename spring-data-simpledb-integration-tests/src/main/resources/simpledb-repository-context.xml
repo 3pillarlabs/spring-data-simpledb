@@ -6,7 +6,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
 		http://www.springframework.org/schema/data/simpledb
-        classpath:META-INF/spring-simpledb.xsd">
+        classpath:META-INF/spring-simpledb.xsd" xmlns:aop="http://www.springframework.org/schema/aop">
 
 
     <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
@@ -18,5 +18,8 @@
         <simpledb:property name="domainPrefix" value="testDB"/>
         <simpledb:property name="dev" value="true"/>
     </simpledb:config>
+
+    <aop:aspectj-autoproxy />
+    <bean class="org.springframework.data.simpledb.logging.LoggingConfiguration"/>
 
 </beans>

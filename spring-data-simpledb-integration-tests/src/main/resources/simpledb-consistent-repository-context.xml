@@ -3,10 +3,14 @@
        xmlns:jpa="http://www.springframework.org/schema/data/jpa"
        xmlns:simpledb="http://www.springframework.org/schema/data/simpledb"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
 	    http://www.springframework.org/schema/data/jpa
 	    http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+	    http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
 		http://www.springframework.org/schema/data/simpledb
 		classpath:META-INF/spring-simpledb.xsd">
 
@@ -20,5 +24,8 @@
         <simpledb:property name="consistentRead" value="true"/>
         <simpledb:property name="dev" value="true"/>
     </simpledb:config>
+
+    <aop:aspectj-autoproxy />
+    <bean class="org.springframework.data.simpledb.logging.LoggingConfiguration"/>
 
 </beans>
