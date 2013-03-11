@@ -219,18 +219,5 @@
             <version>2.6</version>
         </dependency>
 
-        <!--LOGGING THROUGH Spring AOP-->
-        <dependency>
-            <groupId>aspectj</groupId>
-            <artifactId>aspectjrt</artifactId>
-            <version>1.5.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>1.5.4</version>
-        </dependency>
-
     </dependencies>
 </project>
