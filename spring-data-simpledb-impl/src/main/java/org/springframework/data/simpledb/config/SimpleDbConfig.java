@@ -9,14 +9,13 @@ public final class SimpleDbConfig {
 	private String domainPrefix;
 	private String devDomainPrefix;
 
-	private static SimpleDbConfig instance;
+	static class SimpleDbConfigHolder {
+
+		private static SimpleDbConfig instance = new SimpleDbConfig();
+	}
 
 	public static SimpleDbConfig getInstance() {
-		if(instance == null) {
-			instance = new SimpleDbConfig();
-		}
-
-		return instance;
+		return SimpleDbConfigHolder.instance;
 	}
 
 	private SimpleDbConfig() {

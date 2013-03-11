@@ -76,7 +76,8 @@
 						    <includeFilterFile>${basedir}/../etc/FindbugsSonar.xml</includeFilterFile>
 						    <excludeFilterFile>${basedir}/../etc/FindbugsSonarExclude.xml</excludeFilterFile>
 						    <effort>Max</effort>
-        					<threshold>High</threshold>
+        					<!-- High/Low -->
+        					<threshold>Low</threshold>
         					<includeTests>false</includeTests>          					  					
                     </configuration>       				 
      			 </plugin>
@@ -172,7 +173,7 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
             <version>1.3</version>
-            <!--<scope>test</scope>-->
+            <scope>test</scope>
         </dependency>
 
         <dependency>

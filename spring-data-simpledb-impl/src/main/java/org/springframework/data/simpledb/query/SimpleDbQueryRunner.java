@@ -47,10 +47,16 @@ public class SimpleDbQueryRunner {
 
 	public Object executeSingleResultQuery() {
 		List<?> returnListFromDb = executeQuery();
-		Assert.isTrue(returnListFromDb.size() == 1,
+		
+		return getSingleResult(returnListFromDb);
+	}
+
+	Object getSingleResult(List<?> returnListFromDb) {
+		Assert.isTrue(returnListFromDb.size() <= 1,
 				"Select statement should return only one entity from database, returned elements size="
 						+ returnListFromDb.size() + ", for Query=" + query);
-		return returnListFromDb.get(0);
+		
+		return returnListFromDb.size() > 0 ? returnListFromDb.get(0) : null;
 	}
 
 	public long executeCount() {

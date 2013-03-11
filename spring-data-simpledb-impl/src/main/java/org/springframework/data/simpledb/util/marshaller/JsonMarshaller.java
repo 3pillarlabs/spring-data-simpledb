@@ -15,7 +15,11 @@ import org.springframework.util.Assert;
  */
 public final class JsonMarshaller {
 
-	private static JsonMarshaller instance;
+	static class JsonMarshallerHolder {
+
+		private static JsonMarshaller instance = new JsonMarshaller();
+	}
+
 	private ObjectMapper jsonMapper;
 
 	private JsonMarshaller() {
@@ -27,11 +31,7 @@ public final class JsonMarshaller {
 	}
 
 	public static JsonMarshaller getInstance() {
-		if(instance == null) {
-			instance = new JsonMarshaller();
-		}
-
-		return instance;
+		return JsonMarshallerHolder.instance;
 	}
 
 	public <T> T unmarshall(String jsonString, Class<?> objectType) {

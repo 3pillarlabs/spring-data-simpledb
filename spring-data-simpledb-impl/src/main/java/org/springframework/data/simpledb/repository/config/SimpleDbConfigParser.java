@@ -48,13 +48,11 @@ public class SimpleDbConfigParser implements BeanDefinitionParser {
 	}
 
 	private String readHostname() {
-		InetAddress address = null;
-
 		try {
-			address = InetAddress.getLocalHost();
+			InetAddress address = InetAddress.getLocalHost();
+			return "dev_" + address.getHostName().replaceAll("\\W+", "_");
 		} catch(UnknownHostException e) {
+			throw new IllegalArgumentException("Could not read host name", e);
 		}
-
-		return "dev_" + address.getHostName().replaceAll("\\W+", "_");
 	}
 }

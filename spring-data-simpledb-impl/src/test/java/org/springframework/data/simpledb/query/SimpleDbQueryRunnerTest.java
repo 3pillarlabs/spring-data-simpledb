@@ -1,5 +1,7 @@
 package org.springframework.data.simpledb.query;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,38 @@ public class SimpleDbQueryRunnerTest {
 				SampleEntity.class, null);
 
 		runner.executeSingleResultQuery();
+	}
+	
+	@Test
+	public void getSingleResult_should_return_null_for_empty_list() {
+		SimpleDbQueryRunner runner = new SimpleDbQueryRunner(null, SampleEntity.class, null);
+		
+		final Object result = runner.getSingleResult(new ArrayList<SampleEntity>());
+		
+		assertNull(result);
+	}
+	
+	@Test
+	public void getSingleResult_should_return_single_value_from_list_with_one_element() {
+		SimpleDbQueryRunner runner = new SimpleDbQueryRunner(null, SampleEntity.class, null);
+		
+		final ArrayList<SampleEntity> results = new ArrayList<SampleEntity>();
+		results.add(new SampleEntity());
+		
+		final Object result = runner.getSingleResult(results);
+		
+		assertNotNull(result);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void getSingleResult_should_fail_for_list_with_multiple_elements() {
+		SimpleDbQueryRunner runner = new SimpleDbQueryRunner(null, SampleEntity.class, null);
+		
+		final ArrayList<SampleEntity> results = new ArrayList<SampleEntity>();
+		results.add(new SampleEntity());
+		results.add(new SampleEntity());
+		
+		runner.getSingleResult(results);
 	}
 
 }

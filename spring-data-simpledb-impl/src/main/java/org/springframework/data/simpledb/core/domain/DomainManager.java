@@ -25,7 +25,7 @@ public class DomainManager {
 
 		if(domainUpdatePolicy == null) {
 			policy = DomainManagementPolicy.NONE;
-			LOGGER.warn("Domain management policy not configured. Using NONE");
+			LOGGER.warn("Domain management policy not configured. Using default value UPDATE");
 		} else {
 			policy = DomainManagementPolicy.valueOf(domainUpdatePolicy.toUpperCase());
 		}
