@@ -82,4 +82,6 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 
 		return (SimpleDbEntityInformation<T, ID>) SimpleDbEntityInformationSupport.getMetadata(domainClass);
 	}
+
+
 }
