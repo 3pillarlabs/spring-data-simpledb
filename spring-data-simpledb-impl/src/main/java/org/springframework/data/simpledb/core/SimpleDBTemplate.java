@@ -5,38 +5,27 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.util.Assert;
 
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
-import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 
 /**
- * Primary implementation of {@link ISimpleDBOperations} 
+ * Primary implementation of {@link ISimpleDBOperations}
  */
 public class SimpleDBTemplate implements ISimpleDBOperations {
 
-	private AmazonSimpleDBClient sdb;
+	private SimpleDb simpleDbFactory;
 
-	public SimpleDBTemplate(final String accessID, final String secretKey) {
-		sdb = new AmazonSimpleDBClient(new AWSCredentials() {
-
-			@Override
-			public String getAWSAccessKeyId() {
-				return accessID;
-			}
-
-			@Override
-			public String getAWSSecretKey() {
-				return secretKey;
-			}
-		});
+	public SimpleDBTemplate(SimpleDb simpleDb) {
+		Assert.notNull(simpleDb);
+		this.simpleDbFactory = simpleDb;
 	}
-	
+
 	@Override
 	public AmazonSimpleDB getDB() {
-		return sdb;
+		return simpleDbFactory.getSimpleDbClient();
 	}
-	
+
 	@Override
 	public String getDomainName(Class<?> entityClass) {
 		throw new UnsupportedOperationException();

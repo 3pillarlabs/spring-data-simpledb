@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.simpledb.core.ISimpleDBOperations;
 import org.springframework.data.simpledb.core.SimpleDBTemplate;
+import org.springframework.data.simpledb.core.SimpleDb;
 import org.springframework.data.simpledb.repository.config.EnableSimpleDBRepositories;
 import org.springframework.data.simpledb.sample.simpledb.repository.BasicSimpleDbUserRepository;
 import org.springframework.test.context.ContextConfiguration;
@@ -25,7 +26,7 @@ public class EnableSimpleDBRepositoriesAnnotationTest {
 		// needed by core framework
 		@Bean
 		public ISimpleDBOperations simpleDBTemplate() throws Exception {
-			return new SimpleDBTemplate("foo", "bar");
+			return new SimpleDBTemplate(new SimpleDb());
 		}
 
 	}
