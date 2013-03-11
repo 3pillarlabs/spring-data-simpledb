@@ -127,7 +127,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 	// TODO: escape bounded query with itemName() for every item_id
 	@Override
 	public long count(String query, boolean consistentRead) {
-		LOGGER.info("Count items for query " + query);
+		LOGGER.debug("Count items for query " + query);
 
 		validateSelectQuery(query);
 
@@ -145,7 +145,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 	}
 
 	private String getNextToken(String query, boolean consistentRead) {
-		LOGGER.info("Get next token for query: " + query);
+		LOGGER.debug("Get next token for query: " + query);
 
 		Assert.isTrue(query.contains("limit"), "Only queries with limit have a next token!");
 

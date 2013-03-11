@@ -1,11 +1,13 @@
 package org.springframework.data.simpledb.sample.simpledb.domain;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.springframework.data.annotation.Id;
-
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.springframework.data.annotation.Id;
 
 /**
  * TODO: extend with other types to be tested as other type handlers are implemented. One sample for each supported
@@ -128,7 +130,12 @@ public class SimpleDbUser {
 		public boolean equals(Object obj) {
 			return EqualsBuilder.reflectionEquals(NestedEntity.this, obj);
 		}
-	}
+
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this);
+        }
+    }
 
 	@Override
 	public boolean equals(Object o) {
@@ -140,4 +147,8 @@ public class SimpleDbUser {
 		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
+	@Override
+	public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+	}
 }

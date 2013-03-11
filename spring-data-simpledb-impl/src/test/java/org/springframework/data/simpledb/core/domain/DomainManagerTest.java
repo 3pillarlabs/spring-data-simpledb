@@ -3,6 +3,7 @@ package org.springframework.data.simpledb.core.domain;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
+import org.junit.After;
 import org.junit.Test;
 
 public class DomainManagerTest {
@@ -24,6 +25,8 @@ public class DomainManagerTest {
 		manager.manageDomain("sample");
 
 		assertFalse(manager.exists("sample"));
+
+        manager.dropDomain("sample");
 	}
 
 	@Test
@@ -54,6 +57,8 @@ public class DomainManagerTest {
 		manager.manageDomain("test_domain_none");
 
 		assertFalse(manager.exists("test_domain_none"));
+
+        manager.dropDomain("test_domain_none");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -62,6 +67,8 @@ public class DomainManagerTest {
 		manager.manageDomain("test_domain_none");
 
 		assertFalse(manager.exists("test_domain_none"));
+
+        manager.dropDomain("test_domain_none");
 	}
 
 }
