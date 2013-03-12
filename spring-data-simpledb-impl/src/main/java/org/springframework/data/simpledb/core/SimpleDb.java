@@ -3,6 +3,7 @@ package org.springframework.data.simpledb.core;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.simpledb.annotation.DomainPrefix;
 import org.springframework.data.simpledb.core.domain.DomainManagementPolicy;
@@ -20,16 +21,27 @@ import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 public class SimpleDb implements InitializingBean {
 
 	private AmazonSimpleDB simpleDbClient;
+    private DomainManagementPolicy policy = DomainManagementPolicy.UPDATE;
 	
 	private String accessID;
 	private String secretKey;
 	
-	private DomainManagementPolicy domainManagementPolicy = DomainManagementPolicy.UPDATE;
+	private String domainManagementPolicy;
 	private String domainPrefix;
 	private boolean consistentRead = false;
 	private boolean dev = false;
 	
 	private String devDomainPrefix;
+
+    public SimpleDb(){
+        //for spring bean injection
+    }
+
+    public SimpleDb(String accessID, String secretKey){
+        //to be used in Java configuration when bean is not read from config
+        this.accessID = accessID;
+        this.secretKey = secretKey;
+    }
 	
 	public AmazonSimpleDB getSimpleDbClient() {
 		return simpleDbClient;
@@ -41,13 +53,14 @@ public class SimpleDb implements InitializingBean {
 	public void setSecretKey(String secretKey) {
 		this.secretKey = secretKey;
 	}
-	
-	public DomainManagementPolicy getDomainManagementPolicy() {
-		return domainManagementPolicy;
-	}
-	public void setDomainManagementPolicy(DomainManagementPolicy domainManagementPolicy) {
+
+	public void setDomainManagementPolicy(String domainManagementPolicy) {
 		this.domainManagementPolicy = domainManagementPolicy;
 	}
+
+    public DomainManagementPolicy getDomainManagementPolicy(){
+        return policy;
+    }
 
 	public String getDomainPrefix() {
 		return domainPrefix;
@@ -71,7 +84,7 @@ public class SimpleDb implements InitializingBean {
 	}
 
 	@Override
-	public void afterPropertiesSet() {
+	public final void afterPropertiesSet() {
 		final AWSCredentials awsCredentials = new AWSCredentials() {
 
 			@Override
@@ -90,6 +103,10 @@ public class SimpleDb implements InitializingBean {
 		if(this.dev) {
 			devDomainPrefix = readHostname();
 		}
+
+        if(!StringUtils.isEmpty(domainManagementPolicy)) {
+            policy = DomainManagementPolicy.valueOf(domainManagementPolicy);
+        }
 	}
 	
 	/**
@@ -101,9 +118,9 @@ public class SimpleDb implements InitializingBean {
 	public String getDomain(Class<?> clazz) {
 		StringBuilder ret = new StringBuilder();
 
-		String domainPrefix = getDomainPrefix(clazz);
-		if(domainPrefix != null) {
-			ret.append(domainPrefix);
+		String computedDomainPrefix = getDomainPrefix(clazz);
+		if(computedDomainPrefix != null) {
+			ret.append(computedDomainPrefix);
 			ret.append(".");
 		}
 
@@ -119,9 +136,9 @@ public class SimpleDb implements InitializingBean {
 			return devDomainPrefix;
 		}
 
-		DomainPrefix domainPrefix = (DomainPrefix) clazz.getAnnotation(DomainPrefix.class);
-		if(domainPrefix != null) {
-			return domainPrefix.value();
+		DomainPrefix annotatedDomainPrefix = (DomainPrefix) clazz.getAnnotation(DomainPrefix.class);
+		if(annotatedDomainPrefix != null) {
+			return annotatedDomainPrefix.value();
 		}
 
 		return this.domainPrefix;

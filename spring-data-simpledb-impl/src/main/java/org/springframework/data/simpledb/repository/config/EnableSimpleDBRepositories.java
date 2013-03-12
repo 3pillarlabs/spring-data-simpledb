@@ -91,12 +91,6 @@ public @interface EnableSimpleDBRepositories {
      *
      * @return
      */
-    String simpledbTemplateRef() default "simpleDBTemplate";
-//
-//    /**
-//     * Whether to automatically create indexes for query methods defined in the repository interface.
-//     *
-//     * @return
-//     */
-//    boolean createIndexesForQueryMethods() default false;
+    String simpleDbTemplateRef() default "simpleDBTemplate";
+
 }

@@ -48,6 +48,9 @@ public class SimpleDbTemplate implements ISimpleDbOperations {
 		return simpleDb.getSimpleDbClient();
 	}
 
+    public SimpleDb getSimpleDb(){
+        return simpleDb;
+    }
 	@Override
 	public String getDomainName(Class<?> entityClass) {
 		return simpleDb.getDomain(entityClass);
