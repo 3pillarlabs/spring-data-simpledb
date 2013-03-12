@@ -19,6 +19,8 @@ public interface ISimpleDBOperations {
 	String getDomainName(Class<?> entityClass);
 
 	AmazonSimpleDB getDB();
+
+    SimpleDb getSimpleDb();
 	
 	<T> T createOrUpdateItem(T entity);
 

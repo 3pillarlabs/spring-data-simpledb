@@ -14,17 +14,21 @@ import com.amazonaws.services.simpledb.AmazonSimpleDB;
  */
 public class SimpleDBTemplate implements ISimpleDBOperations {
 
-	private SimpleDb simpleDbFactory;
+	private SimpleDb simpleDb;
 
 	public SimpleDBTemplate(SimpleDb simpleDb) {
 		Assert.notNull(simpleDb);
-		this.simpleDbFactory = simpleDb;
+		this.simpleDb = simpleDb;
 	}
 
 	@Override
 	public AmazonSimpleDB getDB() {
-		return simpleDbFactory.getSimpleDbClient();
+		return simpleDb.getSimpleDbClient();
 	}
+
+    public SimpleDb getSimpleDb(){
+        return simpleDb;
+    }
 
 	@Override
 	public String getDomainName(Class<?> entityClass) {

@@ -1,12 +1,12 @@
 package org.springframework.data.simpledb.core;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.data.simpledb.annotation.DomainPrefix;
-import org.springframework.data.simpledb.core.domain.DomainManagementPolicy;
-
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.data.simpledb.annotation.DomainPrefix;
+import org.springframework.data.simpledb.core.domain.DomainManagementPolicy;
 
 /**
  * A configuration class to create and instance of {@link AmazonSimpleDB} from user credentials
@@ -16,14 +16,25 @@ import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 public class SimpleDb implements InitializingBean {
 
 	private AmazonSimpleDB simpleDbClient;
+    private DomainManagementPolicy policy = DomainManagementPolicy.UPDATE;
 	
 	private String accessID;
 	private String secretKey;
 	
-	private DomainManagementPolicy domainManagementPolicy = DomainManagementPolicy.UPDATE;
+	private String domainManagementPolicy;
 	private String domainPrefix;
 	private boolean consistentRead = false;
 	private boolean dev = false;
+
+    public SimpleDb(){
+        //for spring bean injection
+    }
+
+    public SimpleDb(String accessID, String secretKey){
+        //to be used in Java configuration when bean is not read from config
+        this.accessID = accessID;
+        this.secretKey = secretKey;
+    }
 	
 	public AmazonSimpleDB getSimpleDbClient() {
 		return simpleDbClient;
@@ -35,13 +46,14 @@ public class SimpleDb implements InitializingBean {
 	public void setSecretKey(String secretKey) {
 		this.secretKey = secretKey;
 	}
-	
-	public DomainManagementPolicy getDomainManagementPolicy() {
-		return domainManagementPolicy;
-	}
-	public void setDomainManagementPolicy(DomainManagementPolicy domainManagementPolicy) {
+
+	public void setDomainManagementPolicy(String domainManagementPolicy) {
 		this.domainManagementPolicy = domainManagementPolicy;
 	}
+
+    public DomainManagementPolicy getDomainManagementPolicy(){
+        return policy;
+    }
 
 	public String getDomainPrefix() {
 		return domainPrefix;
@@ -65,7 +77,7 @@ public class SimpleDb implements InitializingBean {
 	}
 
 	@Override
-	public void afterPropertiesSet() {
+	public final void afterPropertiesSet() {
 		final AWSCredentials awsCredentials = new AWSCredentials() {
 
 			@Override
@@ -80,6 +92,10 @@ public class SimpleDb implements InitializingBean {
 		};
 
 		this.simpleDbClient = new AmazonSimpleDBClient(awsCredentials);
+
+        if(!StringUtils.isEmpty(domainManagementPolicy)) {
+            policy = DomainManagementPolicy.valueOf(domainManagementPolicy);
+        }
 	}
 	
 }
