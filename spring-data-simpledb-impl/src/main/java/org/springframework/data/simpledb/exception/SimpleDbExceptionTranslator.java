@@ -55,25 +55,6 @@ public final class SimpleDbExceptionTranslator implements PersistenceExceptionTr
 			return new InvalidDataAccessResourceUsageException(e.getLocalizedMessage(), e);
 		}
 
-		// The specified query expression syntax is not valid.
-		if(e instanceof InvalidQueryExpressionException) {
-			// return new MappingException(e.getLocalizedMessage(), e);
-		}
-
-		// throw new MappingException
-		if(e instanceof InvalidNumberPredicatesException) {
-			// return new MappingException(e.getLocalizedMessage(), e);
-		}
-
-		if(e instanceof InvalidParameterValueException) {
-			// return new MappingException(e.getLocalizedMessage(), e);
-		}
-
-		// Too many predicates exist in the query expression.
-		if(e instanceof InvalidNumberValueTestsException) {
-			// return new MappingException(e.getLocalizedMessage(), e);
-		}
-
 		if(e instanceof NoSuchDomainException) {
 			return new EmptyResultDataAccessException(e.getLocalizedMessage(), -1);
 		}
@@ -97,7 +78,8 @@ public final class SimpleDbExceptionTranslator implements PersistenceExceptionTr
 			return new UncategorizedSpringDaoException(e.getLocalizedMessage(), e);
 		}
 
-		// should not encounter this line
+		// this line means that spring-data exceptions will not be translated to DataAccessException, being interpreted
+		// as they are from the SimpleDB Template
 		return null;
 	}
 }
