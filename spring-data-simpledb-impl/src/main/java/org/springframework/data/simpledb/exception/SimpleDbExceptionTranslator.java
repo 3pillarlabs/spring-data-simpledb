@@ -43,10 +43,6 @@ public final class SimpleDbExceptionTranslator implements PersistenceExceptionTr
 			return new IncorrectResultSizeDataAccessException(e.getLocalizedMessage(), -1);
 		}
 
-		if(e instanceof AmazonServiceException) {
-			return new DataAccessResourceFailureException(e.getLocalizedMessage(), e);
-		}
-
 		if(e instanceof InvalidParameterValueException || e instanceof MissingParameterException) {
 			return new InvalidDataAccessResourceUsageException(e.getLocalizedMessage(), e);
 		}
@@ -55,15 +51,19 @@ public final class SimpleDbExceptionTranslator implements PersistenceExceptionTr
 			return new EmptyResultDataAccessException(e.getLocalizedMessage(), -1);
 		}
 
-		if(e instanceof NumberDomainAttributesExceededException || e instanceof NumberDomainsExceededException
-				|| e instanceof TooManyRequestedAttributesException) {
+		if((e instanceof NumberDomainAttributesExceededException) || (e instanceof NumberDomainsExceededException)
+				|| (e instanceof TooManyRequestedAttributesException)) {
 			return new DataIntegrityViolationException(e.getLocalizedMessage(), e);
 		}
 
-		if(e instanceof InvalidNextTokenException || e instanceof TooManyRequestedAttributesException
-				|| e instanceof MissingParameterException) {
+		if((e instanceof InvalidNextTokenException) || (e instanceof TooManyRequestedAttributesException)
+				|| (e instanceof MissingParameterException)) {
 			return new InvalidDataAccessApiUsageException(e.getLocalizedMessage(), e);
 		}
+
+        if(e instanceof AmazonServiceException) {
+            return new DataAccessResourceFailureException(e.getLocalizedMessage(), e);
+        }
 
 		// Amazon Internal Exception
 		if(e instanceof AmazonClientException) {
