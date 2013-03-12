@@ -28,11 +28,6 @@ public class SimpleDBTemplateInjectionTest {
 		assertNotNull(operations2);
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void method_calls_on_operations_should_throw_exception() {
-		operations1.createOrUpdate(null);
-	}
-
 	@Test
 	public void operations_should_be_configured() {
 		assertNotNull(operations1.getDB());

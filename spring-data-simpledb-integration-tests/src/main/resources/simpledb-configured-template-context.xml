@@ -25,7 +25,7 @@
         <property name="dev" value="true" />
     </bean>
 
-	<bean id="simpleDBTemplate2" class="org.springframework.data.simpledb.core.SimpleDBTemplate">
+	<bean id="simpleDBTemplate2" class="org.springframework.data.simpledb.core.SimpleDbTemplate">
 	   	<constructor-arg name="simpleDb" ref="simpleDb" />
 	</bean>
 	

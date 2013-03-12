@@ -11,11 +11,11 @@
         <property name="secretKey" value="Nzy6w0iq8JI+DHgdiPPiuqixiMoWQmPhWFgQzOZY"/>
     </bean>
     
-	<bean id="simpleDBTemplate1" class="org.springframework.data.simpledb.core.SimpleDBTemplate">
+	<bean id="simpleDBTemplate1" class="org.springframework.data.simpledb.core.SimpleDbTemplate">
 	    <constructor-arg name="simpleDb" ref="simpleDb" />
 	</bean>
 
-	<bean id="simpleDBTemplate2" class="org.springframework.data.simpledb.core.SimpleDBTemplate">
+	<bean id="simpleDBTemplate2" class="org.springframework.data.simpledb.core.SimpleDbTemplate">
 	   	<constructor-arg name="simpleDb" ref="simpleDb" />
 	</bean>
 	
