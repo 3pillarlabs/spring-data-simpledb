@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:simpledb="http://www.springframework.org/schema/data/simpledb"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/data/simpledb
+        classpath:META-INF/spring-simpledb.xsd">
+
+    <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
+    
+    <simpledb:config>
+        <simpledb:property name="accessID" value="AKIAIVX775TRPPSZTEMQ"/>
+        <simpledb:property name="secretKey" value="Nzy6w0iq8JI+DHgdiPPiuqixiMoWQmPhWFgQzOZY"/>
+        <simpledb:property name="domainManagementPolicy" value="drop_create"/>
+        <simpledb:property name="domainPrefix" value="testDB"/>
+        <simpledb:property name="consistentRead" value="true"/>
+        <simpledb:property name="dev" value="true"/>
+    </simpledb:config>
+    
+    <bean id="simpleDb" class="org.springframework.data.simpledb.core.SimpleDb">
+        <property name="accessID" value="AKIAIVX775TRPPSZTEMQ"/>
+        <property name="secretKey" value="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"/>
+        <property name="domainPrefix" value="testDB" />
+        <property name="consistentRead" value="true" />
+        <property name="dev" value="true" />
+    </bean>
+
+	<bean id="simpleDBTemplate2" class="org.springframework.data.simpledb.core.SimpleDBTemplate">
+	   	<constructor-arg name="simpleDb" ref="simpleDb" />
+	</bean>
+	
+</beans>

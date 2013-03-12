@@ -30,8 +30,7 @@ public abstract class SimpleDbEntityInformationSupport<T, ID extends Serializabl
 		AbstractEntityInformation<T, ID> implements SimpleDbEntityInformation<T, ID> {
 
 	/**
-	 * Creates a new {@link org.springframework.data.jpa.repository.support.JpaEntityInformationSupport} with the given
-	 * domain class.
+	 * Creates a new {@link SimpleDbEntityInformationSupport} with the given domain class.
 	 * 
 	 * @param domainClass
 	 *            must not be {@literal null}.
@@ -42,8 +41,7 @@ public abstract class SimpleDbEntityInformationSupport<T, ID extends Serializabl
 	}
 
 	/**
-	 * Creates a {@link org.springframework.data.jpa.repository.support.JpaEntityInformation} for the given domain class
-	 * and {@link javax.persistence.EntityManager}.
+	 * Creates a {@link SimpleDbEntityInformation} for the given domain class.
 	 * 
 	 * @param domainClass
 	 *            must not be {@literal null}.

@@ -7,7 +7,7 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.simpledb.config.SimpleDbConfig;
-import org.springframework.data.simpledb.core.ISimpleDBOperations;
+import org.springframework.data.simpledb.core.ISimpleDbOperations;
 
 import java.io.Serializable;
 
@@ -18,7 +18,7 @@ import java.io.Serializable;
 public class SimpleDbRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> extends
 		RepositoryFactoryBeanSupport<T, S, ID> {
 
-    private ISimpleDBOperations simpleDbOperations;
+    private ISimpleDbOperations simpleDbOperations;
 
 	@Override
 	protected RepositoryFactorySupport createRepositoryFactory() {
@@ -43,7 +43,7 @@ public class SimpleDbRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
      * Needed by spring data core to inject operations
      * @param simpleDbOperations
      */
-    public void setSimpleDbOperations(ISimpleDBOperations simpleDbOperations) {
+    public void setSimpleDbOperations(ISimpleDbOperations simpleDbOperations) {
         this.simpleDbOperations = simpleDbOperations;
     }
 }

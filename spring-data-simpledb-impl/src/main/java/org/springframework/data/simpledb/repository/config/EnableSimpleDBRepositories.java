@@ -87,7 +87,7 @@ public @interface EnableSimpleDBRepositories {
     Class<?> repositoryFactoryBeanClass() default SimpleDbRepositoryFactoryBean.class;
 
     /**
-     * Configures the name of the {@link org.springframework.data.simpledb.core.SimpleDBTemplate} bean to be used with the repositories detected.
+     * Configures the name of the {@link org.springframework.data.simpledb.core.SimpleDbTemplate} bean to be used with the repositories detected.
      *
      * @return
      */

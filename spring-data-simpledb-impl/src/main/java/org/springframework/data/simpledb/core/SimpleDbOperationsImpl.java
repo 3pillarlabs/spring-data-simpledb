@@ -37,7 +37,7 @@ public class SimpleDbOperationsImpl<T, ID extends Serializable> implements Simpl
 
 	public SimpleDbOperationsImpl(AmazonSimpleDB sdb) {
 		this.sdb = sdb;
-		domainItemBuilder = new DomainItemBuilder<T, ID>();
+		domainItemBuilder = new DomainItemBuilder<T>();
 	}
 
 	@Override

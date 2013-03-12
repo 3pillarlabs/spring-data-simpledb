@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 
-public interface ISimpleDBOperations {
+public interface ISimpleDbOperations {
 	
 	/**
 	 * The domain name used for the specified class by this template.
@@ -20,16 +20,30 @@ public interface ISimpleDBOperations {
 
 	AmazonSimpleDB getDB();
 	
-	<T> T createOrUpdateItem(T entity);
+	<T> T createOrUpdate(T entity);
+	
+	void delete(String domainName, String itemName);
+	
+	<T> void delete(T entity);
+	
+	<T, ID extends Serializable> T read(ID id, Class<T> entityClass);
+	
+	<T, ID extends Serializable> T read(ID id, Class<T> entityClass, boolean consistentRead);
 
-	void deleteItem(String domainName, String itemName);
-
-	<T, ID extends Serializable> T readItem(ID id, Class<T> entityClass, boolean consistentRead);
-
+	<T> long count(Class<T> entityClass);
+	
 	<T> long count(Class<T> entityClass, boolean consistentRead);
 
+	<T> List<T> findAll(Class<T> entityClass);
+	
+	<T> List<T> findAll(Class<T> entityClass, boolean consistentRead);
+	
+	<T> List<T> find(Class<T> entityClass, String query);
+	
 	<T> List<T> find(Class<T> entityClass, String query, boolean consistentRead);
 
+	<T> Page<T> executePagedQuery(Class<T> entityClass, String query, Pageable pageable);
+	
 	<T> Page<T> executePagedQuery(Class<T> entityClass, String query, Pageable pageable,
 			boolean consistentRead);
 }

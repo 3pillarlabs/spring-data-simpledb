@@ -1,8 +1,12 @@
 package org.springframework.data.simpledb.core;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.simpledb.annotation.DomainPrefix;
 import org.springframework.data.simpledb.core.domain.DomainManagementPolicy;
+import org.springframework.data.simpledb.util.StringUtil;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
@@ -24,6 +28,8 @@ public class SimpleDb implements InitializingBean {
 	private String domainPrefix;
 	private boolean consistentRead = false;
 	private boolean dev = false;
+	
+	private String devDomainPrefix;
 	
 	public AmazonSimpleDB getSimpleDbClient() {
 		return simpleDbClient;
@@ -80,6 +86,53 @@ public class SimpleDb implements InitializingBean {
 		};
 
 		this.simpleDbClient = new AmazonSimpleDBClient(awsCredentials);
+		
+		if(this.dev) {
+			devDomainPrefix = readHostname();
+		}
 	}
 	
+	/**
+	 * Domain name are computed based on class names: UserJob -> user_job
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	public String getDomain(Class<?> clazz) {
+		StringBuilder ret = new StringBuilder();
+
+		String domainPrefix = getDomainPrefix(clazz);
+		if(domainPrefix != null) {
+			ret.append(domainPrefix);
+			ret.append(".");
+		}
+
+		String camelCaseString = clazz.getSimpleName();
+
+		ret.append(StringUtil.toLowerFirstChar(camelCaseString));
+
+		return ret.toString();
+	}
+	
+	private String getDomainPrefix(Class<?> clazz) {
+		if(this.dev) {
+			return devDomainPrefix;
+		}
+
+		DomainPrefix domainPrefix = (DomainPrefix) clazz.getAnnotation(DomainPrefix.class);
+		if(domainPrefix != null) {
+			return domainPrefix.value();
+		}
+
+		return this.domainPrefix;
+	}
+	
+	private String readHostname() {
+		try {
+			InetAddress address = InetAddress.getLocalHost();
+			return "dev_" + address.getHostName().replaceAll("\\W+", "_");
+		} catch(UnknownHostException e) {
+			throw new IllegalArgumentException("Could not read host name", e);
+		}
+	}
 }

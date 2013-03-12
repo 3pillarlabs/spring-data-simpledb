@@ -7,8 +7,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.simpledb.core.ISimpleDBOperations;
-import org.springframework.data.simpledb.core.SimpleDBTemplate;
+import org.springframework.data.simpledb.core.ISimpleDbOperations;
+import org.springframework.data.simpledb.core.SimpleDbTemplate;
 import org.springframework.data.simpledb.core.SimpleDb;
 import org.springframework.data.simpledb.repository.config.EnableSimpleDBRepositories;
 import org.springframework.data.simpledb.sample.simpledb.repository.BasicSimpleDbUserRepository;
@@ -25,8 +25,8 @@ public class EnableSimpleDBRepositoriesAnnotationTest {
 
 		// needed by core framework
 		@Bean
-		public ISimpleDBOperations simpleDBTemplate() throws Exception {
-			return new SimpleDBTemplate(new SimpleDb());
+		public ISimpleDbOperations simpleDBTemplate() throws Exception {
+			return new SimpleDbTemplate(new SimpleDb());
 		}
 
 	}
