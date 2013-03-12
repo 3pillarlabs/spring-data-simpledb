@@ -47,11 +47,7 @@ public final class SimpleDbExceptionTranslator implements PersistenceExceptionTr
 			return new DataAccessResourceFailureException(e.getLocalizedMessage(), e);
 		}
 
-		if(e instanceof InvalidParameterValueException) {
-			return new InvalidDataAccessResourceUsageException(e.getLocalizedMessage(), e);
-		}
-
-		if(e instanceof MissingParameterException) {
+		if(e instanceof InvalidParameterValueException || e instanceof MissingParameterException) {
 			return new InvalidDataAccessResourceUsageException(e.getLocalizedMessage(), e);
 		}
 
@@ -67,10 +63,6 @@ public final class SimpleDbExceptionTranslator implements PersistenceExceptionTr
 		if(e instanceof InvalidNextTokenException || e instanceof TooManyRequestedAttributesException
 				|| e instanceof MissingParameterException) {
 			return new InvalidDataAccessApiUsageException(e.getLocalizedMessage(), e);
-		}
-
-		if(e instanceof AmazonServiceException) {
-
 		}
 
 		// Amazon Internal Exception
