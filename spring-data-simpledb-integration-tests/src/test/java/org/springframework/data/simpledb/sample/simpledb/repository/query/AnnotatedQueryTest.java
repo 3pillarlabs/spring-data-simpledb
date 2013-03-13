@@ -11,7 +11,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.simpledb.core.InvalidSimpleDBQueryException;
+import org.springframework.data.simpledb.exception.InvalidSimpleDBQueryException;
 import org.springframework.data.simpledb.sample.simpledb.domain.JSONCompatibleClass;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
