@@ -53,20 +53,6 @@ public class SimpleDbExceptionTranslatorTest {
 	}
 
 	@Test
-	public void translateExceptionIfPossible_should_translate_TooManyRequestedAttributesException_into_IncorrectResultSizeDataAccessException() {
-		TooManyRequestedAttributesException tooManyRequestedAttributesException = new TooManyRequestedAttributesException(
-				"Too many Attributes");
-
-		DataAccessException dataAccessException = translator
-				.translateExceptionIfPossible(tooManyRequestedAttributesException);
-		assertThat(dataAccessException, is(instanceOf(IncorrectResultSizeDataAccessException.class)));
-
-		assertThat(dataAccessException, is(notNullValue()));
-		assertThat(dataAccessException.getLocalizedMessage(), is("Too many Attributes"));
-
-	}
-
-	@Test
 	public void translateExceptionIfPossible_should_translate_InvalidParameterValueException_into_InvalidDataAccessResourceUsageException() {
 		InvalidParameterValueException invalidParameterValueException = new InvalidParameterValueException(
 				"Invalid Parameter");

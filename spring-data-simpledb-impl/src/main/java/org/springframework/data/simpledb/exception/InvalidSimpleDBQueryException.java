@@ -1,6 +1,8 @@
 package org.springframework.data.simpledb.exception;
 
-public class InvalidSimpleDBQueryException extends RuntimeException {
+import org.springframework.dao.UncategorizedDataAccessException;
+
+public class InvalidSimpleDBQueryException extends UncategorizedDataAccessException{
 
 	private static final long serialVersionUID = 1L;
 

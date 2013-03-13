@@ -38,6 +38,11 @@ public class DomainManager {
 		LOGGER.debug("Read domain management policy: {}", policy);
 	}
 
+    /**
+     * Creates a domain, based on the Domain Policy; The default is UPDATE(if it does not exist create it)
+     *
+     * @param domainName
+     */
 	public void manageDomain(String domainName) {
 		try {
 			if(policy == DomainManagementPolicy.NONE) {
@@ -53,7 +58,13 @@ public class DomainManager {
 		}
 	}
 
-	public void dropDomain(String domainName) throws AmazonClientException {
+	/**
+	 * Running the delete-domain command over & over again on the same domain, or if the domain does NOT exist will NOT
+	 * result in a Amazon Exception
+	 * 
+	 * @param domainName
+	 */
+	public void dropDomain(String domainName) {
 		try {
 			LOGGER.debug("Dropping domain: {}", domainName);
 			DeleteDomainRequest request = new DeleteDomainRequest(domainName);
@@ -64,7 +75,7 @@ public class DomainManager {
 		}
 	}
 
-	private void createDomain(String domainName) throws AmazonClientException {
+	private void createDomain(String domainName) {
 		try {
 			LOGGER.debug("Creating domain: {}", domainName);
 			CreateDomainRequest request = new CreateDomainRequest(domainName);
@@ -75,7 +86,7 @@ public class DomainManager {
 		}
 	}
 
-	public boolean exists(String domainName) throws AmazonClientException {
+	public boolean exists(String domainName) {
 		try {
 			ListDomainsResult listDomainsResult = sdb.listDomains(new ListDomainsRequest());
 			List<String> domainNames = listDomainsResult.getDomainNames();
