@@ -47,7 +47,7 @@ public class SimpleDbConfigParser implements BeanDefinitionParser {
 
 	}
 
-	private String readHostname() {
+	public static String readHostname() {
 		try {
 			InetAddress address = InetAddress.getLocalHost();
 			return "dev_" + address.getHostName().replaceAll("\\W+", "_");

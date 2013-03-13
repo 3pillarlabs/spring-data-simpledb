@@ -19,7 +19,7 @@ public class DomainItemBuilderTest {
 	public static final String SAMPLE_ATT_NAME = "name";
 	public static final String SAMPLE_ATT_VALUE = "value";
 	private static final Boolean SAMPLE_BOOLEAN_ATT_VALUE = Boolean.TRUE;
-	private DomainItemBuilder<SimpleDbSampleEntity, String> domainItemBuilder;
+	private DomainItemBuilder<SimpleDbSampleEntity> domainItemBuilder;
 
 	@Test
 	public void buildDomainItem_should_convert_item_name() {
@@ -28,7 +28,7 @@ public class DomainItemBuilderTest {
 		SimpleDbEntityInformation<SimpleDbSampleEntity, String> entityInformation = SimpleDbSampleEntity
 				.entityInformation();
 
-		domainItemBuilder = new DomainItemBuilder<SimpleDbSampleEntity, String>();
+		domainItemBuilder = new DomainItemBuilder<SimpleDbSampleEntity>();
 		SimpleDbSampleEntity returnedDomainEntity = domainItemBuilder.buildDomainItem(entityInformation, sampleItem);
 
 		assertEquals(SAMPLE_ITEM_NAME, returnedDomainEntity.getItemName());
@@ -43,7 +43,7 @@ public class DomainItemBuilderTest {
 		SimpleDbEntityInformation<SimpleDbSampleEntity, String> entityInformation = SimpleDbSampleEntity
 				.entityInformation();
 
-		domainItemBuilder = new DomainItemBuilder<SimpleDbSampleEntity, String>();
+		domainItemBuilder = new DomainItemBuilder<SimpleDbSampleEntity>();
 		SimpleDbSampleEntity returnedDomainEntity = domainItemBuilder.buildDomainItem(entityInformation, sampleItem);
 
 		assertTrue(returnedDomainEntity.getBooleanField() == SAMPLE_BOOLEAN_ATT_VALUE);

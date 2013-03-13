@@ -24,7 +24,7 @@ public class DomainManager {
 		this.sdb = sdb;
 
 		if(domainUpdatePolicy == null) {
-			policy = DomainManagementPolicy.NONE;
+			policy = DomainManagementPolicy.UPDATE;
 			LOGGER.warn("Domain management policy not configured. Using default value UPDATE");
 		} else {
 			policy = DomainManagementPolicy.valueOf(domainUpdatePolicy.toUpperCase());

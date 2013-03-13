@@ -87,16 +87,10 @@ public @interface EnableSimpleDBRepositories {
     Class<?> repositoryFactoryBeanClass() default SimpleDbRepositoryFactoryBean.class;
 
     /**
-     * Configures the name of the {@link org.springframework.data.simpledb.core.SimpleDBTemplate} bean to be used with the repositories detected.
+     * Configures the name of the {@link org.org.springframework.data.simpledb.core.SimpleDbTemplate} bean to be used with the repositories detected.
      *
      * @return
      */
-    String simpledbTemplateRef() default "simpleDBTemplate";
-//
-//    /**
-//     * Whether to automatically create indexes for query methods defined in the repository interface.
-//     *
-//     * @return
-//     */
-//    boolean createIndexesForQueryMethods() default false;
+    String simpleDbTemplateRef() default "simpleDBTemplate";
+
 }
