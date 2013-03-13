@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.core;
+package org.springframework.data.simpledb.exception;
 
 public class InvalidSimpleDBQueryException extends RuntimeException {
 

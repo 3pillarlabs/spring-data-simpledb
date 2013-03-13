@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
+import org.springframework.data.simpledb.exception.InvalidSimpleDBQueryException;
 import org.springframework.data.simpledb.parser.SimpleDBParser;
 import org.springframework.data.simpledb.query.QueryUtils;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;

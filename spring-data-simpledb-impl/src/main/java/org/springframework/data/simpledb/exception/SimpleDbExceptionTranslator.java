@@ -61,9 +61,9 @@ public final class SimpleDbExceptionTranslator implements PersistenceExceptionTr
 			return new InvalidDataAccessApiUsageException(e.getLocalizedMessage(), e);
 		}
 
-        if(e instanceof AmazonServiceException) {
-            return new DataAccessResourceFailureException(e.getLocalizedMessage(), e);
-        }
+		if(e instanceof AmazonServiceException) {
+			return new DataAccessResourceFailureException(e.getLocalizedMessage(), e);
+		}
 
 		// Amazon Internal Exception
 		if(e instanceof AmazonClientException) {

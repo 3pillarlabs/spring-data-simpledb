@@ -11,7 +11,7 @@ import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 /**
  * A configuration class to create and instance of {@link AmazonSimpleDB} from user credentials
  * and to hold few extra configuration options: {@link DomainManagementPolicy}, 
- * {@link DomainPrefix}, consistentRead and dev
+ * {@link org.springframework.data.simpledb.annotation.DomainPrefix}, consistentRead and dev
  */
 public class SimpleDb implements InitializingBean {
 
