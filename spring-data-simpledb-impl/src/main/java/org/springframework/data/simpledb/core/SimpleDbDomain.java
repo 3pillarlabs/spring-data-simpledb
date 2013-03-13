@@ -59,7 +59,7 @@ public class SimpleDbDomain {
 		return this.domainPrefix;
 	}
 	
-	public String readHostname() {
+	public static String readHostname() {
 		try {
 			InetAddress address = InetAddress.getLocalHost();
 			return "dev_" + address.getHostName().replaceAll("\\W+", "_");
