@@ -31,6 +31,8 @@ import org.w3c.dom.Element;
  * See JpaRepositoryConfigExtension
  */
 public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationExtensionSupport {
+	
+	private static final String SIMPLEDB_TEMPLATE_REF = "simpledb-template-ref";
 
 	/*
 	 * (non-Javadoc)
@@ -64,8 +66,7 @@ public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationEx
 	@Override
 	public void postProcess(BeanDefinitionBuilder builder, XmlRepositoryConfigurationSource config) {
 		Element element = config.getElement();
-		ParsingUtils.setPropertyReference(builder, element, "simpledb-template-ref", "simpleDbOperations");
-
+		ParsingUtils.setPropertyReference(builder, element, SIMPLEDB_TEMPLATE_REF, "simpleDbOperations");
 	}
 
 	/**
@@ -76,9 +77,7 @@ public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationEx
 	 */
 	@Override
 	public void postProcess(BeanDefinitionBuilder builder, AnnotationRepositoryConfigurationSource config) {
-
 		AnnotationAttributes attributes = config.getAttributes();
-
         builder.addPropertyReference("simpleDbOperations", attributes.getString("simpleDbTemplateRef"));
 	}
 
