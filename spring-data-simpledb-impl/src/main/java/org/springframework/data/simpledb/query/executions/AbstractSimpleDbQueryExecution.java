@@ -1,7 +1,5 @@
 package org.springframework.data.simpledb.query.executions;
 
-import java.io.Serializable;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.query.QueryUtils;
@@ -16,9 +14,9 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractSimpleDbQueryExecution {
 
-	private final SimpleDbOperations<?, Serializable> simpledbOperations;
+	private final SimpleDbOperations simpledbOperations;
 
-	public AbstractSimpleDbQueryExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
+	public AbstractSimpleDbQueryExecution(SimpleDbOperations simpleDbOperations) {
 		this.simpledbOperations = simpleDbOperations;
 	}
 

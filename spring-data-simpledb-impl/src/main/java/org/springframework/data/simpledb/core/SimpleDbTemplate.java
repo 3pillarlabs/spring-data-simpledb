@@ -28,12 +28,12 @@ import com.amazonaws.services.simpledb.model.SelectRequest;
 import com.amazonaws.services.simpledb.model.SelectResult;
 
 /**
- * Primary implementation of {@link ISimpleDbOperations}
+ * Primary implementation of {@link SimpleDbOperations}
  */
-public class SimpleDbTemplate implements ISimpleDbOperations {
+public class SimpleDbTemplate implements SimpleDbOperations {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbTemplate.class);
-	
+
 	private final SimpleDb simpleDb;
 	private final AmazonSimpleDB simpleDbClient;
 
@@ -48,9 +48,10 @@ public class SimpleDbTemplate implements ISimpleDbOperations {
 		return simpleDb.getSimpleDbClient();
 	}
 
-    public SimpleDb getSimpleDb(){
-        return simpleDb;
-    }
+	public SimpleDb getSimpleDb() {
+		return simpleDb;
+	}
+
 	@Override
 	public String getDomainName(Class<?> entityClass) {
 		return simpleDb.getDomain(entityClass);
@@ -59,9 +60,9 @@ public class SimpleDbTemplate implements ISimpleDbOperations {
 	@Override
 	public <T> T createOrUpdate(T domainItem) {
 		final EntityWrapper<T, ?> entity = getEntityWrapper(domainItem);
-		
+
 		Assert.notNull(entity.getDomain(), "Domain name should not be null");
-		
+
 		logOperation("Create or update", entity);
 		entity.generateIdIfNotSet();
 
@@ -81,7 +82,7 @@ public class SimpleDbTemplate implements ISimpleDbOperations {
 	@Override
 	public void delete(String domainName, String itemName) {
 		LOGGER.debug("Delete Domain\"{}\" ItemName \"{}\"", domainName, itemName);
-		
+
 		Assert.notNull(domainName, "Domain name should not be null");
 		Assert.notNull(itemName, "Item name should not be null");
 		simpleDbClient.deleteAttributes(new DeleteAttributesRequest(domainName, itemName));
@@ -90,21 +91,21 @@ public class SimpleDbTemplate implements ISimpleDbOperations {
 	@Override
 	public <T> void delete(T domainItem) {
 		final EntityWrapper<T, ?> entity = getEntityWrapper(domainItem);
-		
+
 		delete(entity.getDomain(), entity.getItemName());
 	}
-	
+
 	@Override
 	public <T, ID extends Serializable> T read(ID id, Class<T> entityClass) {
 		return read(id, entityClass, simpleDb.isConsistentRead());
 	}
-	
+
 	@Override
 	public <T, ID extends Serializable> T read(ID id, Class<T> entityClass, boolean consistentRead) {
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
-		
+
 		LOGGER.debug("Read ItemName \"{}\"", id);
-		
+
 		List<ID> ids = new ArrayList<ID>();
 		{
 			ids.add(id);
@@ -117,12 +118,38 @@ public class SimpleDbTemplate implements ISimpleDbOperations {
 	public <T> long count(Class<T> entityClass) {
 		return count(entityClass, simpleDb.isConsistentRead());
 	}
-	
+
+	@Override
+	public <T> long count(String query, Class<T> entityClass) {
+		return count(query, entityClass, simpleDb.isConsistentRead());
+	}
+
+	@Override
+	public <T> long count(String query, Class<T> entityClass, boolean consistentRead) {
+		LOGGER.debug("Count items for query " + query);
+
+		validateSelectQuery(query);
+
+		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
+		final String escapedQuery = getEscapedQuery(query, entityInformation);
+		final SelectResult selectResult = simpleDbClient.select(new SelectRequest(escapedQuery, consistentRead));
+		for(Item item : selectResult.getItems()) {
+			if(item.getName().equals("Domain")) {
+				for(Attribute attribute : item.getAttributes()) {
+					if(attribute.getName().equals("Count")) {
+						return Long.parseLong(attribute.getValue());
+					}
+				}
+			}
+		}
+		return 0;
+	}
+
 	@Override
 	public <T> long count(Class<T> entityClass, boolean consistentRead) {
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
 		final String countQuery = new QueryBuilder(entityInformation, true).toString();
-		
+
 		LOGGER.debug("Count items for query " + countQuery);
 
 		validateSelectQuery(countQuery);
@@ -137,6 +164,7 @@ public class SimpleDbTemplate implements ISimpleDbOperations {
 				}
 			}
 		}
+		
 		return 0;
 	}
 
@@ -144,12 +172,12 @@ public class SimpleDbTemplate implements ISimpleDbOperations {
 	public <T> List<T> find(Class<T> entityClass, String query) {
 		return find(entityClass, query, simpleDb.isConsistentRead());
 	}
-	
+
 	@Override
 	public <T> List<T> find(Class<T> entityClass, String query, boolean consistentRead) {
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
 		final DomainItemBuilder<T> domainItemBuilder = new DomainItemBuilder<T>();
-		
+
 		LOGGER.debug("Find All Domain \"{}\" isConsistent=\"{}\"", entityInformation.getDomain(), consistentRead);
 
 		validateSelectQuery(query);
@@ -159,17 +187,17 @@ public class SimpleDbTemplate implements ISimpleDbOperations {
 
 		return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
 	}
-	
+
 	@Override
 	public <T> List<T> findAll(Class<T> entityClass) {
 		return findAll(entityClass, simpleDb.isConsistentRead());
 	}
-	
+
 	@Override
 	public <T> List<T> findAll(Class<T> entityClass, boolean consistentRead) {
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
 		final String findAllQuery = new QueryBuilder(entityInformation).toString();
-		
+
 		return find(entityClass, findAllQuery);
 	}
 
@@ -177,11 +205,11 @@ public class SimpleDbTemplate implements ISimpleDbOperations {
 	public <T> Page<T> executePagedQuery(Class<T> entityClass, String query, Pageable pageable) {
 		return executePagedQuery(entityClass, query, pageable, simpleDb.isConsistentRead());
 	}
-	
+
 	@Override
 	public <T> Page<T> executePagedQuery(Class<T> entityClass, String query, Pageable pageable, boolean consistentRead) {
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
-		
+
 		Assert.notNull(pageable);
 		Assert.isTrue(pageable.getPageNumber() > 0);
 		Assert.isTrue(pageable.getPageSize() > 0);
@@ -204,17 +232,19 @@ public class SimpleDbTemplate implements ISimpleDbOperations {
 			resultsList = find(entityClass, queryWithPageSizeLimit, consistentRead);
 		}
 
-		Long totalCount = count(entityClass, consistentRead);
+		final String countQuery = new QueryBuilder(escapedQuery, true).toString();
+		
+		Long totalCount = count(countQuery, entityClass, consistentRead);
 
 		return new PageImpl<T>(resultsList, pageable, totalCount);
 	}
 
 	private <T> List<T> find(SimpleDbEntityInformation<T, ?> entityInformation, String query, String nextToken,
 			boolean consistentRead) {
-		
+
 		LOGGER.debug("Find All Domain \"{}\" isConsistent=\"{}\", with token!", entityInformation.getDomain(),
 				consistentRead);
-		
+
 		final DomainItemBuilder<T> domainItemBuilder = new DomainItemBuilder<T>();
 
 		validateSelectQuery(query);
@@ -228,24 +258,26 @@ public class SimpleDbTemplate implements ISimpleDbOperations {
 
 		return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
 	}
-	
+
 	private <T> EntityWrapper<T, ?> getEntityWrapper(T domainItem) {
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(domainItem.getClass());
 		final EntityWrapper<T, ?> entityWrapper = new EntityWrapper<T, Serializable>(entityInformation, domainItem);
-		
+
 		return entityWrapper;
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T> SimpleDbEntityInformation<T, ?> getEntityInformation(Class<?> domainClass) {
-		return (SimpleDbEntityInformation<T, ?>) SimpleDbEntityInformationSupport.getMetadata(domainClass);
+		String simpleDbDomain = simpleDb.getSimpleDbDomain().getDomain(domainClass);
+		return (SimpleDbEntityInformation<T, ?>) SimpleDbEntityInformationSupport.getMetadata(domainClass,
+				simpleDbDomain);
 	}
-	
+
 	private <T> String getEscapedQuery(String query, SimpleDbEntityInformation<T, ?> entityInformation) {
 		return QueryUtils.escapeQueryAttributes(query, MetadataParser.getIdField(entityInformation.getJavaType())
 				.getName());
 	}
-	
+
 	/*
 	 * Validate a custom query before sending the request to the DB.
 	 */
@@ -258,7 +290,7 @@ public class SimpleDbTemplate implements ISimpleDbOperations {
 					e);
 		}
 	}
-	
+
 	private String getNextToken(String query, boolean consistentRead) {
 		LOGGER.debug("Get next token for query: " + query);
 
@@ -279,7 +311,7 @@ public class SimpleDbTemplate implements ISimpleDbOperations {
 
 		return getNextToken(countQuery, consistentRead);
 	}
-	
+
 	private void logOperation(String operation, EntityWrapper<?, ?> entity) {
 		LOGGER.debug(operation + " \"{}\" ItemName \"{}\"", entity.getDomain(), entity.getItemName());
 	}

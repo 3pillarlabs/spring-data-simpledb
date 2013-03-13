@@ -1,11 +1,11 @@
 package org.springframework.data.simpledb.query.executions;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.query.SimpleDbQueryRunner;
 import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
-
-import java.io.Serializable;
 
 /**
  * Execute a paged query. A paged query may have as a result a {@link Page} or a {@link List}, depending on the method's
@@ -13,7 +13,7 @@ import java.io.Serializable;
  */
 public class PagedResultExecution extends AbstractSimpleDbQueryExecution {
 
-	public PagedResultExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
+	public PagedResultExecution(SimpleDbOperations simpleDbOperations) {
 		super(simpleDbOperations);
 	}
 

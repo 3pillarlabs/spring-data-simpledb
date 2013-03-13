@@ -11,8 +11,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.annotation.Attributes;
-import org.springframework.data.simpledb.annotation.DomainPrefix;
-import org.springframework.data.simpledb.config.SimpleDbConfig;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -23,28 +21,6 @@ public final class MetadataParser {
 
 	private MetadataParser() {
 		// Utility class
-	}
-
-	/**
-	 * Domain name are computed based on class names: UserJob -> user_job
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	public static String getDomain(Class<?> clazz) {
-		StringBuilder ret = new StringBuilder();
-
-		String domainPrefix = getDomainPrefix(clazz);
-		if(domainPrefix != null) {
-			ret.append(domainPrefix);
-			ret.append(".");
-		}
-
-		String camelCaseString = clazz.getSimpleName();
-
-		ret.append(StringUtil.toLowerFirstChar(camelCaseString));
-
-		return ret.toString();
 	}
 
 	public static String getItemName(Object object) {
@@ -154,20 +130,5 @@ public final class MetadataParser {
 
 	public static boolean isNestedDomainField(Field field, Object object) {
 		return FieldTypeIdentifier.isOfType(field, FieldType.NESTED_ENTITY);
-	}
-
-	private static String getDomainPrefix(Class<?> clazz) {
-		SimpleDbConfig configInstance = SimpleDbConfig.getInstance();
-
-		if(configInstance.getDevDomainPrefix() != null) {
-			return configInstance.getDevDomainPrefix();
-		}
-
-		DomainPrefix domainPrefix = (DomainPrefix) clazz.getAnnotation(DomainPrefix.class);
-		if(domainPrefix != null) {
-			return domainPrefix.value();
-		}
-
-		return SimpleDbConfig.getInstance().getDomainPrefix();
 	}
 }

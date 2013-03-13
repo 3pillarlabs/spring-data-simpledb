@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.simpledb.annotation.Query;
+import org.springframework.data.simpledb.core.SimpleDbDomain;
 
 public class SimpleDbQueryMethodWithSelectAndWhereClauseTest {
 
@@ -77,6 +78,7 @@ public class SimpleDbQueryMethodWithSelectAndWhereClauseTest {
 
 		Method testMethod = AnnotatedQueryRepository.class.getMethod(methodName);
 		when(repositoryMetadata.getReturnedDomainClass(testMethod)).thenReturn((Class) entityClass);
-		return new SimpleDbQueryMethod(testMethod, repositoryMetadata);
+		SimpleDbDomain simpleDbDomain = new SimpleDbDomain();
+		return new SimpleDbQueryMethod(testMethod, repositoryMetadata, simpleDbDomain);
 	}
 }

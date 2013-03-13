@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.simpledb.annotation.Query;
+import org.springframework.data.simpledb.core.SimpleDbDomain;
 import org.springframework.data.simpledb.query.SampleEntity;
 import org.springframework.data.simpledb.query.SimpleDbQueryMethod;
 
@@ -129,6 +130,7 @@ public class MultipleResultExecutionTest {
 		when(repositoryMetadata.getDomainType()).thenReturn((Class) entityClass);
 		Method testMethod = AnnotatedQueryRepository.class.getMethod(methodName);
 		when(repositoryMetadata.getReturnedDomainClass(testMethod)).thenReturn((Class) entityClass);
-		return new SimpleDbQueryMethod(testMethod, repositoryMetadata);
+		SimpleDbDomain simpleDbDomain = new SimpleDbDomain();
+		return new SimpleDbQueryMethod(testMethod, repositoryMetadata, simpleDbDomain);
 	}
 }

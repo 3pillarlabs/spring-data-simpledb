@@ -1,7 +1,6 @@
 package org.springframework.data.simpledb.query.parser;
 
 import org.springframework.data.simpledb.annotation.Query;
-import org.springframework.data.simpledb.util.MetadataParser;
 import org.springframework.util.StringUtils;
 
 /**
@@ -14,7 +13,7 @@ public final class QueryParserUtils {
 	}
 
 	public static String buildQueryFromQueryParameters(String valueParameter, String[] rawSelectParameters,
-			String rawWhereParameters, Class<?> domainClass) {
+			String rawWhereParameters, String domainName) {
 
 		if(StringUtils.hasText(valueParameter)) {
 			return valueParameter;
@@ -23,7 +22,7 @@ public final class QueryParserUtils {
 		StringBuilder stringBuilder = new StringBuilder();
 
 		appendSelectClause(stringBuilder, rawSelectParameters);
-		appendFromClause(stringBuilder, domainClass);
+		appendFromClause(stringBuilder, domainName);
 		appendWhereClauseIfPresent(stringBuilder, rawWhereParameters);
 
 		return stringBuilder.toString();
@@ -50,8 +49,8 @@ public final class QueryParserUtils {
 		}
 	}
 
-	private static void appendFromClause(StringBuilder stringBuilder, Class<?> domainClass) {
-		stringBuilder.append(" from `" + MetadataParser.getDomain(domainClass) + "`");
+	private static void appendFromClause(StringBuilder stringBuilder, String domainName) {
+		stringBuilder.append(" from `" + domainName + "`");
 	}
 
 	private static void appendSelectClause(StringBuilder stringBuilder, String[] rawSelectParameters) {

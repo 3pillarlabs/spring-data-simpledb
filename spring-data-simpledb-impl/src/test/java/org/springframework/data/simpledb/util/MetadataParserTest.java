@@ -32,12 +32,6 @@ public class MetadataParserTest {
 	}
 
 	@Test
-	public void should_read_Domain_value() {
-		String domain = MetadataParser.getDomain(SampleAnnotatedId.class);
-		assertEquals("testDB.sampleAnnotatedId", domain);
-	}
-
-	@Test
 	public void should_read_annotated_id_value() {
 		SampleAnnotatedId entity = new SampleAnnotatedId();
 		String itemName = MetadataParser.getItemName(entity);
@@ -65,13 +59,6 @@ public class MetadataParserTest {
 		SampleDeclaredId entity = new SampleDeclaredId();
 		String itemName = MetadataParser.getItemName(entity);
 		assertEquals(SAMPLE_ITEM, itemName);
-	}
-
-	@Test
-	public void should_read_declared_domain_value() {
-		SampleDeclaredId entity = new SampleDeclaredId();
-		String domain = MetadataParser.getDomain(entity.getClass());
-		assertEquals("sampleDeclaredId", domain);
 	}
 
 	@Test

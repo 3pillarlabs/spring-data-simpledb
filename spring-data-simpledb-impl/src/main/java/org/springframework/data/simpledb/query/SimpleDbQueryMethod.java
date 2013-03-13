@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.simpledb.annotation.Query;
+import org.springframework.data.simpledb.core.SimpleDbDomain;
 import org.springframework.data.simpledb.query.parser.QueryParserUtils;
 import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.Assert;
@@ -28,6 +29,7 @@ public class SimpleDbQueryMethod extends QueryMethod {
 
 	// TODO add here custom query extractor
 	private final Method method;
+	private final SimpleDbDomain simpleDbDomain;
 
 	/**
 	 * Creates a new {@link org.springframework.data.simpledb.query.SimpleDbQueryMethod}
@@ -36,10 +38,12 @@ public class SimpleDbQueryMethod extends QueryMethod {
 	 *            must not be {@literal null}
 	 * @param metadata
 	 *            must not be {@literal null}
+	 * @param simpleDbDomain
 	 */
-	public SimpleDbQueryMethod(Method method, RepositoryMetadata metadata) {
+	public SimpleDbQueryMethod(Method method, RepositoryMetadata metadata, SimpleDbDomain simpleDbDomain) {
 		super(method, metadata);
 		this.method = method;
+		this.simpleDbDomain = simpleDbDomain;
 
 		Assert.isTrue(!(isModifyingQuery() && getParameters().hasSpecialParameter()),
 				String.format("Modifying method must not contain %s!", Parameters.TYPES));
@@ -80,7 +84,7 @@ public class SimpleDbQueryMethod extends QueryMethod {
 		String[] selectParameters = getAnnotationValue(Query.QueryClause.SELECT.getQueryClause(), String[].class);
 
 		return QueryParserUtils.buildQueryFromQueryParameters(valueParameter, selectParameters, whereParameters,
-				getDomainClass());
+				simpleDbDomain.getDomain(getDomainClass()));
 	}
 
 	/**

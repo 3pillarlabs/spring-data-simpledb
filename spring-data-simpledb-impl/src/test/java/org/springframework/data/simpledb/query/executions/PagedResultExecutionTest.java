@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.simpledb.annotation.Query;
+import org.springframework.data.simpledb.core.SimpleDbDomain;
 import org.springframework.data.simpledb.query.SampleEntity;
 import org.springframework.data.simpledb.query.SimpleDbQueryMethod;
 import org.springframework.data.simpledb.query.SimpleDbQueryRunner;
@@ -66,7 +67,7 @@ public class PagedResultExecutionTest {
 		when(repositoryMetadata.getDomainType()).thenReturn((Class) entityClass);
 		Method testMethod = PagedAnnotatedQueryRepository.class.getMethod(methodName, Pageable.class);
 		when(repositoryMetadata.getReturnedDomainClass(testMethod)).thenReturn((Class) entityClass);
-
-		return new SimpleDbQueryMethod(testMethod, repositoryMetadata);
+		SimpleDbDomain simpleDbDomain = new SimpleDbDomain();
+		return new SimpleDbQueryMethod(testMethod, repositoryMetadata, simpleDbDomain);
 	}
 }

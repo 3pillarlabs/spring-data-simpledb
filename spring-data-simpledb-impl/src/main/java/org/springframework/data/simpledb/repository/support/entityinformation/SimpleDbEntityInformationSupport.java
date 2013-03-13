@@ -21,10 +21,8 @@ import org.springframework.data.repository.core.support.AbstractEntityInformatio
 import org.springframework.util.Assert;
 
 /**
- * Base class for {@link org.springframework.data.jpa.repository.support.JpaEntityInformation} implementations to share
- * common method implementations.
+ * Base class for {@link SimpleDbEntityInformation} implementations to share common method implementations.
  * 
- * @author Oliver Gierke
  */
 public abstract class SimpleDbEntityInformationSupport<T, ID extends Serializable> extends
 		AbstractEntityInformation<T, ID> implements SimpleDbEntityInformation<T, ID> {
@@ -48,11 +46,11 @@ public abstract class SimpleDbEntityInformationSupport<T, ID extends Serializabl
 	 * @return
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T> SimpleDbEntityInformation<T, ?> getMetadata(Class<T> domainClass) {
+	public static <T> SimpleDbEntityInformation<T, ?> getMetadata(Class<T> domainClass, String simpleDbDomain) {
 
 		Assert.notNull(domainClass);
 
-		return new SimpleDbMetamodelEntityInformation(domainClass);
+		return new SimpleDbMetamodelEntityInformation(domainClass, simpleDbDomain);
 	}
 
 }

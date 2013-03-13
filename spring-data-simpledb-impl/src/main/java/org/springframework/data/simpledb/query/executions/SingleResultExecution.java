@@ -1,7 +1,5 @@
 package org.springframework.data.simpledb.query.executions;
 
-import java.io.Serializable;
-
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.query.QueryUtils;
 import org.springframework.data.simpledb.query.SimpleDbQueryMethod;
@@ -40,7 +38,7 @@ public class SingleResultExecution extends AbstractSimpleDbQueryExecution {
 		SINGLE_FIELD_RESULT, COUNT_RESULT, ENTITY_RESULT;
 	}
 
-	public SingleResultExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
+	public SingleResultExecution(SimpleDbOperations simpleDbOperations) {
 		super(simpleDbOperations);
 	}
 

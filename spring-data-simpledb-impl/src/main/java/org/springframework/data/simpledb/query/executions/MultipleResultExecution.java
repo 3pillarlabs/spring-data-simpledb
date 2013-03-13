@@ -1,19 +1,22 @@
 package org.springframework.data.simpledb.query.executions;
 
-import org.springframework.data.simpledb.core.SimpleDbOperations;
-import org.springframework.data.simpledb.query.*;
-import org.springframework.data.simpledb.util.ReflectionUtils;
-
-import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
+
+import org.springframework.data.simpledb.core.SimpleDbOperations;
+import org.springframework.data.simpledb.query.QueryUtils;
+import org.springframework.data.simpledb.query.SimpleDbQueryMethod;
+import org.springframework.data.simpledb.query.SimpleDbQueryRunner;
+import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
+import org.springframework.data.simpledb.query.SimpleDbResultConverter;
+import org.springframework.data.simpledb.util.ReflectionUtils;
 
 /**
  * Factory class for creating the appropriate type of execution.
  */
 public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
 
-	public MultipleResultExecution(SimpleDbOperations<?, Serializable> simpledbOperations) {
+	public MultipleResultExecution(SimpleDbOperations simpledbOperations) {
 		super(simpledbOperations);
 	}
 

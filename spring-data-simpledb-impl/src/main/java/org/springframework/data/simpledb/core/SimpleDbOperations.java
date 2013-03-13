@@ -5,25 +5,52 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
-public interface SimpleDbOperations<T, ID extends Serializable> {
+import com.amazonaws.services.simpledb.AmazonSimpleDB;
 
-	T updateItem(EntityWrapper<T, ID> entity);
+public interface SimpleDbOperations {
 
-	void deleteItem(String domainName, String itemName);
+	/**
+	 * The domain name used for the specified class by this template.
+	 * 
+	 * @param entityClass
+	 *            must not be {@literal null}.
+	 * @return the domain name for the specified class
+	 */
+	String getDomainName(Class<?> entityClass);
 
-	T readItem(SimpleDbEntityInformation<T, ID> entityInformation, ID id, boolean consistentRead);
+	AmazonSimpleDB getDB();
 
-	long count(SimpleDbEntityInformation<T, ?> entityInformation, boolean consistentRead);
+	SimpleDb getSimpleDb();
 
-	List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, QueryBuilder queryBuilder, boolean consistentRead);
+	<T> T createOrUpdate(T entity);
 
-	List<T> find(SimpleDbEntityInformation<T, ID> entityInformation, String query, boolean consistentRead);
+	void delete(String domainName, String itemName);
 
-	long count(String query, boolean consistentRead);
+	<T> void delete(T entity);
 
-	Page<T> executePagedQuery(SimpleDbEntityInformation<T, ID> entityInformation, String query, Pageable pageable,
-			boolean consistentRead);
+	<T, ID extends Serializable> T read(ID id, Class<T> entityClass);
+
+	<T, ID extends Serializable> T read(ID id, Class<T> entityClass, boolean consistentRead);
+
+	<T> long count(Class<T> entityClass);
+
+	<T> long count(Class<T> entityClass, boolean consistentRead);
+
+	<T> List<T> findAll(Class<T> entityClass);
+
+	<T> List<T> findAll(Class<T> entityClass, boolean consistentRead);
+
+	<T> List<T> find(Class<T> entityClass, String query);
+
+	<T> List<T> find(Class<T> entityClass, String query, boolean consistentRead);
+
+	<T> Page<T> executePagedQuery(Class<T> entityClass, String query, Pageable pageable);
+
+	<T> Page<T> executePagedQuery(Class<T> entityClass, String query, Pageable pageable, boolean consistentRead);
+
+	<T> long count(String query, Class<T> entityClass);
+
+	<T> long count(String query, Class<T> entityClass, boolean consistentRead);
+
 }

@@ -15,19 +15,20 @@
  */
 package org.springframework.data.simpledb.repository.support.entityinformation;
 
-import org.springframework.data.simpledb.util.MetadataParser;
-
 import java.io.Serializable;
 import java.util.Map;
+
+import org.springframework.data.simpledb.util.MetadataParser;
 
 /**
  * Implementation of {@link org.springframework.data.repository.core.EntityInformation} that uses JPA
  * {@link javax.persistence.metamodel.Metamodel} to find the domain class' id field.
  * 
- * @author Oliver Gierke
  */
 public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> extends
 		SimpleDbEntityInformationSupport<T, ID> {
+
+	private String simpleDbDomain;
 
 	/**
 	 * Creates a new {@link org.springframework.data.jpa.repository.support.JpaMetamodelEntityInformation} for the given
@@ -36,9 +37,10 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
 	 * @param domainClass
 	 *            must not be {@literal null}.
 	 */
-	public SimpleDbMetamodelEntityInformation(Class<T> domainClass) {
+	public SimpleDbMetamodelEntityInformation(Class<T> domainClass, String simpleDbDomain) {
 
 		super(domainClass);
+		this.simpleDbDomain = simpleDbDomain;
 
 	}
 
@@ -66,7 +68,7 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
 
 	@Override
 	public String getDomain() {
-		return MetadataParser.getDomain(getJavaType());
+		return simpleDbDomain;
 	}
 
 	@Override

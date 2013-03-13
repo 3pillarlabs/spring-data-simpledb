@@ -54,7 +54,7 @@ public class EntityWrapperTest {
 
 	@SuppressWarnings("unchecked")
 	private <E> SimpleDbEntityInformation<E, String> readEntityInformation(Class<E> clazz) {
-		return (SimpleDbEntityInformation<E, String>) SimpleDbEntityInformationSupport.<E> getMetadata(clazz);
+		return (SimpleDbEntityInformation<E, String>) SimpleDbEntityInformationSupport.<E> getMetadata(clazz, "");
 	}
 
 	@Test

@@ -19,10 +19,6 @@ public class SimpleDbDomain {
 	public SimpleDbDomain(final String domainPrefix, final boolean dev) {
 		this.domainPrefix = domainPrefix;
 		this.dev = dev;
-		
-		if(this.dev) {
-			devDomainPrefix = readHostname();
-		}
 	}
 	
 	/**
@@ -49,6 +45,9 @@ public class SimpleDbDomain {
 	
 	private String getDomainPrefix(Class<?> clazz) {
 		if(this.dev) {
+			if(devDomainPrefix == null) {
+				devDomainPrefix = readHostname();
+			}
 			return devDomainPrefix;
 		}
 
@@ -60,7 +59,7 @@ public class SimpleDbDomain {
 		return this.domainPrefix;
 	}
 	
-	private String readHostname() {
+	public String readHostname() {
 		try {
 			InetAddress address = InetAddress.getLocalHost();
 			return "dev_" + address.getHostName().replaceAll("\\W+", "_");

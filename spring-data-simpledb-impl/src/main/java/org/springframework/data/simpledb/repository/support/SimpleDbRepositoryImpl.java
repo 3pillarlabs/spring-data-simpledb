@@ -15,37 +15,35 @@
  */
 package org.springframework.data.simpledb.repository.support;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.simpledb.config.SimpleDbConfig;
 import org.springframework.data.simpledb.core.QueryBuilder;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.repository.SimpleDbPagingAndSortingRepository;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.util.Assert;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 @org.springframework.stereotype.Repository
 public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements PagingAndSortingRepository<T, ID>,
 		SimpleDbPagingAndSortingRepository<T, ID> {
 
 	private final SimpleDbEntityInformation<T, ID> entityInformation;
-	private final SimpleDbOperations<T, ID> operations;
+	private final SimpleDbOperations operations;
 	private final boolean consistentRead;
 
 	public SimpleDbRepositoryImpl(SimpleDbEntityInformation<T, ID> entityInformation,
-			SimpleDbOperations<T, ID> simpledbOperations) {
+			SimpleDbOperations simpledbOperations) {
 		Assert.notNull(simpledbOperations);
 		Assert.notNull(entityInformation);
 		this.operations = simpledbOperations;
 		this.entityInformation = entityInformation;
-		this.consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
+		this.consistentRead = simpledbOperations.getSimpleDb().isConsistentRead();
 	}
 
 	@Override
@@ -116,8 +114,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 	// --------------------------------------------------
 	@Override
 	public <S extends T> S save(S entity, boolean consistentRead) {
-		EntityWrapper sdbEntity = new EntityWrapper(entityInformation, entity);
-		return (S) operations.updateItem(sdbEntity);
+		return (S) operations.createOrUpdate(entity);
 	}
 
 	@Override
@@ -134,7 +131,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 
 	public T findOne(ID id, boolean consistentRead) {
 		Assert.notNull(id, "The given id must not be null!");
-		return operations.readItem(entityInformation, id, consistentRead);
+		return operations.read(id, entityInformation.getJavaType(), consistentRead);
 	}
 
 	public boolean exists(ID id, boolean consistentRead) {
@@ -143,24 +140,27 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 	}
 
 	public List<T> findAll(boolean consistentRead) {
-		return operations.find(entityInformation, new QueryBuilder(entityInformation), consistentRead);
+		return operations.find(entityInformation.getJavaType(), new QueryBuilder(entityInformation).toString(),
+				consistentRead);
 	}
 
 	public List<T> findAll(Iterable<ID> ids, boolean consistentRead) {
-		return operations.find(entityInformation, new QueryBuilder(entityInformation).withIds(ids), consistentRead);
+		return operations.find(entityInformation.getJavaType(), new QueryBuilder(entityInformation).withIds(ids)
+				.toString(), consistentRead);
 	}
 
 	public List<T> findAll(Sort sort, boolean consistentRead) {
-		return operations.find(entityInformation, new QueryBuilder(entityInformation).with(sort), consistentRead);
+		return operations.find(entityInformation.getJavaType(), new QueryBuilder(entityInformation).with(sort)
+				.toString(), consistentRead);
 	}
 
 	public Page<T> findAll(Pageable pageable, boolean consistentRead) {
-		return operations.executePagedQuery(entityInformation, new QueryBuilder(entityInformation).toString(),
-				pageable, consistentRead);
+		return operations.executePagedQuery(entityInformation.getJavaType(),
+				new QueryBuilder(entityInformation).toString(), pageable, consistentRead);
 	}
 
 	public long count(boolean consistentRead) {
-		return operations.count(entityInformation, consistentRead);
+		return operations.count(entityInformation.getJavaType(), consistentRead);
 	}
 
 	@Override
@@ -176,7 +176,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 			}
 		}
 
-		operations.deleteItem(entityInformation.getDomain(), (String) id);
+		operations.delete(entityInformation.getDomain(), (String) id);
 	}
 
 	@Override

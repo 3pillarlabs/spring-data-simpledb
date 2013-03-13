@@ -24,11 +24,10 @@ import java.util.Map;
  * Extension of {@link org.springframework.data.repository.core.EntityInformation} to capture aditional JPA specific
  * information about entities.
  * 
- * @author Oliver Gierke
  */
 public interface SimpleDbEntityInformation<T, ID extends Serializable> extends EntityInformation<T, ID>,
 		SimpleDBEntityMappingInformation<T> {
-
+	
 	String getDomain();
 
 	String getItemName(T entity);

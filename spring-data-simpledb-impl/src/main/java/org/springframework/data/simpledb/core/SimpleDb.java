@@ -76,6 +76,10 @@ public class SimpleDb implements InitializingBean {
 	public void setDev(boolean dev) {
 		this.dev = dev;
 	}
+	
+	public SimpleDbDomain getSimpleDbDomain() {
+		return simpleDbDomain;
+	}
 
 	@Override
 	public final void afterPropertiesSet() {

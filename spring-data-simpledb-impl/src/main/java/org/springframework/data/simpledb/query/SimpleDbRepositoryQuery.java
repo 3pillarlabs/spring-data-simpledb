@@ -1,18 +1,20 @@
 package org.springframework.data.simpledb.query;
 
+import java.lang.reflect.Field;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
-import org.springframework.data.simpledb.query.executions.*;
+import org.springframework.data.simpledb.query.executions.AbstractSimpleDbQueryExecution;
+import org.springframework.data.simpledb.query.executions.MultipleResultExecution;
+import org.springframework.data.simpledb.query.executions.PagedResultExecution;
+import org.springframework.data.simpledb.query.executions.SingleResultExecution;
 import org.springframework.data.simpledb.util.FieldType;
 import org.springframework.data.simpledb.util.FieldTypeIdentifier;
-
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.List;
 
 /**
  * {@link RepositoryQuery} implementation that inspects a {@link SimpleDbQueryMethod} for the existence of an
@@ -23,9 +25,9 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbRepositoryQuery.class);
 	private final SimpleDbQueryMethod method;
-	private final SimpleDbOperations<?, Serializable> simpledbOperations;
+	private final SimpleDbOperations simpledbOperations;
 
-	public SimpleDbRepositoryQuery(SimpleDbQueryMethod method, SimpleDbOperations<?, Serializable> simpledbOperations) {
+	public SimpleDbRepositoryQuery(SimpleDbQueryMethod method, SimpleDbOperations simpledbOperations) {
 		this.method = method;
 		this.simpledbOperations = simpledbOperations;
 	}
@@ -52,7 +54,7 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
 	 * @return the {@link RepositoryQuery} derived from the annotation or {@code null} if no annotation found.
 	 */
 	public static RepositoryQuery fromQueryAnnotation(SimpleDbQueryMethod queryMethod,
-			SimpleDbOperations<?, Serializable> simpleDbOperations) {
+			SimpleDbOperations simpleDbOperations) {
 		LOGGER.debug("Looking up query for method {}", queryMethod.getName());
 		return queryMethod.getAnnotatedQuery() == null ? null : new SimpleDbRepositoryQuery(queryMethod,
 				simpleDbOperations);

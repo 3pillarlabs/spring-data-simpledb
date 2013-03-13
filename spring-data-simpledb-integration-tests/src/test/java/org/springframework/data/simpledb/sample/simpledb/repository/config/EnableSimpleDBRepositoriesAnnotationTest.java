@@ -7,11 +7,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.simpledb.core.ISimpleDbOperations;
-import org.springframework.data.simpledb.core.SimpleDbTemplate;
 import org.springframework.data.simpledb.core.SimpleDb;
+import org.springframework.data.simpledb.core.SimpleDbOperations;
+import org.springframework.data.simpledb.core.SimpleDbTemplate;
 import org.springframework.data.simpledb.repository.config.EnableSimpleDBRepositories;
-import org.springframework.data.simpledb.repository.config.SimpleDbConfigParser;
 import org.springframework.data.simpledb.sample.simpledb.repository.BasicSimpleDbUserRepository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -27,10 +26,10 @@ public class EnableSimpleDBRepositoriesAnnotationTest {
 		// Default value for simpleDbTemplateRef annotation attribute is simpleDBTemplate
 		// The Template bean is needed by core framework so it needs to be provided
 		@Bean
-		public ISimpleDbOperations simpleDBTemplate() throws Exception {
+		public SimpleDbOperations simpleDBTemplate() throws Exception {
 			SimpleDb simpleDb = new SimpleDb("AKIAIVX775TRPPSZTEMQ", "Nzy6w0iq8JI+DHgdiPPiuqixiMoWQmPhWFgQzOZY");
 			simpleDb.setConsistentRead(true);
-			simpleDb.setDomainPrefix(SimpleDbConfigParser.readHostname() + "testDB");
+			simpleDb.setDomainPrefix(simpleDb.getSimpleDbDomain().readHostname() + "testDB");
 			simpleDb.afterPropertiesSet();
 			return new SimpleDbTemplate(simpleDb);
 		}

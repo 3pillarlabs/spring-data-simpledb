@@ -1,14 +1,10 @@
 package org.springframework.data.simpledb.query;
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.simpledb.config.SimpleDbConfig;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbMetamodelEntityInformation;
 import org.springframework.util.Assert;
 
 /**
@@ -16,20 +12,19 @@ import org.springframework.util.Assert;
  */
 public class SimpleDbQueryRunner {
 
-	private final SimpleDbOperations<?, Serializable> simpledbOperations;
+	private final SimpleDbOperations simpledbOperations;
 	private final Class<?> domainClass;
 	private final String query;
 	private Pageable pageable;
 
-	public SimpleDbQueryRunner(SimpleDbOperations<?, Serializable> simpledbOperations, Class<?> domainClass,
-			String query) {
+	public SimpleDbQueryRunner(SimpleDbOperations simpledbOperations, Class<?> domainClass, String query) {
 		this.simpledbOperations = simpledbOperations;
 		this.domainClass = domainClass;
 		this.query = query;
 	}
 
-	public SimpleDbQueryRunner(SimpleDbOperations<?, Serializable> simpledbOperations, Class<?> domainClass,
-			String query, Pageable pageable) {
+	public SimpleDbQueryRunner(SimpleDbOperations simpledbOperations, Class<?> domainClass, String query,
+			Pageable pageable) {
 		this(simpledbOperations, domainClass, query);
 
 		Assert.notNull(pageable);
@@ -40,14 +35,12 @@ public class SimpleDbQueryRunner {
 	}
 
 	public List<?> executeQuery() {
-		SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
-		final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
-		return simpledbOperations.find(entityInformation, query, consistentRead);
+		return simpledbOperations.find(domainClass, query);
 	}
 
 	public Object executeSingleResultQuery() {
 		List<?> returnListFromDb = executeQuery();
-		
+
 		return getSingleResult(returnListFromDb);
 	}
 
@@ -55,13 +48,12 @@ public class SimpleDbQueryRunner {
 		Assert.isTrue(returnListFromDb.size() <= 1,
 				"Select statement should return only one entity from database, returned elements size="
 						+ returnListFromDb.size() + ", for Query=" + query);
-		
+
 		return returnListFromDb.size() > 0 ? returnListFromDb.get(0) : null;
 	}
 
 	public long executeCount() {
-		final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
-		return simpledbOperations.count(query, consistentRead);
+		return simpledbOperations.count(query, domainClass);
 	}
 
 	public List<String> getRequestedQueryFieldNames() {
@@ -75,10 +67,7 @@ public class SimpleDbQueryRunner {
 	}
 
 	public Page<?> executePagedQuery() {
-		final boolean consistentRead = SimpleDbConfig.getInstance().isConsistentRead();
-		SimpleDbEntityInformation entityInformation = new SimpleDbMetamodelEntityInformation(domainClass);
-
-		return simpledbOperations.executePagedQuery(entityInformation, query, pageable, consistentRead);
+		return simpledbOperations.executePagedQuery(domainClass, query, pageable);
 	}
 
 }
