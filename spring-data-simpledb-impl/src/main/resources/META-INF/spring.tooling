@@ -1,0 +1,2 @@
+http\://www.springframework.org/schema/data/simpledb@name=SimpleDb Namespace
+http\://www.springframework.org/schema/data/simpledb@prefix=simpledb

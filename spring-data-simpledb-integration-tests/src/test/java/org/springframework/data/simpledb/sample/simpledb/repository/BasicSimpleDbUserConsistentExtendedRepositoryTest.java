@@ -26,19 +26,6 @@ public class BasicSimpleDbUserConsistentExtendedRepositoryTest {
 		repository.deleteAll(true);
 	}
 
-	@Test
-	public void consistent_find_should_return_updated_item_with_no_delay() {
-		String itemName = "FirstItem";
-
-		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
-		repository.save(user, true);
-
-		SimpleDbUser findOneResult = repository.findOne(itemName, true);
-		assertNotNull(findOneResult);
-
-		repository.delete(itemName, true);
-		assertNull(repository.findOne(itemName, true));
-	}
 
 	@Test
 	public void consistent_count_should_return_total_number_of_item_with_no_delay() {

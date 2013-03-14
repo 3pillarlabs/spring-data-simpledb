@@ -8,7 +8,7 @@
         <module name="FileContentsHolder"/>
         <module name="CyclomaticComplexity">
             <property name="severity" value="warning"/>
-            <property name="max" value="10"/>
+            <property name="max" value="13"/>
         </module>
         <module name="HiddenField">
             <property name="severity" value="warning"/>

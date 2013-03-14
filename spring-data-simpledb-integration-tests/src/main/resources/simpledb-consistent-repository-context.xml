@@ -12,9 +12,9 @@
 	    http://www.springframework.org/schema/aop
 		http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
 		http://www.springframework.org/schema/data/simpledb
-		classpath:META-INF/spring-simpledb.xsd">
-
-    <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
+		http://www.springframework.org/schema/data/simpledb/spring-simpledb.xsd">
+		
+	<simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
 
     <bean id="simpleDb" class="org.springframework.data.simpledb.core.SimpleDb">
         <property name="accessID" value="AKIAIVX775TRPPSZTEMQ"/>
@@ -28,6 +28,7 @@
 	   	<constructor-arg name="simpleDb" ref="simpleDb" />
 	</bean>
 
+    
     <bean class="org.springframework.data.simpledb.sample.simpledb.logging.LoggingConfiguration"/>
 
 </beans>

@@ -1,6 +1,8 @@
 package org.springframework.data.simpledb.sample.simpledb.repository.query;
 
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,38 +23,53 @@ public class AnnotatedSingleResultQueryTest {
 	@Autowired
 	AnnotatedSingleResultQueryRepository repository;
 
-	@After
-	public void tearDown() {
-		repository.deleteAll();
-	}
+    static List<SimpleDbUser> simpleDbUsers;
+
+    //Used for performance reasons to delete after class all simpleDbUsers created
+    static AnnotatedSingleResultQueryRepository staticRepository;
+
+    @Before
+    public void setUp() {
+        //for performance reasons create 3 entities once and use them to test all queries
+        if(simpleDbUsers == null){
+            simpleDbUsers = SimpleDbUserBuilder.createListOfItems(3);
+            repository.save(simpleDbUsers);
+        }
+    }
+
+    @After
+    public void setUpStaticRepository(){
+        staticRepository = repository;
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        staticRepository.deleteAll();
+    }
 
 	@Test
 	public void customLongCount_should_return_the_number_of_users_represented_as_Long() {
-		List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
-		repository.save(testUsers);
-
+        //created in setup a list of 3 SimpleDbUser - first Item_0
 		long result = repository.customLongCount();
 		assertNotNull(result);
-		assertEquals(testUsers.size(), result);
+		assertEquals(simpleDbUsers.size(), result);
 	}
 
 	@Test
 	public void customSelectOneUser_should_return_one_user() {
-		List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
-		repository.save(testUsers);
+        //created in setup a list of 3 SimpleDbUser - first Item_0
 
 		SimpleDbUser result = repository.customSelectOneUser();
 		assertNotNull(result);
-		assertEquals(testUsers.get(0), result);
+		assertEquals(simpleDbUsers.get(0), result);
 	}
 
 	@Test
 	public void partialPrimitiveFieldSelect_should_return_a_single_primitive_field() {
-		SimpleDbUser entity = SimpleDbUserBuilder.createUserWithSampleAttributes("Item_0");
-		repository.save(entity);
+        //created in setup a list of 3 SimpleDbUser - first Item_0
 
 		float result = repository.partialPrimitiveFieldSelect();
 		assertNotNull(result);
-		assertThat(result, is(entity.getPrimitiveField()));
+		assertThat(result, is( simpleDbUsers.get(0).getPrimitiveField()));
 	}
 }

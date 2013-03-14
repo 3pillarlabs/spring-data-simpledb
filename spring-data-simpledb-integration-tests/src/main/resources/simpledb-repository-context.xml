@@ -12,8 +12,7 @@
 	    http://www.springframework.org/schema/aop
 		http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
 		http://www.springframework.org/schema/data/simpledb
-		classpath:META-INF/spring-simpledb.xsd">
-
+        http://www.springframework.org/schema/data/simpledb/spring-simpledb.xsd">
 
     <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
 
