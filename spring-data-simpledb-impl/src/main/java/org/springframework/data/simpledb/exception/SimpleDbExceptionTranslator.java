@@ -19,7 +19,7 @@ public final class SimpleDbExceptionTranslator implements PersistenceExceptionTr
 
 	private SimpleDbExceptionTranslator() { }
 
-	public static SimpleDbExceptionTranslator getTranslatorInstance() {
+	public static synchronized SimpleDbExceptionTranslator getTranslatorInstance() {
 		if(instance == null) {
 			instance = new SimpleDbExceptionTranslator();
 		}
