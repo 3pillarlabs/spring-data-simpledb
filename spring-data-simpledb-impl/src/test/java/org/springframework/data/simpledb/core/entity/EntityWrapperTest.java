@@ -15,8 +15,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.simpledb.core.domain.SimpleDbSampleEntity;
 import org.springframework.data.simpledb.core.entity.EntityWrapperTest.AClass.BClass;
 import org.springframework.data.simpledb.core.entity.EntityWrapperTest.AClass.BClass.CClass;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
+import org.springframework.data.simpledb.util.EntityInformationSupport;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 
 public class EntityWrapperTest {
@@ -52,11 +51,6 @@ public class EntityWrapperTest {
 		assertNotEquals(object1.getItemName(), object2.getItemName());
 	}
 
-	@SuppressWarnings("unchecked")
-	private <E> SimpleDbEntityInformation<E, String> readEntityInformation(Class<E> clazz) {
-		return (SimpleDbEntityInformation<E, String>) SimpleDbEntityInformationSupport.<E> getMetadata(clazz, "");
-	}
-
 	@Test
 	public void test_getSerializedPrimitiveAttributes() throws ParseException {
 		final SampleEntity entity = new SampleEntity();
@@ -71,7 +65,7 @@ public class EntityWrapperTest {
 		entity.setDoubleWrapper(Double.valueOf("2323.32d"));
 
 		EntityWrapper<SampleEntity, String> sdbEntity = new EntityWrapper<SampleEntity, String>(
-				this.<SampleEntity> readEntityInformation(SampleEntity.class), entity);
+				EntityInformationSupport.readEntityInformation(SampleEntity.class), entity);
 
 		assertNotNull(sdbEntity);
 
@@ -132,7 +126,7 @@ public class EntityWrapperTest {
 		}
 
 		EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(
-				this.<AClass> readEntityInformation(AClass.class), aDomain);
+				EntityInformationSupport.readEntityInformation(AClass.class), aDomain);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		assertNotNull(attributes);
@@ -160,12 +154,12 @@ public class EntityWrapperTest {
 		}
 
 		EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(
-				this.<AClass> readEntityInformation(AClass.class), aDomain);
+				EntityInformationSupport.readEntityInformation(AClass.class), aDomain);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		/* convert back */
 		final EntityWrapper<AClass, String> convertedEntity = new EntityWrapper<AClass, String>(
-				this.<AClass> readEntityInformation(AClass.class));
+				EntityInformationSupport.readEntityInformation(AClass.class));
 		convertedEntity.deserialize(attributes);
 
 		assertTrue(aDomain.equals(convertedEntity.getItem()));

@@ -7,8 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
+import org.springframework.data.simpledb.util.EntityInformationSupport;
 
 public class ObjectFieldWrapperTest {
 
@@ -46,7 +45,7 @@ public class ObjectFieldWrapperTest {
 		AClass aDomainObject = new AClass();
 
 		EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(
-				this.<AClass> readEntityInformation(AClass.class), aDomainObject);
+				EntityInformationSupport.readEntityInformation(AClass.class), aDomainObject);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		assertEquals(0, attributes.size());
@@ -58,11 +57,11 @@ public class ObjectFieldWrapperTest {
 		AClass aDomainObject = new AClass();
 
 		EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(
-				this.<AClass> readEntityInformation(AClass.class), aDomainObject);
+				EntityInformationSupport.readEntityInformation(AClass.class), aDomainObject);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		EntityWrapper<AClass, String> newSdbEntity = new EntityWrapper<AClass, String>(
-				this.<AClass> readEntityInformation(AClass.class));
+				EntityInformationSupport.readEntityInformation(AClass.class));
 		newSdbEntity.deserialize(attributes);
 		AClass returnedEntity = newSdbEntity.getItem();
 
@@ -79,7 +78,7 @@ public class ObjectFieldWrapperTest {
 		aDomainObject.setObject(aJSONObject);
 
 		EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(
-				this.<AClass> readEntityInformation(AClass.class), aDomainObject);
+				EntityInformationSupport.readEntityInformation(AClass.class), aDomainObject);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		assertNotNull(attributes);
@@ -99,11 +98,11 @@ public class ObjectFieldWrapperTest {
 		aDomainObject.setObject(aJSONObject);
 
 		EntityWrapper<AClass, String> sdbEntity = new EntityWrapper<AClass, String>(
-				this.<AClass> readEntityInformation(AClass.class), aDomainObject);
+				EntityInformationSupport.readEntityInformation(AClass.class), aDomainObject);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		EntityWrapper<AClass, String> newSdbEntity = new EntityWrapper<AClass, String>(
-				this.<AClass> readEntityInformation(AClass.class));
+				EntityInformationSupport.readEntityInformation(AClass.class));
 		newSdbEntity.deserialize(attributes);
 
 		AClass returnedEntity = newSdbEntity.getItem();
@@ -111,9 +110,5 @@ public class ObjectFieldWrapperTest {
 
 		assertEquals(aJSONObject.getName(), deserializedJSONObject.getName());
 
-	}
-
-	private <E> SimpleDbEntityInformation<E, String> readEntityInformation(Class<E> clazz) {
-		return (SimpleDbEntityInformation<E, String>) SimpleDbEntityInformationSupport.<E> getMetadata(clazz, "");
 	}
 }
