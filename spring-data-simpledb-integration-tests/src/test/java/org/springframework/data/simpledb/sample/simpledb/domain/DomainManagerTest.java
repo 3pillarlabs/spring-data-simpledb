@@ -1,10 +1,11 @@
-package org.springframework.data.simpledb.core.domain;
+package org.springframework.data.simpledb.sample.simpledb.domain;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.simpledb.core.domain.DomainManager;
 
 public class DomainManagerTest {
 
@@ -76,5 +77,4 @@ public class DomainManagerTest {
         DomainManager manager = new DomainManager(AmazonSimpleDBClientFactory.getTestClient(), null);
         manager.dropDomain(null);
     }
-
 }

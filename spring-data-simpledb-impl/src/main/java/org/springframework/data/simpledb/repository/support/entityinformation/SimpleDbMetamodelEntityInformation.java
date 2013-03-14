@@ -16,24 +16,19 @@
 package org.springframework.data.simpledb.repository.support.entityinformation;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.simpledb.util.MetadataParser;
+import org.springframework.data.simpledb.util.ReflectionUtils;
+import org.springframework.util.Assert;
 
-/**
- * Implementation of {@link org.springframework.data.repository.core.EntityInformation} that uses JPA
- * {@link javax.persistence.metamodel.Metamodel} to find the domain class' id field.
- * 
- */
 public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> extends
 		SimpleDbEntityInformationSupport<T, ID> {
 
 	private String simpleDbDomain;
 
 	/**
-	 * Creates a new {@link org.springframework.data.jpa.repository.support.JpaMetamodelEntityInformation} for the given
-	 * domain class and {@link javax.persistence.metamodel.Metamodel}.
-	 * 
 	 * @param domainClass
 	 *            must not be {@literal null}.
 	 */
@@ -82,6 +77,19 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
 	}
 
 	@Override
+	public void buildReferencedAttributes(Class<?> clazz, List<Class<?>> references) {
+        Assert.notNull(references, "Nested Referenced Field List should not be null!");
+
+		List<String> referencedFields = ReflectionUtils.getReferencedAttributes(clazz);
+
+		for(String eachReference : referencedFields) {
+			Class<?> fieldClazz = ReflectionUtils.getFieldClass(clazz, eachReference);
+			references.add(fieldClazz);
+			buildReferencedAttributes(fieldClazz, references);
+		}
+	}
+
+	@Override
 	public String getItemNameFieldName(T entity) {
 		return MetadataParser.getIdField(entity).getName();
 	}
@@ -90,5 +98,4 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
 	public String getAttributesFieldName(T entity) {
 		return MetadataParser.getAttributesField(entity).getName();
 	}
-
 }

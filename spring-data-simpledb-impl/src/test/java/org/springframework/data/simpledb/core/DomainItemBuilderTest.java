@@ -16,8 +16,6 @@ import com.amazonaws.services.simpledb.model.Item;
 public class DomainItemBuilderTest {
 
 	public static final String SAMPLE_ITEM_NAME = "SAMPLE_ITEM_NAME";
-	public static final String SAMPLE_ATT_NAME = "name";
-	public static final String SAMPLE_ATT_VALUE = "value";
 	private static final Boolean SAMPLE_BOOLEAN_ATT_VALUE = Boolean.TRUE;
 	private DomainItemBuilder<SimpleDbSampleEntity> domainItemBuilder;
 

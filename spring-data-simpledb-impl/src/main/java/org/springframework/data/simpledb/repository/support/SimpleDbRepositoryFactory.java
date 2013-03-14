@@ -1,6 +1,8 @@
 package org.springframework.data.simpledb.repository.support;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
@@ -23,7 +25,8 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 	private DomainManager domainManager;
 
 	public SimpleDbRepositoryFactory(SimpleDbOperations simpleDbOperations) {
-		this.domainManager = new DomainManager(simpleDbOperations.getDB(), simpleDbOperations.getSimpleDb().getDomainManagementPolicy().toString());
+		this.domainManager = new DomainManager(simpleDbOperations.getDB(), simpleDbOperations.getSimpleDb()
+				.getDomainManagementPolicy().toString());
 
 		this.simpleDbOperations = new SimpleDbTemplate(simpleDbOperations.getSimpleDb());
 
@@ -39,6 +42,13 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 	@Override
 	protected Object getTargetRepository(RepositoryMetadata metadata) {
 		SimpleDbEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());
+
+		List<Class<?>> nestedReferences = new ArrayList<Class<?>>();
+		entityInformation.buildReferencedAttributes(entityInformation.getJavaType(), nestedReferences);
+
+		for(Class<?> eachReferencedDomain : nestedReferences) {
+			domainManager.manageDomain(simpleDbOperations.getDomainName(eachReferencedDomain));
+		}
 
 		domainManager.manageDomain(entityInformation.getDomain());
 
@@ -77,8 +87,7 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 	@SuppressWarnings("unchecked")
 	public <T, ID extends Serializable> SimpleDbEntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
 		String simpleDbDomain = simpleDbOperations.getSimpleDb().getSimpleDbDomain().getDomain(domainClass);
-		return (SimpleDbEntityInformation<T, ID>) SimpleDbEntityInformationSupport.getMetadata(domainClass, simpleDbDomain);
+		return (SimpleDbEntityInformation<T, ID>) SimpleDbEntityInformationSupport.getMetadata(domainClass,
+				simpleDbDomain);
 	}
-
-
 }

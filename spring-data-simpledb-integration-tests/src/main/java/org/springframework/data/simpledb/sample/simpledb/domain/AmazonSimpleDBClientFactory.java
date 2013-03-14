@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.core.domain;
+package org.springframework.data.simpledb.sample.simpledb.domain;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;

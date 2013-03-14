@@ -7,10 +7,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Reference;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.util.Assert;
 
@@ -175,4 +177,15 @@ public final class ReflectionUtils {
 				+ fieldObject.getClass(), cause);
 	}
 
+    public static List<String> getReferencedAttributes(Class<?> clazz) {
+        List<String> referenceFields = new ArrayList<String>();
+
+        for(Field eachField: clazz.getDeclaredFields()) {
+
+            if(eachField.getAnnotation(Reference.class) != null) {
+                referenceFields.add(eachField.getName());
+            }
+        }
+        return referenceFields;
+    }
 }
