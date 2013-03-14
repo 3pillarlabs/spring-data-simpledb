@@ -106,6 +106,18 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 
 		delete(entity.getDomain(), entity.getItemName());
 	}
+	
+	@Override
+	public <T> void deleteAll(Class<T> entityClass) {
+		deleteAll(entityClass, simpleDb.isConsistentRead());
+	}
+
+	@Override
+	public <T> void deleteAll(Class<T> entityClass, boolean consistentRead) {
+		for(T element: findAll(entityClass, consistentRead)) {
+			delete(element);
+		}
+	}
 
 	@Override
 	public <T, ID extends Serializable> T read(ID id, Class<T> entityClass) {
