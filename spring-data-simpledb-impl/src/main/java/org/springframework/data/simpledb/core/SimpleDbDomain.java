@@ -1,9 +1,7 @@
 package org.springframework.data.simpledb.core;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import org.springframework.data.simpledb.annotation.DomainPrefix;
+import org.springframework.data.simpledb.util.HostNameResolver;
 import org.springframework.data.simpledb.util.StringUtil;
 
 public class SimpleDbDomain {
@@ -46,7 +44,7 @@ public class SimpleDbDomain {
 	private String getDomainPrefix(Class<?> clazz) {
 		if(this.dev) {
 			if(devDomainPrefix == null) {
-				devDomainPrefix = readHostname();
+				devDomainPrefix = HostNameResolver.readHostname();
 			}
 			return devDomainPrefix;
 		}
@@ -59,12 +57,4 @@ public class SimpleDbDomain {
 		return this.domainPrefix;
 	}
 	
-	public static String readHostname() {
-		try {
-			InetAddress address = InetAddress.getLocalHost();
-			return "dev_" + address.getHostName().replaceAll("\\W+", "_");
-		} catch(UnknownHostException e) {
-			throw new IllegalArgumentException("Could not read host name", e);
-		}
-	}
 }

@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.exception.InvalidSimpleDBQueryException;
+import org.springframework.data.simpledb.exception.SimpleDbExceptionTranslator;
 import org.springframework.data.simpledb.parser.SimpleDBParser;
 import org.springframework.data.simpledb.query.QueryUtils;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
@@ -20,6 +21,7 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 import org.springframework.data.simpledb.util.MetadataParser;
 import org.springframework.util.Assert;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
@@ -74,7 +76,11 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 				entity.getDomain(), entity.getItemName(), rawAttributes);
 
 		for(PutAttributesRequest request : putAttributesRequests) {
-			simpleDbClient.putAttributes(request);
+			try {
+				simpleDbClient.putAttributes(request);
+			} catch(AmazonClientException amazonException) {
+				throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
+			}
 		}
 
 		return entity.getItem();
@@ -86,7 +92,12 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 
 		Assert.notNull(domainName, "Domain name should not be null");
 		Assert.notNull(itemName, "Item name should not be null");
-		simpleDbClient.deleteAttributes(new DeleteAttributesRequest(domainName, itemName));
+		
+		try {
+			simpleDbClient.deleteAttributes(new DeleteAttributesRequest(domainName, itemName));
+		} catch(AmazonClientException amazonException) {
+			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
+		}
 	}
 
 	@Override
@@ -94,6 +105,18 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 		final EntityWrapper<T, ?> entity = getEntityWrapper(domainItem);
 
 		delete(entity.getDomain(), entity.getItemName());
+	}
+	
+	@Override
+	public <T> void deleteAll(Class<T> entityClass) {
+		deleteAll(entityClass, simpleDb.isConsistentRead());
+	}
+
+	@Override
+	public <T> void deleteAll(Class<T> entityClass, boolean consistentRead) {
+		for(T element: findAll(entityClass, consistentRead)) {
+			delete(element);
+		}
 	}
 
 	@Override
@@ -133,16 +156,22 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
 		final String escapedQuery = getEscapedQuery(query, entityInformation);
-		final SelectResult selectResult = simpleDbClient.select(new SelectRequest(escapedQuery, consistentRead));
-		for(Item item : selectResult.getItems()) {
-			if(item.getName().equals("Domain")) {
-				for(Attribute attribute : item.getAttributes()) {
-					if(attribute.getName().equals("Count")) {
-						return Long.parseLong(attribute.getValue());
+		
+		try {
+			final SelectResult selectResult = simpleDbClient.select(new SelectRequest(escapedQuery, consistentRead));
+			for(Item item : selectResult.getItems()) {
+				if(item.getName().equals("Domain")) {
+					for(Attribute attribute : item.getAttributes()) {
+						if(attribute.getName().equals("Count")) {
+							return Long.parseLong(attribute.getValue());
+						}
 					}
 				}
 			}
+		} catch(AmazonClientException amazonException) {
+			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
 		}
+		
 		return 0;
 	}
 
@@ -155,15 +184,19 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 
 		validateSelectQuery(countQuery);
 
-		final SelectResult selectResult = simpleDbClient.select(new SelectRequest(countQuery, consistentRead));
-		for(Item item : selectResult.getItems()) {
-			if(item.getName().equals("Domain")) {
-				for(Attribute attribute : item.getAttributes()) {
-					if(attribute.getName().equals("Count")) {
-						return Long.parseLong(attribute.getValue());
+		try {
+			final SelectResult selectResult = simpleDbClient.select(new SelectRequest(countQuery, consistentRead));
+			for(Item item : selectResult.getItems()) {
+				if(item.getName().equals("Domain")) {
+					for(Attribute attribute : item.getAttributes()) {
+						if(attribute.getName().equals("Count")) {
+							return Long.parseLong(attribute.getValue());
+						}
 					}
 				}
 			}
+		} catch(AmazonClientException amazonException) {
+			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
 		}
 		
 		return 0;
@@ -184,9 +217,14 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 		validateSelectQuery(query);
 
 		final String escapedQuery = getEscapedQuery(query, entityInformation);
-		final SelectResult selectResult = simpleDbClient.select(new SelectRequest(escapedQuery, consistentRead));
-
-		return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
+		
+		try {
+			final SelectResult selectResult = simpleDbClient.select(new SelectRequest(escapedQuery, consistentRead));
+			
+			return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
+		} catch(AmazonClientException amazonException) {
+			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
+		}
 	}
 
 	@Override
@@ -255,9 +293,13 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 
 		selectRequest.setNextToken(nextToken);
 
-		final SelectResult selectResult = simpleDbClient.select(selectRequest);
+		try {
+			final SelectResult selectResult = simpleDbClient.select(selectRequest);
 
-		return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
+			return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
+		} catch(AmazonClientException amazonException) {
+			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
+		}
 	}
 
 	private <T> EntityWrapper<T, ?> getEntityWrapper(T domainItem) {
@@ -297,9 +339,13 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 
 		Assert.isTrue(query.contains("limit"), "Only queries with limit have a next token!");
 
-		final SelectResult selectResult = simpleDbClient.select(new SelectRequest(query, consistentRead));
+		try {
+			final SelectResult selectResult = simpleDbClient.select(new SelectRequest(query, consistentRead));
 
-		return selectResult.getNextToken();
+			return selectResult.getNextToken();
+		} catch(AmazonClientException amazonException) {
+			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
+		}
 	}
 
 	private <T> String getPageOffsetToken(final Pageable pageable, SimpleDbEntityInformation<T, ?> entityInformation,

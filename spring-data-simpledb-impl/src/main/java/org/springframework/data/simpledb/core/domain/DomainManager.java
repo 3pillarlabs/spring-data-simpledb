@@ -18,7 +18,6 @@ public class DomainManager {
 
 	private final AmazonSimpleDB sdb;
 	private final DomainManagementPolicy policy;
-	private final SimpleDbExceptionTranslator exceptionTranslator;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DomainManager.class);
 
@@ -32,8 +31,6 @@ public class DomainManager {
 		} else {
 			policy = DomainManagementPolicy.valueOf(domainUpdatePolicy.toUpperCase());
 		}
-
-		exceptionTranslator = SimpleDbExceptionTranslator.getTranslatorInstance();
 
 		LOGGER.debug("Read domain management policy: {}", policy);
 	}
@@ -54,7 +51,7 @@ public class DomainManager {
 				createDomain(domainName);
 			}
 		} catch(AmazonClientException e) {
-			throw exceptionTranslationHandler(e);
+			throw SimpleDbExceptionTranslator.translateAmazonClientException(e);
 		}
 	}
 
@@ -71,7 +68,7 @@ public class DomainManager {
 			sdb.deleteDomain(request);
 			LOGGER.debug("Dropped domain: {}", domainName);
 		} catch(AmazonClientException amazonException) {
-			throw exceptionTranslationHandler(amazonException);
+			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
 		}
 	}
 
@@ -82,7 +79,7 @@ public class DomainManager {
 			sdb.createDomain(request);
 			LOGGER.debug("Created domain: {}", domainName);
 		} catch(AmazonClientException amazonException) {
-			throw exceptionTranslationHandler(amazonException);
+			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
 		}
 	}
 
@@ -92,15 +89,8 @@ public class DomainManager {
 			List<String> domainNames = listDomainsResult.getDomainNames();
 			return domainNames.contains(domainName);
 		} catch(AmazonClientException amazonException) {
-			throw exceptionTranslationHandler(amazonException);
+			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
 		}
 	}
-
-	private RuntimeException exceptionTranslationHandler(AmazonClientException e) {
-		RuntimeException translatedException = exceptionTranslator.translateExceptionIfPossible(e);
-		if(translatedException == null) {
-			translatedException = e;
-		}
-		return translatedException;
-	}
+	
 }
