@@ -5,6 +5,7 @@ import org.springframework.data.simpledb.config.AWSCredentials;
 import org.springframework.data.simpledb.config.AbstractSimpleDBConfiguration;
 import org.springframework.data.simpledb.core.SimpleDb;
 import org.springframework.data.simpledb.repository.config.EnableSimpleDBRepositories;
+import org.springframework.data.simpledb.util.HostNameResolver;
 
 @EnableSimpleDBRepositories(basePackages = "org.springframework.data.simpledb.sample.simpledb.repository")
 @Configuration
@@ -18,6 +19,6 @@ public class SimpleDBJavaConfiguration extends AbstractSimpleDBConfiguration {
 	@Override
 	public void setExtraProperties(SimpleDb simpleDb) {
 		simpleDb.setConsistentRead(true);
-		simpleDb.setDomainPrefix(simpleDb.getSimpleDbDomain().readHostname() + "testDB");
+		simpleDb.setDomainPrefix(HostNameResolver.readHostname() + "testDB");
 	}
 }
