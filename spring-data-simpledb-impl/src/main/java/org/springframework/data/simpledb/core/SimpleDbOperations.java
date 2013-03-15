@@ -29,6 +29,10 @@ public interface SimpleDbOperations {
 
 	<T> void delete(T entity);
 
+	<T> void deleteAll(Class<T> entityClass);
+	
+	<T> void deleteAll(Class<T> entityClass, boolean consistentRead);
+	
 	<T, ID extends Serializable> T read(ID id, Class<T> entityClass);
 
 	<T, ID extends Serializable> T read(ID id, Class<T> entityClass, boolean consistentRead);

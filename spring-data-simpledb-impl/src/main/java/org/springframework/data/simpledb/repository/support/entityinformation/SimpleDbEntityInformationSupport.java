@@ -47,9 +47,9 @@ public abstract class SimpleDbEntityInformationSupport<T, ID extends Serializabl
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static <T> SimpleDbEntityInformation<T, ?> getMetadata(Class<T> domainClass, String simpleDbDomain) {
-
 		Assert.notNull(domainClass);
-
+		Assert.notNull(simpleDbDomain);
+		
 		return new SimpleDbMetamodelEntityInformation(domainClass, simpleDbDomain);
 	}
 

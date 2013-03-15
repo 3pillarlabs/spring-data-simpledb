@@ -121,7 +121,12 @@
     </modules>
 
     <properties>
-        <spring.version>3.2.0.RELEASE</spring.version>
+        <spring.data.parent.version>1.4.1.RELEASE</spring.data.parent.version>
+        <!-- use the version from spring data commons parent spring:3.1.2.RELEASE for spring-data-parent:1.4.1.RELEASE-->
+        <spring.version>3.1.2.RELEASE</spring.version>
+        <!-- since spring 3.1.2 has no dependency to cglib, add it explicit - needed for Java configuration -->
+        <cglib.version>2.2.2</cglib.version>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.compiler.version>1.6</java.compiler.version>
     </properties>
@@ -133,7 +138,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons-core</artifactId>
-            <version>1.4.0.RELEASE</version>
+            <version>${spring.data.parent.version}</version>
         </dependency>
 
         <dependency>
@@ -146,6 +151,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>${cglib.version}</version>
         </dependency>
 
         <!--AMAZON-->

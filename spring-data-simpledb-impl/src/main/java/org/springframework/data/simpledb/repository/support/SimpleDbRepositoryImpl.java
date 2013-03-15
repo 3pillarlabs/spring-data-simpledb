@@ -195,8 +195,6 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 
 	@Override
 	public void deleteAll(boolean consistentRead) {
-		for(T element : findAll(consistentRead)) {
-			delete(element, consistentRead);
-		}
+		operations.deleteAll(entityInformation.getJavaType(), consistentRead);
 	}
 }

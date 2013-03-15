@@ -15,15 +15,27 @@ import com.amazonaws.services.simpledb.model.*;
  */
 public final class SimpleDbExceptionTranslator implements PersistenceExceptionTranslator {
 
-	private static final SimpleDbExceptionTranslator INSTANCE = new SimpleDbExceptionTranslator();
+	private static SimpleDbExceptionTranslator instance;
 
-	private SimpleDbExceptionTranslator() {
+	private SimpleDbExceptionTranslator() { }
+
+	public static synchronized SimpleDbExceptionTranslator getTranslatorInstance() {
+		if(instance == null) {
+			instance = new SimpleDbExceptionTranslator();
+		}
+		
+		return instance;
 	}
 
-	public static SimpleDbExceptionTranslator getTranslatorInstance() {
-		return INSTANCE;
+	public static RuntimeException translateAmazonClientException(AmazonClientException e) {
+		RuntimeException translatedException = getTranslatorInstance().translateExceptionIfPossible(e);
+		if(translatedException == null) {
+			translatedException = e;
+		}
+		
+		return translatedException;
 	}
-
+	
 	@Override
 	public DataAccessException translateExceptionIfPossible(RuntimeException e) {
         final String errorMessage = e.getLocalizedMessage();

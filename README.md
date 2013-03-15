@@ -10,50 +10,33 @@ The Spring Data SimpleDB module aims to provide a familiar and consistent Spring
 
 Clone the Spring Data SimpleDB module into and define it as a dependency in your project's Maven file:
 
-
     <dependency>
         <groupId>org.springframework.data.simpledb</groupId>
         <artifactId>spring-data-simpledb</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
 
+First, set up the SimpleDb configuration.
 
-Setup Spring Data SimpleDB repository support:
-
-    <?xml version="1.0" encoding="UTF-8"?>
-    <beans xmlns="http://www.springframework.org/schema/beans"
-        xmlns:simpledb="http://www.springframework.org/schema/data/simpledb"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        classpath:META-INF/spring-simpledb.xsd">
-    
-        <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
-    
-        <simpledb:config>
-            <simpledb:property name="accessID" value="$AWS_ACCESS_ID" />
-            <simpledb:property name="secretKey" value="$AWS_SECRET_KEY"/>
-            <simpledb:property name="domainPrefix" value="$DOMAIN_PREFIX"/>
-            <simpledb:property name="domainManagementPolicy" value="$DOMAIN_MANAGEMENT_POLICY"/>
-            <simpledb:property name="consistentRead" value="$CONSISTENT_READ_VALUE"/>
-        </simpledb:config>
-    
-    </beans>
-
-For SimpleDB specific configurations,  the __config__ tag must be used.
-
+    <bean id="simpleDb" class="org.springframework.data.simpledb.core.SimpleDb">
+        <property name="accessID" value="$AWS_ACCESS_ID" />
+        <property name="secretKey" value="$AWS_SECRET_KEY"/>
+        <property name="domainPrefix" value="$DOMAIN_PREFIX"/>
+        <property name="domainManagementPolicy" value="$DOMAIN_MANAGEMENT_POLICY"/>
+        <property name="consistentRead" value="$CONSISTENT_READ_VALUE"/>
+    </bean>
 The following can be configured here:
 
 **SimpleDB access credentials** via __accessID__ and __secretKey__ tags.
 
 **SimpleDB domain prefixes** via __domainPrefix__ tag.
 
-If a value is specified here each SimpleDB domain name created by the application will be prefixed with this value.
+If a value is specified here, each SimpleDB domain name created by the application will be prefixed with this value.
 
-Ex:
-<simpledb:property name="domainPrefix" value="testDB"/>
-Persisted class has Name "UserJob"
+For:
 
-The generated SimpleDB domain will be testDB.userJob
+    <property name="domainPrefix" value="testDB"/>
+and persisted class has Name "UserJob", the generated SimpleDB domain will be testDB.userJob
 
 **SimpleDB Domain management policies** via __domainManagementPolicy__ tag.
 
@@ -78,8 +61,59 @@ If some operations need consistent reads and inconsistent reads at the same time
 
 This repository has an additional parameter __readConsistent__ on each repository method.
 
-Next, create and entity to model your domain:
+Next declare a template bean.
 
+    <bean id="simpleDbTemplate" class="org.springframework.data.simpledb.core.SimpleDbTemplate">
+       	<constructor-arg name="simpleDb" ref="simpleDb" />
+    </bean>
+SimpleDbTemplate is the central support class for SimpleDb database operations. To declare a template, a reference to SimpleDb configuration bean is needed.
+Several templates can be configured for an application.
+
+Next, optionally, configure a spring data repository.
+
+    <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
+A repository can contain a __simpledb-template-ref__ tag which specifies the id of the template to be used for this repository.
+
+    <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" simpledb-template-ref="template"/>
+If no simpledb-template-ref is specified, the default value is __simpleDbTemplate__, so a template with this id must be present in the configuration file.
+
+Here is a .xml configuration file containing a SimpleDb configuration bean, a template and a package for repositories:
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:simpledb="http://www.springframework.org/schema/data/simpledb"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/data/jpa
+        http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+        http://www.springframework.org/schema/data/simpledb
+        http://www.springframework.org/schema/data/simpledb/spring-simpledb.xsd">
+    
+        <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
+    
+        <bean id="simpleDb" class="org.springframework.data.simpledb.core.SimpleDb">
+            <property name="accessID" value="$AWS_ACCESS_ID" />
+            <property name="secretKey" value="$AWS_SECRET_KEY"/>
+            <property name="domainPrefix" value="$DOMAIN_PREFIX"/>
+            <property name="domainManagementPolicy" value="$DOMAIN_MANAGEMENT_POLICY"/>
+            <property name="consistentRead" value="$CONSISTENT_READ_VALUE"/>
+        </bean>
+    
+        <bean id="simpleDbTemplate" class="org.springframework.data.simpledb.core.SimpleDbTemplate">
+            <constructor-arg name="simpleDb" ref="simpleDb" />
+        </bean>
+    
+        <bean class="org.springframework.data.simpledb.sample.simpledb.logging.LoggingConfiguration"/>
+
+    </beans>
+    
+Next, create and entity to model your domain:
 
     public class SimpleDBUser {
         @org.springframework.data.annotation.Id
@@ -104,18 +138,16 @@ If a domain field does not contain getter and/or setter it will **not** be persi
 
 Create a repository interface:
 
-
     public interface BasicSimpleDbUserRepository extends CrudRepository<SimpleDbUser, String> { }
-    
 
-
-Write a test client:
+Write a test client using repository:
 
     @RunWith(SpringJUnit4TestRunner.class)
     @ContextConfiguration("classpath:your-config-file.xml")
     public class BasicSimpleDbUserRepositoryTest {
 
-        @Autowired BasicSimpleDbUserRepository repository;
+        @Autowired 
+        BasicSimpleDbUserRepository repository;
 
         @Test
         public void sampleTestCase() {
@@ -129,6 +161,29 @@ Write a test client:
             Assert.notNull(repository.findAll());
         }
     }
+    
+Or write a test client using the SimpleDb template:
+
+    @RunWith(SpringJUnit4ClassRunner.class)
+    @ContextConfiguration(locations = "classpath:simpledb-configured-template-context.xml")
+    public class SimpleDbTemplateTest {
+        @Autowired
+        private SimpleDbOperations operations;
+    
+        @Test
+        public void save_should_persist_single_item() {
+    		String itemName = "FirstItem";
+    
+    		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
+    		operations.createOrUpdate(user);
+    		
+    		SimpleDbUser foundUser = operations.read(user.getItemName(), user.getClass());
+    
+    		assertEquals(user.getItemName(), foundUser.getItemName());
+    		assertEquals(user, foundUser);
+    	}
+    }
+If only the template is used for working with SimpleDb, no repository should be defined in .xml configuration file. 
 
 ### Using custom queries ###
 SimpleDb native queries can be run using a custom **@Query** annotation.
