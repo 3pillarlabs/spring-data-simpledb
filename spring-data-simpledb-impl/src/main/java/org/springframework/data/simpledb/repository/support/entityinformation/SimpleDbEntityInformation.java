@@ -15,12 +15,12 @@
  */
 package org.springframework.data.simpledb.repository.support.entityinformation;
 
-import org.springframework.data.repository.core.EntityInformation;
-
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
-import java.lang.reflect.Field;
+
+import org.springframework.data.repository.core.EntityInformation;
 
 /**
  * Extension of {@link org.springframework.data.repository.core.EntityInformation} to capture aditional JPA specific
@@ -29,14 +29,12 @@ import java.lang.reflect.Field;
  */
 public interface SimpleDbEntityInformation<T, ID extends Serializable> extends EntityInformation<T, ID>,
 		SimpleDBEntityMappingInformation<T> {
-	
+
 	String getDomain();
 
 	String getItemName(T entity);
 
 	Map<String, String> getAttributes(T entity);
 
-    List<Field> getReferencedAttributesList(Class<?> clazz);
-
-    void validateReferenceAnnotation(Field referenceField);
+	void validateReferenceFields(List<Field> referenceFields);
 }
