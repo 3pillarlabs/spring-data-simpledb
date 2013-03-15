@@ -8,12 +8,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Reference;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.annotation.Attributes;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 @Component
 public final class MetadataParser {
@@ -60,10 +58,6 @@ public final class MetadataParser {
 
 		return idField;
 	}
-
-    public static boolean isReferenceField(Field field) {
-        return field.getAnnotation(Reference.class) != null;
-    }
 
 	@SuppressWarnings("unchecked")
 	public static Map<String, String> getAttributes(Object object) {

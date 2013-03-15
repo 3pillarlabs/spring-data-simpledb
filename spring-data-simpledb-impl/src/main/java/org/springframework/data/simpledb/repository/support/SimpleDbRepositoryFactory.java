@@ -46,8 +46,8 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 		List<Class<?>> nestedReferences = new ArrayList<Class<?>>();
 		entityInformation.buildReferencedAttributes(entityInformation.getJavaType(), nestedReferences);
 
-		for(Class<?> eachReferencedDomain : nestedReferences) {
-			domainManager.manageDomain(simpleDbOperations.getDomainName(eachReferencedDomain));
+		for(Class<?> eachNestedReference : nestedReferences) {
+			domainManager.manageDomain(simpleDbOperations.getDomainName(eachNestedReference));
 		}
 
 		domainManager.manageDomain(entityInformation.getDomain());

@@ -1,6 +1,5 @@
 package org.springframework.data.simpledb.sample.simpledb.domain;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -131,11 +130,11 @@ public class SimpleDbUser {
 			return EqualsBuilder.reflectionEquals(NestedEntity.this, obj);
 		}
 
-        @Override
-        public String toString() {
-            return ToStringBuilder.reflectionToString(this);
-        }
-    }
+		@Override
+		public String toString() {
+			return ToStringBuilder.reflectionToString(this);
+		}
+	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -149,6 +148,6 @@ public class SimpleDbUser {
 
 	@Override
 	public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

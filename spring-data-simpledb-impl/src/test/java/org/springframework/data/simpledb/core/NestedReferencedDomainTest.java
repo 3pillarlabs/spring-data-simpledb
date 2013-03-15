@@ -2,6 +2,7 @@ package org.springframework.data.simpledb.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +25,7 @@ public class NestedReferencedDomainTest {
 
         assertThat(builtListOfDomainRefs.size(), is(2));
 
-        assertThat(builtListOfDomainRefs.iterator().next().getName(), is("FirstNestedEntity"));
-
-        assertThat(builtListOfDomainRefs.iterator().next().getName(), is("SecondNestedEntity"));
+        assertTrue(builtListOfDomainRefs.contains(SimpleDbReferencesEntity.SecondNestedEntity.class));
+        assertTrue(builtListOfDomainRefs.contains(SimpleDbReferencesEntity.FirstNestedEntity.class));
 	}
 }
