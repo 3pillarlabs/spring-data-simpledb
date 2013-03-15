@@ -20,6 +20,7 @@ import org.springframework.data.repository.core.EntityInformation;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.lang.reflect.Field;
 
 /**
  * Extension of {@link org.springframework.data.repository.core.EntityInformation} to capture aditional JPA specific
@@ -35,5 +36,7 @@ public interface SimpleDbEntityInformation<T, ID extends Serializable> extends E
 
 	Map<String, String> getAttributes(T entity);
 
-    void buildReferencedAttributes(Class<?> clazz, List<Class<?>> references);
+    List<Field> getReferencedAttributesList(Class<?> clazz);
+
+    void validateReferenceAnnotation(Field referenceField);
 }

@@ -2,11 +2,7 @@ package org.springframework.data.simpledb.util;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,9 +71,13 @@ public final class ReflectionUtils {
 	}
 
 	public static Class<?> getFieldClass(final Class<?> entityClazz, final String fieldName) {
+		Field field = getField(entityClazz, fieldName);
+		return field.getType();
+	}
+
+	public static Field getField(final Class<?> entityClazz, final String fieldName) {
 		try {
-			Field field = entityClazz.getDeclaredField(fieldName);
-			return field.getType();
+			return entityClazz.getDeclaredField(fieldName);
 		} catch(NoSuchFieldException e) {
 			throw new IllegalArgumentException("Field doesn't exist in entity :" + fieldName, e);
 		}
@@ -177,15 +177,15 @@ public final class ReflectionUtils {
 				+ fieldObject.getClass(), cause);
 	}
 
-    public static List<String> getReferencedAttributes(Class<?> clazz) {
-        List<String> referenceFields = new ArrayList<String>();
+	public static List<String> getReferencedAttributes(Class<?> clazz) {
+		List<String> referenceFields = new ArrayList<String>();
 
-        for(Field eachField: clazz.getDeclaredFields()) {
+		for(Field eachField : clazz.getDeclaredFields()) {
 
-            if(eachField.getAnnotation(Reference.class) != null) {
-                referenceFields.add(eachField.getName());
-            }
-        }
-        return referenceFields;
-    }
+			if(eachField.getAnnotation(Reference.class) != null) {
+				referenceFields.add(eachField.getName());
+			}
+		}
+		return referenceFields;
+	}
 }

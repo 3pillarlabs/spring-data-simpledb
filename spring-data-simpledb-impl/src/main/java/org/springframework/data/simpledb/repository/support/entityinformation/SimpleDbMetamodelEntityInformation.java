@@ -16,12 +16,13 @@
 package org.springframework.data.simpledb.repository.support.entityinformation;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.simpledb.util.MetadataParser;
 import org.springframework.data.simpledb.util.ReflectionUtils;
-import org.springframework.util.Assert;
 
 public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> extends
 		SimpleDbEntityInformationSupport<T, ID> {
@@ -77,16 +78,22 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
 	}
 
 	@Override
-	public void buildReferencedAttributes(Class<?> clazz, List<Class<?>> references) {
-        Assert.notNull(references, "Nested Referenced Field List should not be null!");
-
+	public List<Field> getReferencedAttributesList(Class<?> clazz) {
+		List<Field> references = new ArrayList<Field>();
 		List<String> referencedFields = ReflectionUtils.getReferencedAttributes(clazz);
 
 		for(String eachReference : referencedFields) {
-			Class<?> fieldClazz = ReflectionUtils.getFieldClass(clazz, eachReference);
-			references.add(fieldClazz);
-			buildReferencedAttributes(fieldClazz, references);
+			Field referenceField = ReflectionUtils.getField(clazz, eachReference);
+			references.add(referenceField);
+			references.addAll(getReferencedAttributesList(referenceField.getType()));
 		}
+
+		return references;
+	}
+
+	@Override
+	public void validateReferenceAnnotation(Field referenceField) {
+		MetadataParser.validateReferenceAnnotation(referenceField);
 	}
 
 	@Override

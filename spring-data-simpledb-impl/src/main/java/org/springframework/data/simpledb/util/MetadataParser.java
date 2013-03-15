@@ -121,14 +121,21 @@ public final class MetadataParser {
 		final List<Field> fieldList = new ArrayList<Field>();
 
 		for(Field field : object.getClass().getDeclaredFields()) {
-			if(isNestedDomainField(field, object)) {
+			if(isNestedDomainField(field)) {
 				fieldList.add(field);
 			}
 		}
 		return fieldList;
 	}
 
-	public static boolean isNestedDomainField(Field field, Object object) {
+	public static boolean isNestedDomainField(Field field) {
 		return FieldTypeIdentifier.isOfType(field, FieldType.NESTED_ENTITY);
+	}
+
+	public static void validateReferenceAnnotation(Field nestedField) {
+		if(!FieldType.NESTED_ENTITY.isOfType(nestedField) && (getIdField(nestedField.getClass()) == null)) {
+             throw new IllegalStateException("Field @Reference " + nestedField.getName() + " should contain an @Id and should be of type nested");
+		}
+
 	}
 }

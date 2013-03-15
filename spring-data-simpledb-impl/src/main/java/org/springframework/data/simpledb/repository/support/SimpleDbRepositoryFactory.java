@@ -1,7 +1,7 @@
 package org.springframework.data.simpledb.repository.support;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -43,11 +43,11 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 	protected Object getTargetRepository(RepositoryMetadata metadata) {
 		SimpleDbEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());
 
-		List<Class<?>> nestedReferences = new ArrayList<Class<?>>();
-		entityInformation.buildReferencedAttributes(entityInformation.getJavaType(), nestedReferences);
+		List<Field> nestedReferences = entityInformation.getReferencedAttributesList(entityInformation.getJavaType());
 
-		for(Class<?> eachNestedReference : nestedReferences) {
-			domainManager.manageDomain(simpleDbOperations.getDomainName(eachNestedReference));
+		for(Field eachNestedReference : nestedReferences) {
+			entityInformation.validateReferenceAnnotation(eachNestedReference);
+			domainManager.manageDomain(simpleDbOperations.getDomainName(eachNestedReference.getType()));
 		}
 
 		domainManager.manageDomain(entityInformation.getDomain());

@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = "classpath:simpledb-repository-context.xml")
 public class SimpleDbReferencesRepositoryTest {
 
+
     @Autowired
     private SimpleDbReferencesRepository referencesRepository;
 
@@ -22,5 +23,6 @@ public class SimpleDbReferencesRepositoryTest {
 
     @Test
     public void manageDomains_should_create_three_domains() {
+        final String x=   "aaa";
     }
 }
