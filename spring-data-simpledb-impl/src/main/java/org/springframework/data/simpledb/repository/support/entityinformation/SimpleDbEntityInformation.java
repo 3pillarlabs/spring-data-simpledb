@@ -18,6 +18,7 @@ package org.springframework.data.simpledb.repository.support.entityinformation;
 import org.springframework.data.repository.core.EntityInformation;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,4 +34,6 @@ public interface SimpleDbEntityInformation<T, ID extends Serializable> extends E
 	String getItemName(T entity);
 
 	Map<String, String> getAttributes(T entity);
+
+    void buildReferencedAttributes(Class<?> clazz, List<Class<?>> references);
 }
