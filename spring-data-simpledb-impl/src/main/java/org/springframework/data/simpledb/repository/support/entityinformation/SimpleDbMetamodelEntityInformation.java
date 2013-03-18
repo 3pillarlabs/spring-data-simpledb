@@ -77,15 +77,34 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
 		return MetadataParser.getAttributes(entity);
 	}
 
+	/**
+	 * @see SimpleDbEntityInformation#getAllReferenceAttributes(Class)
+	 */
 	@Override
-	public List<Field> getReferencedAttributesList(Class<?> clazz) {
+	public List<Field> getAllReferenceAttributes(Class<?> clazz) {
 		List<Field> references = new ArrayList<Field>();
 		List<String> referencedFields = ReflectionUtils.getReferencedAttributes(clazz);
 
 		for(String eachReference : referencedFields) {
 			Field referenceField = ReflectionUtils.getField(clazz, eachReference);
 			references.add(referenceField);
-			references.addAll(getReferencedAttributesList(referenceField.getType()));
+			references.addAll(getReferenceAttributes(referenceField.getType()));
+		}
+
+		return references;
+	}
+	
+	/**
+	 * @see SimpleDbEntityInformation#getReferenceAttributes(Class)
+	 */
+	@Override
+	public List<Field> getReferenceAttributes(Class<?> clazz) {
+		List<Field> references = new ArrayList<Field>();
+		List<String> referencedFields = ReflectionUtils.getReferencedAttributes(clazz);
+
+		for(String eachReference : referencedFields) {
+			Field referenceField = ReflectionUtils.getField(clazz, eachReference);
+			references.add(referenceField);
 		}
 
 		return references;

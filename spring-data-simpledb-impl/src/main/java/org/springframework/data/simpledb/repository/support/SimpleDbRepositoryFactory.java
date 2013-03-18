@@ -43,7 +43,7 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 	protected Object getTargetRepository(RepositoryMetadata metadata) {
 		SimpleDbEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());
 
-		List<Field> nestedReferences = entityInformation.getReferencedAttributesList(entityInformation.getJavaType());
+		List<Field> nestedReferences = entityInformation.getReferenceAttributes(entityInformation.getJavaType());
 
 		for(Field eachNestedReference : nestedReferences) {
 			entityInformation.validateReferenceAnnotation(eachNestedReference);

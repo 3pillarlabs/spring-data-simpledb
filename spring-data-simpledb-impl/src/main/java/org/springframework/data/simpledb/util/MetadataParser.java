@@ -133,7 +133,7 @@ public final class MetadataParser {
 	}
 
 	public static void validateReferenceAnnotation(Field nestedField) {
-		if(!FieldType.NESTED_ENTITY.isOfType(nestedField) && (getIdField(nestedField.getClass()) == null)) {
+		if(FieldType.REFERENCE_ENTITY.isOfType(nestedField) && (getIdField(nestedField.getType()) == null)) {
              throw new IllegalStateException("Field @Reference " + nestedField.getName() + " should contain an @Id and should be of type nested");
 		}
 

@@ -17,7 +17,7 @@ public class NestedReferencedDomainTest {
 		SimpleDbEntityInformation<SimpleDbReferencesEntity, String> entityInformation = SimpleDbReferencesEntity
 				.entityInformation();
 
-        List<Field> referencedFields = entityInformation.getReferencedAttributesList(entityInformation.getJavaType());
+        List<Field> referencedFields = entityInformation.getReferenceAttributes(entityInformation.getJavaType());
 
         assertThat(referencedFields.size(), is(2));
 
@@ -30,7 +30,7 @@ public class NestedReferencedDomainTest {
         SimpleDbEntityInformation<SimpleDbReferencesEntity, String> entityInformation = SimpleDbReferencesEntity
                 .entityInformation();
 
-        List<Field> referencedFields = entityInformation.getReferencedAttributesList(entityInformation.getJavaType());
+        List<Field> referencedFields = entityInformation.getReferenceAttributes(entityInformation.getJavaType());
         entityInformation.validateReferenceAnnotation(referencedFields.get(1));
     }
 }

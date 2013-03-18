@@ -24,6 +24,8 @@ public final class FieldWrapperFactory {
 			return createArrayFieldWrapper(field, parent, isNewParent);
 		} else if(FieldTypeIdentifier.isOfType(field, FieldType.NESTED_ENTITY)) {
 			return createNestedEntityFieldWrapper(field, parent, isNewParent);
+		} else if(FieldTypeIdentifier.isOfType(field, FieldType.REFERENCE_ENTITY)) {
+			return createReferenceEntityFieldWrapper(field, parent, isNewParent);
 		} else if(FieldTypeIdentifier.isOfType(field, FieldType.MAP)) {
 			return createMapFieldWrapper(field, parent, isNewParent);
 		}
@@ -54,6 +56,11 @@ public final class FieldWrapperFactory {
 	private static <T, ID extends Serializable> NestedEntityFieldWrapper<T, ID> createNestedEntityFieldWrapper(
 			final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
 		return new NestedEntityFieldWrapper<T, ID>(field, parent, isNewParent);
+	}
+	
+	private static <T, ID extends Serializable> ReferenceEntityFieldWrapper<T, ID> createReferenceEntityFieldWrapper(
+			final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
+		return new ReferenceEntityFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 
 	private static <T, ID extends Serializable> MapSimpleFieldWrapper<T, ID> createMapFieldWrapper(final Field field,

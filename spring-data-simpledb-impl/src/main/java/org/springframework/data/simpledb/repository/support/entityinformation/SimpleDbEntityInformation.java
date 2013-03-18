@@ -36,7 +36,15 @@ public interface SimpleDbEntityInformation<T, ID extends Serializable> extends E
 
 	Map<String, String> getAttributes(T entity);
 
-    List<Field> getReferencedAttributesList(Class<?> clazz);
+	/**
+	 * Get recursively all reference attributes.
+	 */
+	List<Field> getAllReferenceAttributes(Class<?> clazz);
+	
+	/**
+	 * Get only first-hand reference attributes (direct attributes of the given class).
+	 */
+    List<Field> getReferenceAttributes(Class<?> clazz);
 
     void validateReferenceAnnotation(Field referenceField);
 }

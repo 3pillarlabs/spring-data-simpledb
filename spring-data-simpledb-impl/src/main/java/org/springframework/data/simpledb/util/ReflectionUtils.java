@@ -180,12 +180,15 @@ public final class ReflectionUtils {
 	public static List<String> getReferencedAttributes(Class<?> clazz) {
 		List<String> referenceFields = new ArrayList<String>();
 
-		for(Field eachField : clazz.getDeclaredFields()) {
-
-			if(eachField.getAnnotation(Reference.class) != null) {
-				referenceFields.add(eachField.getName());
+		for(Field field : clazz.getDeclaredFields()) {
+			if(isReference(field)) {
+				referenceFields.add(field.getName());
 			}
 		}
 		return referenceFields;
+	}
+
+	public static boolean isReference(Field field) {
+		return field.getAnnotation(Reference.class) != null;
 	}
 }

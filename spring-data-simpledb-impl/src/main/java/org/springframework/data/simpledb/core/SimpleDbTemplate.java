@@ -1,6 +1,7 @@
 package org.springframework.data.simpledb.core;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.springframework.data.simpledb.query.QueryUtils;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 import org.springframework.data.simpledb.util.MetadataParser;
+import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.Assert;
 
 import com.amazonaws.AmazonClientException;
@@ -62,12 +64,20 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 
 	@Override
 	public <T> T createOrUpdate(T domainItem) {
-		final EntityWrapper<T, ?> entity = getEntityWrapper(domainItem);
+		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(domainItem.getClass());
+		final EntityWrapper<T, ?> entity = getEntityWrapper(domainItem, entityInformation);
 
 		Assert.notNull(entity.getDomain(), "Domain name should not be null");
 
 		logOperation("Create or update", entity);
 		entity.generateIdIfNotSet();
+		
+		for(final Field field: entityInformation.getReferenceAttributes(domainItem.getClass())) {
+			final Object referenceEntity = ReflectionUtils.callGetter(domainItem, field.getName());
+			
+			/* recursive call */
+			createOrUpdate(referenceEntity);
+		}
 
 		delete(entity.getDomain(), entity.getItemName());
 
@@ -301,9 +311,14 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
 		}
 	}
-
+	
 	private <T> EntityWrapper<T, ?> getEntityWrapper(T domainItem) {
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(domainItem.getClass());
+		
+		return getEntityWrapper(domainItem, entityInformation);
+	}
+	
+	private <T> EntityWrapper<T, ?> getEntityWrapper(T domainItem, SimpleDbEntityInformation<T, ?> entityInformation) {
 		final EntityWrapper<T, ?> entityWrapper = new EntityWrapper<T, Serializable>(entityInformation, domainItem);
 
 		return entityWrapper;
