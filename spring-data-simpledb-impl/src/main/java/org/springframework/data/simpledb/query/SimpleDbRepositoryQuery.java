@@ -1,11 +1,7 @@
 package org.springframework.data.simpledb.query;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
@@ -15,6 +11,9 @@ import org.springframework.data.simpledb.query.executions.PagedResultExecution;
 import org.springframework.data.simpledb.query.executions.SingleResultExecution;
 import org.springframework.data.simpledb.util.FieldType;
 import org.springframework.data.simpledb.util.FieldTypeIdentifier;
+
+import java.lang.reflect.Field;
+import java.util.List;
 
 /**
  * {@link RepositoryQuery} implementation that inspects a {@link SimpleDbQueryMethod} for the existence of an
@@ -34,16 +33,12 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
 
 	@Override
 	public Object execute(Object[] parameters) {
-		return getExecution().execute(this, parameters);
+		return getExecution().execute(method, parameters);
 	}
 
 	@Override
 	public QueryMethod getQueryMethod() {
 		return method;
-	}
-
-	public Parameters getQueryParameters() {
-		return method.getParameters();
 	}
 
 	/**
@@ -60,9 +55,6 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
 				simpleDbOperations);
 	}
 
-	public String getAnnotatedQuery() {
-		return method.getAnnotatedQuery();
-	}
 
 	protected AbstractSimpleDbQueryExecution getExecution() {
 		String query = method.getAnnotatedQuery();
