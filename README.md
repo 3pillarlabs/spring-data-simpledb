@@ -64,7 +64,7 @@ This repository has an additional parameter __readConsistent__ on each repositor
 Next declare a template bean.
 
     <bean id="simpleDbTemplate" class="org.springframework.data.simpledb.core.SimpleDbTemplate">
-       	<constructor-arg name="simpleDb" ref="simpleDb" />
+           <constructor-arg name="simpleDb" ref="simpleDb" />
     </bean>
 SimpleDbTemplate is the central support class for SimpleDb database operations. To declare a template, a reference to SimpleDb configuration bean is needed.
 Several templates can be configured for an application.
@@ -312,4 +312,8 @@ Currently, paginating partial annotated queries will return a collection of the 
     @Query(value = "select primitiveField from `testDB.simpleDbUser`")
     List<SimpleDbUser> pagedPartialQuery(Pageable page);
 
-DEV_NOTES: Please use http://dillinger.io/ when editing this file
+### Design notes
+[Repository Generation sequence diagram](http://www.websequencediagrams.com/?lz=dGl0bGUgUmVwb3NpdG9yeSBHZW5lcmF0aW9uCgpDbGllbnQtLT5TcHJpbmdEYXRhQ29yZToAHQhlIG15IHIANAhpZXMKbm90ZSByaWdodCBvZiBTaW1wbGVEYk9wAEwHczoAARMgaW50ZXJmYWNlXG5oYXMgYSBzaW5nbGUgY29uY3JldGUgAEIFbWVudACBEwVcbigAUQhUZW1wbGF0ZS5jbGFzcylcbnNpbWlsYXIgd2l0aCBIaWJlcm5hdGUAHwgKCgCBOw4tPgCBDhRpbnN0YW50aQAUHQCCKApGYWN0b3J5AH0GADENAIEeCQCBdgopCgpsb29wIEZvciBlYWNoIGphdmEgZmlsZSBpbgCCQQp5IHBhY2thZ2UAgR8SAIJ7D3BhcnMAgzQMTWV0YWRhdGEAggwGAIEOMmdldFRhcmdldACECQooAEwSKQoAgWkfAIQiEgCCJxJJbXBsCmVuZACDBRAtPgCEcgY6AIRODCByZWFkeSBmb3IgQEF1dG93aXJl&s=rose) 
+
+
+DEV_NOTES: Please use [Dillinger](http://dillinger.io/) when editing this file
