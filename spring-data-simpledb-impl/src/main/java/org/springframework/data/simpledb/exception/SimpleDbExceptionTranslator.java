@@ -67,7 +67,7 @@ public final class SimpleDbExceptionTranslator implements PersistenceExceptionTr
 		}
 
 		if((e instanceof InvalidNextTokenException) || (e instanceof TooManyRequestedAttributesException)
-				|| (e instanceof MissingParameterException) || (e instanceof TooManyRequestedAttributesException)) {
+				|| (e instanceof MissingParameterException) ) {
 			return new InvalidDataAccessApiUsageException(errorMessage, e);
 		}
 
