@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.simpledb.core.domain.DomainManager;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.exception.InvalidSimpleDBQueryException;
 import org.springframework.data.simpledb.exception.SimpleDbExceptionTranslator;
@@ -69,6 +70,8 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 
 		Assert.notNull(entity.getDomain(), "Domain name should not be null");
 
+		manageSimpleDbDomains(entityInformation);
+		
 		logOperation("Create or update", entity);
 		entity.generateIdIfNotSet();
 		
@@ -98,6 +101,8 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 
 	@Override
 	public void delete(String domainName, String itemName) {
+		manageSimpleDbDomain(domainName);
+		
 		LOGGER.debug("Delete Domain\"{}\" ItemName \"{}\"", domainName, itemName);
 
 		Assert.notNull(domainName, "Domain name should not be null");
@@ -138,6 +143,8 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 	public <T, ID extends Serializable> T read(ID id, Class<T> entityClass, boolean consistentRead) {
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
 
+		manageSimpleDbDomains(entityInformation);
+		
 		LOGGER.debug("Read ItemName \"{}\"", id);
 
 		List<ID> ids = new ArrayList<ID>();
@@ -165,6 +172,9 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 		validateSelectQuery(query);
 
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
+		
+		manageSimpleDbDomains(entityInformation);
+		
 		final String escapedQuery = getEscapedQuery(query, entityInformation);
 		
 		try {
@@ -190,6 +200,8 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
 		final String countQuery = new QueryBuilder(entityInformation, true).toString();
 
+		manageSimpleDbDomains(entityInformation);
+		
 		LOGGER.debug("Count items for query " + countQuery);
 
 		validateSelectQuery(countQuery);
@@ -220,6 +232,9 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 	@Override
 	public <T> List<T> find(Class<T> entityClass, String query, boolean consistentRead) {
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
+		
+		manageSimpleDbDomains(entityInformation);
+		
 		final DomainItemBuilder<T> domainItemBuilder = new DomainItemBuilder<T>();
 
 		LOGGER.debug("Find All Domain \"{}\" isConsistent=\"{}\"", entityInformation.getDomain(), consistentRead);
@@ -245,6 +260,9 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 	@Override
 	public <T> List<T> findAll(Class<T> entityClass, boolean consistentRead) {
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
+		
+		manageSimpleDbDomains(entityInformation);
+		
 		final String findAllQuery = new QueryBuilder(entityInformation).toString();
 
 		return find(entityClass, findAllQuery);
@@ -291,6 +309,8 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 	private <T> List<T> find(SimpleDbEntityInformation<T, ?> entityInformation, String query, String nextToken,
 			boolean consistentRead) {
 
+		manageSimpleDbDomains(entityInformation);
+		
 		LOGGER.debug("Find All Domain \"{}\" isConsistent=\"{}\", with token!", entityInformation.getDomain(),
 				consistentRead);
 
@@ -377,5 +397,20 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 	private void logOperation(String operation, EntityWrapper<?, ?> entity) {
 		LOGGER.debug(operation + " \"{}\" ItemName \"{}\"", entity.getDomain(), entity.getItemName());
 	}
+	
+	private <T> void manageSimpleDbDomain(final String domainName) {
+		DomainManager.getInstance().manageDomain(domainName, simpleDb.getDomainManagementPolicy(), simpleDbClient);
+	}
 
+	private <T> void manageSimpleDbDomains(final SimpleDbEntityInformation<T, ?> entityInformation) {
+		List<Field> nestedReferences = ReflectionUtils.getReferenceAttributesList(entityInformation.getJavaType());
+		
+		entityInformation.validateReferenceFields(nestedReferences);
+
+		for(Field eachNestedReference : nestedReferences) {
+			manageSimpleDbDomain(getDomainName(eachNestedReference.getType()));
+		}
+
+		manageSimpleDbDomain(entityInformation.getDomain());
+	}
 }

@@ -1,6 +1,8 @@
 package org.springframework.data.simpledb.core.domain;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,45 +16,53 @@ import com.amazonaws.services.simpledb.model.DeleteDomainRequest;
 import com.amazonaws.services.simpledb.model.ListDomainsRequest;
 import com.amazonaws.services.simpledb.model.ListDomainsResult;
 
-public class DomainManager {
-
-	private final AmazonSimpleDB sdb;
-	private final DomainManagementPolicy policy;
+public final class DomainManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DomainManager.class);
 
-	public DomainManager(AmazonSimpleDB sdb, String domainUpdatePolicy) {
-		Assert.notNull(sdb);
-		this.sdb = sdb;
+	private static DomainManager instance;
+	
+	private final Set<String> managedDomains = new HashSet<String>();
 
-		if(domainUpdatePolicy == null) {
-			policy = DomainManagementPolicy.UPDATE;
-			LOGGER.warn("Domain management policy not configured. Using default value UPDATE");
-		} else {
-			policy = DomainManagementPolicy.valueOf(domainUpdatePolicy.toUpperCase());
-		}
-
-		LOGGER.debug("Read domain management policy: {}", policy);
+	private DomainManager() {
 	}
 
-    /**
-     * Creates a domain, based on the Domain Policy; The default is UPDATE(if it does not exist create it)
-     *
-     * @param domainName
-     */
-	public void manageDomain(String domainName) {
-		try {
-			if(policy == DomainManagementPolicy.NONE) {
-				return;
-			} else if(policy == DomainManagementPolicy.UPDATE) {
-				createDomain(domainName);
-			} else if(policy == DomainManagementPolicy.DROP_CREATE) {
-				dropDomain(domainName);
-				createDomain(domainName);
-			}
-		} catch(AmazonClientException e) {
-			throw SimpleDbExceptionTranslator.translateAmazonClientException(e);
+	public static synchronized DomainManager getInstance() {
+		if(instance == null) {
+			instance = new DomainManager();
 		}
+
+		return instance;
+	}
+
+	/**
+	 * Creates a domain, based on the Domain Policy; The default is UPDATE(if it does not exist create it)
+	 *
+	 * @return true if the domain was successfuly managed, false if the domain has been managed before
+	 */
+	public boolean manageDomain(final String domainName, final DomainManagementPolicy policy, final AmazonSimpleDB sdb) {
+		Assert.notNull(sdb);
+		
+		if(! managedDomains.contains(domainName)) {
+			try {
+				if(policy == DomainManagementPolicy.UPDATE || policy == null) {
+					createDomain(domainName, sdb);
+				} else if(policy == DomainManagementPolicy.DROP_CREATE) {
+					dropDomain(domainName, sdb);
+					createDomain(domainName, sdb);
+				}
+				
+				managedDomains.add(domainName);
+				
+				return true;
+			} catch(AmazonClientException e) {
+				throw SimpleDbExceptionTranslator.translateAmazonClientException(e);
+			}
+		} else {
+			LOGGER.debug("Domain has been managed before: {}", domainName);
+		}
+		
+		return false;
 	}
 
 	/**
@@ -61,7 +71,7 @@ public class DomainManager {
 	 * 
 	 * @param domainName
 	 */
-	public void dropDomain(String domainName) {
+	public void dropDomain(final String domainName, final AmazonSimpleDB sdb) {
 		try {
 			LOGGER.debug("Dropping domain: {}", domainName);
 			DeleteDomainRequest request = new DeleteDomainRequest(domainName);
@@ -72,7 +82,7 @@ public class DomainManager {
 		}
 	}
 
-	private void createDomain(String domainName) {
+	private void createDomain(final String domainName, final AmazonSimpleDB sdb) {
 		try {
 			LOGGER.debug("Creating domain: {}", domainName);
 			CreateDomainRequest request = new CreateDomainRequest(domainName);
@@ -83,7 +93,7 @@ public class DomainManager {
 		}
 	}
 
-	public boolean exists(String domainName) {
+	public boolean exists(final String domainName, final AmazonSimpleDB sdb) {
 		try {
 			ListDomainsResult listDomainsResult = sdb.listDomains(new ListDomainsRequest());
 			List<String> domainNames = listDomainsResult.getDomainNames();
@@ -92,5 +102,5 @@ public class DomainManager {
 			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
 		}
 	}
-	
+
 }

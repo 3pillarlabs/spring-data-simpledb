@@ -1,80 +1,91 @@
 package org.springframework.data.simpledb.sample.simpledb.domain;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.simpledb.core.domain.DomainManagementPolicy;
 import org.springframework.data.simpledb.core.domain.DomainManager;
+import org.springframework.data.simpledb.util.HostNameResolver;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "classpath:simpledb-repository-context.xml")
 public class DomainManagerTest {
 
 	@Test
 	public void manageDomains_with_DROP_CREATE_should_create_new_domain() {
-		DomainManager manager = new DomainManager(AmazonSimpleDBClientFactory.getTestClient(), "DROP_CREATE");
-		manager.manageDomain("test_domain");
+		final String domainName = getDomainName("test_domain");
+		
+		DomainManager manager = DomainManager.getInstance(); 
+		manager.manageDomain(domainName, DomainManagementPolicy.DROP_CREATE, AmazonSimpleDBClientFactory.getTestClient());
 
-		assertTrue(manager.exists("test_domain"));
+		assertTrue(manager.exists(domainName, AmazonSimpleDBClientFactory.getTestClient()));
 
 		// cleanup
-		manager.dropDomain("test_domain");
+		manager.dropDomain(domainName, AmazonSimpleDBClientFactory.getTestClient());
 	}
 
 	@Test
 	public void manageDomains_with_NONE_should_NOT_create_domain() {
-		DomainManager manager = new DomainManager(AmazonSimpleDBClientFactory.getTestClient(), "NONE");
-		manager.manageDomain("sample");
+		final String domainName = getDomainName("sample");
+		
+		DomainManager manager = DomainManager.getInstance();
+		manager.manageDomain(domainName, DomainManagementPolicy.NONE, AmazonSimpleDBClientFactory.getTestClient());
 
-		assertFalse(manager.exists("sample"));
+		assertFalse(manager.exists(domainName, AmazonSimpleDBClientFactory.getTestClient()));
 
-        manager.dropDomain("sample");
+        manager.dropDomain(domainName, AmazonSimpleDBClientFactory.getTestClient());
 	}
 
 	@Test
 	public void manageDomains_with_UPDATE_should_create_domain_if_not_existing() {
-		DomainManager manager = new DomainManager(AmazonSimpleDBClientFactory.getTestClient(), "UPDATE");
-		manager.manageDomain("sample_update");
+		final String domainName = getDomainName("sample_update");
+		
+		DomainManager manager = DomainManager.getInstance();
+		manager.manageDomain(domainName, DomainManagementPolicy.UPDATE, AmazonSimpleDBClientFactory.getTestClient());
 
-		assertTrue(manager.exists("sample_update"));
-
-		// cleanup
-		manager.dropDomain("sample_update");
-	}
-
-	@Test
-	public void domain_management_policies_should_be_read_case_insensitive() {
-		DomainManager manager = new DomainManager(AmazonSimpleDBClientFactory.getTestClient(), "drop_create");
-		manager.manageDomain("test_domain");
-
-		assertTrue(manager.exists("test_domain"));
+		assertTrue(manager.exists(domainName, AmazonSimpleDBClientFactory.getTestClient()));
 
 		// cleanup
-		manager.dropDomain("test_domain");
+		manager.dropDomain(domainName, AmazonSimpleDBClientFactory.getTestClient());
 	}
 
 	@Test
 	public void manageDomains_with_UPDATE_should_use_default_UPDATE_policy() {
-		DomainManager manager = new DomainManager(AmazonSimpleDBClientFactory.getTestClient(), null);
-		manager.manageDomain("test_domain_update");
+		final String domainName = getDomainName("test_domain_update");
+		
+		DomainManager manager = DomainManager.getInstance();
+		manager.manageDomain(domainName, null, AmazonSimpleDBClientFactory.getTestClient());
 
-		assertTrue(manager.exists("test_domain_update"));
+		assertTrue(manager.exists(domainName, AmazonSimpleDBClientFactory.getTestClient()));
 
-        manager.dropDomain("test_domain_update");
+        manager.dropDomain(domainName, AmazonSimpleDBClientFactory.getTestClient());
 	}
+	
+	@Test
+	public void managing_same_domain_more_than_once_should_return_false() {
+		final String domainName = getDomainName("test_domain_multiple");
+		
+		DomainManager manager = DomainManager.getInstance();
+		boolean result = manager.manageDomain(domainName, null, AmazonSimpleDBClientFactory.getTestClient());
 
-	@Test(expected = IllegalArgumentException.class)
-	public void manageDomains_with_WRONG_policy_should_throw_exception() {
-		DomainManager manager = new DomainManager(AmazonSimpleDBClientFactory.getTestClient(), "wrong");
-		manager.manageDomain("test_domain_none");
-
-		assertFalse(manager.exists("test_domain_none"));
-
-        manager.dropDomain("test_domain_none");
+		assertTrue(result);
+		
+		result = manager.manageDomain(domainName, null, AmazonSimpleDBClientFactory.getTestClient());
+		
+		assertFalse(result);
 	}
 
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void manageDomain_should_throw_AmazonClientException_translated_to_spring_dao_core_exception() {
-        DomainManager manager = new DomainManager(AmazonSimpleDBClientFactory.getTestClient(), null);
-        manager.dropDomain(null);
+        DomainManager manager = DomainManager.getInstance();
+        manager.dropDomain(null, AmazonSimpleDBClientFactory.getTestClient());
+    }
+    
+    private String getDomainName(final String domain) {
+    	return HostNameResolver.readHostname() + "." + domain;
     }
 }
