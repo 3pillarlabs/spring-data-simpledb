@@ -172,7 +172,7 @@ Or write a test client using the SimpleDb template:
     
         @Test
         public void save_should_persist_single_item() {
-    		String itemName = "FirstItem";
+        	String itemName = "FirstItem";
     
     		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
     		operations.createOrUpdate(user);
@@ -275,6 +275,9 @@ To overcome this issue, the attribute values exceeding the length limit are spli
 ### Primitive field conversions ###
 
 The current version supports converting all primitive types but *Character*. More that that, *Float.MIN_VALUE* and *Double.MIN_VALUE* cannot be converted accurately.
+
+### Delete
+Both in the repository and the template, a method to delete an entity by ID is provided. Using this method will not cascade the deletion in case of @Reference attributes.
 
 ### Custom select
 Methods annotated with @Query can run custom SimpleDb valid queries.
