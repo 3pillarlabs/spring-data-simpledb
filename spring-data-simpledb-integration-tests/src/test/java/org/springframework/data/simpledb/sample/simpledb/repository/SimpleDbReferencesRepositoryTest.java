@@ -90,4 +90,30 @@ public class SimpleDbReferencesRepositoryTest {
 		assertEquals(nestedEntity2.getItemName(), foundSecondNestedEntity.getItemName());
 		assertEquals(nestedEntity2.getPrimitive(), foundSecondNestedEntity.getPrimitive());
 	}
+	
+	@Test
+	public void should_cascade_delete_on_reference_entities() {
+		final SimpleDbReferences domainEntity = new SimpleDbReferences();
+		
+		final FirstNestedEntity nestedEntity1 = new FirstNestedEntity();
+		nestedEntity1.setItemName("nested_entity_1");
+		
+		final SecondNestedEntity nestedEntity2 = new SecondNestedEntity();
+		
+		nestedEntity1.setSecondNestedEntity(nestedEntity2);
+		
+		domainEntity.setFirstNestedEntity(nestedEntity1);
+		
+		final SimpleDbReferences savedEntity = repository.save(domainEntity);
+		
+		repository.delete(savedEntity);
+		
+		final SimpleDbReferences foundReferences = repository.findOne(domainEntity.getItemName());
+		final FirstNestedEntity foundFirstNestedEntity = operations.read(nestedEntity1.getItemName(), FirstNestedEntity.class);
+		final SecondNestedEntity foundSecondNestedEntity = operations.read(nestedEntity2.getItemName(), SecondNestedEntity.class);
+	
+		assertNull(foundReferences);
+		assertNull(foundFirstNestedEntity);
+		assertNull(foundSecondNestedEntity);
+	}
 }
