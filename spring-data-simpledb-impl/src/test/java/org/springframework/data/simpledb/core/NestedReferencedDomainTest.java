@@ -8,29 +8,34 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.data.simpledb.core.domain.SimpleDbReferencesEntity;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
+import org.springframework.data.simpledb.util.MetadataParser;
+import org.springframework.data.simpledb.util.ReflectionUtils;
 
 public class NestedReferencedDomainTest {
 
 	@Test
 	public void getReferencedAttributes_should_build_recursively_referenced_nested_domain_names() {
-		SimpleDbEntityInformation<SimpleDbReferencesEntity, String> entityInformation = SimpleDbReferencesEntity
-				.entityInformation();
 
-        List<Field> referencedFields = entityInformation.getReferenceAttributes(entityInformation.getJavaType());
+		List<Field> referencedFields = ReflectionUtils.getReferenceAttributesList(SimpleDbReferencesEntity.class);
 
-        assertThat(referencedFields.size(), is(2));
+		assertThat(referencedFields.size(), is(3));
 
-        assertThat(referencedFields.get(0).getName(), is("firstNestedEntity"));
-        assertThat(referencedFields.get(1).getName(), is("secondNestedEntity"));
-  	}
+		assertThat(referencedFields.get(0).getName(), is("notNestedDouble"));
+		assertThat(referencedFields.get(1).getName(), is("firstNestedEntity"));
+		assertThat(referencedFields.get(2).getName(), is("secondNestedEntity"));
+	}
 
-    @Test
-    public void validateReferenceAnnotation_should_fail_for_missing_id(){
-        SimpleDbEntityInformation<SimpleDbReferencesEntity, String> entityInformation = SimpleDbReferencesEntity
-                .entityInformation();
+	@Test(expected = IllegalStateException.class)
+	public void validateReferenceAnnotation_should_fail_for_missing_Id() {
 
-        List<Field> referencedFields = entityInformation.getReferenceAttributes(entityInformation.getJavaType());
-        entityInformation.validateReferenceAnnotation(referencedFields.get(1));
-    }
+		List<Field> referencedFields = ReflectionUtils.getReferenceAttributesList(SimpleDbReferencesEntity.class);
+		MetadataParser.validateReferenceAnnotation(referencedFields.get(2));
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void validateReferenceAnnotation_should_fail_for_not_nested_field_type() {
+
+		List<Field> referencedFields = ReflectionUtils.getReferenceAttributesList(SimpleDbReferencesEntity.class);
+		MetadataParser.validateReferenceAnnotation(referencedFields.get(0));
+	}
 }

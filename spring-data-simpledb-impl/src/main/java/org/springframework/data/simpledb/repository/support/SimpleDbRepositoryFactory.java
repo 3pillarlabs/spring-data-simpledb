@@ -13,11 +13,11 @@ import org.springframework.data.simpledb.core.domain.DomainManager;
 import org.springframework.data.simpledb.query.SimpleDbQueryLookupStrategy;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
+import org.springframework.data.simpledb.util.ReflectionUtils;
 
 /**
  * SimpleDB specific generic repository factory.
  * 
- * See JpaRepositoryFactory
  */
 public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 
@@ -43,14 +43,8 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 	protected Object getTargetRepository(RepositoryMetadata metadata) {
 		SimpleDbEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());
 
-		List<Field> nestedReferences = entityInformation.getReferenceAttributes(entityInformation.getJavaType());
-
-		for(Field eachNestedReference : nestedReferences) {
-			entityInformation.validateReferenceAnnotation(eachNestedReference);
-			domainManager.manageDomain(simpleDbOperations.getDomainName(eachNestedReference.getType()));
-		}
-
-		domainManager.manageDomain(entityInformation.getDomain());
+		// TODO: remove this when SimpleDBTemplate will provide functionality of managing domains
+		manageSimpleDbDomains(entityInformation);
 
 		SimpleDbRepositoryImpl<?, ?> repo = new SimpleDbRepositoryImpl(entityInformation, simpleDbOperations);
 
@@ -89,5 +83,17 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 		String simpleDbDomain = simpleDbOperations.getSimpleDb().getSimpleDbDomain().getDomain(domainClass);
 		return (SimpleDbEntityInformation<T, ID>) SimpleDbEntityInformationSupport.getMetadata(domainClass,
 				simpleDbDomain);
+	}
+
+	private void manageSimpleDbDomains(SimpleDbEntityInformation<?, Serializable> entityInformation) {
+		List<Field> nestedReferences = ReflectionUtils.getReferenceAttributesList(entityInformation.getJavaType());
+
+		entityInformation.validateReferenceFields(nestedReferences);
+
+		for(Field eachNestedReference : nestedReferences) {
+			domainManager.manageDomain(simpleDbOperations.getDomainName(eachNestedReference.getType()));
+		}
+
+		domainManager.manageDomain(entityInformation.getDomain());
 	}
 }

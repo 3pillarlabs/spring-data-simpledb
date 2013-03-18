@@ -104,25 +104,6 @@ public final class ReflectionUtils {
 		}
 	}
 
-	private static boolean isSameConcreteType(Type firstType, Type secondType) {
-		if(firstType instanceof ParameterizedType && secondType instanceof ParameterizedType) {
-
-			Type firstRawType = ((ParameterizedType) firstType).getRawType();
-			Class<?> firstTypeClass = (Class<?>) firstRawType;
-			Type secondRawType = ((ParameterizedType) secondType).getRawType();
-			Class<?> secondTypeClass = (Class<?>) secondRawType;
-
-			if(firstTypeClass.isAssignableFrom(secondTypeClass)) {
-				Type firstTypeArgument = ((ParameterizedType) firstType).getActualTypeArguments()[0];
-				Type secondTypeArgument = ((ParameterizedType) secondType).getActualTypeArguments()[0];
-				return isSameConcreteType(firstTypeArgument, secondTypeArgument);
-			}
-			return false;
-		} else {
-			return firstType.equals(secondType);
-		}
-	}
-
 	public static boolean isListOfListOfObject(Type type) {
 		if(type instanceof ParameterizedType) {
 			ParameterizedType secondGenericType = (ParameterizedType) type;
@@ -137,6 +118,37 @@ public final class ReflectionUtils {
 			}
 		}
 		return false;
+	}
+
+	public static List<String> getReferencedAttributeNames(Class<?> clazz) {
+		List<String> referenceFields = new ArrayList<String>();
+
+		for(Field eachField : clazz.getDeclaredFields()) {
+
+			if(eachField.getAnnotation(Reference.class) != null) {
+				referenceFields.add(eachField.getName());
+			}
+		}
+		return referenceFields;
+	}
+
+	public static List<Field> getReferenceAttributesList(Class<?> clazz) {
+		List<Field> references = new ArrayList<Field>();
+		List<String> referencedFieldNames = ReflectionUtils.getReferencedAttributeNames(clazz);
+
+		for(String fieldName : referencedFieldNames) {
+			Field referenceField = ReflectionUtils.getField(clazz, fieldName);
+			references.add(referenceField);
+			references.addAll(getReferenceAttributesList(referenceField.getType()));
+		}
+
+		return references;
+	}
+
+	private static MappingException toMappingException(Exception cause, String accessMethod, String fieldName,
+			Object fieldObject) {
+		return new MappingException("Could not call " + accessMethod + " for field " + fieldName + " in class:  "
+				+ fieldObject.getClass(), cause);
 	}
 
 	private static <T> Method retrieveGetterFrom(final Class<T> entityClazz, final String fieldName) {
@@ -164,28 +176,23 @@ public final class ReflectionUtils {
 		return setterMethod;
 	}
 
-	public static void assertThatFieldsDeclaredInClass(List<String> fieldNames, Class<?> domainClazz) {
-		for(String eachEntry : fieldNames) {
-			boolean isFieldDeclared = isFieldInClass(domainClazz, eachEntry);
-			Assert.isTrue(isFieldDeclared, "no such field in entity class : " + eachEntry);
-		}
-	}
+	private static boolean isSameConcreteType(Type firstType, Type secondType) {
+		if(firstType instanceof ParameterizedType && secondType instanceof ParameterizedType) {
 
-	private static MappingException toMappingException(Exception cause, String accessMethod, String fieldName,
-			Object fieldObject) {
-		return new MappingException("Could not call " + accessMethod + " for field " + fieldName + " in class:  "
-				+ fieldObject.getClass(), cause);
-	}
+			Type firstRawType = ((ParameterizedType) firstType).getRawType();
+			Class<?> firstTypeClass = (Class<?>) firstRawType;
+			Type secondRawType = ((ParameterizedType) secondType).getRawType();
+			Class<?> secondTypeClass = (Class<?>) secondRawType;
 
-	public static List<String> getReferencedAttributes(Class<?> clazz) {
-		List<String> referenceFields = new ArrayList<String>();
-
-		for(Field field : clazz.getDeclaredFields()) {
-			if(isReference(field)) {
-				referenceFields.add(field.getName());
+			if(firstTypeClass.isAssignableFrom(secondTypeClass)) {
+				Type firstTypeArgument = ((ParameterizedType) firstType).getActualTypeArguments()[0];
+				Type secondTypeArgument = ((ParameterizedType) secondType).getActualTypeArguments()[0];
+				return isSameConcreteType(firstTypeArgument, secondTypeArgument);
 			}
+			return false;
+		} else {
+			return firstType.equals(secondType);
 		}
-		return referenceFields;
 	}
 
 	public static boolean isReference(Field field) {

@@ -133,9 +133,13 @@ public final class MetadataParser {
 	}
 
 	public static void validateReferenceAnnotation(Field nestedField) {
-		if(FieldType.REFERENCE_ENTITY.isOfType(nestedField) && (getIdField(nestedField.getType()) == null)) {
-             throw new IllegalStateException("Field @Reference " + nestedField.getName() + " should contain an @Id and should be of type nested");
+		if(FieldType.REFERENCE_ENTITY.isOfType(nestedField) && getIdField(nestedField.getType()) != null) {
+			return;
 		}
+
+		// TODO: check spring alliance - is converted to spring + make package for Reference Tests
+		throw new IllegalStateException("Field @Reference " + nestedField.getName()
+				+ " should contain an @Id and should be a bean");
 
 	}
 }

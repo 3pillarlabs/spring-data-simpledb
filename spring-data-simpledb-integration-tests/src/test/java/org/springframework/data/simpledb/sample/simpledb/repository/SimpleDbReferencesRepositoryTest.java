@@ -2,35 +2,61 @@ package org.springframework.data.simpledb.sample.simpledb.repository;
 
 import static org.junit.Assert.*;
 
+import static org.hamcrest.Matchers.is;
+
+import java.util.List;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
+import org.springframework.data.simpledb.sample.simpledb.config.SimpleDBJavaConfiguration;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbReferences;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbReferences.FirstNestedEntity;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbReferences.SecondNestedEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.amazonaws.services.simpledb.AmazonSimpleDB;
+import com.amazonaws.services.simpledb.model.ListDomainsRequest;
+import com.amazonaws.services.simpledb.model.ListDomainsResult;
+
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:simpledb-repository-context.xml")
+@ContextConfiguration(classes = SimpleDBJavaConfiguration.class)
 public class SimpleDbReferencesRepositoryTest {
 
 	@Autowired
-	private SimpleDbReferencesRepository referencesRepository;
-	
+	private SimpleDbReferencesRepository repository;
+
 	@Autowired
-	private SimpleDbOperations operations;
+	SimpleDbOperations operations;
 
 	@Before
 	public void tearDown() {
-		referencesRepository.deleteAll();
+		repository.deleteAll();
 		
 		operations.deleteAll(SecondNestedEntity.class);
 		operations.deleteAll(FirstNestedEntity.class);	
 	}
-	
+
+	@Test
+	public void manageDomains_should_create_domains_referred_by_repository() {
+		AmazonSimpleDB sdb = operations.getDB();
+
+		final String domainPrefix = operations.getSimpleDb().getDomainPrefix();
+
+		ListDomainsResult listDomainsResult = sdb.listDomains(new ListDomainsRequest());
+		List<String> domainNames = listDomainsResult.getDomainNames();
+
+		assertThat(domainNames.contains(domainPrefix + ".simpleDbReferences"), is(true));
+		assertThat(domainNames.contains(domainPrefix + ".firstNestedEntity"), is(true));
+		assertThat(domainNames.contains(domainPrefix + ".secondNestedEntity"), is(true));
+
+		Assert.assertNotNull(operations);
+	}
+
 	@Test
 	public void should_persist_reference_entities_in_separate_domains() {
 		final SimpleDbReferences domainEntity = new SimpleDbReferences();
@@ -44,9 +70,9 @@ public class SimpleDbReferencesRepositoryTest {
 		
 		domainEntity.setFirstNestedEntity(nestedEntity1);
 		
-		referencesRepository.save(domainEntity);
+		repository.save(domainEntity);
 		
-		final SimpleDbReferences foundReferences = referencesRepository.findOne(domainEntity.getItemName());
+		final SimpleDbReferences foundReferences = repository.findOne(domainEntity.getItemName());
 		final FirstNestedEntity foundFirstNestedEntity = operations.read(nestedEntity1.getItemName(), FirstNestedEntity.class);
 		final SecondNestedEntity foundSecondNestedEntity = operations.read(nestedEntity2.getItemName(), SecondNestedEntity.class);
 		

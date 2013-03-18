@@ -29,7 +29,7 @@ import java.lang.reflect.Field;
  */
 public interface SimpleDbEntityInformation<T, ID extends Serializable> extends EntityInformation<T, ID>,
 		SimpleDBEntityMappingInformation<T> {
-	
+
 	String getDomain();
 
 	String getItemName(T entity);
@@ -46,5 +46,5 @@ public interface SimpleDbEntityInformation<T, ID extends Serializable> extends E
 	 */
     List<Field> getReferenceAttributes(Class<?> clazz);
 
-    void validateReferenceAnnotation(Field referenceField);
+    void validateReferenceFields(List<Field> referenceFields);
 }
