@@ -17,33 +17,31 @@
         <xsd:complexType>
             <xsd:complexContent>
                 <xsd:extension base="repository:repositories">
-                    <xsd:attributeGroup ref="repository:transactional-repository-attributes" />
+                    <xsd:attributeGroup ref="simpledb-repository-attributes" />
                 </xsd:extension>
             </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
 
+	<xsd:attributeGroup name="simpledb-repository-attributes">
+		<xsd:attribute name="simpledb-template-ref" type="simpleDbTemplateRef" default="simpleDbTemplate">
+			<xsd:annotation>
+				<xsd:documentation>
+					The reference to a SimpleDbTemplate. Will default to 'simpleDbTemplate'.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
 
-    <xsd:element name="config">
-        <xsd:annotation>
-            <xsd:documentation>SimpleDB specific configuration properties.</xsd:documentation>
-        </xsd:annotation>
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element name="property" minOccurs="0" maxOccurs="unbounded">
-                    <xsd:annotation>
-                        <xsd:documentation>A name-value pair.</xsd:documentation>
-                    </xsd:annotation>
-                    <xsd:complexType>
-                        <xsd:attribute name="name" type="xsd:string" use="required"/>
-                        <xsd:attribute name="value" type="xsd:string" use="required"/>
-                    </xsd:complexType>
-                </xsd:element>
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
-
-
-
+	<xsd:simpleType name="simpleDbTemplateRef">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<tool:annotation kind="ref">
+					<tool:assignable-to type="org.springframework.data.simpledb.core.SimpleDbTemplate"/>
+				</tool:annotation>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:union memberTypes="xsd:string"/>
+	</xsd:simpleType>
 
 </xsd:schema>

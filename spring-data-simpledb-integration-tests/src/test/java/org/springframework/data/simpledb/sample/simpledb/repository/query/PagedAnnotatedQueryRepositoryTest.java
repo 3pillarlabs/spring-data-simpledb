@@ -9,6 +9,8 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +28,33 @@ public class PagedAnnotatedQueryRepositoryTest {
 	@Autowired
 	PagedAnnotatedQueryRepository repository;
 
-	@After
-	public void tearDown() {
-		repository.deleteAll();
-	}
+    static List<SimpleDbUser> simpleDbUsers;
+
+    //Used for performance reasons to delete after class all simpleDbUsers created
+    static PagedAnnotatedQueryRepository staticRepository;
+
+    @Before
+    public void setUp() {
+        //for performance reasons create 3 entities once and use them to test all queries
+        if(simpleDbUsers == null){
+            simpleDbUsers = createUsersWithPrimitiveFields(new float[]{0f, 1.0f, 2.0f, 3.0f, 4.0f, 5f});
+            repository.save(simpleDbUsers);
+        }
+    }
+
+    @After
+    public void setUpStaticRepository(){
+        staticRepository = repository;
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        staticRepository.deleteAll();
+    }
 
 	@Test
 	public void custom_queries_should_return_Page_results_for_PageRequests() {
-		saveUsersWithPrimitiveFields(new float[] { 0f, 1.0f, 2.0f, 3.0f, 4.0f, 5f });
+        // created users with primitive fields 0f, 1.0f, 2.0f, 3.0f, 4.0f, 5f
 
 		final int pageNumber = 1;
 		final int pageSize = 1;
@@ -49,7 +70,7 @@ public class PagedAnnotatedQueryRepositoryTest {
 
 	@Test
 	public void custom_queries_should_return_List_results_for_PageRequests() {
-		saveUsersWithPrimitiveFields(new float[] { 0f, 1.0f, 2.0f, 3.0f, 4.0f, 5f });
+        // created users with primitive fields 0f, 1.0f, 2.0f, 3.0f, 4.0f, 5f
 
 		final int pageNumber = 2;
 		final int pageSize = 2;
@@ -64,9 +85,11 @@ public class PagedAnnotatedQueryRepositoryTest {
 
 	@Test
 	public void paged_request_should_work_for_no_elements() {
-		final int pageNumber = 1;
+        // created users with primitive fields 0f, 1.0f, 2.0f, 3.0f, 4.0f, 5f
+
+        final int pageNumber = 1;
 		final int pageSize = 1;
-		final Page<SimpleDbUser> page = repository.findUsersWithPrimitiveFieldHigherThan(1.0f, new PageRequest(
+		final Page<SimpleDbUser> page = repository.findUsersWithPrimitiveFieldHigherThan(6.0f, new PageRequest(
 				pageNumber, pageSize));
 
 		assertNotNull(page);
@@ -86,9 +109,10 @@ public class PagedAnnotatedQueryRepositoryTest {
 
 	@Test
 	public void paged_request_for_partial_field_should_return_list_of_entities_only_with_requested_fields() {
-		saveUsersWithPrimitiveFields(new float[] { 0f, 1.0f, 2.0f, 3.0f, 4.0f, 5f });
+        // created users with primitive fields 0f, 1.0f, 2.0f, 3.0f, 4.0f, 5f
 
-		final int pageNumber = 2;
+
+        final int pageNumber = 2;
 		final int pageSize = 2;
 		final List<SimpleDbUser> results = repository.pagedPartialQuery(1.0f, new PageRequest(pageNumber, pageSize));
 
@@ -104,14 +128,15 @@ public class PagedAnnotatedQueryRepositoryTest {
 		assertNull(firstResult.getObjectField());
 	}
 
-	private void saveUsersWithPrimitiveFields(float[] primitiveFields) {
+	private List<SimpleDbUser> createUsersWithPrimitiveFields(float[] primitiveFields) {
 		List<SimpleDbUser> users = SimpleDbUserBuilder.createListOfItems(primitiveFields.length);
 		int i = 0;
 		for(SimpleDbUser user : users) {
 			user.setPrimitiveField(primitiveFields[i]);
-			repository.save(user);
 			i++;
 		}
+
+        return users;
 
 	}
 

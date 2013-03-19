@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,37 +16,54 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
+import org.springframework.data.simpledb.sample.simpledb.repository.query.PagedAnnotatedQueryRepository;
 import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-consistent-repository-context.xml")
-// @Ignore(value = "work in progress")
 public class PagingAndSortingSimpleDbUserRepositoryTest {
 
 	@Autowired
 	PagingAndSortingUserRepository repository;
 
-	@After
-	public void tearDown() {
-		repository.deleteAll();
-	}
+    static List<SimpleDbUser> simpleDbUsers;
+
+    //Used for performance reasons to delete after class all simpleDbUsers created
+    static PagingAndSortingUserRepository staticRepository;
+
+    @Before
+    public void setUp() {
+        //for performance reasons create 3 entities once and use them to test all queries
+        if(simpleDbUsers == null){
+            simpleDbUsers = SimpleDbUserBuilder.createListOfItems(5);
+            repository.save(simpleDbUsers);
+        }
+    }
+
+    @After
+    public void setUpStaticRepository(){
+        staticRepository = repository;
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        staticRepository.deleteAll();
+    }
 
 	@Test
 	public void findAll_with_sort_should_return_desc_items() {
-		final List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(3);
-		repository.save(testUsers);
+        //created in setup a list of 5 SimpleDbUser - first Item_0
 
 		Iterable<SimpleDbUser> findAll = repository.findAll(new Sort(new Order(Sort.Direction.DESC, "itemName")));
 
-		assertEquals(testUsers.get(testUsers.size() - 1).getItemName(), findAll.iterator().next().getItemName());
+		assertEquals(simpleDbUsers.get(simpleDbUsers.size() - 1).getItemName(), findAll.iterator().next().getItemName());
 	}
 
 	@Test
 	public void findAll_with_pageable_should_return_paged_result() {
-		final List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(5);
-		repository.save(testUsers);
+        //created in setup a list of 5 SimpleDbUser - first Item_0
 
 		final int pageNumber = 2;
 		final int pageSize = 2;
@@ -58,14 +77,13 @@ public class PagingAndSortingSimpleDbUserRepositoryTest {
 		assertEquals(pageSize, content.size());
 
 		/* users 3 & 4 */
-		assertEquals(testUsers.get(2), content.get(0));
-		assertEquals(testUsers.get(3), content.get(1));
+		assertEquals(simpleDbUsers.get(2), content.get(0));
+		assertEquals(simpleDbUsers.get(3), content.get(1));
 	}
 
 	@Test
 	public void findAll_should_return_page_with_last_element_only() {
-		final List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(5);
-		repository.save(testUsers);
+        //created in setup a list of 5 SimpleDbUser - first Item_0
 
 		final int pageNumber = 3;
 		final int pageSize = 2;
@@ -79,13 +97,12 @@ public class PagingAndSortingSimpleDbUserRepositoryTest {
 		assertEquals(1, content.size());
 
 		/* users 5 */
-		assertEquals(testUsers.get(4), content.get(0));
+		assertEquals(simpleDbUsers.get(4), content.get(0));
 	}
 
 	@Test
 	public void findAll_should_return_empty_list_for_non_existing_page() {
-		final List<SimpleDbUser> testUsers = SimpleDbUserBuilder.createListOfItems(5);
-		repository.save(testUsers);
+        //created in setup a list of 5 SimpleDbUser - first Item_0
 
 		final int pageNumber = 4;
 		final int pageSize = 2;

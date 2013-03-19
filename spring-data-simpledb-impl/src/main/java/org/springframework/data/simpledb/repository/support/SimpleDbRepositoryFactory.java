@@ -5,30 +5,22 @@ import java.io.Serializable;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.query.QueryLookupStrategy;
-import org.springframework.data.simpledb.config.SimpleDbConfig;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
-import org.springframework.data.simpledb.core.SimpleDbOperationsImpl;
-import org.springframework.data.simpledb.core.domain.DomainManager;
+import org.springframework.data.simpledb.core.SimpleDbTemplate;
 import org.springframework.data.simpledb.query.SimpleDbQueryLookupStrategy;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 
-import com.amazonaws.services.simpledb.AmazonSimpleDB;
-
 /**
  * SimpleDB specific generic repository factory.
  * 
- * See JpaRepositoryFactory
  */
 public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 
-	private SimpleDbOperations<?, Serializable> simpledbOperations;
-	private DomainManager domainManager;
+	private SimpleDbOperations simpleDbOperations;
 
-	public SimpleDbRepositoryFactory(AmazonSimpleDB sdb, SimpleDbConfig config) {
-		this.domainManager = new DomainManager(sdb, config.getDomainManagementPolicy());
-
-		this.simpledbOperations = new SimpleDbOperationsImpl(sdb);
+	public SimpleDbRepositoryFactory(SimpleDbOperations simpleDbOperations) {
+		this.simpleDbOperations = new SimpleDbTemplate(simpleDbOperations.getSimpleDb());
 
 	}
 
@@ -43,9 +35,7 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 	protected Object getTargetRepository(RepositoryMetadata metadata) {
 		SimpleDbEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());
 
-		domainManager.manageDomain(entityInformation.getDomain());
-
-		SimpleDbRepositoryImpl<?, ?> repo = new SimpleDbRepositoryImpl(entityInformation, simpledbOperations);
+		SimpleDbRepositoryImpl<?, ?> repo = new SimpleDbRepositoryImpl(entityInformation, simpleDbOperations);
 
 		return repo;
 	}
@@ -68,7 +58,7 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 	 */
 	@Override
 	protected QueryLookupStrategy getQueryLookupStrategy(QueryLookupStrategy.Key key) {
-		return SimpleDbQueryLookupStrategy.create(simpledbOperations, key);
+		return SimpleDbQueryLookupStrategy.create(simpleDbOperations, key);
 	}
 
 	/*
@@ -79,7 +69,9 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T, ID extends Serializable> SimpleDbEntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
-
-		return (SimpleDbEntityInformation<T, ID>) SimpleDbEntityInformationSupport.getMetadata(domainClass);
+		String simpleDbDomain = simpleDbOperations.getSimpleDb().getSimpleDbDomain().getDomain(domainClass);
+		return (SimpleDbEntityInformation<T, ID>) SimpleDbEntityInformationSupport.getMetadata(domainClass,
+				simpleDbDomain);
 	}
+
 }

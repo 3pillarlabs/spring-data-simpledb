@@ -5,11 +5,8 @@ import java.io.Serializable;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
-import org.springframework.data.simpledb.config.SimpleDbConfig;
-
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.services.simpledb.AmazonSimpleDB;
-import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
+import org.springframework.data.simpledb.core.SimpleDbOperations;
+import org.springframework.util.Assert;
 
 /**
  * Constructs additional elements needed by the repository factory i.e. EntityManager for JPA, Some
@@ -18,21 +15,21 @@ import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 public class SimpleDbRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> extends
 		RepositoryFactoryBeanSupport<T, S, ID> {
 
+	private SimpleDbOperations simpleDbOperations;
+
 	@Override
 	protected RepositoryFactorySupport createRepositoryFactory() {
-		AmazonSimpleDB sdb = new AmazonSimpleDBClient(new AWSCredentials() {
+		Assert.notNull(simpleDbOperations);
 
-			@Override
-			public String getAWSAccessKeyId() {
-				return SimpleDbConfig.getInstance().getAccessID();
-			}
+		return new SimpleDbRepositoryFactory(simpleDbOperations);
+	}
 
-			@Override
-			public String getAWSSecretKey() {
-				return SimpleDbConfig.getInstance().getSecretKey();
-			}
-		});
-
-		return new SimpleDbRepositoryFactory(sdb, SimpleDbConfig.getInstance());
+	/**
+	 * Needed by spring data core to inject operations
+	 * 
+	 * @param simpleDbOperations
+	 */
+	public void setSimpleDbOperations(SimpleDbOperations simpleDbOperations) {
+		this.simpleDbOperations = simpleDbOperations;
 	}
 }

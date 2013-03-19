@@ -31,6 +31,8 @@ import org.w3c.dom.Element;
  * See JpaRepositoryConfigExtension
  */
 public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationExtensionSupport {
+	
+	private static final String SIMPLEDB_TEMPLATE_REF = "simpledb-template-ref";
 
 	/*
 	 * (non-Javadoc)
@@ -64,25 +66,19 @@ public class SimpleDbRepositoryConfigExtension extends RepositoryConfigurationEx
 	@Override
 	public void postProcess(BeanDefinitionBuilder builder, XmlRepositoryConfigurationSource config) {
 		Element element = config.getElement();
-		ParsingUtils.setPropertyReference(builder, element, "simpledb-template-ref", "simpleDbOperations");
-
+		ParsingUtils.setPropertyReference(builder, element, SIMPLEDB_TEMPLATE_REF, "simpleDbOperations");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport#postProcess(org.springframework
-	 * .beans.factory.support.BeanDefinitionBuilder,
-	 * org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource)
+	/**
+	 * We bind here the provided SimpleDB template bean specified by "simpleDbTemplateRef" annotation property <br/>
+	 * to our internally used bean simpleDbOperations of class
+	 * {@link org.springframework.data.simpledb.repository.support.SimpleDbRepositoryFactoryBean}. <br/>
+	 * The bean will be used to construct repository implementations. <br/>
 	 */
 	@Override
 	public void postProcess(BeanDefinitionBuilder builder, AnnotationRepositoryConfigurationSource config) {
-
 		AnnotationAttributes attributes = config.getAttributes();
-
-		builder.addPropertyReference("simpleDbOperations", attributes.getString("simpledbTemplateRef"));
-
+        builder.addPropertyReference("simpleDbOperations", attributes.getString("simpleDbTemplateRef"));
 	}
 
 }

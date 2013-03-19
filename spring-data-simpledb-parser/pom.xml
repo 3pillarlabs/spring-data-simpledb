@@ -10,7 +10,7 @@
 
 	<parent>
 		<groupId>com.threepillar.labs</groupId>
-		<artifactId>spring-data-simpledb-parent</artifactId>
+		<artifactId>spring-data-simpledb-sdk</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
@@ -29,7 +29,7 @@
 					</execution>
 				</executions>
 				<configuration>
-				    <outputDirectory>src/generated/java</outputDirectory>
+				    <outputDirectory>src/main/java</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -41,6 +41,16 @@
 			<artifactId>javacc</artifactId>
 			<version>5.0</version>
 		</dependency>
+
+
+        <!-- TEST -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+
 	</dependencies>
 
 </project>

@@ -10,8 +10,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.junit.Test;
 import org.springframework.data.simpledb.core.entity.util.AttributeUtil;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
+import org.springframework.data.simpledb.util.EntityInformationSupport;
 
 public class CoreTypeWrapperTest {
 
@@ -24,12 +23,12 @@ public class CoreTypeWrapperTest {
 
 		/* ----------------------- Serialize Representation ------------------------ */
 		EntityWrapper<SampleCoreType, String> sdbEntity = new EntityWrapper<SampleCoreType, String>(
-				this.<SampleCoreType> readEntityInformation(SampleCoreType.class), coreType);
+				EntityInformationSupport.readEntityInformation(SampleCoreType.class), coreType);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		/* ----------------------- De-serialize Representation ------------------------ */
 		final EntityWrapper<SampleCoreType, String> convertedEntity = new EntityWrapper<SampleCoreType, String>(
-				this.<SampleCoreType> readEntityInformation(SampleCoreType.class));
+				EntityInformationSupport.readEntityInformation(SampleCoreType.class));
 		convertedEntity.deserialize(attributes);
 
 		assertTrue(coreType.equals(convertedEntity.getItem()));
@@ -42,12 +41,12 @@ public class CoreTypeWrapperTest {
 
 		/* ----------------------- Serialize Representation ------------------------ */
 		EntityWrapper<SampleCoreType, String> sdbEntity = new EntityWrapper<SampleCoreType, String>(
-				this.<SampleCoreType> readEntityInformation(SampleCoreType.class), coreType);
+				EntityInformationSupport.readEntityInformation(SampleCoreType.class), coreType);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		/* ----------------------- De-serialize Representation ------------------------ */
 		final EntityWrapper<SampleCoreType, String> convertedEntity = new EntityWrapper<SampleCoreType, String>(
-				this.<SampleCoreType> readEntityInformation(SampleCoreType.class));
+				EntityInformationSupport.readEntityInformation(SampleCoreType.class));
 		convertedEntity.deserialize(attributes);
 
 		assertTrue(coreType.equals(convertedEntity.getItem()));
@@ -66,7 +65,7 @@ public class CoreTypeWrapperTest {
 
 		/* ----------------------- Serialize Representation ------------------------ */
 		EntityWrapper<SampleCoreType, String> sdbEntity = new EntityWrapper<SampleCoreType, String>(
-				this.<SampleCoreType> readEntityInformation(SampleCoreType.class), coreType);
+				EntityInformationSupport.readEntityInformation(SampleCoreType.class), coreType);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		assertTrue(attributes.size() == 3);
@@ -76,10 +75,6 @@ public class CoreTypeWrapperTest {
 			assertTrue(attributes.containsKey(attributeName));
 		}
 
-	}
-
-	private <E> SimpleDbEntityInformation<E, String> readEntityInformation(Class<E> clazz) {
-		return (SimpleDbEntityInformation<E, String>) SimpleDbEntityInformationSupport.<E> getMetadata(clazz);
 	}
 
 	public static class SampleCoreType {

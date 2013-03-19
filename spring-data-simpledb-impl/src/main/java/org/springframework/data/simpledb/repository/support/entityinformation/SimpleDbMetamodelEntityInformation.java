@@ -15,30 +15,26 @@
  */
 package org.springframework.data.simpledb.repository.support.entityinformation;
 
-import org.springframework.data.simpledb.util.MetadataParser;
-
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 
-/**
- * Implementation of {@link org.springframework.data.repository.core.EntityInformation} that uses JPA
- * {@link javax.persistence.metamodel.Metamodel} to find the domain class' id field.
- * 
- * @author Oliver Gierke
- */
+import org.springframework.data.simpledb.util.MetadataParser;
+
 public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> extends
 		SimpleDbEntityInformationSupport<T, ID> {
 
+	private String simpleDbDomain;
+
 	/**
-	 * Creates a new {@link org.springframework.data.jpa.repository.support.JpaMetamodelEntityInformation} for the given
-	 * domain class and {@link javax.persistence.metamodel.Metamodel}.
-	 * 
 	 * @param domainClass
 	 *            must not be {@literal null}.
 	 */
-	public SimpleDbMetamodelEntityInformation(Class<T> domainClass) {
+	public SimpleDbMetamodelEntityInformation(Class<T> domainClass, String simpleDbDomain) {
 
 		super(domainClass);
+		this.simpleDbDomain = simpleDbDomain;
 
 	}
 
@@ -66,7 +62,7 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
 
 	@Override
 	public String getDomain() {
-		return MetadataParser.getDomain(getJavaType());
+		return simpleDbDomain;
 	}
 
 	@Override
@@ -80,6 +76,13 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
 	}
 
 	@Override
+	public void validateReferenceFields(List<Field> referenceFields) {
+		for(Field eachReferencedField : referenceFields) {
+			MetadataParser.validateReferenceAnnotation(eachReferencedField);
+		}
+	}
+
+	@Override
 	public String getItemNameFieldName(T entity) {
 		return MetadataParser.getIdField(entity).getName();
 	}
@@ -88,5 +91,4 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
 	public String getAttributesFieldName(T entity) {
 		return MetadataParser.getAttributesField(entity).getName();
 	}
-
 }

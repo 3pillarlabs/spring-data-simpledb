@@ -1,12 +1,12 @@
 package org.springframework.data.simpledb.query;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.RepositoryQuery;
+import org.springframework.data.simpledb.annotation.Query;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 
 /**
@@ -28,15 +28,15 @@ public final class SimpleDbQueryLookupStrategy {
 	 */
 	private static class AnnotationBasedQueryLookupStrategy implements QueryLookupStrategy {
 
-		private final SimpleDbOperations<?, Serializable> simpleDbOperations;
+		private final SimpleDbOperations simpleDbOperations;
 
-		public AnnotationBasedQueryLookupStrategy(SimpleDbOperations<?, Serializable> simpleDbOperations) {
+		public AnnotationBasedQueryLookupStrategy(SimpleDbOperations simpleDbOperations) {
 			this.simpleDbOperations = simpleDbOperations;
 		}
 
 		@Override
 		public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, NamedQueries namedQueries) {
-			SimpleDbQueryMethod queryMethod = new SimpleDbQueryMethod(method, metadata);
+			SimpleDbQueryMethod queryMethod = new SimpleDbQueryMethod(method, metadata, simpleDbOperations.getSimpleDb().getSimpleDbDomain());
 			RepositoryQuery query = SimpleDbRepositoryQuery.fromQueryAnnotation(queryMethod, simpleDbOperations);
 
 			if(null != query) {
@@ -47,7 +47,7 @@ public final class SimpleDbQueryLookupStrategy {
 		}
 	}
 
-	public static QueryLookupStrategy create(SimpleDbOperations<?, Serializable> simpleDbOperations,
+	public static QueryLookupStrategy create(SimpleDbOperations simpleDbOperations,
 			QueryLookupStrategy.Key key) {
 		// TODO check in Spring data core key switching and their semantics (look in spring-data-jpa)
 		return new AnnotationBasedQueryLookupStrategy(simpleDbOperations);

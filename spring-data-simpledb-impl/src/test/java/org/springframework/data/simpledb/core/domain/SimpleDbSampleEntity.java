@@ -42,7 +42,7 @@ public class SimpleDbSampleEntity {
 	}
 
 	public static SimpleDbEntityInformation<SimpleDbSampleEntity, String> entityInformation() {
-		return (SimpleDbEntityInformation<SimpleDbSampleEntity, String>) SimpleDbEntityInformationSupport
-				.getMetadata(SimpleDbSampleEntity.class);
+		return (SimpleDbEntityInformation<SimpleDbSampleEntity, String>) SimpleDbEntityInformationSupport.getMetadata(
+				SimpleDbSampleEntity.class, "simpleDbSampleEntity");
 	}
 }

@@ -18,7 +18,7 @@ public class NestedEntityFieldWrapper<T, ID extends Serializable> extends Abstra
 		super(field, parent, isNewParent);
 
 		final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(getField()
-				.getType());
+				.getType(), getParentWrapper().getDomain());
 
 		/* if it was already created in createNewInstance */
 		if(!isNewParent) {
@@ -53,7 +53,7 @@ public class NestedEntityFieldWrapper<T, ID extends Serializable> extends Abstra
 	public void createInstance() {
 		/* instantiation is handled by the EntityWrapper */
 		final SimpleDbEntityInformation entityMetadata = SimpleDbEntityInformationSupport.getMetadata(getField()
-				.getType());
+				.getType(), getParentWrapper().getDomain());
 		wrappedNestedEntity = new EntityWrapper(entityMetadata);
 
 		try {

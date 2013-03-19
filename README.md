@@ -10,50 +10,33 @@ The Spring Data SimpleDB module aims to provide a familiar and consistent Spring
 
 Clone the Spring Data SimpleDB module into and define it as a dependency in your project's Maven file:
 
-
     <dependency>
         <groupId>org.springframework.data.simpledb</groupId>
         <artifactId>spring-data-simpledb</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
 
+First, set up the SimpleDb configuration.
 
-Setup Spring Data SimpleDB repository support:
-
-    <?xml version="1.0" encoding="UTF-8"?>
-    <beans xmlns="http://www.springframework.org/schema/beans"
-        xmlns:simpledb="http://www.springframework.org/schema/data/simpledb"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        classpath:META-INF/spring-simpledb.xsd">
-    
-        <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
-    
-        <simpledb:config>
-            <simpledb:property name="accessID" value="$AWS_ACCESS_ID" />
-            <simpledb:property name="secretKey" value="$AWS_SECRET_KEY"/>
-            <simpledb:property name="domainPrefix" value="$DOMAIN_PREFIX"/>
-            <simpledb:property name="domainManagementPolicy" value="$DOMAIN_MANAGEMENT_POLICY"/>
-            <simpledb:property name="consistentRead" value="$CONSISTENT_READ_VALUE"/>
-        </simpledb:config>
-    
-    </beans>
-
-For SimpleDB specific configurations,  the __config__ tag must be used.
-
+    <bean id="simpleDb" class="org.springframework.data.simpledb.core.SimpleDb">
+        <property name="accessID" value="$AWS_ACCESS_ID" />
+        <property name="secretKey" value="$AWS_SECRET_KEY"/>
+        <property name="domainPrefix" value="$DOMAIN_PREFIX"/>
+        <property name="domainManagementPolicy" value="$DOMAIN_MANAGEMENT_POLICY"/>
+        <property name="consistentRead" value="$CONSISTENT_READ_VALUE"/>
+    </bean>
 The following can be configured here:
 
 **SimpleDB access credentials** via __accessID__ and __secretKey__ tags.
 
 **SimpleDB domain prefixes** via __domainPrefix__ tag.
 
-If a value is specified here each SimpleDB domain name created by the application will be prefixed with this value.
+If a value is specified here, each SimpleDB domain name created by the application will be prefixed with this value.
 
-Ex:
-<simpledb:property name="domainPrefix" value="testDB"/>
-Persisted class has Name "UserJob"
+For:
 
-The generated SimpleDB domain will be testDB.userJob
+    <property name="domainPrefix" value="testDB"/>
+and persisted class has Name "UserJob", the generated SimpleDB domain will be testDB.userJob
 
 **SimpleDB Domain management policies** via __domainManagementPolicy__ tag.
 
@@ -66,7 +49,7 @@ $DOMAIN_MANAGEMENT_POLICY possible values:
 
 _Default value_: **UPDATE**
 
-**SimpleDB default read behaviour**
+**SimpleDB default read behavior**
 
 If a value is specified here, the default read operations performed to SimpleDB will be performed accordingly.
 $CONSISTENT_READ_VALUE possible values:
@@ -78,8 +61,59 @@ If some operations need consistent reads and inconsistent reads at the same time
 
 This repository has an additional parameter __readConsistent__ on each repository method.
 
-Next, create and entity to model your domain:
+Next declare a template bean.
 
+    <bean id="simpleDbTemplate" class="org.springframework.data.simpledb.core.SimpleDbTemplate">
+           <constructor-arg name="simpleDb" ref="simpleDb" />
+    </bean>
+SimpleDbTemplate is the central support class for SimpleDb database operations. To declare a template, a reference to SimpleDb configuration bean is needed.
+Several templates can be configured for an application.
+
+Next, optionally, configure a spring data repository.
+
+    <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
+A repository can contain a __simpledb-template-ref__ tag which specifies the id of the template to be used for this repository.
+
+    <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" simpledb-template-ref="template"/>
+If no simpledb-template-ref is specified, the default value is __simpleDbTemplate__, so a template with this id must be present in the configuration file.
+
+Here is a .xml configuration file containing a SimpleDb configuration bean, a template and a package for repositories:
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:simpledb="http://www.springframework.org/schema/data/simpledb"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/data/jpa
+        http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+        http://www.springframework.org/schema/data/simpledb
+        http://www.springframework.org/schema/data/simpledb/spring-simpledb.xsd">
+    
+        <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
+    
+        <bean id="simpleDb" class="org.springframework.data.simpledb.core.SimpleDb">
+            <property name="accessID" value="$AWS_ACCESS_ID" />
+            <property name="secretKey" value="$AWS_SECRET_KEY"/>
+            <property name="domainPrefix" value="$DOMAIN_PREFIX"/>
+            <property name="domainManagementPolicy" value="$DOMAIN_MANAGEMENT_POLICY"/>
+            <property name="consistentRead" value="$CONSISTENT_READ_VALUE"/>
+        </bean>
+    
+        <bean id="simpleDbTemplate" class="org.springframework.data.simpledb.core.SimpleDbTemplate">
+            <constructor-arg name="simpleDb" ref="simpleDb" />
+        </bean>
+    
+        <bean class="org.springframework.data.simpledb.sample.simpledb.logging.LoggingConfiguration"/>
+
+    </beans>
+    
+Next, create and entity to model your domain:
 
     public class SimpleDBUser {
         @org.springframework.data.annotation.Id
@@ -104,18 +138,16 @@ If a domain field does not contain getter and/or setter it will **not** be persi
 
 Create a repository interface:
 
-
     public interface BasicSimpleDbUserRepository extends CrudRepository<SimpleDbUser, String> { }
-    
 
-
-Write a test client:
+Write a test client using repository:
 
     @RunWith(SpringJUnit4TestRunner.class)
     @ContextConfiguration("classpath:your-config-file.xml")
     public class BasicSimpleDbUserRepositoryTest {
 
-        @Autowired BasicSimpleDbUserRepository repository;
+        @Autowired 
+        BasicSimpleDbUserRepository repository;
 
         @Test
         public void sampleTestCase() {
@@ -129,6 +161,29 @@ Write a test client:
             Assert.notNull(repository.findAll());
         }
     }
+    
+Or write a test client using the SimpleDb template:
+
+    @RunWith(SpringJUnit4ClassRunner.class)
+    @ContextConfiguration(locations = "classpath:simpledb-configured-template-context.xml")
+    public class SimpleDbTemplateTest {
+        @Autowired
+        private SimpleDbOperations operations;
+    
+        @Test
+        public void save_should_persist_single_item() {
+            String itemName = "FirstItem";
+    
+        	SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
+    		operations.createOrUpdate(user);
+    		
+    		SimpleDbUser foundUser = operations.read(user.getItemName(), user.getClass());
+    
+    		assertEquals(user.getItemName(), foundUser.getItemName());
+    		assertEquals(user, foundUser);
+    	}
+    }
+If only the template is used for working with SimpleDb, no repository should be defined in .xml configuration file. 
 
 ### Using custom queries ###
 SimpleDb native queries can be run using a custom **@Query** annotation.
@@ -190,19 +245,231 @@ The field representing the id of the entity will be replace in select and where 
     
 
 ### Paging ###
-We support pagination by extending the **PagingAndSortingRepository** which provides a `Page<T> findAll(Pagealbe pageable)` method. Otherwise, you can also define the findAll method in any repository. The following repository defines the findAll paged query:
+We support pagination by extending the **PagingAndSortingRepository** which provides a `Page<T> findAll(Pageable pageable)` method. Otherwise, you can also define the findAll method in any repository. The following repository defines the findAll paged query:
 
     public interface MyRepository extends Repository<SimpleDbUser, String> {
         Page<SimpleDbUser> findAll(Pageable pageable);
     }
 
-Moreover, any custom annotated query can be paginated by simply adding a **Pagealbe** parameter to the query method's signature. The parameter must be placed after the mandatory parameters and the method's return type can be only `Page<T>` or `List<T>`. The following example depicts a few different query methods:
+Moreover, any custom annotated query can be paginated by simply adding a **Pageable** parameter to the query method's signature. The parameter must be placed after the mandatory parameters and the method's return type can be only `Page<T>` or `List<T>`. The following example depicts a few different query methods:
 
     @Query(value = "select * from `testDB.simpleDbUser` where primitiveField > ?")
     Page<SimpleDbUser> findUsers(float primitiveField, Pageable page);
 
     @Query(value = "select * from `testDB.simpleDbUser` where primitiveField > ?")
     List<SimpleDbUser> findUsersList(float primitiveField, Pageable page);
+
+### @Configuration ###
+
+Besides XML configuration, SimpleDb supports also Java based configuration. This means user can create classes annotated with @Configuration and produce beans later to be managed by the Spring container. 
+
+SimpleDb contains an abstract class called **AbstractSimpleDbConfiguration**. The class will configure the simpleDbTemplate bean. It contains one abstract method **getAWSCredentials** the user needs to implement providing the credentials(accessKey and secretId) for the AmazonDB. The remaining properties such as policy,  consistentRead,  domainPrefix can be set overrring the **setExtraProperties** method.
+
+In order to use this java based configuration class the user must create his own configuration class:
+
+    @Configuration
+    public class SampleConfiguration extends AbstractSimpleDBConfiguration {
+
+        @Override
+        public AWSCredentials getAWSCredentials() {
+            return new AWSCredentials("sampleAccessId", "sampleSecretKey");
+        }
+       
+        @Override
+         public void setExtraProperties(SimpleDb simpleDb) {
+	    	simpleDb.setConsistentRead(true);
+	    	simpleDb.setDomainPrefix(HostNameResolver.readHostname() + "testDB");
+    	}
+    }
+  
+The test client code will look like this:
+
+    @RunWith(SpringJUnit4ClassRunner.class)
+    @ContextConfiguration(classes = SampleConfiguration.class)
+    public class SampleConfigurationTest {
+
+        @Autowired
+        private SimpleDbTemplate template;
+
+        @Test
+        public void testConfig() {
+            assertNotNull(template);
+       }
+    }
+The test client code needs to contain the **@ContextConfiguration** annotation for specifying which configuration class is to be used.
+
+
+If the user wants to manipulate by himself the producing of the beans he is able to create his own configuration class without exteding the AbstractSimpleDbConfiguration class. 
+
+Here is an example with producing 2 simpleDbTemplates beans:
+
+    @Configuration
+    public class MySimpleDbConfiguration {
+
+        @Bean
+	    public SimpleDbTemplate simpleDBTemplate1(){
+             SimpleDb simpleDb = new SimpleDb("foo1","bar1"); 
+             simpleDb.setConsistentRead(true);
+             simpleDb.setDomainPrefix("testDB_1");
+             simpleDb.setDomainManagementPolicy("DROP_CREATE");
+             simpleDb.afterPropertiesSet();
+             return new SimpleDbTemplate(simpleDb);
+            
+         }
+         
+        @Bean
+        public SimpleDbTemplate simpleDBTemplate2(){
+             SimpleDb simpleDb = new SimpleDb("foo2","bar2"); 
+             simpleDb.setConsistentRead(true);
+             simpleDb.setDomainPrefix("testDB_2");
+             simpleDb.afterPropertiesSet();
+             return new SimpleDbTemplate(simpleDb);
+         }
+      }     
+    
+And the test client code:
+
+    @RunWith(SpringJUnit4ClassRunner.class)
+    @ContextConfiguration(classes = MySimpleDbConfiguration.class)
+    public class MyClass {
+
+        @Autowired
+        private SimpleDbTemplate simpleDBTemplate1;
+
+         @Autowired
+        private SimpleDbTemplate simpleDBTemplate2;
+    }
+    
+As a note, user need to call also **afterPropertiesSet** method after the simpleDb object it's created, for extra processing.    
+
+### @EnableSimpleDbRepositories ###
+
+Part of Java based configuration is also @EnableSimpleDbRepositories which offers support for activate the simpleDbRepositories. Instead of using an XML containg the element:
+
+    <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
+simply use the annotation and repositories will be loaded.
+
+Below is an example:
+
+    @RunWith(SpringJUnit4ClassRunner.class)
+    @ContextConfiguration
+    public class EnableSimpleDBRepositoriesAnnotationTest {
+
+        @Configuration
+	    @EnableSimpleDBRepositories(basePackages = "org.springframework.data.simpledb.sample.simpledb.repository")
+	    static class Config {
+
+		    @Bean
+		    public SimpleDbOperations simpleDBTemplate() throws Exception {
+			    SimpleDb simpleDb = new SimpleDb("AKIAIVX775TRPPSZTEMQ", "Nzy6w0iq8JI+DHgdiPPiuqixiMoWQmPhWFgQzOZY");
+			    simpleDb.setConsistentRead(true);
+			    simpleDb.setDomainPrefix(HostNameResolver.readHostname() + "testDB");
+			    simpleDb.afterPropertiesSet();
+			    return new SimpleDbTemplate(simpleDb);
+		}
+	    }
+
+	    @Autowired
+	    BasicSimpleDbUserRepository userRepository;
+
+	    @Test
+	    public void enable_repositories_should_be_used_by_core_spring_data() {
+		    assertNotNull(userRepository);
+	    }
+}
+
+
+
+### @Reference ###
+We support spring-data-core standard @Reference annotation. 
+For each object annotated with @Reference, a new domain will be created and the object will be serialized into that domain. 
+In terms of SimpleDB, @Reference is suported for fields that are not primitives or primitive wrappers and don't contain the @Id annotation. 
+
+SimpleDBTemplate methods like createOrUpdate(), delete() check if entities contain @Reference annotations.
+If a field is annotated with this annotation, it will be validated. Furthermore, if domain update policy is not NONE, SimpleDbTemplate will create a separate domain for the field. 
+
+For example let's check the following class with nested objects annotated with @Reference:
+
+    public class SimpleDbReferences {
+
+        @Id
+        private String itemName;
+
+    	@Reference
+	    private FirstNestedEntity firstNestedEntity;
+	
+        public String getItemName() {
+            return itemName;
+        }
+
+        public void setItemName(String itemName) {
+            this.itemName = itemName;
+        }
+    
+        public FirstNestedEntity getFirstNestedEntity() {
+            return firstNestedEntity;
+        }
+
+        public void setFirstNestedEntity(FirstNestedEntity firstNestedEntity) {
+            this.firstNestedEntity = firstNestedEntity;
+    }
+    
+    public static class FirstNestedEntity {
+
+        @Id
+    	private String itemName;
+        
+        @Reference
+    	private SecondNestedEntity secondNestedEntity;
+        
+        public String getItemName() {
+            return itemName;
+        }
+
+        public void setItemName(String itemName) {
+            this.itemName = itemName;
+         }
+    	
+        public SecondNestedEntity getSecondNestedEntity() {
+            return secondNestedEntity;
+        }
+
+        public void setSecondNestedEntity(SecondNestedEntity secondNestedEntity) {
+            this.secondNestedEntity = secondNestedEntity;
+        }        
+      }   
+      
+     public static class SecondNestedEntity {
+      
+        @Id
+    	private String itemName;   
+        
+        public String getItemName() {
+         return itemName;
+        }
+
+         public void setItemName(String itemName) {
+            this.itemName = itemName;
+        }
+        
+    }
+    
+and the following code which creates the entities:
+
+    SimpleDbReferences ref = new SimpleDbReferences();
+    FirstNestedEntity first = new FirstNestedEntity();
+    SecondNestedEntity second = new SecondNestedEntity();
+    first.setItemName("first");
+    second.setItemName("second");
+    ref.setFirstNestedEntity(first);
+    first.setSecondNestedEntity(second);
+    
+After calling createOrUpdate method of the SimpleDbTemplate three domains will be created : testDB.simpleDbReferences, testDB.firstNestedEntity and testDB.secondNestedEntity. 
+
+The links between the domains are specified via SimpleDB attributes as shown bellow:
+
+    testDB.simpleDbReferences.firstNestedEntity = "first"
+    testDB.firstNestedEntity.secondNestedEntity = "second"
 
 ## Known Limitations ##
 
@@ -220,6 +487,9 @@ To overcome this issue, the attribute values exceeding the length limit are spli
 ### Primitive field conversions ###
 
 The current version supports converting all primitive types but *Character*. More that that, *Float.MIN_VALUE* and *Double.MIN_VALUE* cannot be converted accurately.
+
+### Delete
+Both in the repository and the template, a method to delete an entity by ID is provided. Using this method will not cascade the deletion in case of @Reference attributes.
 
 ### Custom select
 Methods annotated with @Query can run custom SimpleDb valid queries.
@@ -256,5 +526,12 @@ Currently, paginating partial annotated queries will return a collection of the 
 
     @Query(value = "select primitiveField from `testDB.simpleDbUser`")
     List<SimpleDbUser> pagedPartialQuery(Pageable page);
+    
+### Reference
+Currently, @Reference serialization and deserialization is not supported for custom queries: fields marked with @Reference annotations are not allowed in the where clause of a custom query.
 
-DEV_NOTES: Please use http://dillinger.io/ when editing this file
+### Design notes
+[Repository Generation sequence diagram](http://www.websequencediagrams.com/?lz=dGl0bGUgUmVwb3NpdG9yeSBHZW5lcmF0aW9uCgpDbGllbnQtLT5TcHJpbmdEYXRhQ29yZToAHQhlIG15IHIANAhpZXMKbm90ZSByaWdodCBvZiBTaW1wbGVEYk9wAEwHczoAARMgaW50ZXJmYWNlXG5oYXMgYSBzaW5nbGUgY29uY3JldGUgAEIFbWVudACBEwVcbigAUQhUZW1wbGF0ZS5jbGFzcylcbnNpbWlsYXIgd2l0aCBIaWJlcm5hdGUAHwgKCgCBOw4tPgCBDhRpbnN0YW50aQAUHQCCKApGYWN0b3J5AH0GADENAIEeCQCBdgopCgpsb29wIEZvciBlYWNoIGphdmEgZmlsZSBpbgCCQQp5IHBhY2thZ2UAgR8SAIJ7D3BhcnMAgzQMTWV0YWRhdGEAggwGAIEOMmdldFRhcmdldACECQooAEwSKQoAgWkfAIQiEgCCJxJJbXBsCmVuZACDBRAtPgCEcgY6AIRODCByZWFkeSBmb3IgQEF1dG93aXJl&s=rose) 
+
+
+DEV_NOTES: Please use [Dillinger](http://dillinger.io/) when editing this file

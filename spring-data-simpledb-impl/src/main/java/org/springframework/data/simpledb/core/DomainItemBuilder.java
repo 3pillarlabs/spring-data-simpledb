@@ -1,6 +1,5 @@
 package org.springframework.data.simpledb.core;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,19 +12,29 @@ import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.SelectResult;
 
-public class DomainItemBuilder<T, ID extends Serializable> {
+public class DomainItemBuilder<T> {
 
-	public List<T> populateDomainItems(SimpleDbEntityInformation<T, ID> entityInformation, SelectResult selectResult) {
+	public List<T> populateDomainItems(SimpleDbEntityInformation<T, ?> entityInformation, SelectResult selectResult) {
 		final List<T> allItems = new ArrayList<T>();
 
 		for(Item item : selectResult.getItems()) {
-			allItems.add(buildDomainItem(entityInformation, item));
+			allItems.add(populateDomainItem(entityInformation, item));
 		}
 
 		return allItems;
 	}
 
-	public T buildDomainItem(SimpleDbEntityInformation<T, ID> entityInformation, Item item) {
+    /**
+     * Used during deserialization process, each item being populated based on attributes retrieved from DB
+     * @param entityInformation
+     * @param item
+     * @return T the Item Instance
+     */
+	public T populateDomainItem(SimpleDbEntityInformation<T, ?> entityInformation, Item item) {
+		return buildDomainItem(entityInformation, item);
+	}
+
+	private T buildDomainItem(SimpleDbEntityInformation<T, ?> entityInformation, Item item) {
 		EntityWrapper entity = new EntityWrapper(entityInformation);
 
 		entity.setId(item.getName());

@@ -1,18 +1,19 @@
 package org.springframework.data.simpledb.query;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-
-import java.lang.reflect.Method;
-import java.util.List;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.simpledb.annotation.Query;
+import org.springframework.data.simpledb.core.SimpleDbDomain;
 import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+
+import java.lang.reflect.Method;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 public class SimpleDbIndexByQueryMethodBindedTest {
 
@@ -63,6 +64,7 @@ public class SimpleDbIndexByQueryMethodBindedTest {
 
 		Method testMethod = AnnotatedQueryRepository.class.getMethod(methodName);
 		when(repositoryMetadata.getReturnedDomainClass(testMethod)).thenReturn((Class) entityClass);
-		return new SimpleDbQueryMethod(testMethod, repositoryMetadata);
+		SimpleDbDomain simpleDbDomain = new SimpleDbDomain();
+		return new SimpleDbQueryMethod(testMethod, repositoryMetadata, simpleDbDomain);
 	}
 }

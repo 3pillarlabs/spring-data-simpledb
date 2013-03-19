@@ -8,7 +8,7 @@
         <module name="FileContentsHolder"/>
         <module name="CyclomaticComplexity">
             <property name="severity" value="warning"/>
-            <property name="max" value="10"/>
+            <property name="max" value="13"/>
         </module>
         <module name="HiddenField">
             <property name="severity" value="warning"/>
@@ -135,5 +135,8 @@
             <property name="ignoreHashCodeMethod" value="false"/>
             <property name="ignoreAnnotation" value="false"/>
         </module>
+    </module>
+    <module name="SuppressionFilter">
+        <property name="file" value="./etc/check-style-suppressions.xml" />
     </module>
 </module>

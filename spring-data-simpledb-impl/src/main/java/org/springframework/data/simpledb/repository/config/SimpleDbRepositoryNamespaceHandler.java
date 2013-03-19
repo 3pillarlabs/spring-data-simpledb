@@ -17,6 +17,5 @@ public class SimpleDbRepositoryNamespaceHandler extends NamespaceHandlerSupport 
 		RepositoryBeanDefinitionParser repositoryBeanDefinitionParser = new RepositoryBeanDefinitionParser(extension);
 
 		registerBeanDefinitionParser("repositories", repositoryBeanDefinitionParser);
-		registerBeanDefinitionParser("config", new SimpleDbConfigParser());
 	}
 }

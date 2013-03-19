@@ -15,7 +15,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-repository-context.xml")
-// @Ignore(value = "work in progress")
 public class BasicSimpleDbUserConsistentExtendedRepositoryTest {
 
 	@Autowired
@@ -27,19 +26,6 @@ public class BasicSimpleDbUserConsistentExtendedRepositoryTest {
 		repository.deleteAll(true);
 	}
 
-	@Test
-	public void consistent_find_should_return_updated_item_with_no_delay() {
-		String itemName = "FirstItem";
-
-		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
-		repository.save(user, true);
-
-		SimpleDbUser findOneResult = repository.findOne(itemName, true);
-		assertNotNull(findOneResult);
-
-		repository.delete(itemName, true);
-		assertNull(repository.findOne(itemName, true));
-	}
 
 	@Test
 	public void consistent_count_should_return_total_number_of_item_with_no_delay() {

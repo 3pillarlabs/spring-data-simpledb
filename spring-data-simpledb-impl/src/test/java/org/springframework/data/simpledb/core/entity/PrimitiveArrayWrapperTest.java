@@ -8,8 +8,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.junit.Test;
 import org.springframework.data.simpledb.core.entity.util.AttributeUtil;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
+import org.springframework.data.simpledb.util.EntityInformationSupport;
 
 public class PrimitiveArrayWrapperTest {
 
@@ -19,12 +18,12 @@ public class PrimitiveArrayWrapperTest {
 		primitivesArray.longPrimitives = new long[] { 123L, 234L, 345L };
 
 		EntityWrapper<SamplePrimitivesArray, String> sdbEntity = new EntityWrapper<SamplePrimitivesArray, String>(
-				this.<SamplePrimitivesArray> readEntityInformation(SamplePrimitivesArray.class), primitivesArray);
+				EntityInformationSupport.readEntityInformation(SamplePrimitivesArray.class), primitivesArray);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		/* convert back */
 		final EntityWrapper<SamplePrimitivesArray, String> convertedEntity = new EntityWrapper<SamplePrimitivesArray, String>(
-				this.<SamplePrimitivesArray> readEntityInformation(SamplePrimitivesArray.class));
+				EntityInformationSupport.readEntityInformation(SamplePrimitivesArray.class));
 		convertedEntity.deserialize(attributes);
 
 		assertTrue(primitivesArray.equals(convertedEntity.getItem()));
@@ -38,12 +37,12 @@ public class PrimitiveArrayWrapperTest {
 
 		/* ----------------------- Serialize Representation ------------------------ */
 		EntityWrapper<SamplePrimitivesArray, String> sdbEntity = new EntityWrapper<SamplePrimitivesArray, String>(
-				this.<SamplePrimitivesArray> readEntityInformation(SamplePrimitivesArray.class), primitivesArray);
+				EntityInformationSupport.readEntityInformation(SamplePrimitivesArray.class), primitivesArray);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		/* ----------------------- De-serialize Representation ------------------------ */
 		final EntityWrapper<SamplePrimitivesArray, String> convertedEntity = new EntityWrapper<SamplePrimitivesArray, String>(
-				this.<SamplePrimitivesArray> readEntityInformation(SamplePrimitivesArray.class));
+				EntityInformationSupport.readEntityInformation(SamplePrimitivesArray.class));
 		convertedEntity.deserialize(attributes);
 
 		assertTrue(primitivesArray.equals(convertedEntity.getItem()));
@@ -61,7 +60,7 @@ public class PrimitiveArrayWrapperTest {
 
 		/* ----------------------- Serialize Representation ------------------------ */
 		EntityWrapper<SamplePrimitivesArray, String> sdbEntity = new EntityWrapper<SamplePrimitivesArray, String>(
-				this.<SamplePrimitivesArray> readEntityInformation(SamplePrimitivesArray.class), primitivesArray);
+				EntityInformationSupport.readEntityInformation(SamplePrimitivesArray.class), primitivesArray);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		assertTrue(attributes.size() == 1);
@@ -71,10 +70,6 @@ public class PrimitiveArrayWrapperTest {
 			assertTrue(attributes.containsKey(attributeName));
 		}
 
-	}
-
-	private <E> SimpleDbEntityInformation<E, String> readEntityInformation(Class<E> clazz) {
-		return (SimpleDbEntityInformation<E, String>) SimpleDbEntityInformationSupport.<E> getMetadata(clazz);
 	}
 
 	public static class SamplePrimitivesArray {

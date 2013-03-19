@@ -39,6 +39,8 @@ public class FieldTypeIdentifier {
 			return FieldType.MAP;
 		} else if(FieldType.NESTED_ENTITY.isOfType(field)) {
 			return FieldType.NESTED_ENTITY;
+		} else if(FieldType.REFERENCE_ENTITY.isOfType(field)) {
+			return FieldType.REFERENCE_ENTITY;
 		}
 
 		return FieldType.OBJECT;

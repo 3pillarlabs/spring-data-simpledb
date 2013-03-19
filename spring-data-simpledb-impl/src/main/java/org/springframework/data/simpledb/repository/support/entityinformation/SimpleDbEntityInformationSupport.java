@@ -21,17 +21,14 @@ import org.springframework.data.repository.core.support.AbstractEntityInformatio
 import org.springframework.util.Assert;
 
 /**
- * Base class for {@link org.springframework.data.jpa.repository.support.JpaEntityInformation} implementations to share
- * common method implementations.
+ * Base class for {@link SimpleDbEntityInformation} implementations to share common method implementations.
  * 
- * @author Oliver Gierke
  */
 public abstract class SimpleDbEntityInformationSupport<T, ID extends Serializable> extends
 		AbstractEntityInformation<T, ID> implements SimpleDbEntityInformation<T, ID> {
 
 	/**
-	 * Creates a new {@link org.springframework.data.jpa.repository.support.JpaEntityInformationSupport} with the given
-	 * domain class.
+	 * Creates a new {@link SimpleDbEntityInformationSupport} with the given domain class.
 	 * 
 	 * @param domainClass
 	 *            must not be {@literal null}.
@@ -42,19 +39,18 @@ public abstract class SimpleDbEntityInformationSupport<T, ID extends Serializabl
 	}
 
 	/**
-	 * Creates a {@link org.springframework.data.jpa.repository.support.JpaEntityInformation} for the given domain class
-	 * and {@link javax.persistence.EntityManager}.
+	 * Creates a {@link SimpleDbEntityInformation} for the given domain class.
 	 * 
 	 * @param domainClass
 	 *            must not be {@literal null}.
 	 * @return
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T> SimpleDbEntityInformation<T, ?> getMetadata(Class<T> domainClass) {
-
+	public static <T> SimpleDbEntityInformation<T, ?> getMetadata(Class<T> domainClass, String simpleDbDomain) {
 		Assert.notNull(domainClass);
+		Assert.notNull(simpleDbDomain);
 
-		return new SimpleDbMetamodelEntityInformation(domainClass);
+		return new SimpleDbMetamodelEntityInformation(domainClass, simpleDbDomain);
 	}
 
 }

@@ -1,13 +1,10 @@
 package org.springframework.data.simpledb.query.executions;
 
-import java.io.Serializable;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.query.QueryUtils;
 import org.springframework.data.simpledb.query.SimpleDbQueryMethod;
 import org.springframework.data.simpledb.query.SimpleDbQueryRunner;
-import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
 import org.springframework.util.Assert;
 
 /**
@@ -16,23 +13,22 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractSimpleDbQueryExecution {
 
-	private final SimpleDbOperations<?, Serializable> simpledbOperations;
+	private final SimpleDbOperations simpledbOperations;
 
-	public AbstractSimpleDbQueryExecution(SimpleDbOperations<?, Serializable> simpleDbOperations) {
+	public AbstractSimpleDbQueryExecution(SimpleDbOperations simpleDbOperations) {
 		this.simpledbOperations = simpleDbOperations;
 	}
 
-	public Object execute(SimpleDbRepositoryQuery repositoryQuery, Object[] parameterValues) {
-		Assert.notNull(repositoryQuery);
+	public Object execute(SimpleDbQueryMethod queryMethod, Object[] parameterValues) {
+		Assert.notNull(queryMethod);
 		Assert.notNull(parameterValues);
 
 		// Demeter's Law
-		QueryUtils.validateBindParametersCount(repositoryQuery.getQueryParameters(), parameterValues);
-		QueryUtils.validateBindParametersTypes(repositoryQuery.getQueryParameters(), parameterValues);
+		QueryUtils.validateBindParametersCount(queryMethod.getParameters(), parameterValues);
+		QueryUtils.validateBindParametersTypes(queryMethod.getParameters(), parameterValues);
 
-		SimpleDbQueryMethod queryMethod = (SimpleDbQueryMethod) repositoryQuery.getQueryMethod();
 		Class<?> domainClass = queryMethod.getDomainClazz();
-		String query = QueryUtils.bindQueryParameters(repositoryQuery, domainClass, parameterValues);
+		String query = QueryUtils.bindQueryParameters(queryMethod, domainClass, parameterValues);
 
 		SimpleDbQueryRunner queryRunner;
 
@@ -44,7 +40,7 @@ public abstract class AbstractSimpleDbQueryExecution {
 			queryRunner = new SimpleDbQueryRunner(simpledbOperations, domainClass, query);
 		}
 
-		return doExecute(repositoryQuery, queryRunner);
+		return doExecute(queryMethod, queryRunner);
 	}
 
 	private Pageable getPageableParamValue(Object[] values) {
@@ -59,6 +55,6 @@ public abstract class AbstractSimpleDbQueryExecution {
 		return pageable;
 	}
 
-	protected abstract Object doExecute(SimpleDbRepositoryQuery query, SimpleDbQueryRunner queryRunner);
+	protected abstract Object doExecute(SimpleDbQueryMethod queryMethod, SimpleDbQueryRunner queryRunner);
 
 }

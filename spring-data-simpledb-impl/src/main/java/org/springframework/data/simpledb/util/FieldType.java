@@ -92,7 +92,18 @@ public enum FieldType {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-			return !isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, COLLECTION, PRIMITIVE_ARRAY, MAP, OBJECT);
+			return !isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, COLLECTION, PRIMITIVE_ARRAY, MAP, OBJECT,
+					REFERENCE_ENTITY);
+		}
+	},
+
+	REFERENCE_ENTITY {
+
+		@Override
+		boolean isOfType(Field field) {
+			Assert.notNull(field);
+
+			return ReflectionUtils.isReference(field);
 		}
 	};
 
@@ -100,7 +111,8 @@ public enum FieldType {
 
 	public static FieldType[] getSerializableFieldTypes() {
 		return new FieldType[] { FieldType.PRIMITIVE, FieldType.CORE_TYPE, FieldType.NESTED_ENTITY,
-				FieldType.COLLECTION, FieldType.PRIMITIVE_ARRAY, FieldType.MAP, FieldType.OBJECT };
+				FieldType.REFERENCE_ENTITY, FieldType.COLLECTION, FieldType.PRIMITIVE_ARRAY, FieldType.MAP,
+				FieldType.OBJECT };
 	}
 
 	static boolean isOfType(final Class<?> fieldType, final Set<Class<?>> supportedTypes) {

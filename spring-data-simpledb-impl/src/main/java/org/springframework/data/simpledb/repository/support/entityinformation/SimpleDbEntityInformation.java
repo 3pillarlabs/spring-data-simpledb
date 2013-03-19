@@ -15,16 +15,17 @@
  */
 package org.springframework.data.simpledb.repository.support.entityinformation;
 
-import org.springframework.data.repository.core.EntityInformation;
-
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
+
+import org.springframework.data.repository.core.EntityInformation;
 
 /**
  * Extension of {@link org.springframework.data.repository.core.EntityInformation} to capture aditional JPA specific
  * information about entities.
  * 
- * @author Oliver Gierke
  */
 public interface SimpleDbEntityInformation<T, ID extends Serializable> extends EntityInformation<T, ID>,
 		SimpleDBEntityMappingInformation<T> {
@@ -34,4 +35,6 @@ public interface SimpleDbEntityInformation<T, ID extends Serializable> extends E
 	String getItemName(T entity);
 
 	Map<String, String> getAttributes(T entity);
+
+	void validateReferenceFields(List<Field> referenceFields);
 }

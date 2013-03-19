@@ -10,8 +10,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.junit.Test;
 import org.springframework.data.simpledb.core.entity.util.AttributeUtil;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
+import org.springframework.data.simpledb.util.EntityInformationSupport;
 
 public class MapWrapperTest {
 
@@ -22,12 +21,12 @@ public class MapWrapperTest {
 		simpleMap.getMapOfByte().put(Byte.valueOf("1"), Byte.valueOf("1"));
 
 		EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(
-				this.<SampleCoreMap> readEntityInformation(SampleCoreMap.class), simpleMap);
+				EntityInformationSupport.readEntityInformation(SampleCoreMap.class), simpleMap);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		/* convert back */
 		final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<SampleCoreMap, String>(
-				this.<SampleCoreMap> readEntityInformation(SampleCoreMap.class));
+				EntityInformationSupport.readEntityInformation(SampleCoreMap.class));
 		convertedEntity.deserialize(attributes);
 
 		SampleCoreMap returnedMap = convertedEntity.getItem();
@@ -41,12 +40,12 @@ public class MapWrapperTest {
 		simpleMap.getMapOfStrings().put("first", "firstValue");
 
 		EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(
-				this.<SampleCoreMap> readEntityInformation(SampleCoreMap.class), simpleMap);
+				EntityInformationSupport.readEntityInformation(SampleCoreMap.class), simpleMap);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		/* convert back */
 		final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<SampleCoreMap, String>(
-				this.<SampleCoreMap> readEntityInformation(SampleCoreMap.class));
+				EntityInformationSupport.readEntityInformation(SampleCoreMap.class));
 		convertedEntity.deserialize(attributes);
 
 		assertTrue(simpleMap.equals(convertedEntity.getItem()));
@@ -58,12 +57,12 @@ public class MapWrapperTest {
 		SampleCoreMap simpleMap = new SampleCoreMap();
 
 		EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(
-				this.<SampleCoreMap> readEntityInformation(SampleCoreMap.class), simpleMap);
+				EntityInformationSupport.readEntityInformation(SampleCoreMap.class), simpleMap);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		/* convert back */
 		final EntityWrapper<SampleCoreMap, String> convertedEntity = new EntityWrapper<SampleCoreMap, String>(
-				this.<SampleCoreMap> readEntityInformation(SampleCoreMap.class));
+				EntityInformationSupport.readEntityInformation(SampleCoreMap.class));
 		convertedEntity.deserialize(attributes);
 
 		assertTrue(simpleMap.equals(convertedEntity.getItem()));
@@ -80,7 +79,7 @@ public class MapWrapperTest {
 
 		/* ----------------------- Serialize Representation ------------------------ */
 		EntityWrapper<SampleCoreMap, String> sdbEntity = new EntityWrapper<SampleCoreMap, String>(
-				this.<SampleCoreMap> readEntityInformation(SampleCoreMap.class), simpleMap);
+				EntityInformationSupport.readEntityInformation(SampleCoreMap.class), simpleMap);
 		final Map<String, String> attributes = sdbEntity.serialize();
 
 		assertTrue(attributes.size() == 2);
@@ -90,10 +89,6 @@ public class MapWrapperTest {
 			assertTrue(attributes.containsKey(attributeName));
 		}
 
-	}
-
-	private <E> SimpleDbEntityInformation<E, String> readEntityInformation(Class<E> clazz) {
-		return (SimpleDbEntityInformation<E, String>) SimpleDbEntityInformationSupport.<E> getMetadata(clazz);
 	}
 
 	public static class SampleCoreMap {
