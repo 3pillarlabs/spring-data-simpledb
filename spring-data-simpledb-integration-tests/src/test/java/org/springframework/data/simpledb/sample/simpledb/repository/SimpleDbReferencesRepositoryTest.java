@@ -1,8 +1,10 @@
 package org.springframework.data.simpledb.sample.simpledb.repository;
 
-import static org.junit.Assert.*;
-
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 import java.util.List;
 
@@ -36,9 +38,9 @@ public class SimpleDbReferencesRepositoryTest {
 	@Before
 	public void tearDown() {
 		repository.deleteAll();
-		
+
 		operations.deleteAll(SecondNestedEntity.class);
-		operations.deleteAll(FirstNestedEntity.class);	
+		operations.deleteAll(FirstNestedEntity.class);
 	}
 
 	@Test
@@ -60,60 +62,85 @@ public class SimpleDbReferencesRepositoryTest {
 	@Test
 	public void should_persist_reference_entities_in_separate_domains() {
 		final SimpleDbReferences domainEntity = new SimpleDbReferences();
-		
+
 		final FirstNestedEntity nestedEntity1 = new FirstNestedEntity();
 		nestedEntity1.setItemName("nested_entity_1");
-		
+
 		final SecondNestedEntity nestedEntity2 = new SecondNestedEntity();
-		
+
 		nestedEntity1.setSecondNestedEntity(nestedEntity2);
-		
+
 		domainEntity.setFirstNestedEntity(nestedEntity1);
-		
+
 		repository.save(domainEntity);
-		
+
 		final SimpleDbReferences foundReferences = repository.findOne(domainEntity.getItemName());
-		final FirstNestedEntity foundFirstNestedEntity = operations.read(nestedEntity1.getItemName(), FirstNestedEntity.class);
-		final SecondNestedEntity foundSecondNestedEntity = operations.read(nestedEntity2.getItemName(), SecondNestedEntity.class);
-		
-		/* 
-		 * We haven't implemented deserialization for reference attributes, therefore we are testing for 
-		 * ID equalito only. This proves that they were saved in separate domains!
+		final FirstNestedEntity foundFirstNestedEntity = operations.read(nestedEntity1.getItemName(),
+				FirstNestedEntity.class);
+		final SecondNestedEntity foundSecondNestedEntity = operations.read(nestedEntity2.getItemName(),
+				SecondNestedEntity.class);
+
+		/*
+		 * We haven't implemented deserialization for reference attributes, therefore we are testing for ID equalito
+		 * only. This proves that they were saved in separate domains!
 		 */
 		assertNotNull(foundReferences);
 		assertEquals(domainEntity.getItemName(), foundReferences.getItemName());
-		
+
 		assertNotNull(foundFirstNestedEntity);
 		assertEquals(nestedEntity1.getItemName(), foundFirstNestedEntity.getItemName());
-		
+
 		assertNotNull(foundSecondNestedEntity);
 		assertEquals(nestedEntity2.getItemName(), foundSecondNestedEntity.getItemName());
 		assertEquals(nestedEntity2.getPrimitive(), foundSecondNestedEntity.getPrimitive());
 	}
-	
+
 	@Test
 	public void should_cascade_delete_on_reference_entities() {
 		final SimpleDbReferences domainEntity = new SimpleDbReferences();
-		
+
 		final FirstNestedEntity nestedEntity1 = new FirstNestedEntity();
 		nestedEntity1.setItemName("nested_entity_1");
-		
+
 		final SecondNestedEntity nestedEntity2 = new SecondNestedEntity();
-		
+
 		nestedEntity1.setSecondNestedEntity(nestedEntity2);
-		
+
 		domainEntity.setFirstNestedEntity(nestedEntity1);
-		
+
 		final SimpleDbReferences savedEntity = repository.save(domainEntity);
-		
+
 		repository.delete(savedEntity);
-		
+
 		final SimpleDbReferences foundReferences = repository.findOne(domainEntity.getItemName());
-		final FirstNestedEntity foundFirstNestedEntity = operations.read(nestedEntity1.getItemName(), FirstNestedEntity.class);
-		final SecondNestedEntity foundSecondNestedEntity = operations.read(nestedEntity2.getItemName(), SecondNestedEntity.class);
-	
+		final FirstNestedEntity foundFirstNestedEntity = operations.read(nestedEntity1.getItemName(),
+				FirstNestedEntity.class);
+		final SecondNestedEntity foundSecondNestedEntity = operations.read(nestedEntity2.getItemName(),
+				SecondNestedEntity.class);
+
 		assertNull(foundReferences);
 		assertNull(foundFirstNestedEntity);
 		assertNull(foundSecondNestedEntity);
+	}
+
+	@Test
+	public void should_deserialize_nested_references() {
+		final SimpleDbReferences domainEntity = new SimpleDbReferences();
+
+		final FirstNestedEntity nestedEntity1 = new FirstNestedEntity();
+		nestedEntity1.setItemName("nested_entity_1");
+
+		final SecondNestedEntity nestedEntity2 = new SecondNestedEntity();
+
+		nestedEntity1.setSecondNestedEntity(nestedEntity2);
+
+		domainEntity.setFirstNestedEntity(nestedEntity1);
+
+		repository.save(domainEntity);
+
+		final SimpleDbReferences foundParent = repository.findOne(domainEntity.getItemName());
+
+		assertEquals(nestedEntity1, foundParent.getFirstNestedEntity());
+		assertEquals(nestedEntity2, foundParent.getFirstNestedEntity().getSecondNestedEntity());
 	}
 }

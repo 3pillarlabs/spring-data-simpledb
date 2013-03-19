@@ -18,10 +18,14 @@ public class DomainItemBuilder<T> {
 		final List<T> allItems = new ArrayList<T>();
 
 		for(Item item : selectResult.getItems()) {
-			allItems.add(buildDomainItem(entityInformation, item));
+			allItems.add(populateDomainItem(entityInformation, item));
 		}
 
 		return allItems;
+	}
+
+	public T populateDomainItem(SimpleDbEntityInformation<T, ?> entityInformation, Item item) {
+		return buildDomainItem(entityInformation, item);
 	}
 
 	public T buildDomainItem(SimpleDbEntityInformation<T, ?> entityInformation, Item item) {

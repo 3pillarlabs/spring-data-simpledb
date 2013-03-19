@@ -72,13 +72,13 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 		Assert.notNull(entity.getDomain(), "Domain name should not be null");
 
 		manageSimpleDbDomains(entityInformation);
-		
+
 		logOperation("Create or update", entity);
 		entity.generateIdIfNotSet();
-		
-		for(final Field field: entityInformation.getReferenceAttributes(domainItem.getClass())) {
+
+		for(final Field field : entityInformation.getReferenceAttributes(domainItem.getClass())) {
 			final Object referenceEntity = ReflectionUtils.callGetter(domainItem, field.getName());
-			
+
 			/* recursive call */
 			if(referenceEntity != null) {
 				createOrUpdate(referenceEntity);
@@ -105,12 +105,12 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 	@Override
 	public void delete(String domainName, String itemName) {
 		manageSimpleDbDomain(domainName);
-		
+
 		LOGGER.debug("Delete Domain\"{}\" ItemName \"{}\"", domainName, itemName);
 
 		Assert.notNull(domainName, "Domain name should not be null");
 		Assert.notNull(itemName, "Item name should not be null");
-		
+
 		try {
 			simpleDbClient.deleteAttributes(new DeleteAttributesRequest(domainName, itemName));
 		} catch(AmazonClientException amazonException) {
@@ -122,7 +122,7 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 	public <T> void delete(T entity) {
 		delete(entity, simpleDb.isConsistentRead());
 	}
-	
+
 	@Override
 	public <T> void delete(T domainItem, boolean consistentRead) {
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(domainItem.getClass());
@@ -136,19 +136,19 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 						entityInformation.getJavaType(), entity.getItemName()));
 			}
 		}
-		
-		for(final Field field: entityInformation.getReferenceAttributes(domainItem.getClass())) {
+
+		for(final Field field : entityInformation.getReferenceAttributes(domainItem.getClass())) {
 			final Object referenceEntity = ReflectionUtils.callGetter(domainItem, field.getName());
-			
+
 			/* recursive call */
 			if(referenceEntity != null) {
 				delete(referenceEntity, consistentRead);
 			}
 		}
-		
+
 		delete(entity.getDomain(), entity.getItemName());
 	}
-	
+
 	@Override
 	public <T> void deleteAll(Class<T> entityClass) {
 		deleteAll(entityClass, simpleDb.isConsistentRead());
@@ -156,7 +156,7 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 
 	@Override
 	public <T> void deleteAll(Class<T> entityClass, boolean consistentRead) {
-		for(T element: findAll(entityClass, consistentRead)) {
+		for(T element : findAll(entityClass, consistentRead)) {
 			delete(element);
 		}
 	}
@@ -171,7 +171,7 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
 
 		manageSimpleDbDomains(entityInformation);
-		
+
 		LOGGER.debug("Read ItemName \"{}\"", id);
 
 		List<ID> ids = new ArrayList<ID>();
@@ -199,11 +199,11 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 		validateSelectQuery(query);
 
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
-		
+
 		manageSimpleDbDomains(entityInformation);
-		
+
 		final String escapedQuery = getEscapedQuery(query, entityInformation);
-		
+
 		try {
 			final SelectResult selectResult = simpleDbClient.select(new SelectRequest(escapedQuery, consistentRead));
 			for(Item item : selectResult.getItems()) {
@@ -218,7 +218,7 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 		} catch(AmazonClientException amazonException) {
 			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
 		}
-		
+
 		return 0;
 	}
 
@@ -228,7 +228,7 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 		final String countQuery = new QueryBuilder(entityInformation, true).toString();
 
 		manageSimpleDbDomains(entityInformation);
-		
+
 		LOGGER.debug("Count items for query " + countQuery);
 
 		validateSelectQuery(countQuery);
@@ -247,7 +247,7 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 		} catch(AmazonClientException amazonException) {
 			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
 		}
-		
+
 		return 0;
 	}
 
@@ -259,21 +259,49 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 	@Override
 	public <T> List<T> find(Class<T> entityClass, String query, boolean consistentRead) {
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
-		
+
 		manageSimpleDbDomains(entityInformation);
-		
-		final DomainItemBuilder<T> domainItemBuilder = new DomainItemBuilder<T>();
 
 		LOGGER.debug("Find All Domain \"{}\" isConsistent=\"{}\"", entityInformation.getDomain(), consistentRead);
 
 		validateSelectQuery(query);
 
 		final String escapedQuery = getEscapedQuery(query, entityInformation);
-		
-		try {
-			final SelectResult selectResult = simpleDbClient.select(new SelectRequest(escapedQuery, consistentRead));
-			
+
+		List<T> result = new ArrayList<T>();
+
+		List<String> referenceFieldsNames = ReflectionUtils.getReferencedAttributeNames(entityClass);
+
+		final DomainItemBuilder<T> domainItemBuilder = new DomainItemBuilder<T>();
+
+		final SelectResult selectResult = simpleDbClient.select(new SelectRequest(escapedQuery, consistentRead));
+
+		if(referenceFieldsNames.isEmpty()) {
 			return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
+		}
+
+		try {
+
+			for(Item item : selectResult.getItems()) {
+
+				T populatedItem = domainItemBuilder.populateDomainItem(entityInformation, item);
+
+				result.add(populatedItem);
+				for(Attribute attribute : item.getAttributes()) {
+					if(!referenceFieldsNames.contains(attribute.getName())) {
+						continue;
+					}
+
+					Class<?> referenceEntityClazz = ReflectionUtils.getFieldClass(entityClass, attribute.getName());
+					Object referenceEntity = read(attribute.getValue(), referenceEntityClazz);
+
+					ReflectionUtils.callSetter(populatedItem, attribute.getName(), referenceEntity);
+
+				}
+			}
+
+			return result;
+
 		} catch(AmazonClientException amazonException) {
 			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
 		}
@@ -287,9 +315,9 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 	@Override
 	public <T> List<T> findAll(Class<T> entityClass, boolean consistentRead) {
 		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
-		
+
 		manageSimpleDbDomains(entityInformation);
-		
+
 		final String findAllQuery = new QueryBuilder(entityInformation).toString();
 
 		return find(entityClass, findAllQuery);
@@ -327,7 +355,7 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 		}
 
 		final String countQuery = new QueryBuilder(escapedQuery, true).toString();
-		
+
 		Long totalCount = count(countQuery, entityClass, consistentRead);
 
 		return new PageImpl<T>(resultsList, pageable, totalCount);
@@ -337,7 +365,7 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 			boolean consistentRead) {
 
 		manageSimpleDbDomains(entityInformation);
-		
+
 		LOGGER.debug("Find All Domain \"{}\" isConsistent=\"{}\", with token!", entityInformation.getDomain(),
 				consistentRead);
 
@@ -358,7 +386,7 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
 		}
 	}
-	
+
 	private <T> EntityWrapper<T, ?> getEntityWrapper(T domainItem, SimpleDbEntityInformation<T, ?> entityInformation) {
 		final EntityWrapper<T, ?> entityWrapper = new EntityWrapper<T, Serializable>(entityInformation, domainItem);
 
@@ -418,14 +446,14 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 	private void logOperation(String operation, EntityWrapper<?, ?> entity) {
 		LOGGER.debug(operation + " \"{}\" ItemName \"{}\"", entity.getDomain(), entity.getItemName());
 	}
-	
+
 	private <T> void manageSimpleDbDomain(final String domainName) {
 		DomainManager.getInstance().manageDomain(domainName, simpleDb.getDomainManagementPolicy(), simpleDbClient);
 	}
 
 	private <T> void manageSimpleDbDomains(final SimpleDbEntityInformation<T, ?> entityInformation) {
 		List<Field> nestedReferences = ReflectionUtils.getReferenceAttributesList(entityInformation.getJavaType());
-		
+
 		entityInformation.validateReferenceFields(nestedReferences);
 
 		for(Field eachNestedReference : nestedReferences) {
