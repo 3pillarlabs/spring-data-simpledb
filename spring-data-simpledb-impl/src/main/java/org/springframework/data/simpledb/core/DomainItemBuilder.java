@@ -24,11 +24,17 @@ public class DomainItemBuilder<T> {
 		return allItems;
 	}
 
+    /**
+     * Used during deserialization process, each item being populated based on attributes retrieved from DB
+     * @param entityInformation
+     * @param item
+     * @return T the Item Instance
+     */
 	public T populateDomainItem(SimpleDbEntityInformation<T, ?> entityInformation, Item item) {
 		return buildDomainItem(entityInformation, item);
 	}
 
-	public T buildDomainItem(SimpleDbEntityInformation<T, ?> entityInformation, Item item) {
+	private T buildDomainItem(SimpleDbEntityInformation<T, ?> entityInformation, Item item) {
 		EntityWrapper entity = new EntityWrapper(entityInformation);
 
 		entity.setId(item.getName());

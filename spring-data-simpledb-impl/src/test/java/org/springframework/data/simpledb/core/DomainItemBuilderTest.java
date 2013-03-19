@@ -20,20 +20,20 @@ public class DomainItemBuilderTest {
 	private DomainItemBuilder<SimpleDbSampleEntity> domainItemBuilder;
 
 	@Test
-	public void buildDomainItem_should_convert_item_name() {
+	public void populateDomainItem_should_convert_item_name() {
 
 		Item sampleItem = new Item(SAMPLE_ITEM_NAME, new ArrayList<Attribute>());
 		SimpleDbEntityInformation<SimpleDbSampleEntity, String> entityInformation = SimpleDbSampleEntity
 				.entityInformation();
 
 		domainItemBuilder = new DomainItemBuilder<SimpleDbSampleEntity>();
-		SimpleDbSampleEntity returnedDomainEntity = domainItemBuilder.buildDomainItem(entityInformation, sampleItem);
+		SimpleDbSampleEntity returnedDomainEntity = domainItemBuilder.populateDomainItem(entityInformation, sampleItem);
 
 		assertEquals(SAMPLE_ITEM_NAME, returnedDomainEntity.getItemName());
 	}
 
 	@Test
-	public void buildDomainItem_should_convert_attributes() {
+	public void populateDomainItem_should_convert_attributes() {
 		List<Attribute> attributeList = new ArrayList<Attribute>();
 		attributeList.add(new Attribute("booleanField", "" + SAMPLE_BOOLEAN_ATT_VALUE));
 
@@ -42,7 +42,7 @@ public class DomainItemBuilderTest {
 				.entityInformation();
 
 		domainItemBuilder = new DomainItemBuilder<SimpleDbSampleEntity>();
-		SimpleDbSampleEntity returnedDomainEntity = domainItemBuilder.buildDomainItem(entityInformation, sampleItem);
+		SimpleDbSampleEntity returnedDomainEntity = domainItemBuilder.populateDomainItem(entityInformation, sampleItem);
 
 		assertTrue(returnedDomainEntity.getBooleanField() == SAMPLE_BOOLEAN_ATT_VALUE);
 	}
