@@ -103,10 +103,10 @@
                          </rulesets>
                          <failurePriority>3</failurePriority>
                          <verbose>true</verbose>
-                         <includeTests>false</includeTests> 
-          				 <excludeRoots>
-            				 <excludeRoot>src/generated/java</excludeRoot>
-          				 </excludeRoots>
+                         <includeTests>false</includeTests>
+                         <excludes>
+                             <exclude>**\org\springframework\data\simpledb\parser\*.*</exclude>
+                         </excludes>
           			</configuration> 				
 				</plugin>   		  
         </plugins>

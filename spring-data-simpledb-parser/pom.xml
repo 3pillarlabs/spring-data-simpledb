@@ -29,7 +29,7 @@
 					</execution>
 				</executions>
 				<configuration>
-				    <outputDirectory>src/generated/java</outputDirectory>
+				    <outputDirectory>src/main/java</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>

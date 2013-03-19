@@ -136,4 +136,7 @@
             <property name="ignoreAnnotation" value="false"/>
         </module>
     </module>
+    <module name="SuppressionFilter">
+        <property name="file" value="./etc/check-style-suppressions.xml" />
+    </module>
 </module>
