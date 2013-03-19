@@ -37,8 +37,6 @@ public class BasicSimpleDbUserConsistentExtendedRepositoryTest {
 
 		repository.delete(itemName, true);
 		assertEquals(0, repository.count(true));
-		
-		assertEquals(1, 2);
 	}
 
 }
