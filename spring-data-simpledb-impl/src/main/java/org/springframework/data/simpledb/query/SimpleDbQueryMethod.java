@@ -87,6 +87,10 @@ public class SimpleDbQueryMethod extends QueryMethod {
 				simpleDbDomain.getDomain(getDomainClass()));
 	}
 
+	public boolean isAnnotatedQuery() {
+		return method.getAnnotation(Query.class) != null;
+	}
+	
 	/**
 	 * Returns the {@link Query} annotation's attribute casted to the given type or default value if no annotation
 	 * available.

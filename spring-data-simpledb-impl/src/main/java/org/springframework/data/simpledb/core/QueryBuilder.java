@@ -6,6 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.parser.Part;
+import org.springframework.data.repository.query.parser.PartTree;
+import org.springframework.data.repository.query.parser.PartTree.OrPart;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 public class QueryBuilder {
@@ -14,6 +17,20 @@ public class QueryBuilder {
 
 	private StringBuilder query;
 
+	public QueryBuilder(SimpleDbEntityInformation entityInformation, PartTree tree, Object[] parameters) {
+		this(entityInformation, false);
+		
+		for (OrPart node : tree) {
+
+			for (Part part : node) {
+
+				/* and */
+			}
+
+			/* or */
+		}
+	}
+	
 	public QueryBuilder(SimpleDbEntityInformation entityInformation) {
 		this(entityInformation, false);
 	}
