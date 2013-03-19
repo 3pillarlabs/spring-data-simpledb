@@ -98,7 +98,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 
 	@Override
 	public void delete(T entity) {
-		delete(entity, consistentRead);
+		operations.delete(entity, consistentRead);
 	}
 
 	@Override
@@ -176,7 +176,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 			}
 		}
 
-		operations.delete(entityInformation.getDomain(), (String) id);
+operations.delete(entityInformation.getDomain(), (String) id);
 	}
 
 	@Override
@@ -195,6 +195,6 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 
 	@Override
 	public void deleteAll(boolean consistentRead) {
-		operations.deleteAll(entityInformation.getJavaType(), consistentRead);
+operations.deleteAll(entityInformation.getJavaType(), consistentRead);
 	}
 }

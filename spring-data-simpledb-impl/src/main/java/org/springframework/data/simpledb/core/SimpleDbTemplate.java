@@ -18,6 +18,7 @@ import org.springframework.data.simpledb.exception.InvalidSimpleDBQueryException
 import org.springframework.data.simpledb.exception.SimpleDbExceptionTranslator;
 import org.springframework.data.simpledb.parser.SimpleDBParser;
 import org.springframework.data.simpledb.query.QueryUtils;
+import org.springframework.data.simpledb.repository.support.EmptyResultDataAccessException;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 import org.springframework.data.simpledb.util.MetadataParser;
@@ -79,7 +80,9 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 			final Object referenceEntity = ReflectionUtils.callGetter(domainItem, field.getName());
 			
 			/* recursive call */
-			createOrUpdate(referenceEntity);
+			if(referenceEntity != null) {
+				createOrUpdate(referenceEntity);
+			}
 		}
 
 		delete(entity.getDomain(), entity.getItemName());
@@ -116,9 +119,33 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 	}
 
 	@Override
-	public <T> void delete(T domainItem) {
-		final EntityWrapper<T, ?> entity = getEntityWrapper(domainItem);
+	public <T> void delete(T entity) {
+		delete(entity, simpleDb.isConsistentRead());
+	}
+	
+	@Override
+	public <T> void delete(T domainItem, boolean consistentRead) {
+		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(domainItem.getClass());
+		final EntityWrapper<T, ?> entity = getEntityWrapper(domainItem, entityInformation);
 
+		if(consistentRead) {
+			T persistedEntity = read(entity.getItemName(), entityInformation.getJavaType(), consistentRead);
+
+			if(persistedEntity == null) {
+				throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!",
+						entityInformation.getJavaType(), entity.getItemName()));
+			}
+		}
+		
+		for(final Field field: entityInformation.getReferenceAttributes(domainItem.getClass())) {
+			final Object referenceEntity = ReflectionUtils.callGetter(domainItem, field.getName());
+			
+			/* recursive call */
+			if(referenceEntity != null) {
+				delete(referenceEntity, consistentRead);
+			}
+		}
+		
 		delete(entity.getDomain(), entity.getItemName());
 	}
 	
@@ -330,12 +357,6 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 		} catch(AmazonClientException amazonException) {
 			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
 		}
-	}
-	
-	private <T> EntityWrapper<T, ?> getEntityWrapper(T domainItem) {
-		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(domainItem.getClass());
-		
-		return getEntityWrapper(domainItem, entityInformation);
 	}
 	
 	private <T> EntityWrapper<T, ?> getEntityWrapper(T domainItem, SimpleDbEntityInformation<T, ?> entityInformation) {

@@ -26,8 +26,10 @@ public interface SimpleDbOperations {
 	<T> T createOrUpdate(T entity);
 
 	void delete(String domainName, String itemName);
-
+	
 	<T> void delete(T entity);
+	
+	<T> void delete(T entity, boolean consistentRead);
 
 	<T> void deleteAll(Class<T> entityClass);
 	

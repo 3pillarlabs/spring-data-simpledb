@@ -1,15 +1,14 @@
 package org.springframework.data.simpledb.query.executions;
 
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.query.QueryUtils;
 import org.springframework.data.simpledb.query.SimpleDbQueryMethod;
 import org.springframework.data.simpledb.query.SimpleDbQueryRunner;
-import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
 import org.springframework.data.simpledb.query.SimpleDbResultConverter;
 import org.springframework.data.simpledb.util.ReflectionUtils;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * Factory class for creating the appropriate type of execution.
@@ -41,8 +40,7 @@ public class MultipleResultExecution extends AbstractSimpleDbQueryExecution {
 	}
 
 	@Override
-	protected Object doExecute(SimpleDbRepositoryQuery query, SimpleDbQueryRunner queryRunner) {
-		SimpleDbQueryMethod method = (SimpleDbQueryMethod) query.getQueryMethod();
+	protected Object doExecute(SimpleDbQueryMethod method, SimpleDbQueryRunner queryRunner) {
 
 		MultipleResultType resultType = detectResultType(method);
 		switch(resultType) {

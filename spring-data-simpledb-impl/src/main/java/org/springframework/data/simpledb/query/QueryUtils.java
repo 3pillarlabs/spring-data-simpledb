@@ -25,13 +25,13 @@ public final class QueryUtils {
 	private QueryUtils() {
 	}
 
-	public static String bindQueryParameters(SimpleDbRepositoryQuery query, Class<?> domainClazz,
+	public static String bindQueryParameters(SimpleDbQueryMethod queryMethod, Class<?> domainClazz,
 			Object... parameterValues) {
-		final String rawQuery = query.getAnnotatedQuery();
+		final String rawQuery = queryMethod.getAnnotatedQuery();
 		String completedQuery = null;
 
-		if(hasNamedParameter(query)) {
-			completedQuery = bindNamedParameters(query, parameterValues);
+		if(hasNamedParameter(queryMethod)) {
+			completedQuery = bindNamedParameters(queryMethod, parameterValues);
 
 		} else if(hasBindParameter(rawQuery)) {
 			completedQuery = bindIndexPositionParameters(rawQuery, parameterValues);
@@ -43,8 +43,8 @@ public final class QueryUtils {
 		return completedQuery;
 	}
 
-	public static boolean hasNamedParameter(SimpleDbRepositoryQuery query) {
-		for(Parameter param : query.getQueryMethod().getParameters()) {
+	public static boolean hasNamedParameter(SimpleDbQueryMethod queryMethod) {
+		for(Parameter param : queryMethod.getParameters()) {
 			if(param.isNamedParameter()) {
 				return Boolean.TRUE;
 			}
@@ -108,9 +108,9 @@ public final class QueryUtils {
 		return query.toLowerCase().contains("count(");
 	}
 
-	static String bindNamedParameters(SimpleDbRepositoryQuery query, Object... parameterValues) {
-		final Parameters parameters = query.getQueryMethod().getParameters();
-		final String rawQuery = query.getAnnotatedQuery();
+	static String bindNamedParameters(SimpleDbQueryMethod queryMethod, Object... parameterValues) {
+		final Parameters parameters = queryMethod.getParameters();
+		final String rawQuery = queryMethod.getAnnotatedQuery();
 
 		return buildQueryConditionsWithParameters(rawQuery, parameters, parameterValues);
 	}

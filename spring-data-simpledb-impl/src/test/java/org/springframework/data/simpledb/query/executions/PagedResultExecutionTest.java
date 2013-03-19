@@ -27,12 +27,10 @@ public class PagedResultExecutionTest {
 		final SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectAllIntoPage", SampleEntity.class);
 		final PagedResultExecution execution = new PagedResultExecution(null);
 
-		final SimpleDbRepositoryQuery query = new SimpleDbRepositoryQuery(repositoryMethod, null);
-
 		final SimpleDbQueryRunner queryRunner = Mockito.mock(SimpleDbQueryRunner.class);
 		when(queryRunner.executePagedQuery()).thenReturn(new PageImpl(new ArrayList()));
 
-		final Object result = execution.doExecute(query, queryRunner);
+		final Object result = execution.doExecute(repositoryMethod, queryRunner);
 
 		assertTrue(Page.class.isAssignableFrom(result.getClass()));
 	}
@@ -42,12 +40,10 @@ public class PagedResultExecutionTest {
 		final SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectAllIntoList", SampleEntity.class);
 		final PagedResultExecution execution = new PagedResultExecution(null);
 
-		final SimpleDbRepositoryQuery query = new SimpleDbRepositoryQuery(repositoryMethod, null);
-
 		final SimpleDbQueryRunner queryRunner = Mockito.mock(SimpleDbQueryRunner.class);
 		when(queryRunner.executePagedQuery()).thenReturn(new PageImpl(new ArrayList()));
 
-		final Object result = execution.doExecute(query, queryRunner);
+		final Object result = execution.doExecute(repositoryMethod, queryRunner);
 
 		assertTrue(List.class.isAssignableFrom(result.getClass()));
 	}
