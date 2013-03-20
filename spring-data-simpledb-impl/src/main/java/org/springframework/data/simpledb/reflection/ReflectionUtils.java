@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.util;
+package org.springframework.data.simpledb.reflection;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;

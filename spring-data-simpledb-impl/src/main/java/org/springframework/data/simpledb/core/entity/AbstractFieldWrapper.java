@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-import org.springframework.data.simpledb.util.ReflectionUtils;
+import org.springframework.data.simpledb.reflection.ReflectionUtils;
 import org.springframework.util.Assert;
 
 public abstract class AbstractFieldWrapper<T, ID extends Serializable> {

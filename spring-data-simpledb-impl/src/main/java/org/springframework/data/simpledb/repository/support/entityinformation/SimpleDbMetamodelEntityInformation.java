@@ -20,7 +20,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.data.simpledb.util.MetadataParser;
+import org.springframework.data.simpledb.reflection.MetadataParser;
 
 public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> extends
 		SimpleDbEntityInformationSupport<T, ID> {

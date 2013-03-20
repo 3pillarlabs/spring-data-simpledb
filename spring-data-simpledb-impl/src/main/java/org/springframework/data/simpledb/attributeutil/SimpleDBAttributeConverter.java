@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.util;
+package org.springframework.data.simpledb.attributeutil;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.data.simpledb.attributeutil.AmazonSimpleDBUtil;
 import org.springframework.util.Assert;
 
 public final class SimpleDBAttributeConverter {

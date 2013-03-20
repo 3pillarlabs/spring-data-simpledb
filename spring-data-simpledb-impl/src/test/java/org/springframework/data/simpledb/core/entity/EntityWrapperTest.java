@@ -16,7 +16,7 @@ import org.springframework.data.simpledb.core.domain.SimpleDbSampleEntity;
 import org.springframework.data.simpledb.core.entity.EntityWrapperTest.AClass.BClass;
 import org.springframework.data.simpledb.core.entity.EntityWrapperTest.AClass.BClass.CClass;
 import org.springframework.data.simpledb.util.EntityInformationSupport;
-import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+import org.springframework.data.simpledb.attributeutil.SimpleDBAttributeConverter;
 
 public class EntityWrapperTest {
 

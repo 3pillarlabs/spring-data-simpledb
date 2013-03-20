@@ -15,7 +15,7 @@ import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.simpledb.annotation.Query;
 import org.springframework.data.simpledb.core.SimpleDbDomain;
 import org.springframework.data.simpledb.query.parser.QueryParserUtils;
-import org.springframework.data.simpledb.util.ReflectionUtils;
+import org.springframework.data.simpledb.reflection.ReflectionUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 

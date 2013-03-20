@@ -6,7 +6,7 @@ import static org.junit.Assert.assertThat;
 import java.util.Date;
 
 import org.junit.Test;
-import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+import org.springframework.data.simpledb.attributeutil.SimpleDBAttributeConverter;
 
 /**
  * @author cclaudiu

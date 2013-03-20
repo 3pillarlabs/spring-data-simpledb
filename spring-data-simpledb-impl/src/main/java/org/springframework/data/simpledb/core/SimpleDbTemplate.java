@@ -21,8 +21,8 @@ import org.springframework.data.simpledb.query.QueryUtils;
 import org.springframework.data.simpledb.repository.support.EmptyResultDataAccessException;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
-import org.springframework.data.simpledb.util.MetadataParser;
-import org.springframework.data.simpledb.util.ReflectionUtils;
+import org.springframework.data.simpledb.reflection.MetadataParser;
+import org.springframework.data.simpledb.reflection.ReflectionUtils;
 import org.springframework.util.Assert;
 
 import com.amazonaws.AmazonClientException;

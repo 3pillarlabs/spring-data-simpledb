@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.util;
+package org.springframework.data.simpledb.attributeutil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -13,6 +13,8 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.data.simpledb.attributeutil.AmazonSimpleDBUtil;
+import org.springframework.data.simpledb.attributeutil.SimpleDBAttributeConverter;
 
 public class SimpleDBAttributeConverterTest {
 
@@ -158,7 +160,7 @@ public class SimpleDBAttributeConverterTest {
 		int x = 1, numberOfDigits = 11;
 		BigDecimal bdx = new BigDecimal(x);
 		String encoded = AmazonSimpleDBUtil.encodeRealNumberRange(bdx, numberOfDigits,
-				new BigDecimal(Integer.MIN_VALUE).negate());
+                new BigDecimal(Integer.MIN_VALUE).negate());
 		assertEquals(numberOfDigits, encoded.length());
 
 		x = 1;

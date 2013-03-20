@@ -3,8 +3,8 @@ package org.springframework.data.simpledb.query;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
-import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
-import org.springframework.data.simpledb.util.SupportedCoreTypes;
+import org.springframework.data.simpledb.attributeutil.SimpleDBAttributeConverter;
+import org.springframework.data.simpledb.reflection.SupportedCoreTypes;
 
 import java.util.*;
 import java.util.regex.Matcher;

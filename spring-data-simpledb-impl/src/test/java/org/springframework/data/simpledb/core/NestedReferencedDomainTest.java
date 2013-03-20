@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.data.simpledb.core.domain.SimpleDbReferencesEntity;
-import org.springframework.data.simpledb.util.MetadataParser;
-import org.springframework.data.simpledb.util.ReflectionUtils;
+import org.springframework.data.simpledb.reflection.MetadataParser;
+import org.springframework.data.simpledb.reflection.ReflectionUtils;
 
 public class NestedReferencedDomainTest {
 

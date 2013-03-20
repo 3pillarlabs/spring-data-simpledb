@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.util.marshaller;
+package org.springframework.data.simpledb.core.entity.json;
 
 import java.io.IOException;
 
