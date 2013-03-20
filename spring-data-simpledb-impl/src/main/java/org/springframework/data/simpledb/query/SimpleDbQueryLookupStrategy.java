@@ -1,6 +1,5 @@
 package org.springframework.data.simpledb.query;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import org.springframework.data.repository.core.NamedQueries;
@@ -9,8 +8,6 @@ import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.simpledb.annotation.Query;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 
 /**
  * Query lookup strategy to execute custom interface query methods <br/>
@@ -36,22 +33,17 @@ public final class SimpleDbQueryLookupStrategy implements QueryLookupStrategy {
 
 	@Override
 	public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, NamedQueries namedQueries) {
-		SimpleDbQueryMethod queryMethod = new SimpleDbQueryMethod(method, metadata, simpleDbOperations.getSimpleDb()
-				.getSimpleDbDomain());
-
-		SimpleDbEntityInformation<?, ?> entityInformation = getEntityInformation(metadata.getDomainType());
-
-		if(queryMethod.isAnnotatedQuery()) {
-			return SimpleDbRepositoryQuery.fromQueryAnnotation(queryMethod, simpleDbOperations);
+		SimpleDbQueryMethod queryMethod;
+		
+		if(SimpleDbQueryMethod.isAnnotatedQuery(method)) {
+			queryMethod = new SimpleDbQueryMethod(method, metadata, simpleDbOperations.getSimpleDb()
+					.getSimpleDbDomain());
 		} else {
-			return new PartTreeSimpleDbQuery(queryMethod, simpleDbOperations, entityInformation);
+			queryMethod = new SimpleDbPartTreeQueryMethod(method, metadata, simpleDbOperations.getSimpleDb()
+					.getSimpleDbDomain());
 		}
-	}
-
-	public <T, ID extends Serializable> SimpleDbEntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
-		String simpleDbDomain = simpleDbOperations.getSimpleDb().getSimpleDbDomain().getDomain(domainClass);
-		return (SimpleDbEntityInformation<T, ID>) SimpleDbEntityInformationSupport.getMetadata(domainClass,
-				simpleDbDomain);
+		
+		return SimpleDbRepositoryQuery.fromQueryAnnotation(queryMethod, simpleDbOperations);
 	}
 
 	public static QueryLookupStrategy create(SimpleDbOperations simpleDbOperations, QueryLookupStrategy.Key key) {

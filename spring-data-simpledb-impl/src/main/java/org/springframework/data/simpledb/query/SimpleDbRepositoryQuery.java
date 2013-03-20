@@ -55,7 +55,6 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
 				simpleDbOperations);
 	}
 
-
 	protected AbstractSimpleDbQueryExecution getExecution() {
 		String query = method.getAnnotatedQuery();
 		assertNotHavingNestedQueryParameters(query);

@@ -62,4 +62,15 @@ public class SimpleDbUserBuilder {
 		}
 		return list;
 	}
+	
+	public static List<SimpleDbUser> createUsersWithPrimitiveFields(float[] primitiveFields) {
+		List<SimpleDbUser> users = SimpleDbUserBuilder.createListOfItems(primitiveFields.length);
+		int i = 0;
+		for(SimpleDbUser user : users) {
+			user.setPrimitiveField(primitiveFields[i]);
+			i++;
+		}
+
+        return users;
+	}
 }

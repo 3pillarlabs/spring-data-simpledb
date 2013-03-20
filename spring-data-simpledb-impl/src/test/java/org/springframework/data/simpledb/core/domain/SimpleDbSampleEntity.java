@@ -13,6 +13,8 @@ public class SimpleDbSampleEntity {
 	private String itemName;
 
 	private boolean booleanField;
+	
+	private int age;
 
 	@Attributes
 	private Map<String, String> atts;
@@ -20,7 +22,6 @@ public class SimpleDbSampleEntity {
 	public void setItemName(String itemName) {
 		this.itemName = itemName;
 	}
-
 	public String getItemName() {
 		return itemName;
 	}
@@ -28,15 +29,20 @@ public class SimpleDbSampleEntity {
 	public boolean getBooleanField() {
 		return booleanField;
 	}
-
 	public void setBooleanField(boolean booleanField) {
 		this.booleanField = booleanField;
 	}
 
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	
 	public void setAtts(Map<String, String> atts) {
 		this.atts = atts;
 	}
-
 	public Map<String, String> getAtts() {
 		return atts;
 	}
