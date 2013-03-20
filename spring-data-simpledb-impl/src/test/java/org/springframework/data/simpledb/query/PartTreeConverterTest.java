@@ -28,7 +28,7 @@ public class PartTreeConverterTest {
 		
 		final String query = PartTreeConverter.toIndexedQuery(tree);
 		
-		final String expected = " age  BETWEEN ? and ? ";
+		final String expected = " age BETWEEN ? and ? ";
 		
 		assertEquals(expected, query);
 	}
