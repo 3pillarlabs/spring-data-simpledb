@@ -22,8 +22,6 @@ import org.springframework.util.StringUtils;
 /**
  * SimpleDB specific extension of {@link org.springframework.data.repository.query.QueryMethod}. <br/>
  * Adds query extraction based on custom Query annotation and query validation helper methods.
- * 
- * @author Oliver Gierke
  */
 public class SimpleDbQueryMethod extends QueryMethod {
 
@@ -42,17 +40,15 @@ public class SimpleDbQueryMethod extends QueryMethod {
 	 */
 	public SimpleDbQueryMethod(Method method, RepositoryMetadata metadata, SimpleDbDomain simpleDbDomain) {
 		super(method, metadata);
+		
 		this.method = method;
 		this.simpleDbDomain = simpleDbDomain;
 
 		Assert.isTrue(!(isModifyingQuery() && getParameters().hasSpecialParameter()),
 				String.format("Modifying method must not contain %s!", Parameters.TYPES));
-		assertParameterNamesInAnnotatedQuery();
 	}
 
-	private void assertParameterNamesInAnnotatedQuery() {
-
-		String annotatedQuery = getAnnotatedQuery();
+	private void assertParameterNamesInAnnotatedQuery(String annotatedQuery) {
 
 		if(!StringUtils.hasText(annotatedQuery)) {
 			return;
@@ -79,14 +75,28 @@ public class SimpleDbQueryMethod extends QueryMethod {
 	 * @return a Query String
 	 */
 	public final String getAnnotatedQuery() {
-		String valueParameter = getAnnotationValue(Query.QueryClause.VALUE.getQueryClause(), String.class);
-		String whereParameters = getAnnotationValue(Query.QueryClause.WHERE.getQueryClause(), String.class);
-		String[] selectParameters = getAnnotationValue(Query.QueryClause.SELECT.getQueryClause(), String[].class);
-
-		return QueryParserUtils.buildQueryFromQueryParameters(valueParameter, selectParameters, whereParameters,
+		String valueParameter = getValueParameters();
+		String whereParameters = getWhereParameters();
+		String[] selectParameters = getSelectParameters();
+		
+		String result = QueryParserUtils.buildQueryFromQueryParameters(valueParameter, selectParameters, whereParameters,
 				simpleDbDomain.getDomain(getDomainClass()));
+		
+		assertParameterNamesInAnnotatedQuery(result);
+		
+		return result;
 	}
 
+	protected String[] getSelectParameters() {
+		return getAnnotationValue(Query.QueryClause.SELECT.getQueryClause(), String[].class);
+	}
+	protected String getWhereParameters() {
+		return getAnnotationValue(Query.QueryClause.WHERE.getQueryClause(), String.class);
+	}
+	protected String getValueParameters() {
+		return getAnnotationValue(Query.QueryClause.VALUE.getQueryClause(), String.class);
+	}
+	
 	/**
 	 * Returns the {@link Query} annotation's attribute casted to the given type or default value if no annotation
 	 * available.
@@ -162,6 +172,10 @@ public class SimpleDbQueryMethod extends QueryMethod {
 		}
 
 		return isPaged;
+	}
+	
+	public static boolean isAnnotatedQuery(final Method method) {
+		return method.getAnnotation(Query.class) != null;
 	}
 
 }

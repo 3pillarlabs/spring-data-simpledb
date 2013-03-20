@@ -211,6 +211,29 @@ Queries are validated against method's returned type. The following query won't 
     @Query(value = "select * from `testDB.simpleDbUser`")
     List<String> customSelectAllWrongReturnType();
 
+Custom queries can also be derived directly from the method name. For example, the following query
+
+    List<SimpleDbUser> findByPrimitiveFieldGreaterThan(final float value);
+
+is a valid query and will return all SimpleDbUsers having primitiveField greater than the specified value. Spring data supports a set of operators you can apply uppon your attributes, but we only support the ones that have an equivalent operator in simpleDb.
+
+The following is the list of supported operators:
+
+* Is, Equals, IsNot, Not
+* IsGreaterThan, GreaterThan, IsLessThan, LessThan
+* IsGreaterThanEqual, GreaterThanEqual, IsLessThanEqual, LessThanEqual
+* Like, NotLike
+* Between, IsBetween
+* IsNotNull, IsNull
+* In
+
+To be noted: when using the LIKE operator, the provided method parametr must be of one of the following forms (from the simpleDb simpleDb API):
+
+* %value
+* value%
+* %value% 
+
+Using an unsupported operator will result into a MappingException.
 ####@Query annotation ####
 
 Query annotation may have the fallowing parameters:
@@ -520,6 +543,10 @@ Since we've implemented the **attribute chunks** mechanism for long values, part
 Nevertheless, querying an entire entity would correctly deserialize the chuncked attributes. Hence, the following query will work:
 
     select * from `testDb.company`
+
+Although Spring Data supports nested attributes in query methods, simpleDb custom queries derived from method names cannot use attributes from nested entities. For instance, the following query is not valid:
+
+    SimpleDbUser findByNesteEntity_NesteField(int value);
 
 ### Paging
 Currently, paginating partial annotated queries will return a collection of the queried entity instead of a collection of the queried partial fields. The following example is a valid partial query and each item in the collection will have the itemName and the requested partial fields populated with values. All the other fields will be empty.

@@ -37,7 +37,7 @@ public class PagedAnnotatedQueryRepositoryTest {
     public void setUp() {
         //for performance reasons create 3 entities once and use them to test all queries
         if(simpleDbUsers == null){
-            simpleDbUsers = createUsersWithPrimitiveFields(new float[]{0f, 1.0f, 2.0f, 3.0f, 4.0f, 5f});
+            simpleDbUsers = SimpleDbUserBuilder.createUsersWithPrimitiveFields(new float[]{0f, 1.0f, 2.0f, 3.0f, 4.0f, 5f});
             repository.save(simpleDbUsers);
         }
     }
@@ -126,18 +126,6 @@ public class PagedAnnotatedQueryRepositoryTest {
 		assertNull(firstResult.getCoreField());
 		assertNull(firstResult.getCoreTypeList());
 		assertNull(firstResult.getObjectField());
-	}
-
-	private List<SimpleDbUser> createUsersWithPrimitiveFields(float[] primitiveFields) {
-		List<SimpleDbUser> users = SimpleDbUserBuilder.createListOfItems(primitiveFields.length);
-		int i = 0;
-		for(SimpleDbUser user : users) {
-			user.setPrimitiveField(primitiveFields[i]);
-			i++;
-		}
-
-        return users;
-
 	}
 
 }

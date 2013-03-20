@@ -19,5 +19,9 @@ public final class StringUtil {
 			return start.toLowerCase() + rest;
 		}
 	}
+	
+	public static String removeExtraSpaces(final String source) {
+		return source.replaceAll(" +", " ");
+	}
 
 }
