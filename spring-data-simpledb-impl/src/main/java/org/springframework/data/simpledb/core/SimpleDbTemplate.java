@@ -21,18 +21,13 @@ import org.springframework.data.simpledb.query.QueryUtils;
 import org.springframework.data.simpledb.repository.support.EmptyResultDataAccessException;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
-import org.springframework.data.simpledb.util.MetadataParser;
-import org.springframework.data.simpledb.util.ReflectionUtils;
+import org.springframework.data.simpledb.reflection.MetadataParser;
+import org.springframework.data.simpledb.reflection.ReflectionUtils;
 import org.springframework.util.Assert;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
-import com.amazonaws.services.simpledb.model.Attribute;
-import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
-import com.amazonaws.services.simpledb.model.Item;
-import com.amazonaws.services.simpledb.model.PutAttributesRequest;
-import com.amazonaws.services.simpledb.model.SelectRequest;
-import com.amazonaws.services.simpledb.model.SelectResult;
+import com.amazonaws.services.simpledb.model.*;
 
 /**
  * Primary implementation of {@link SimpleDbOperations}
@@ -76,7 +71,7 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 		logOperation("Create or update", entity);
 		entity.generateIdIfNotSet();
 
-		for(final Field field : entityInformation.getReferenceAttributes(domainItem.getClass())) {
+		for(final Field field : ReflectionUtils.getFirstLevelOfReferenceAttributes(domainItem.getClass())) {
 			final Object referenceEntity = ReflectionUtils.callGetter(domainItem, field.getName());
 
 			/* recursive call */
@@ -137,7 +132,7 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 			}
 		}
 
-		for(final Field field : entityInformation.getReferenceAttributes(domainItem.getClass())) {
+		for(final Field field : ReflectionUtils.getFirstLevelOfReferenceAttributes(domainItem.getClass())) {
 			final Object referenceEntity = ReflectionUtils.callGetter(domainItem, field.getName());
 
 			/* recursive call */

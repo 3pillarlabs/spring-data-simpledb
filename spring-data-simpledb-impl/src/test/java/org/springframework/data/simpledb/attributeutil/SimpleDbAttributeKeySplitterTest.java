@@ -1,6 +1,7 @@
-package org.springframework.data.simpledb.util;
+package org.springframework.data.simpledb.attributeutil;
 
 import org.junit.Test;
+import org.springframework.data.simpledb.attributeutil.SimpleDbAttributeKeySplitter;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;

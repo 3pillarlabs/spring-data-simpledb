@@ -5,8 +5,8 @@ import java.lang.reflect.Field;
 
 import org.springframework.data.annotation.Reference;
 import org.springframework.data.simpledb.core.SimpleDbTemplate;
-import org.springframework.data.simpledb.util.FieldType;
-import org.springframework.data.simpledb.util.MetadataParser;
+import org.springframework.data.simpledb.reflection.FieldType;
+import org.springframework.data.simpledb.reflection.MetadataParser;
 
 /**
  * Wraps {@link FieldType#REFERENCE_ENTITY} fields. A reference field is annotated with {@link Reference}

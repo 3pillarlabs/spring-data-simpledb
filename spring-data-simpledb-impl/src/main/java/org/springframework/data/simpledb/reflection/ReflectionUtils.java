@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.util;
+package org.springframework.data.simpledb.reflection;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -83,15 +83,6 @@ public final class ReflectionUtils {
 		}
 	}
 
-	public static boolean isFieldInClass(final Class<?> entityClazz, final String fieldName) {
-		try {
-			Field field = entityClazz.getDeclaredField(fieldName);
-			return hasDeclaredGetterAndSetter(field, entityClazz);
-		} catch(NoSuchFieldException e) {
-			throw new IllegalArgumentException("Field doesn't exist in entity :" + fieldName, e);
-		}
-	}
-
 	public static boolean isOfType(Type type, final Class<?> entityClazz, final String fieldName) {
 		try {
 			Field field = entityClazz.getDeclaredField(fieldName);
@@ -132,6 +123,7 @@ public final class ReflectionUtils {
 		return referenceFields;
 	}
 
+
 	public static List<Field> getReferenceAttributesList(Class<?> clazz) {
 		List<Field> references = new ArrayList<Field>();
 		List<String> referencedFieldNames = ReflectionUtils.getReferencedAttributeNames(clazz);
@@ -139,11 +131,29 @@ public final class ReflectionUtils {
 		for(String fieldName : referencedFieldNames) {
 			Field referenceField = ReflectionUtils.getField(clazz, fieldName);
 			references.add(referenceField);
+            /* recursive call */
 			references.addAll(getReferenceAttributesList(referenceField.getType()));
 		}
 
 		return references;
 	}
+
+    /**
+     * Get only the first Level of Nested Reference Attributes from a given class
+     * @param clazz
+     * @return List<Field> of referenced fields
+     */
+    public static List<Field> getFirstLevelOfReferenceAttributes(Class<?> clazz) {
+        List<Field> references = new ArrayList<Field>();
+        List<String> referencedFields = ReflectionUtils.getReferencedAttributeNames(clazz);
+
+        for(String eachReference : referencedFields) {
+            Field referenceField = ReflectionUtils.getField(clazz, eachReference);
+            references.add(referenceField);
+        }
+
+        return references;
+    }
 
 	private static MappingException toMappingException(Exception cause, String accessMethod, String fieldName,
 			Object fieldObject) {

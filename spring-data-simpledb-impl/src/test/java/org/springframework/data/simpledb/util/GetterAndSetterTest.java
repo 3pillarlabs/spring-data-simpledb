@@ -9,8 +9,8 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
+import org.springframework.data.simpledb.reflection.MetadataParser;
+import org.springframework.data.simpledb.reflection.ReflectionUtils;
 
 public class GetterAndSetterTest {
 

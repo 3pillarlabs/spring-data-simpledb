@@ -18,7 +18,7 @@ import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.simpledb.annotation.Query;
 import org.springframework.data.simpledb.core.SimpleDbDomain;
-import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+import org.springframework.data.simpledb.attributeutil.SimpleDBAttributeConverter;
 
 public class SimpleDbNamedQueryMethodBindedTest {
 

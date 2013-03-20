@@ -16,6 +16,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.simpledb.annotation.Attributes;
 import org.springframework.data.simpledb.annotation.DomainPrefix;
+import org.springframework.data.simpledb.reflection.MetadataParser;
 
 public class MetadataParserTest {
 

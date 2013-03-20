@@ -6,7 +6,7 @@ import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.simpledb.annotation.Query;
 import org.springframework.data.simpledb.core.SimpleDbDomain;
-import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+import org.springframework.data.simpledb.attributeutil.SimpleDBAttributeConverter;
 
 import java.lang.reflect.Method;
 import java.util.List;

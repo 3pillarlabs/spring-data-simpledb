@@ -3,8 +3,8 @@ package org.springframework.data.simpledb.core.entity;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
-import org.springframework.data.simpledb.util.FieldType;
-import org.springframework.data.simpledb.util.FieldTypeIdentifier;
+import org.springframework.data.simpledb.reflection.FieldType;
+import org.springframework.data.simpledb.reflection.FieldTypeIdentifier;
 
 public final class FieldWrapperFactory {
 
@@ -33,44 +33,44 @@ public final class FieldWrapperFactory {
 		return createObjectFieldWrapper(field, parent, isNewParent);
 	}
 
-	private static <T, ID extends Serializable> PrimitiveSimpleFieldWrapper<T, ID> createPrimitiveFieldWrapper(
+	private static <T, ID extends Serializable> AbstractFieldWrapper<T, ID> createPrimitiveFieldWrapper(
 			final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
 		return new PrimitiveSimpleFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 
-	private static <T, ID extends Serializable> CoreSimpleFieldWrapper<T, ID> createCoreFieldWrapper(final Field field,
+	private static <T, ID extends Serializable> AbstractFieldWrapper<T, ID> createCoreFieldWrapper(final Field field,
 			final EntityWrapper<T, ID> parent, final boolean isNewParent) {
 		return new CoreSimpleFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 
-	private static <T, ID extends Serializable> ArraySimpleFieldWrapper<T, ID> createArrayFieldWrapper(
+	private static <T, ID extends Serializable> AbstractFieldWrapper<T, ID> createArrayFieldWrapper(
 			final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
-		return new ArraySimpleFieldWrapper<T, ID>(field, parent, isNewParent);
+		return new JSONFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 
-	private static <T, ID extends Serializable> CollectionSimpleFieldWrapper<T, ID> createCollectionFieldWrapper(
+	private static <T, ID extends Serializable> AbstractFieldWrapper<T, ID> createCollectionFieldWrapper(
 			final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
-		return new CollectionSimpleFieldWrapper<T, ID>(field, parent, isNewParent);
+		return new JSONFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 
-	private static <T, ID extends Serializable> NestedEntityFieldWrapper<T, ID> createNestedEntityFieldWrapper(
+	private static <T, ID extends Serializable> AbstractFieldWrapper<T, ID> createNestedEntityFieldWrapper(
 			final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
 		return new NestedEntityFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 	
-	private static <T, ID extends Serializable> ReferenceEntityFieldWrapper<T, ID> createReferenceEntityFieldWrapper(
+	private static <T, ID extends Serializable> AbstractFieldWrapper<T, ID> createReferenceEntityFieldWrapper(
 			final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
 		return new ReferenceEntityFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 
-	private static <T, ID extends Serializable> MapSimpleFieldWrapper<T, ID> createMapFieldWrapper(final Field field,
+	private static <T, ID extends Serializable> AbstractFieldWrapper<T, ID> createMapFieldWrapper(final Field field,
 			final EntityWrapper<T, ID> parent, final boolean isNewParent) {
-		return new MapSimpleFieldWrapper<T, ID>(field, parent, isNewParent);
+		return new JSONFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 
-	private static <T, ID extends Serializable> ObjectSimpleFieldWrapper<T, ID> createObjectFieldWrapper(
+	private static <T, ID extends Serializable> AbstractFieldWrapper<T, ID> createObjectFieldWrapper(
 			final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
-		return new ObjectSimpleFieldWrapper<T, ID>(field, parent, isNewParent);
+		return new JSONFieldWrapper<T, ID>(field, parent, isNewParent);
 	}
 
 }

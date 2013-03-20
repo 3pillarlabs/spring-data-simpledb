@@ -1,6 +1,6 @@
 package org.springframework.data.simpledb.query;
 
-import org.springframework.data.simpledb.util.ReflectionUtils;
+import org.springframework.data.simpledb.reflection.ReflectionUtils;
 
 import java.util.*;
 

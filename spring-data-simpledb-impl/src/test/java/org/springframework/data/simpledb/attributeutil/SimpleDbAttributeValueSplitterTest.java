@@ -1,6 +1,8 @@
-package org.springframework.data.simpledb.util;
+package org.springframework.data.simpledb.attributeutil;
 
 import org.junit.Test;
+import org.springframework.data.simpledb.attributeutil.SimpleDbAttributeKeySplitter;
+import org.springframework.data.simpledb.attributeutil.SimpleDbAttributeValueSplitter;
 
 import java.util.*;
 

@@ -15,12 +15,12 @@
  */
 package org.springframework.data.simpledb.repository.support.entityinformation;
 
-import org.springframework.data.repository.core.EntityInformation;
-
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
-import java.lang.reflect.Field;
+
+import org.springframework.data.repository.core.EntityInformation;
 
 /**
  * Extension of {@link org.springframework.data.repository.core.EntityInformation} to capture aditional JPA specific
@@ -36,15 +36,5 @@ public interface SimpleDbEntityInformation<T, ID extends Serializable> extends E
 
 	Map<String, String> getAttributes(T entity);
 
-	/**
-	 * Get recursively all reference attributes.
-	 */
-	List<Field> getAllReferenceAttributes(Class<?> clazz);
-	
-	/**
-	 * Get only first-hand reference attributes (direct attributes of the given class).
-	 */
-    List<Field> getReferenceAttributes(Class<?> clazz);
-
-    void validateReferenceFields(List<Field> referenceFields);
+	void validateReferenceFields(List<Field> referenceFields);
 }

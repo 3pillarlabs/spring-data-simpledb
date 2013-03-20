@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.util;
+package org.springframework.data.simpledb.attributeutil;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

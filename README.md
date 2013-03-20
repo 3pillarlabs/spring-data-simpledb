@@ -49,7 +49,7 @@ $DOMAIN_MANAGEMENT_POLICY possible values:
 
 _Default value_: **UPDATE**
 
-**SimpleDB default read behaviour**
+**SimpleDB default read behavior**
 
 If a value is specified here, the default read operations performed to SimpleDB will be performed accordingly.
 $CONSISTENT_READ_VALUE possible values:
@@ -174,7 +174,7 @@ Or write a test client using the SimpleDb template:
         public void save_should_persist_single_item() {
             String itemName = "FirstItem";
     
-    		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
+        	SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
     		operations.createOrUpdate(user);
     		
     		SimpleDbUser foundUser = operations.read(user.getItemName(), user.getClass());
@@ -268,19 +268,231 @@ The field representing the id of the entity will be replace in select and where 
     
 
 ### Paging ###
-We support pagination by extending the **PagingAndSortingRepository** which provides a `Page<T> findAll(Pagealbe pageable)` method. Otherwise, you can also define the findAll method in any repository. The following repository defines the findAll paged query:
+We support pagination by extending the **PagingAndSortingRepository** which provides a `Page<T> findAll(Pageable pageable)` method. Otherwise, you can also define the findAll method in any repository. The following repository defines the findAll paged query:
 
     public interface MyRepository extends Repository<SimpleDbUser, String> {
         Page<SimpleDbUser> findAll(Pageable pageable);
     }
 
-Moreover, any custom annotated query can be paginated by simply adding a **Pagealbe** parameter to the query method's signature. The parameter must be placed after the mandatory parameters and the method's return type can be only `Page<T>` or `List<T>`. The following example depicts a few different query methods:
+Moreover, any custom annotated query can be paginated by simply adding a **Pageable** parameter to the query method's signature. The parameter must be placed after the mandatory parameters and the method's return type can be only `Page<T>` or `List<T>`. The following example depicts a few different query methods:
 
     @Query(value = "select * from `testDB.simpleDbUser` where primitiveField > ?")
     Page<SimpleDbUser> findUsers(float primitiveField, Pageable page);
 
     @Query(value = "select * from `testDB.simpleDbUser` where primitiveField > ?")
     List<SimpleDbUser> findUsersList(float primitiveField, Pageable page);
+
+### @Configuration ###
+
+Besides XML configuration, SimpleDb supports also Java based configuration. This means user can create classes annotated with @Configuration and produce beans later to be managed by the Spring container. 
+
+SimpleDb contains an abstract class called **AbstractSimpleDbConfiguration**. The class will configure the simpleDbTemplate bean. It contains one abstract method **getAWSCredentials** the user needs to implement providing the credentials(accessKey and secretId) for the AmazonDB. The remaining properties such as policy,  consistentRead,  domainPrefix can be set overrring the **setExtraProperties** method.
+
+In order to use this java based configuration class the user must create his own configuration class:
+
+    @Configuration
+    public class SampleConfiguration extends AbstractSimpleDBConfiguration {
+
+        @Override
+        public AWSCredentials getAWSCredentials() {
+            return new AWSCredentials("sampleAccessId", "sampleSecretKey");
+        }
+       
+        @Override
+         public void setExtraProperties(SimpleDb simpleDb) {
+	    	simpleDb.setConsistentRead(true);
+	    	simpleDb.setDomainPrefix(HostNameResolver.readHostname() + "testDB");
+    	}
+    }
+  
+The test client code will look like this:
+
+    @RunWith(SpringJUnit4ClassRunner.class)
+    @ContextConfiguration(classes = SampleConfiguration.class)
+    public class SampleConfigurationTest {
+
+        @Autowired
+        private SimpleDbTemplate template;
+
+        @Test
+        public void testConfig() {
+            assertNotNull(template);
+       }
+    }
+The test client code needs to contain the **@ContextConfiguration** annotation for specifying which configuration class is to be used.
+
+
+If the user wants to manipulate by himself the producing of the beans he is able to create his own configuration class without exteding the AbstractSimpleDbConfiguration class. 
+
+Here is an example with producing 2 simpleDbTemplates beans:
+
+    @Configuration
+    public class MySimpleDbConfiguration {
+
+        @Bean
+	    public SimpleDbTemplate simpleDBTemplate1(){
+             SimpleDb simpleDb = new SimpleDb("foo1","bar1"); 
+             simpleDb.setConsistentRead(true);
+             simpleDb.setDomainPrefix("testDB_1");
+             simpleDb.setDomainManagementPolicy("DROP_CREATE");
+             simpleDb.afterPropertiesSet();
+             return new SimpleDbTemplate(simpleDb);
+            
+         }
+         
+        @Bean
+        public SimpleDbTemplate simpleDBTemplate2(){
+             SimpleDb simpleDb = new SimpleDb("foo2","bar2"); 
+             simpleDb.setConsistentRead(true);
+             simpleDb.setDomainPrefix("testDB_2");
+             simpleDb.afterPropertiesSet();
+             return new SimpleDbTemplate(simpleDb);
+         }
+      }     
+    
+And the test client code:
+
+    @RunWith(SpringJUnit4ClassRunner.class)
+    @ContextConfiguration(classes = MySimpleDbConfiguration.class)
+    public class MyClass {
+
+        @Autowired
+        private SimpleDbTemplate simpleDBTemplate1;
+
+         @Autowired
+        private SimpleDbTemplate simpleDBTemplate2;
+    }
+    
+As a note, user need to call also **afterPropertiesSet** method after the simpleDb object it's created, for extra processing.    
+
+### @EnableSimpleDbRepositories ###
+
+Part of Java based configuration is also @EnableSimpleDbRepositories which offers support for activate the simpleDbRepositories. Instead of using an XML containg the element:
+
+    <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
+simply use the annotation and repositories will be loaded.
+
+Below is an example:
+
+    @RunWith(SpringJUnit4ClassRunner.class)
+    @ContextConfiguration
+    public class EnableSimpleDBRepositoriesAnnotationTest {
+
+        @Configuration
+	    @EnableSimpleDBRepositories(basePackages = "org.springframework.data.simpledb.sample.simpledb.repository")
+	    static class Config {
+
+		    @Bean
+		    public SimpleDbOperations simpleDBTemplate() throws Exception {
+			    SimpleDb simpleDb = new SimpleDb("AKIAIVX775TRPPSZTEMQ", "Nzy6w0iq8JI+DHgdiPPiuqixiMoWQmPhWFgQzOZY");
+			    simpleDb.setConsistentRead(true);
+			    simpleDb.setDomainPrefix(HostNameResolver.readHostname() + "testDB");
+			    simpleDb.afterPropertiesSet();
+			    return new SimpleDbTemplate(simpleDb);
+		}
+	    }
+
+	    @Autowired
+	    BasicSimpleDbUserRepository userRepository;
+
+	    @Test
+	    public void enable_repositories_should_be_used_by_core_spring_data() {
+		    assertNotNull(userRepository);
+	    }
+}
+
+
+
+### @Reference ###
+We support spring-data-core standard @Reference annotation. 
+For each object annotated with @Reference, a new domain will be created and the object will be serialized into that domain. 
+In terms of SimpleDB, @Reference is suported for fields that are not primitives or primitive wrappers and don't contain the @Id annotation. 
+
+SimpleDBTemplate methods like createOrUpdate(), delete() check if entities contain @Reference annotations.
+If a field is annotated with this annotation, it will be validated. Furthermore, if domain update policy is not NONE, SimpleDbTemplate will create a separate domain for the field. 
+
+For example let's check the following class with nested objects annotated with @Reference:
+
+    public class SimpleDbReferences {
+
+        @Id
+        private String itemName;
+
+    	@Reference
+	    private FirstNestedEntity firstNestedEntity;
+	
+        public String getItemName() {
+            return itemName;
+        }
+
+        public void setItemName(String itemName) {
+            this.itemName = itemName;
+        }
+    
+        public FirstNestedEntity getFirstNestedEntity() {
+            return firstNestedEntity;
+        }
+
+        public void setFirstNestedEntity(FirstNestedEntity firstNestedEntity) {
+            this.firstNestedEntity = firstNestedEntity;
+    }
+    
+    public static class FirstNestedEntity {
+
+        @Id
+    	private String itemName;
+        
+        @Reference
+    	private SecondNestedEntity secondNestedEntity;
+        
+        public String getItemName() {
+            return itemName;
+        }
+
+        public void setItemName(String itemName) {
+            this.itemName = itemName;
+         }
+    	
+        public SecondNestedEntity getSecondNestedEntity() {
+            return secondNestedEntity;
+        }
+
+        public void setSecondNestedEntity(SecondNestedEntity secondNestedEntity) {
+            this.secondNestedEntity = secondNestedEntity;
+        }        
+      }   
+      
+     public static class SecondNestedEntity {
+      
+        @Id
+    	private String itemName;   
+        
+        public String getItemName() {
+         return itemName;
+        }
+
+         public void setItemName(String itemName) {
+            this.itemName = itemName;
+        }
+        
+    }
+    
+and the following code which creates the entities:
+
+    SimpleDbReferences ref = new SimpleDbReferences();
+    FirstNestedEntity first = new FirstNestedEntity();
+    SecondNestedEntity second = new SecondNestedEntity();
+    first.setItemName("first");
+    second.setItemName("second");
+    ref.setFirstNestedEntity(first);
+    first.setSecondNestedEntity(second);
+    
+After calling createOrUpdate method of the SimpleDbTemplate three domains will be created : testDB.simpleDbReferences, testDB.firstNestedEntity and testDB.secondNestedEntity. 
+
+The links between the domains are specified via SimpleDB attributes as shown bellow:
+
+    testDB.simpleDbReferences.firstNestedEntity = "first"
+    testDB.firstNestedEntity.secondNestedEntity = "second"
 
 ## Known Limitations ##
 
@@ -341,6 +553,9 @@ Currently, paginating partial annotated queries will return a collection of the 
 
     @Query(value = "select primitiveField from `testDB.simpleDbUser`")
     List<SimpleDbUser> pagedPartialQuery(Pageable page);
+    
+### Reference
+Currently, @Reference serialization and deserialization is not supported for custom queries: fields marked with @Reference annotations are not allowed in the where clause of a custom query.
 
 ### Design notes
 [Repository Generation sequence diagram](http://www.websequencediagrams.com/?lz=dGl0bGUgUmVwb3NpdG9yeSBHZW5lcmF0aW9uCgpDbGllbnQtLT5TcHJpbmdEYXRhQ29yZToAHQhlIG15IHIANAhpZXMKbm90ZSByaWdodCBvZiBTaW1wbGVEYk9wAEwHczoAARMgaW50ZXJmYWNlXG5oYXMgYSBzaW5nbGUgY29uY3JldGUgAEIFbWVudACBEwVcbigAUQhUZW1wbGF0ZS5jbGFzcylcbnNpbWlsYXIgd2l0aCBIaWJlcm5hdGUAHwgKCgCBOw4tPgCBDhRpbnN0YW50aQAUHQCCKApGYWN0b3J5AH0GADENAIEeCQCBdgopCgpsb29wIEZvciBlYWNoIGphdmEgZmlsZSBpbgCCQQp5IHBhY2thZ2UAgR8SAIJ7D3BhcnMAgzQMTWV0YWRhdGEAggwGAIEOMmdldFRhcmdldACECQooAEwSKQoAgWkfAIQiEgCCJxJJbXBsCmVuZACDBRAtPgCEcgY6AIRODCByZWFkeSBmb3IgQEF1dG93aXJl&s=rose) 
