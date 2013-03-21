@@ -1,8 +1,7 @@
 package org.springframework.data.simpledb.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -11,8 +10,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class SimpleDBAttributeConverterTest {
 
@@ -234,7 +232,7 @@ public class SimpleDBAttributeConverterTest {
 	public void encode_decode_primitive_arrays() throws ParseException {
 		int[] someInts = { 1, 2, 3, 4 };
 
-		List<String> returnedMappedAttributeValues = SimpleDBAttributeConverter.encodePrimitiveArray(someInts);
+		List<String> returnedMappedAttributeValues = SimpleDBAttributeConverter.encodeArray(someInts);
 
 		Object returnedPrimitiveCol = SimpleDBAttributeConverter.decodeToPrimitiveArray(returnedMappedAttributeValues,
 				int.class);

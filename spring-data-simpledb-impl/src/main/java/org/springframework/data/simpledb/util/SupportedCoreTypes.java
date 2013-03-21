@@ -1,10 +1,10 @@
 package org.springframework.data.simpledb.util;
 
+import org.springframework.util.Assert;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.springframework.util.Assert;
 
 public enum SupportedCoreTypes {
 
@@ -22,18 +22,18 @@ public enum SupportedCoreTypes {
 			return isOfType(clazz, SUPPORTED_CORE_TYPES);
 		}
 	},
-	PRIMITIVE_ARRAYS {
+	ARRAYS {
 
 		@Override
 		public boolean isOfType(Class<?> clazz) {
-			return isOfType(clazz, SUPPORTED_PRIMITIVE_ARRAYS);
+			return isOfType(clazz, SUPPORTED_ARRAYS);
 		}
 	};
 
 	public abstract boolean isOfType(final Class<?> clazz);
 
 	public static boolean isSupported(final Class<?> clazz) {
-		return PRIMITIVE_TYPES.isOfType(clazz) || CORE_TYPES.isOfType(clazz) || PRIMITIVE_ARRAYS.isOfType(clazz);
+		return PRIMITIVE_TYPES.isOfType(clazz) || CORE_TYPES.isOfType(clazz) || ARRAYS.isOfType(clazz);
 	}
 
 	static boolean isOfType(final Class<?> clazz, final Set<Class<?>> supportedTypes) {
@@ -57,15 +57,20 @@ public enum SupportedCoreTypes {
 		SUPPORTED_CORE_TYPES.add(Date.class);
 	}
 
-	private static final Set<Class<?>> SUPPORTED_PRIMITIVE_ARRAYS = new HashSet<Class<?>>();
+	private static final Set<Class<?>> SUPPORTED_ARRAYS = new HashSet<Class<?>>();
 	static {
-		SUPPORTED_PRIMITIVE_ARRAYS.add(boolean[].class);
-		SUPPORTED_PRIMITIVE_ARRAYS.add(long[].class);
-		SUPPORTED_PRIMITIVE_ARRAYS.add(short[].class);
-		SUPPORTED_PRIMITIVE_ARRAYS.add(int[].class);
-		SUPPORTED_PRIMITIVE_ARRAYS.add(byte[].class);
-		SUPPORTED_PRIMITIVE_ARRAYS.add(float[].class);
-		SUPPORTED_PRIMITIVE_ARRAYS.add(double[].class);
-		SUPPORTED_PRIMITIVE_ARRAYS.add(char[].class);
+		SUPPORTED_ARRAYS.add(boolean[].class);
+		SUPPORTED_ARRAYS.add(long[].class);
+		SUPPORTED_ARRAYS.add(short[].class);
+		SUPPORTED_ARRAYS.add(int[].class);
+		SUPPORTED_ARRAYS.add(byte[].class);
+		SUPPORTED_ARRAYS.add(float[].class);
+		SUPPORTED_ARRAYS.add(double[].class);
+		SUPPORTED_ARRAYS.add(char[].class);
+        SUPPORTED_ARRAYS.add(Boolean[].class);
+        SUPPORTED_ARRAYS.add(Character[].class);
+        SUPPORTED_ARRAYS.add(Date[].class);
+        SUPPORTED_ARRAYS.add(String[].class);
+        SUPPORTED_ARRAYS.add(Number[].class);
 	}
 }

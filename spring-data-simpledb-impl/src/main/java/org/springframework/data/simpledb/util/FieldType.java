@@ -1,13 +1,13 @@
 package org.springframework.data.simpledb.util;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.simpledb.annotation.Attributes;
+import org.springframework.util.Assert;
+
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
-import org.springframework.data.annotation.Id;
-import org.springframework.data.simpledb.annotation.Attributes;
-import org.springframework.util.Assert;
 
 public enum FieldType {
 
@@ -59,13 +59,13 @@ public enum FieldType {
 		}
 	},
 
-	PRIMITIVE_ARRAY {
+	ARRAY {
 
 		@Override
 		boolean isOfType(Field field) {
-			final boolean isPrimitiveArrayType = SupportedCoreTypes.PRIMITIVE_ARRAYS.isOfType(field.getType());
+			final boolean isArrayType = SupportedCoreTypes.ARRAYS.isOfType(field.getType());
 
-			return isPrimitiveArrayType;
+			return isArrayType;
 		}
 	},
 
@@ -92,7 +92,7 @@ public enum FieldType {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-			return !isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, COLLECTION, PRIMITIVE_ARRAY, MAP, OBJECT,
+			return !isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, COLLECTION, ARRAY, MAP, OBJECT,
 					REFERENCE_ENTITY);
 		}
 	},
@@ -111,7 +111,7 @@ public enum FieldType {
 
 	public static FieldType[] getSerializableFieldTypes() {
 		return new FieldType[] { FieldType.PRIMITIVE, FieldType.CORE_TYPE, FieldType.NESTED_ENTITY,
-				FieldType.REFERENCE_ENTITY, FieldType.COLLECTION, FieldType.PRIMITIVE_ARRAY, FieldType.MAP,
+				FieldType.REFERENCE_ENTITY, FieldType.COLLECTION, FieldType.ARRAY, FieldType.MAP,
 				FieldType.OBJECT };
 	}
 

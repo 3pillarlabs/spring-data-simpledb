@@ -1,10 +1,10 @@
 package org.springframework.data.simpledb.core.entity;
 
-import java.io.Serializable;
-import java.lang.reflect.Field;
-
 import org.springframework.data.simpledb.util.FieldType;
 import org.springframework.data.simpledb.util.FieldTypeIdentifier;
+
+import java.io.Serializable;
+import java.lang.reflect.Field;
 
 public final class FieldWrapperFactory {
 
@@ -20,7 +20,7 @@ public final class FieldWrapperFactory {
 			return createCoreFieldWrapper(field, parent, isNewParent);
 		} else if(FieldTypeIdentifier.isOfType(field, FieldType.COLLECTION)) {
 			return createCollectionFieldWrapper(field, parent, isNewParent);
-		} else if(FieldTypeIdentifier.isOfType(field, FieldType.PRIMITIVE_ARRAY)) {
+		} else if(FieldTypeIdentifier.isOfType(field, FieldType.ARRAY)) {
 			return createArrayFieldWrapper(field, parent, isNewParent);
 		} else if(FieldTypeIdentifier.isOfType(field, FieldType.NESTED_ENTITY)) {
 			return createNestedEntityFieldWrapper(field, parent, isNewParent);
