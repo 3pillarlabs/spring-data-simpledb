@@ -26,7 +26,7 @@ public abstract class AbstractSimpleDBConfiguration {
     public abstract AWSCredentials getAWSCredentials();
 
     /**
-     * Override this to configure non credential {@link SimpleDb}  properties
+     * Override this to configure non credential {@link org.springframework.data.simpledb.core.SimpleDb}  properties
      */
     public void setExtraProperties(SimpleDb simpleDb){
     }

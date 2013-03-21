@@ -1,8 +1,6 @@
 package org.springframework.data.simpledb.sample.simpledb.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Test;
@@ -20,25 +18,25 @@ public class SimpleDbTemplateTest {
 
 	@Autowired
 	private SimpleDbOperations operations;
-	
+
 	@After
 	public void tearDown() {
 		operations.deleteAll(SimpleDbUser.class);
 	}
-	
+
 	@Test
 	public void save_should_persist_single_item() {
 		String itemName = "FirstItem";
 
 		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
 		operations.createOrUpdate(user);
-		
+
 		SimpleDbUser foundUser = operations.read(user.getItemName(), user.getClass());
 
 		assertEquals(user.getItemName(), foundUser.getItemName());
 		assertEquals(user, foundUser);
 	}
-	
+
 	@Test
 	public void save_should_create_new_item_for_modified_item_name() {
 		String itemName = "FirstItem";
@@ -57,7 +55,7 @@ public class SimpleDbTemplateTest {
 		foundUser = operations.read("FirstItem", SimpleDbUser.class);
 		assertNotNull(foundUser);
 	}
-	
+
 	@Test
 	public void delete_should_remove_item() {
 		String itemName = "FirstItem";
@@ -69,7 +67,7 @@ public class SimpleDbTemplateTest {
 		user = operations.read(itemName, SimpleDbUser.class);
 		assertNull(user);
 	}
-	
+
 	@Test
 	public void consistent_count_should_return_total_number_of_item_with_no_delay() {
 		String itemName = "FirstItem";
@@ -81,7 +79,7 @@ public class SimpleDbTemplateTest {
 		operations.delete(user);
 		assertEquals(0, operations.count(user.getClass()));
 	}
-	
+
 	@Test
 	public void save_should_generateId() {
 
@@ -91,5 +89,4 @@ public class SimpleDbTemplateTest {
 
 		assertNotNull(user.getItemName());
 	}
-
 }

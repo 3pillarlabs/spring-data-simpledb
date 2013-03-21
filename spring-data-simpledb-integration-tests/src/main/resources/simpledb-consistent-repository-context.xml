@@ -22,6 +22,7 @@
         <property name="domainPrefix" value="testDB" />
         <property name="consistentRead" value="true" />
         <property name="dev" value="true" />
+        <property name="unavailableServiceRetries" value="4" />
     </bean>
 
 	<bean id="simpleDbTemplate" class="org.springframework.data.simpledb.core.SimpleDbTemplate">
