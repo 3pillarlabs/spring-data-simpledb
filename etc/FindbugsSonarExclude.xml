@@ -5,7 +5,7 @@
 		<Package name="~org\.springframework\.data\.simpledb\.parser*" />		
 	</Match>
 	<Match>
-		<Package name="~org\.springframework\.data\.simpledb\.sample*.*" />
+		<Package name="~org\.springframework\.data\.simpledb*.*" />
 	</Match>
 	<Match>
 		<Bug pattern="DM_CONVERT_CASE" />

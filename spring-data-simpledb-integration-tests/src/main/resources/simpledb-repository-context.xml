@@ -14,7 +14,7 @@
 		http://www.springframework.org/schema/data/simpledb
         http://www.springframework.org/schema/data/simpledb/spring-simpledb.xsd">
 
-    <simpledb:repositories base-package="org.springframework.data.simpledb.sample.simpledb.repository" />
+    <simpledb:repositories base-package="org.springframework.data.simpledb.repository" />
 
     <bean id="simpleDb" class="org.springframework.data.simpledb.core.SimpleDb">
         <property name="accessID" value="AKIAIVX775TRPPSZTEMQ"/>
@@ -28,6 +28,6 @@
 	   	<constructor-arg name="simpleDb" ref="simpleDb" />
 	</bean>
 
-    <bean class="org.springframework.data.simpledb.sample.simpledb.logging.LoggingConfiguration"/>
+    <bean class="org.springframework.data.simpledb.logging.LoggingConfiguration"/>
 
 </beans>
