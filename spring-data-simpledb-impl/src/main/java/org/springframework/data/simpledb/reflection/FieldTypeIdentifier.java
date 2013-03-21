@@ -33,8 +33,8 @@ public class FieldTypeIdentifier {
 			return FieldType.CORE_TYPE;
 		} else if(FieldType.COLLECTION.isOfType(field)) {
 			return FieldType.COLLECTION;
-		} else if(FieldType.PRIMITIVE_ARRAY.isOfType(field)) {
-			return FieldType.PRIMITIVE_ARRAY;
+		} else if(FieldType.ARRAY.isOfType(field)) {
+			return FieldType.ARRAY;
 		} else if(FieldType.MAP.isOfType(field)) {
 			return FieldType.MAP;
 		} else if(FieldType.NESTED_ENTITY.isOfType(field)) {

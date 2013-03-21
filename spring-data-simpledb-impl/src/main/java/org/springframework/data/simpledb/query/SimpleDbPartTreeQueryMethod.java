@@ -1,12 +1,12 @@
 package org.springframework.data.simpledb.query;
 
-import java.lang.reflect.Method;
-
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.data.simpledb.core.SimpleDbDomain;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
+
+import java.lang.reflect.Method;
 
 /**
  *

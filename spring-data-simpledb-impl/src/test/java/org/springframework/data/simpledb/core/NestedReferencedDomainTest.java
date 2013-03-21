@@ -1,15 +1,15 @@
 package org.springframework.data.simpledb.core;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
-import java.lang.reflect.Field;
-import java.util.List;
-
 import org.junit.Test;
 import org.springframework.data.simpledb.core.domain.SimpleDbReferencesEntity;
 import org.springframework.data.simpledb.reflection.MetadataParser;
 import org.springframework.data.simpledb.reflection.ReflectionUtils;
+
+import java.lang.reflect.Field;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public class NestedReferencedDomainTest {
 

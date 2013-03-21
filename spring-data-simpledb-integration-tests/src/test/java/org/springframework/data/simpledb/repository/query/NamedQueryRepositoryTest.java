@@ -1,9 +1,5 @@
 package org.springframework.data.simpledb.repository.query;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -17,6 +13,10 @@ import org.springframework.data.simpledb.repository.query.NamedQueryRepository;
 import org.springframework.data.simpledb.repository.util.SimpleDbUserBuilder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-consistent-repository-context.xml")

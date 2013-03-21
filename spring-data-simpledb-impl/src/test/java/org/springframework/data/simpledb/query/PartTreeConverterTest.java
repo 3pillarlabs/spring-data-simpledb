@@ -1,11 +1,11 @@
 package org.springframework.data.simpledb.query;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.data.simpledb.core.domain.SimpleDbSampleEntity;
+
+import static org.junit.Assert.assertEquals;
 
 public class PartTreeConverterTest {
 

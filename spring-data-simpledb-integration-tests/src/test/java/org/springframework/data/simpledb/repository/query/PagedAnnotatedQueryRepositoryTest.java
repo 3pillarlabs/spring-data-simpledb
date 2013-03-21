@@ -1,13 +1,5 @@
 package org.springframework.data.simpledb.repository.query;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-
-import java.util.List;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -21,6 +13,11 @@ import org.springframework.data.simpledb.repository.query.PagedAnnotatedQueryRep
 import org.springframework.data.simpledb.repository.util.SimpleDbUserBuilder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-consistent-repository-context.xml")
@@ -60,7 +57,7 @@ public class PagedAnnotatedQueryRepositoryTest {
 		final int pageNumber = 1;
 		final int pageSize = 1;
 		final Page<SimpleDbUser> page = repository.findUsersWithPrimitiveFieldHigherThan(1.0f, new PageRequest(
-				pageNumber, pageSize));
+                pageNumber, pageSize));
 
 		assertNotNull(page);
 
@@ -76,7 +73,7 @@ public class PagedAnnotatedQueryRepositoryTest {
 		final int pageNumber = 2;
 		final int pageSize = 2;
 		final List<SimpleDbUser> results = repository.findUserListWithPrimitiveFieldHigherThan(1f, new PageRequest(
-				pageNumber, pageSize));
+                pageNumber, pageSize));
 
 		// 4 and 5
 		assertEquals(2, results.size());

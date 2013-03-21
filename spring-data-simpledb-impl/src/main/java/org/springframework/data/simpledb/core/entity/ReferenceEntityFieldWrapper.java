@@ -1,12 +1,12 @@
 package org.springframework.data.simpledb.core.entity;
 
-import java.io.Serializable;
-import java.lang.reflect.Field;
-
 import org.springframework.data.annotation.Reference;
 import org.springframework.data.simpledb.core.SimpleDbTemplate;
 import org.springframework.data.simpledb.reflection.FieldType;
 import org.springframework.data.simpledb.reflection.MetadataParser;
+
+import java.io.Serializable;
+import java.lang.reflect.Field;
 
 /**
  * Wraps {@link FieldType#REFERENCE_ENTITY} fields. A reference field is annotated with {@link Reference}

@@ -1,17 +1,16 @@
 package org.springframework.data.simpledb.core;
 
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.amazonaws.services.simpledb.model.Attribute;
+import com.amazonaws.services.simpledb.model.Item;
 import org.junit.Test;
 import org.springframework.data.simpledb.core.domain.SimpleDbSampleEntity;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
-import com.amazonaws.services.simpledb.model.Attribute;
-import com.amazonaws.services.simpledb.model.Item;
+import java.util.ArrayList;
+import java.util.List;
+
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DomainItemBuilderTest {
 

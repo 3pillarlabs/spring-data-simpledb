@@ -1,11 +1,5 @@
 package org.springframework.data.simpledb.query;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Iterator;
-import java.util.List;
-
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -18,6 +12,12 @@ import org.springframework.data.simpledb.query.parser.QueryParserUtils;
 import org.springframework.data.simpledb.reflection.ReflectionUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * SimpleDB specific extension of {@link org.springframework.data.repository.query.QueryMethod}. <br/>
@@ -45,7 +45,7 @@ public class SimpleDbQueryMethod extends QueryMethod {
 		this.simpleDbDomain = simpleDbDomain;
 
 		Assert.isTrue(!(isModifyingQuery() && getParameters().hasSpecialParameter()),
-				String.format("Modifying method must not contain %s!", Parameters.TYPES));
+                String.format("Modifying method must not contain %s!", Parameters.TYPES));
 	}
 
 	private void assertParameterNamesInAnnotatedQuery(String annotatedQuery) {

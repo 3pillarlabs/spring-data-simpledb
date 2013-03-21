@@ -1,9 +1,11 @@
 package org.springframework.data.simpledb.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.simpledb.annotation.Attributes;
+import org.springframework.data.simpledb.annotation.DomainPrefix;
+import org.springframework.data.simpledb.reflection.MetadataParser;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -11,12 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.simpledb.annotation.Attributes;
-import org.springframework.data.simpledb.annotation.DomainPrefix;
-import org.springframework.data.simpledb.reflection.MetadataParser;
+import static org.junit.Assert.*;
 
 public class MetadataParserTest {
 

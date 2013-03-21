@@ -1,13 +1,13 @@
 package org.springframework.data.simpledb.query;
 
-import java.util.Iterator;
-
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.data.repository.query.parser.PartTree.OrPart;
 import org.springframework.data.simpledb.annotation.Query;
 import org.springframework.data.simpledb.util.StringUtil;
+
+import java.util.Iterator;
 
 public final class PartTreeConverter {
 
