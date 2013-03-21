@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.util;
+package org.springframework.data.simpledb.reflection;
 
 import org.springframework.util.Assert;
 

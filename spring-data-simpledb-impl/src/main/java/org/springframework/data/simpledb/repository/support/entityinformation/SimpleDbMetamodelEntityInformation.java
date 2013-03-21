@@ -15,14 +15,12 @@
  */
 package org.springframework.data.simpledb.repository.support.entityinformation;
 
+import org.springframework.data.simpledb.reflection.MetadataParser;
+
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.data.simpledb.util.MetadataParser;
-import org.springframework.data.simpledb.util.ReflectionUtils;
 
 public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> extends
 		SimpleDbEntityInformationSupport<T, ID> {
@@ -75,39 +73,6 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
 	@Override
 	public Map<String, String> getAttributes(T entity) {
 		return MetadataParser.getAttributes(entity);
-	}
-
-	/**
-	 * @see SimpleDbEntityInformation#getAllReferenceAttributes(Class)
-	 */
-	@Override
-	public List<Field> getAllReferenceAttributes(Class<?> clazz) {
-		List<Field> references = new ArrayList<Field>();
-		List<String> referencedFields = ReflectionUtils.getReferencedAttributeNames(clazz);
-
-		for(String eachReference : referencedFields) {
-			Field referenceField = ReflectionUtils.getField(clazz, eachReference);
-			references.add(referenceField);
-			references.addAll(getAllReferenceAttributes(referenceField.getType()));
-		}
-
-		return references;
-	}
-	
-	/**
-	 * @see SimpleDbEntityInformation#getReferenceAttributes(Class)
-	 */
-	@Override
-	public List<Field> getReferenceAttributes(Class<?> clazz) {
-		List<Field> references = new ArrayList<Field>();
-		List<String> referencedFields = ReflectionUtils.getReferencedAttributeNames(clazz);
-
-		for(String eachReference : referencedFields) {
-			Field referenceField = ReflectionUtils.getField(clazz, eachReference);
-			references.add(referenceField);
-		}
-
-		return references;
 	}
 
 	@Override

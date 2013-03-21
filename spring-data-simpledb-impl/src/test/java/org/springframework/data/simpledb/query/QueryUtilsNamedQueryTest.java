@@ -1,13 +1,5 @@
 package org.springframework.data.simpledb.query;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Pageable;
@@ -15,8 +7,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
+import org.springframework.data.simpledb.attributeutil.SimpleDBAttributeConverter;
 import org.springframework.data.simpledb.core.domain.SimpleDbSampleEntity;
-import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class QueryUtilsNamedQueryTest {
 

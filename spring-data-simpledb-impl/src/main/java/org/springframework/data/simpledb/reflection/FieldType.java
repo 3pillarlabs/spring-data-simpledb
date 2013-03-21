@@ -1,4 +1,4 @@
-package org.springframework.data.simpledb.util;
+package org.springframework.data.simpledb.reflection;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.simpledb.annotation.Attributes;

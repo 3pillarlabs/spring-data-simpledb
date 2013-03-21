@@ -1,11 +1,11 @@
 package org.springframework.data.simpledb.core.entity;
 
+import org.springframework.data.mapping.model.MappingException;
+import org.springframework.data.simpledb.attributeutil.SimpleDBAttributeConverter;
+
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.text.ParseException;
-
-import org.springframework.data.mapping.model.MappingException;
-import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
 
 public class CoreSimpleFieldWrapper<T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T, ID> {
 

@@ -3,8 +3,8 @@ package org.springframework.data.simpledb.query;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
-import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
-import org.springframework.data.simpledb.util.SupportedCoreTypes;
+import org.springframework.data.simpledb.attributeutil.SimpleDBAttributeConverter;
+import org.springframework.data.simpledb.reflection.SupportedCoreTypes;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -23,9 +23,8 @@ import java.util.regex.Pattern;
 
 public final class QueryUtils {
 
-    private static final String BIND_PARAMETER_REGEX = "(\\?)";
-    private static final String NAMED_PARAMETER_REGEX = "(\\:)";
-    private static final String SINGLE_QUOTE = "'";
+	private static final String BIND_PARAMETER_REGEX = "(\\?)";
+	private static final String SINGLE_QUOTE = "'";
 
     private QueryUtils() {
     }

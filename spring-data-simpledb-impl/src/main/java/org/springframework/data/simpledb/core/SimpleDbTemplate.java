@@ -1,12 +1,8 @@
 package org.springframework.data.simpledb.core;
 
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.services.simpledb.AmazonSimpleDB;
+import com.amazonaws.services.simpledb.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,21 +14,19 @@ import org.springframework.data.simpledb.exception.InvalidSimpleDBQueryException
 import org.springframework.data.simpledb.exception.SimpleDbExceptionTranslator;
 import org.springframework.data.simpledb.parser.SimpleDBParser;
 import org.springframework.data.simpledb.query.QueryUtils;
+import org.springframework.data.simpledb.reflection.MetadataParser;
+import org.springframework.data.simpledb.reflection.ReflectionUtils;
 import org.springframework.data.simpledb.repository.support.EmptyResultDataAccessException;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
-import org.springframework.data.simpledb.util.MetadataParser;
-import org.springframework.data.simpledb.util.ReflectionUtils;
 import org.springframework.util.Assert;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.services.simpledb.AmazonSimpleDB;
-import com.amazonaws.services.simpledb.model.Attribute;
-import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
-import com.amazonaws.services.simpledb.model.Item;
-import com.amazonaws.services.simpledb.model.PutAttributesRequest;
-import com.amazonaws.services.simpledb.model.SelectRequest;
-import com.amazonaws.services.simpledb.model.SelectResult;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Primary implementation of {@link SimpleDbOperations}
@@ -76,7 +70,7 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 		logOperation("Create or update", entity);
 		entity.generateIdIfNotSet();
 
-		for(final Field field : entityInformation.getReferenceAttributes(domainItem.getClass())) {
+		for(final Field field : ReflectionUtils.getFirstLevelOfReferenceAttributes(domainItem.getClass())) {
 			final Object referenceEntity = ReflectionUtils.callGetter(domainItem, field.getName());
 
 			/* recursive call */
@@ -137,7 +131,7 @@ public class SimpleDbTemplate implements SimpleDbOperations {
 			}
 		}
 
-		for(final Field field : entityInformation.getReferenceAttributes(domainItem.getClass())) {
+		for(final Field field : ReflectionUtils.getFirstLevelOfReferenceAttributes(domainItem.getClass())) {
 			final Object referenceEntity = ReflectionUtils.callGetter(domainItem, field.getName());
 
 			/* recursive call */

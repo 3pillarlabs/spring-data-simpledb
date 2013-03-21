@@ -1,5 +1,6 @@
-package org.springframework.data.simpledb.util;
+package org.springframework.data.simpledb.attributeutil;
 
+import org.springframework.data.simpledb.reflection.SupportedCoreTypes;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Array;
@@ -31,9 +32,8 @@ public final class SimpleDBAttributeConverter {
 		if(ob instanceof Date) {
 			Date d = (Date) ob;
 			return AmazonSimpleDBUtil.encodeDate(d);
-		} else if(ob instanceof byte[]) {
-			return AmazonSimpleDBUtil.encodeByteArray((byte[]) ob);
-		}
+		} 
+
 		return ob.toString();
 	}
 

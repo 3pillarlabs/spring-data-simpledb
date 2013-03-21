@@ -1,13 +1,5 @@
 package org.springframework.data.simpledb.sample.simpledb.repository.query;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-
-import java.util.List;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -20,6 +12,11 @@ import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-consistent-repository-context.xml")
@@ -37,7 +34,7 @@ public class PagedAnnotatedQueryRepositoryTest {
     public void setUp() {
         //for performance reasons create 3 entities once and use them to test all queries
         if(simpleDbUsers == null){
-            simpleDbUsers = createUsersWithPrimitiveFields(new float[]{0f, 1.0f, 2.0f, 3.0f, 4.0f, 5f});
+            simpleDbUsers = SimpleDbUserBuilder.createUsersWithPrimitiveFields(new float[]{0f, 1.0f, 2.0f, 3.0f, 4.0f, 5f});
             repository.save(simpleDbUsers);
         }
     }
@@ -59,7 +56,7 @@ public class PagedAnnotatedQueryRepositoryTest {
 		final int pageNumber = 1;
 		final int pageSize = 1;
 		final Page<SimpleDbUser> page = repository.findUsersWithPrimitiveFieldHigherThan(1.0f, new PageRequest(
-				pageNumber, pageSize));
+                pageNumber, pageSize));
 
 		assertNotNull(page);
 
@@ -75,7 +72,7 @@ public class PagedAnnotatedQueryRepositoryTest {
 		final int pageNumber = 2;
 		final int pageSize = 2;
 		final List<SimpleDbUser> results = repository.findUserListWithPrimitiveFieldHigherThan(1f, new PageRequest(
-				pageNumber, pageSize));
+                pageNumber, pageSize));
 
 		// 4 and 5
 		assertEquals(2, results.size());
@@ -126,18 +123,6 @@ public class PagedAnnotatedQueryRepositoryTest {
 		assertNull(firstResult.getCoreField());
 		assertNull(firstResult.getCoreTypeList());
 		assertNull(firstResult.getObjectField());
-	}
-
-	private List<SimpleDbUser> createUsersWithPrimitiveFields(float[] primitiveFields) {
-		List<SimpleDbUser> users = SimpleDbUserBuilder.createListOfItems(primitiveFields.length);
-		int i = 0;
-		for(SimpleDbUser user : users) {
-			user.setPrimitiveField(primitiveFields[i]);
-			i++;
-		}
-
-        return users;
-
 	}
 
 }
