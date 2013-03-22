@@ -7,9 +7,9 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 
-public class CoreSimpleFieldWrapper<T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T, ID> {
+public class SimpleFieldWrapper<T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T, ID> {
 
-	public CoreSimpleFieldWrapper(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
+	public SimpleFieldWrapper(Field field, EntityWrapper<T, ID> parent, final boolean isNewParent) {
 		super(field, parent, isNewParent);
 	}
 
