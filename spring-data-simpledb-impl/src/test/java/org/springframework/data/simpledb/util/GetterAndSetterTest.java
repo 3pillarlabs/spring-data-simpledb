@@ -1,16 +1,16 @@
 package org.springframework.data.simpledb.util;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.junit.Test;
+import org.springframework.data.simpledb.core.entity.EntityWrapper;
+import org.springframework.data.simpledb.reflection.MetadataParser;
+import org.springframework.data.simpledb.reflection.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
-import org.springframework.data.simpledb.reflection.MetadataParser;
-import org.springframework.data.simpledb.reflection.ReflectionUtils;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class GetterAndSetterTest {
 

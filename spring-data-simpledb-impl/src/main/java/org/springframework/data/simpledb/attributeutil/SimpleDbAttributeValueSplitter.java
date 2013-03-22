@@ -1,6 +1,5 @@
 package org.springframework.data.simpledb.attributeutil;
 
-import org.springframework.data.simpledb.attributeutil.SimpleDbAttributeKeySplitter;
 import org.springframework.data.simpledb.util.AlphanumStringComparator;
 
 import java.util.*;

@@ -1,7 +1,5 @@
 package org.springframework.data.simpledb.core.entity.json;
 
-import java.io.IOException;
-
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonMethod;
@@ -9,6 +7,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.mrbean.MrBeanModule;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
 
 /**
  * Marshall and unmarshall objects, collections and map field wrappers

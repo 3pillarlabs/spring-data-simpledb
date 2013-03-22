@@ -1,5 +1,8 @@
 package org.springframework.data.simpledb.attributeutil;
 
+import org.springframework.data.simpledb.reflection.SupportedCoreTypes;
+import org.springframework.util.Assert;
+
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -7,9 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
-import org.springframework.data.simpledb.attributeutil.AmazonSimpleDBUtil;
-import org.springframework.util.Assert;
 
 public final class SimpleDBAttributeConverter {
 
@@ -32,21 +32,20 @@ public final class SimpleDBAttributeConverter {
 		if(ob instanceof Date) {
 			Date d = (Date) ob;
 			return AmazonSimpleDBUtil.encodeDate(d);
-		} else if(ob instanceof byte[]) {
-			return AmazonSimpleDBUtil.encodeByteArray((byte[]) ob);
-		}
+		} 
 
 		return ob.toString();
 	}
 
-	public static List<String> encodePrimitiveArray(final Object primitiveCollectionFieldValues) {
-		Assert.notNull(primitiveCollectionFieldValues);
+	public static List<String> encodeArray(final Object arrayValues) {
+		Assert.notNull(arrayValues);
+        Assert.isTrue(SupportedCoreTypes.ARRAYS.isOfType(arrayValues.getClass()));
 
 		final List<String> attributeValues = new ArrayList<String>();
-		final int primitiveCollLength = Array.getLength(primitiveCollectionFieldValues);
+		final int primitiveCollLength = Array.getLength(arrayValues);
 
 		for(int idx = 0; idx < primitiveCollLength; idx++) {
-			Object itemValue = Array.get(primitiveCollectionFieldValues, idx);
+			Object itemValue = Array.get(arrayValues, idx);
 			attributeValues.add(encode(itemValue));
 		}
 
@@ -60,8 +59,6 @@ public final class SimpleDBAttributeConverter {
 			val = decodeToFieldOfNumericType(value, retType);
 		} else if(BigDecimal.class.isAssignableFrom(retType)) {
 			val = AmazonSimpleDBUtil.decodeRealNumber(value);
-		} else if(byte[].class.isAssignableFrom(retType)) {
-			val = AmazonSimpleDBUtil.decodeByteArray(value);
 		} else if(Date.class.isAssignableFrom(retType)) {
 			val = AmazonSimpleDBUtil.decodeDate(value);
 		} else if(Boolean.class.isAssignableFrom(retType) || retType == boolean.class) {

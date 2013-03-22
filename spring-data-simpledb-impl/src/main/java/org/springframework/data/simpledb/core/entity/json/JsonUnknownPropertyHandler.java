@@ -1,13 +1,13 @@
 package org.springframework.data.simpledb.core.entity.json;
 
-import java.io.IOException;
-
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.DeserializationProblemHandler;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class JsonUnknownPropertyHandler extends DeserializationProblemHandler {
 

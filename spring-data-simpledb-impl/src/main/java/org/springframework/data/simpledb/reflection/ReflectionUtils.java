@@ -1,16 +1,16 @@
 package org.springframework.data.simpledb.reflection;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Reference;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.util.Assert;
+
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class ReflectionUtils {
 
