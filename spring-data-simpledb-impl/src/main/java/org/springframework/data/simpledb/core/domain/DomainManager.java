@@ -56,7 +56,7 @@ public final class DomainManager {
 				
 				return true;
 			} catch(AmazonClientException e) {
-				throw SimpleDbExceptionTranslator.translateAmazonClientException(e);
+				throw SimpleDbExceptionTranslator.getTranslatorInstance().translateAmazonClientException(e);
 			}
 		} else {
 			LOGGER.debug("Domain has been managed before: {}", domainName);
@@ -78,7 +78,7 @@ public final class DomainManager {
 			sdb.deleteDomain(request);
 			LOGGER.debug("Dropped domain: {}", domainName);
 		} catch(AmazonClientException amazonException) {
-			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
+			throw SimpleDbExceptionTranslator.getTranslatorInstance().translateAmazonClientException(amazonException);
 		}
 	}
 
@@ -89,7 +89,7 @@ public final class DomainManager {
 			sdb.createDomain(request);
 			LOGGER.debug("Created domain: {}", domainName);
 		} catch(AmazonClientException amazonException) {
-			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
+			throw SimpleDbExceptionTranslator.getTranslatorInstance().translateAmazonClientException(amazonException);
 		}
 	}
 
@@ -99,7 +99,7 @@ public final class DomainManager {
 			List<String> domainNames = listDomainsResult.getDomainNames();
 			return domainNames.contains(domainName);
 		} catch(AmazonClientException amazonException) {
-			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
+			throw SimpleDbExceptionTranslator.getTranslatorInstance().translateAmazonClientException(amazonException);
 		}
 	}
 

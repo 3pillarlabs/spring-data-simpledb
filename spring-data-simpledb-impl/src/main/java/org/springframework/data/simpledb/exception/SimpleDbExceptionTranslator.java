@@ -27,7 +27,8 @@ public final class SimpleDbExceptionTranslator implements PersistenceExceptionTr
         return instance;
     }
 
-    public static RuntimeException translateAmazonClientException(AmazonClientException e) {
+    // TODO: remove static calls
+    public RuntimeException translateAmazonClientException(AmazonClientException e) {
         RuntimeException translatedException = getTranslatorInstance().translateExceptionIfPossible(e);
         if(translatedException == null) {
             translatedException = e;
