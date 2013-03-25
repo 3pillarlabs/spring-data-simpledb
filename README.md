@@ -174,7 +174,7 @@ Or write a test client using the SimpleDb template:
         public void save_should_persist_single_item() {
             String itemName = "FirstItem";
     
-        	SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
+            SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
     		operations.createOrUpdate(user);
     		
     		SimpleDbUser foundUser = operations.read(user.getItemName(), user.getClass());
@@ -494,6 +494,18 @@ The links between the domains are specified via SimpleDB attributes as shown bel
     testDB.simpleDbReferences.firstNestedEntity = "first"
     testDB.firstNestedEntity.secondNestedEntity = "second"
 
+## Retries ##
+Being a fully restfull database, the probability to retrieve an un-expected Service Unavailable Exception (Http 503 Exception) has to be handled appropriatelly.
+An "abstraction" over the API is implemented that simplifies the user interaction with SimpleDB database.
+
+The Service Unavailable Exception is a resource-not-being-available exception, for eg: the server communication is overloaded;
+
+Curent release resolves this problem, by implementing an alghorithm for retry query the database when this exception is thrown by the database layer.
+The retry mechanism is configurable, from Java Configuration Bean, or from within the context configuration xml file. The xml configuration overwrites the Java Configuration.
+
+## Mapped SimpleDb Exception to Spring Exceptions ##
+Each possible thrown SimpleDb Exception are mapped and translated to Spring Core, or Spring Data related Exceptions.
+
 ## Known Limitations ##
 
 ### Serialization limitations
@@ -556,6 +568,10 @@ Currently, paginating partial annotated queries will return a collection of the 
     
 ### Reference
 Currently, @Reference serialization and deserialization is not supported for custom queries: fields marked with @Reference annotations are not allowed in the where clause of a custom query.
+
+### Retries
+The current timeout defaults to a fixed 400ms between each retry. This limitation needs to be translated to the Exponential Backoff algorithm( for eg: the first retry 400ms, the second 600ms, the third 1200ms )
+
 
 ### Design notes
 [Repository Generation sequence diagram](http://www.websequencediagrams.com/?lz=dGl0bGUgUmVwb3NpdG9yeSBHZW5lcmF0aW9uCgpDbGllbnQtLT5TcHJpbmdEYXRhQ29yZToAHQhlIG15IHIANAhpZXMKbm90ZSByaWdodCBvZiBTaW1wbGVEYk9wAEwHczoAARMgaW50ZXJmYWNlXG5oYXMgYSBzaW5nbGUgY29uY3JldGUgAEIFbWVudACBEwVcbigAUQhUZW1wbGF0ZS5jbGFzcylcbnNpbWlsYXIgd2l0aCBIaWJlcm5hdGUAHwgKCgCBOw4tPgCBDhRpbnN0YW50aQAUHQCCKApGYWN0b3J5AH0GADENAIEeCQCBdgopCgpsb29wIEZvciBlYWNoIGphdmEgZmlsZSBpbgCCQQp5IHBhY2thZ2UAgR8SAIJ7D3BhcnMAgzQMTWV0YWRhdGEAggwGAIEOMmdldFRhcmdldACECQooAEwSKQoAgWkfAIQiEgCCJxJJbXBsCmVuZACDBRAtPgCEcgY6AIRODCByZWFkeSBmb3IgQEF1dG93aXJl&s=rose) 
