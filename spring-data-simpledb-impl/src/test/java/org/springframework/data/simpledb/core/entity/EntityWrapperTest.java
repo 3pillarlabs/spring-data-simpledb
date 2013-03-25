@@ -20,7 +20,7 @@ public class EntityWrapperTest {
 	@Test
 	public void generateId_should_populate_itemName_of_Item() {
 		SimpleDbSampleEntity object = new SimpleDbSampleEntity();
-		EntityWrapper sdbEntity = new EntityWrapper(SimpleDbSampleEntity.entityInformation(), object);
+		EntityWrapper<SimpleDbSampleEntity, String> sdbEntity = new EntityWrapper(SimpleDbSampleEntity.entityInformation(), object);
 		sdbEntity.generateIdIfNotSet();
 		assertNotNull(object.getItemName());
 
@@ -30,7 +30,7 @@ public class EntityWrapperTest {
 	public void generateId_should_not_overwrite_existing_id() {
 		SimpleDbSampleEntity object = new SimpleDbSampleEntity();
 		object.setItemName("gigi");
-		EntityWrapper sdbEntity = new EntityWrapper(SimpleDbSampleEntity.entityInformation(), object);
+		EntityWrapper<SimpleDbSampleEntity, String> sdbEntity = new EntityWrapper(SimpleDbSampleEntity.entityInformation(), object);
 		sdbEntity.generateIdIfNotSet();
 		assertEquals("gigi", object.getItemName());
 	}
@@ -40,9 +40,9 @@ public class EntityWrapperTest {
 		SimpleDbSampleEntity object1 = new SimpleDbSampleEntity();
 		SimpleDbSampleEntity object2 = new SimpleDbSampleEntity();
 
-		EntityWrapper sdbEntity1 = new EntityWrapper(SimpleDbSampleEntity.entityInformation(), object1);
+		EntityWrapper<SimpleDbSampleEntity, String> sdbEntity1 = new EntityWrapper(SimpleDbSampleEntity.entityInformation(), object1);
 		sdbEntity1.generateIdIfNotSet();
-		EntityWrapper sdbEntity2 = new EntityWrapper(SimpleDbSampleEntity.entityInformation(), object2);
+		EntityWrapper<SimpleDbSampleEntity, String> sdbEntity2 = new EntityWrapper(SimpleDbSampleEntity.entityInformation(), object2);
 		sdbEntity2.generateIdIfNotSet();
 
 		assertNotEquals(object1.getItemName(), object2.getItemName());

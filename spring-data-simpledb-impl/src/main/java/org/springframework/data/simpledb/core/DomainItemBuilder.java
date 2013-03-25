@@ -6,6 +6,7 @@ import com.amazonaws.services.simpledb.model.SelectResult;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,13 +35,13 @@ public class DomainItemBuilder<T> {
 	}
 
 	private T buildDomainItem(SimpleDbEntityInformation<T, ?> entityInformation, Item item) {
-		EntityWrapper entity = new EntityWrapper(entityInformation);
+		EntityWrapper<T, ?> entity = new EntityWrapper<T, Serializable>(entityInformation);
 
 		entity.setId(item.getName());
 		final Map<String, String> attributes = convertSimpleDbAttributes(item.getAttributes());
 		entity.deserialize(attributes);
 
-		return (T) entity.getItem();
+		return entity.getItem();
 	}
 
 	private Map<String, String> convertSimpleDbAttributes(List<Attribute> simpleDbAttributes) {
