@@ -8,10 +8,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.simpledb.domain.SimpleDbUser;
 import org.springframework.data.simpledb.parser.TokenMgrError;
-import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
-import org.springframework.data.simpledb.sample.simpledb.repository.query.PagedAnnotatedQueryRepository;
-import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
+import org.springframework.data.simpledb.repository.util.SimpleDbUserBuilder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
