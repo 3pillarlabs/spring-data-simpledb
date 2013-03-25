@@ -1,24 +1,19 @@
 package org.springframework.data.simpledb.core;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.simpledb.core.domain.DomainManager;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.exception.InvalidSimpleDBQueryException;
-import org.springframework.data.simpledb.exception.SimpleDbExceptionTranslator;
 import org.springframework.data.simpledb.parser.SimpleDBParser;
 import org.springframework.data.simpledb.query.QueryUtils;
 import org.springframework.data.simpledb.reflection.MetadataParser;
 import org.springframework.data.simpledb.reflection.ReflectionUtils;
 import org.springframework.data.simpledb.repository.support.EmptyResultDataAccessException;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
@@ -31,429 +26,278 @@ import java.util.Map;
 /**
  * Primary implementation of {@link SimpleDbOperations}
  */
-public class SimpleDbTemplate implements SimpleDbOperations {
+public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbTemplate.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbTemplate.class);
 
-	private final SimpleDb simpleDb;
-	private final AmazonSimpleDB simpleDbClient;
+    public SimpleDbTemplate(SimpleDb simpleDb) {
+        super(simpleDb);
+    }
 
-	public SimpleDbTemplate(SimpleDb simpleDb) {
-		Assert.notNull(simpleDb);
-		this.simpleDb = simpleDb;
-		this.simpleDbClient = simpleDb.getSimpleDbClient();
-	}
+    @Override
+    public <T> T createOrUpdateImpl(T domainItem, EntityWrapper<T, ?> entity) {
+        Assert.notNull(entity.getDomain(), "Domain name should not be null");
 
-	@Override
-	public AmazonSimpleDB getDB() {
-		return simpleDb.getSimpleDbClient();
-	}
+        logOperation("Create or update", entity);
+        entity.generateIdIfNotSet();
 
-	public SimpleDb getSimpleDb() {
-		return simpleDb;
-	}
-
-	@Override
-	public String getDomainName(Class<?> entityClass) {
-		return simpleDb.getDomain(entityClass);
-	}
-
-	@Override
-	public <T> T createOrUpdate(T domainItem) {
-		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(domainItem.getClass());
-		final EntityWrapper<T, ?> entity = getEntityWrapper(domainItem, entityInformation);
-
-		Assert.notNull(entity.getDomain(), "Domain name should not be null");
-
-		manageSimpleDbDomains(entityInformation);
-
-		logOperation("Create or update", entity);
-		entity.generateIdIfNotSet();
-
-		for(final Field field : ReflectionUtils.getFirstLevelOfReferenceAttributes(domainItem.getClass())) {
-			final Object referenceEntity = ReflectionUtils.callGetter(domainItem, field.getName());
+        for (final Field field : ReflectionUtils.getFirstLevelOfReferenceAttributes(domainItem.getClass())) {
+            final Object referenceEntity = ReflectionUtils.callGetter(domainItem, field.getName());
 
 			/* recursive call */
-			if(referenceEntity != null) {
-				createOrUpdate(referenceEntity);
-			}
-		}
+            if (referenceEntity != null) {
+                createOrUpdate(referenceEntity);
+            }
+        }
 
-		delete(entity.getDomain(), entity.getItemName());
+        delete(entity.getDomain(), entity.getItemName());
 
-		Map<String, String> rawAttributes = entity.serialize();
-		List<PutAttributesRequest> putAttributesRequests = SimpleDbRequestBuilder.createPutAttributesRequests(
-				entity.getDomain(), entity.getItemName(), rawAttributes);
+        Map<String, String> rawAttributes = entity.serialize();
+        List<PutAttributesRequest> putAttributesRequests = SimpleDbRequestBuilder.createPutAttributesRequests(
+                entity.getDomain(), entity.getItemName(), rawAttributes);
 
-		for(PutAttributesRequest request : putAttributesRequests) {
-			try {
-				simpleDbClient.putAttributes(request);
-			} catch(AmazonClientException amazonException) {
-				throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
-			}
-		}
+        for (PutAttributesRequest request : putAttributesRequests) {
+            getDB().putAttributes(request);
+        }
+        return entity.getItem();
+    }
 
-		return entity.getItem();
-	}
+    @Override
+    public void deleteAttributesImpl(String domainName, String itemName) {
+        LOGGER.debug("Delete Domain\"{}\" ItemName \"{}\"", domainName, itemName);
 
-	@Override
-	public void delete(String domainName, String itemName) {
-		manageSimpleDbDomain(domainName);
+        Assert.notNull(domainName, "Domain name should not be null");
+        Assert.notNull(itemName, "Item name should not be null");
 
-		LOGGER.debug("Delete Domain\"{}\" ItemName \"{}\"", domainName, itemName);
+        getDB().deleteAttributes(new DeleteAttributesRequest(domainName, itemName));
+    }
 
-		Assert.notNull(domainName, "Domain name should not be null");
-		Assert.notNull(itemName, "Item name should not be null");
+    @Override
+    public <T> void deleteImpl(T domainItem, boolean consistentRead, SimpleDbEntityInformation<T, ?> entityInformation,
+                               EntityWrapper<T, ?> entity) {
+        if (consistentRead) {
+            T persistedEntity = read(entity.getItemName(), entityInformation.getJavaType(), consistentRead);
 
-		try {
-			simpleDbClient.deleteAttributes(new DeleteAttributesRequest(domainName, itemName));
-		} catch(AmazonClientException amazonException) {
-			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
-		}
-	}
+            if (persistedEntity == null) {
+                throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!",
+                        entityInformation.getJavaType(), entity.getItemName()));
+            }
+        }
 
-	@Override
-	public <T> void delete(T entity) {
-		delete(entity, simpleDb.isConsistentRead());
-	}
-
-	@Override
-	public <T> void delete(T domainItem, boolean consistentRead) {
-		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(domainItem.getClass());
-		final EntityWrapper<T, ?> entity = getEntityWrapper(domainItem, entityInformation);
-
-		if(consistentRead) {
-			T persistedEntity = read(entity.getItemName(), entityInformation.getJavaType(), consistentRead);
-
-			if(persistedEntity == null) {
-				throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!",
-						entityInformation.getJavaType(), entity.getItemName()));
-			}
-		}
-
-		for(final Field field : ReflectionUtils.getFirstLevelOfReferenceAttributes(domainItem.getClass())) {
-			final Object referenceEntity = ReflectionUtils.callGetter(domainItem, field.getName());
+        for (final Field field : ReflectionUtils.getFirstLevelOfReferenceAttributes(domainItem.getClass())) {
+            final Object referenceEntity = ReflectionUtils.callGetter(domainItem, field.getName());
 
 			/* recursive call */
-			if(referenceEntity != null) {
-				delete(referenceEntity, consistentRead);
-			}
-		}
-
-		delete(entity.getDomain(), entity.getItemName());
-	}
-
-	@Override
-	public <T> void deleteAll(Class<T> entityClass) {
-		deleteAll(entityClass, simpleDb.isConsistentRead());
-	}
-
-	@Override
-	public <T> void deleteAll(Class<T> entityClass, boolean consistentRead) {
-		for(T element : findAll(entityClass, consistentRead)) {
-			delete(element);
-		}
-	}
-
-	@Override
-	public <T, ID extends Serializable> T read(ID id, Class<T> entityClass) {
-		return read(id, entityClass, simpleDb.isConsistentRead());
-	}
-
-	@Override
-	public <T, ID extends Serializable> T read(ID id, Class<T> entityClass, boolean consistentRead) {
-		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
-
-		manageSimpleDbDomains(entityInformation);
-
-		LOGGER.debug("Read ItemName \"{}\"", id);
-
-		List<ID> ids = new ArrayList<ID>();
-		{
-			ids.add(id);
-		}
-		List<T> results = find(entityClass, new QueryBuilder(entityInformation).withIds(ids).toString(), consistentRead);
-		return results.size() == 1 ? results.get(0) : null;
-	}
+            if (referenceEntity != null) {
+                delete(referenceEntity, consistentRead);
+            }
+        }
+
+        delete(entity.getDomain(), entity.getItemName());
+    }
+
+    @Override
+    public SelectResult invokeFindImpl(boolean consistentRead, String escapedQuery) {
+        return getDB().select(new SelectRequest(escapedQuery, consistentRead));
+    }
+
+    @Override
+    public <T, ID extends Serializable> T readImpl(ID id, Class<T> entityClass, boolean consistentRead,
+                                                   SimpleDbEntityInformation<T, ?> entityInformation) {
+        LOGGER.debug("Read ItemName \"{}\"", id);
+
+        List<ID> ids = new ArrayList<ID>();
+        {
+            ids.add(id);
+        }
+        List<T> results = find(entityClass, new QueryBuilder(entityInformation).withIds(ids).toString(), consistentRead);
+        return results.size() == 1 ? results.get(0) : null;
+    }
+
+    @Override
+    public <T> long countImpl(String query, boolean consistentRead, SimpleDbEntityInformation<T, ?> entityInformation) {
+        LOGGER.debug("Count items for query " + query);
+        validateSelectQuery(query);
 
-	@Override
-	public <T> long count(Class<T> entityClass) {
-		return count(entityClass, simpleDb.isConsistentRead());
-	}
+        final String escapedQuery = getEscapedQuery(query, entityInformation);
 
-	@Override
-	public <T> long count(String query, Class<T> entityClass) {
-		return count(query, entityClass, simpleDb.isConsistentRead());
-	}
+        final SelectResult selectResult = invokeFindImpl(consistentRead, escapedQuery);
+        for (Item item : selectResult.getItems()) {
+            if (item.getName().equals("Domain")) {
+                for (Attribute attribute : item.getAttributes()) {
+                    if (attribute.getName().equals("Count")) {
+                        return Long.parseLong(attribute.getValue());
+                    }
+                }
+            }
+        }
 
-	@Override
-	public <T> long count(String query, Class<T> entityClass, boolean consistentRead) {
-		LOGGER.debug("Count items for query " + query);
+        return 0;
+    }
 
-		validateSelectQuery(query);
+    @Override
+    public <T> long countImpl(boolean consistentRead, SimpleDbEntityInformation<T, ?> entityInformation) {
+        final String countQuery = new QueryBuilder(entityInformation, true).toString();
+        LOGGER.debug("Count items for query " + countQuery);
+        validateSelectQuery(countQuery);
 
-		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
+        final SelectResult selectResult = invokeFindImpl(consistentRead, countQuery);
+        for (Item item : selectResult.getItems()) {
+            if (item.getName().equals("Domain")) {
+                for (Attribute attribute : item.getAttributes()) {
+                    if (attribute.getName().equals("Count")) {
+                        return Long.parseLong(attribute.getValue());
+                    }
+                }
+            }
+        }
 
-		manageSimpleDbDomains(entityInformation);
+        return 0;
+    }
 
-		final String escapedQuery = getEscapedQuery(query, entityInformation);
+    @Override
+    public <T> List<T> findAllQueryImpl(Class<T> entityClass, SimpleDbEntityInformation<T, ?> entityInformation) {
+        final String findAllQuery = new QueryBuilder(entityInformation).toString();
 
-		try {
-			final SelectResult selectResult = simpleDbClient.select(new SelectRequest(escapedQuery, consistentRead));
-			for(Item item : selectResult.getItems()) {
-				if(item.getName().equals("Domain")) {
-					for(Attribute attribute : item.getAttributes()) {
-						if(attribute.getName().equals("Count")) {
-							return Long.parseLong(attribute.getValue());
-						}
-					}
-				}
-			}
-		} catch(AmazonClientException amazonException) {
-			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
-		}
+        return find(entityClass, findAllQuery);
+    }
 
-		return 0;
-	}
+    @Override
+    public <T> Page<T> executePagedQueryImpl(Class<T> entityClass, String query, Pageable pageable,
+                                             boolean consistentRead, SimpleDbEntityInformation<T, ?> entityInformation) {
+        Assert.notNull(pageable);
+        Assert.isTrue(pageable.getPageNumber() > 0);
+        Assert.isTrue(pageable.getPageSize() > 0);
 
-	@Override
-	public <T> long count(Class<T> entityClass, boolean consistentRead) {
-		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
-		final String countQuery = new QueryBuilder(entityInformation, true).toString();
+        final String escapedQuery = getEscapedQuery(query, entityInformation);
 
-		manageSimpleDbDomains(entityInformation);
+        List<T> resultsList;
+        String queryWithPageSizeLimit = new QueryBuilder(escapedQuery).with(pageable).toString();
 
-		LOGGER.debug("Count items for query " + countQuery);
+        if (pageable.getPageNumber() != 1) {
+            String pageOffsetToken = getPageOffsetToken(pageable, entityInformation, escapedQuery, consistentRead);
 
-		validateSelectQuery(countQuery);
+            if (pageOffsetToken != null && !pageOffsetToken.isEmpty()) {
+                resultsList = find(entityInformation, queryWithPageSizeLimit, pageOffsetToken, consistentRead);
+            } else {
+                resultsList = Collections.emptyList();
+            }
 
-		try {
-			final SelectResult selectResult = simpleDbClient.select(new SelectRequest(countQuery, consistentRead));
-			for(Item item : selectResult.getItems()) {
-				if(item.getName().equals("Domain")) {
-					for(Attribute attribute : item.getAttributes()) {
-						if(attribute.getName().equals("Count")) {
-							return Long.parseLong(attribute.getValue());
-						}
-					}
-				}
-			}
-		} catch(AmazonClientException amazonException) {
-			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
-		}
+        } else {
+            resultsList = find(entityClass, queryWithPageSizeLimit, consistentRead);
+        }
 
-		return 0;
-	}
+        final String countQuery = new QueryBuilder(escapedQuery, true).toString();
 
-	@Override
-	public <T> List<T> find(Class<T> entityClass, String query) {
-		return find(entityClass, query, simpleDb.isConsistentRead());
-	}
+        Long totalCount = count(countQuery, entityClass, consistentRead);
 
-	@Override
-	public <T> List<T> find(Class<T> entityClass, String query, boolean consistentRead) {
-		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
+        return new PageImpl<T>(resultsList, pageable, totalCount);
+    }
 
-		manageSimpleDbDomains(entityInformation);
+    @Override
+    public <T> List<T> recursiveFindImpl(Class<T> entityClass, String query, boolean consistentRead,
+                                         SimpleDbEntityInformation<T, ?> entityInformation) {
 
-		LOGGER.debug("Find All Domain \"{}\" isConsistent=\"{}\"", entityInformation.getDomain(), consistentRead);
+        LOGGER.debug("Find All Domain \"{}\" isConsistent=\"{}\"", entityInformation.getDomain(), consistentRead);
 
-		validateSelectQuery(query);
+        validateSelectQuery(query);
 
-		final String escapedQuery = getEscapedQuery(query, entityInformation);
+        final String escapedQuery = getEscapedQuery(query, entityInformation);
 
-		List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<T>();
 
-		List<String> referenceFieldsNames = ReflectionUtils.getReferencedAttributeNames(entityClass);
+        List<String> referenceFieldsNames = ReflectionUtils.getReferencedAttributeNames(entityClass);
 
-		final DomainItemBuilder<T> domainItemBuilder = new DomainItemBuilder<T>();
+        final DomainItemBuilder<T> domainItemBuilder = new DomainItemBuilder<T>();
 
-		final SelectResult selectResult = simpleDbClient.select(new SelectRequest(escapedQuery, consistentRead));
+        final SelectResult selectResult = invokeFindImpl(consistentRead, escapedQuery);
 
-		if(referenceFieldsNames.isEmpty()) {
-			return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
-		}
+        if (referenceFieldsNames.isEmpty()) {
+            return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
+        }
 
-		try {
+        for (Item item : selectResult.getItems()) {
 
-			for(Item item : selectResult.getItems()) {
+            T populatedItem = domainItemBuilder.populateDomainItem(entityInformation, item);
 
-				T populatedItem = domainItemBuilder.populateDomainItem(entityInformation, item);
+            result.add(populatedItem);
+            for (Attribute attribute : item.getAttributes()) {
+                if (!referenceFieldsNames.contains(attribute.getName())) {
+                    continue;
+                }
 
-				result.add(populatedItem);
-				for(Attribute attribute : item.getAttributes()) {
-					if(!referenceFieldsNames.contains(attribute.getName())) {
-						continue;
-					}
+                Class<?> referenceEntityClazz = ReflectionUtils.getFieldClass(entityClass, attribute.getName());
+                Object referenceEntity = read(attribute.getValue(), referenceEntityClazz);
 
-					Class<?> referenceEntityClazz = ReflectionUtils.getFieldClass(entityClass, attribute.getName());
-					Object referenceEntity = read(attribute.getValue(), referenceEntityClazz);
+                ReflectionUtils.callSetter(populatedItem, attribute.getName(), referenceEntity);
 
-					ReflectionUtils.callSetter(populatedItem, attribute.getName(), referenceEntity);
+            }
+        }
 
-				}
-			}
+        return result;
+    }
 
-			return result;
+    @Override
+    public <T> List<T> findImpl(SimpleDbEntityInformation<T, ?> entityInformation, String query, String nextToken,
+                                boolean consistentRead) {
 
-		} catch(AmazonClientException amazonException) {
-			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
-		}
-	}
+        LOGGER.debug("Find All Domain \"{}\" isConsistent=\"{}\", with token!", entityInformation.getDomain(),
+                consistentRead);
 
-	@Override
-	public <T> List<T> findAll(Class<T> entityClass) {
-		return findAll(entityClass, simpleDb.isConsistentRead());
-	}
+        final DomainItemBuilder<T> domainItemBuilder = new DomainItemBuilder<T>();
 
-	@Override
-	public <T> List<T> findAll(Class<T> entityClass, boolean consistentRead) {
-		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
+        validateSelectQuery(query);
 
-		manageSimpleDbDomains(entityInformation);
+        final String escapedQuery = getEscapedQuery(query, entityInformation);
+        SelectRequest selectRequest = new SelectRequest(escapedQuery, consistentRead);
 
-		final String findAllQuery = new QueryBuilder(entityInformation).toString();
+        selectRequest.setNextToken(nextToken);
 
-		return find(entityClass, findAllQuery);
-	}
+        final SelectResult selectResult = getDB().select(selectRequest);
 
-	@Override
-	public <T> Page<T> executePagedQuery(Class<T> entityClass, String query, Pageable pageable) {
-		return executePagedQuery(entityClass, query, pageable, simpleDb.isConsistentRead());
-	}
+        return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
+    }
 
-	@Override
-	public <T> Page<T> executePagedQuery(Class<T> entityClass, String query, Pageable pageable, boolean consistentRead) {
-		final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
+    private <T> String getEscapedQuery(String query, SimpleDbEntityInformation<T, ?> entityInformation) {
+        return QueryUtils.escapeQueryAttributes(query, MetadataParser.getIdField(entityInformation.getJavaType())
+                .getName());
+    }
 
-		Assert.notNull(pageable);
-		Assert.isTrue(pageable.getPageNumber() > 0);
-		Assert.isTrue(pageable.getPageSize() > 0);
+    /*
+     * Validate a custom query before sending the request to the DB.
+     */
+    private void validateSelectQuery(final String selectQuery) {
+        final SimpleDBParser parser = new SimpleDBParser(selectQuery);
+        try {
+            parser.selectQuery();
+        } catch (Exception e) {
+            throw new InvalidSimpleDBQueryException("The following query is an invalid SimpleDB query: " + selectQuery,
+                    e);
+        }
+    }
 
-		final String escapedQuery = getEscapedQuery(query, entityInformation);
+    private String getNextToken(String query, boolean consistentRead) {
+        LOGGER.debug("Get next token for query: " + query);
 
-		List<T> resultsList;
-		String queryWithPageSizeLimit = new QueryBuilder(escapedQuery).with(pageable).toString();
+        Assert.isTrue(query.contains("limit"), "Only queries with limit have a next token!");
 
-		if(pageable.getPageNumber() != 1) {
-			String pageOffsetToken = getPageOffsetToken(pageable, entityInformation, escapedQuery, consistentRead);
+        final SelectResult selectResult = getDB().select(new SelectRequest(query, consistentRead));
 
-			if(pageOffsetToken != null && !pageOffsetToken.isEmpty()) {
-				resultsList = find(entityInformation, queryWithPageSizeLimit, pageOffsetToken, consistentRead);
-			} else {
-				resultsList = Collections.emptyList();
-			}
+        return selectResult.getNextToken();
+    }
 
-		} else {
-			resultsList = find(entityClass, queryWithPageSizeLimit, consistentRead);
-		}
+    private <T> String getPageOffsetToken(final Pageable pageable, SimpleDbEntityInformation<T, ?> entityInformation,
+                                          String query, boolean consistentRead) {
+        int previousPageNumber = pageable.getPageNumber() - 1;
+        int endOfPreviousPageLimit = previousPageNumber * pageable.getPageSize();
 
-		final String countQuery = new QueryBuilder(escapedQuery, true).toString();
+        final String escapedQuery = getEscapedQuery(query, entityInformation);
+        final String countQuery = new QueryBuilder(escapedQuery, true).withLimit(endOfPreviousPageLimit).toString();
 
-		Long totalCount = count(countQuery, entityClass, consistentRead);
+        return getNextToken(countQuery, consistentRead);
+    }
 
-		return new PageImpl<T>(resultsList, pageable, totalCount);
-	}
-
-	private <T> List<T> find(SimpleDbEntityInformation<T, ?> entityInformation, String query, String nextToken,
-			boolean consistentRead) {
-
-		manageSimpleDbDomains(entityInformation);
-
-		LOGGER.debug("Find All Domain \"{}\" isConsistent=\"{}\", with token!", entityInformation.getDomain(),
-				consistentRead);
-
-		final DomainItemBuilder<T> domainItemBuilder = new DomainItemBuilder<T>();
-
-		validateSelectQuery(query);
-
-		final String escapedQuery = getEscapedQuery(query, entityInformation);
-		SelectRequest selectRequest = new SelectRequest(escapedQuery, consistentRead);
-
-		selectRequest.setNextToken(nextToken);
-
-		try {
-			final SelectResult selectResult = simpleDbClient.select(selectRequest);
-
-			return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
-		} catch(AmazonClientException amazonException) {
-			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
-		}
-	}
-
-	private <T> EntityWrapper<T, ?> getEntityWrapper(T domainItem, SimpleDbEntityInformation<T, ?> entityInformation) {
-		final EntityWrapper<T, ?> entityWrapper = new EntityWrapper<T, Serializable>(entityInformation, domainItem);
-
-		return entityWrapper;
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> SimpleDbEntityInformation<T, ?> getEntityInformation(Class<?> domainClass) {
-		String simpleDbDomain = simpleDb.getSimpleDbDomain().getDomain(domainClass);
-		return (SimpleDbEntityInformation<T, ?>) SimpleDbEntityInformationSupport.getMetadata(domainClass,
-				simpleDbDomain);
-	}
-
-	private <T> String getEscapedQuery(String query, SimpleDbEntityInformation<T, ?> entityInformation) {
-		return QueryUtils.escapeQueryAttributes(query, MetadataParser.getIdField(entityInformation.getJavaType())
-				.getName());
-	}
-
-	/*
-	 * Validate a custom query before sending the request to the DB.
-	 */
-	private void validateSelectQuery(final String selectQuery) {
-		final SimpleDBParser parser = new SimpleDBParser(selectQuery);
-		try {
-			parser.selectQuery();
-		} catch(Exception e) {
-			throw new InvalidSimpleDBQueryException("The following query is an invalid SimpleDB query: " + selectQuery,
-					e);
-		}
-	}
-
-	private String getNextToken(String query, boolean consistentRead) {
-		LOGGER.debug("Get next token for query: " + query);
-
-		Assert.isTrue(query.contains("limit"), "Only queries with limit have a next token!");
-
-		try {
-			final SelectResult selectResult = simpleDbClient.select(new SelectRequest(query, consistentRead));
-
-			return selectResult.getNextToken();
-		} catch(AmazonClientException amazonException) {
-			throw SimpleDbExceptionTranslator.translateAmazonClientException(amazonException);
-		}
-	}
-
-	private <T> String getPageOffsetToken(final Pageable pageable, SimpleDbEntityInformation<T, ?> entityInformation,
-			String query, boolean consistentRead) {
-		int previousPageNumber = pageable.getPageNumber() - 1;
-		int endOfPreviousPageLimit = previousPageNumber * pageable.getPageSize();
-
-		final String escapedQuery = getEscapedQuery(query, entityInformation);
-		final String countQuery = new QueryBuilder(escapedQuery, true).withLimit(endOfPreviousPageLimit).toString();
-
-		return getNextToken(countQuery, consistentRead);
-	}
-
-	private void logOperation(String operation, EntityWrapper<?, ?> entity) {
-		LOGGER.debug(operation + " \"{}\" ItemName \"{}\"", entity.getDomain(), entity.getItemName());
-	}
-
-	private <T> void manageSimpleDbDomain(final String domainName) {
-		DomainManager.getInstance().manageDomain(domainName, simpleDb.getDomainManagementPolicy(), simpleDbClient);
-	}
-
-	private <T> void manageSimpleDbDomains(final SimpleDbEntityInformation<T, ?> entityInformation) {
-		List<Field> nestedReferences = ReflectionUtils.getReferenceAttributesList(entityInformation.getJavaType());
-
-		entityInformation.validateReferenceFields(nestedReferences);
-
-		for(Field eachNestedReference : nestedReferences) {
-			manageSimpleDbDomain(getDomainName(eachNestedReference.getType()));
-		}
-
-		manageSimpleDbDomain(entityInformation.getDomain());
-	}
+    private void logOperation(String operation, EntityWrapper<?, ?> entity) {
+        LOGGER.debug(operation + " \"{}\" ItemName \"{}\"", entity.getDomain(), entity.getItemName());
+    }
 }

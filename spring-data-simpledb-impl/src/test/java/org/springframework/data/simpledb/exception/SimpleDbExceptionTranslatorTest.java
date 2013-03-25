@@ -114,7 +114,8 @@ public class SimpleDbExceptionTranslatorTest {
 		assertThat(dataAccessException, is(instanceOf(DataAccessResourceFailureException.class)));
 
 		assertThat(dataAccessException, is(notNullValue()));
-		assertThat(dataAccessException.getLocalizedMessage(), StringContains.containsString("Amazon internal exception"));
+		assertThat(dataAccessException.getLocalizedMessage(),
+				StringContains.containsString("Amazon internal exception"));
 	}
 
 	@Test
@@ -126,7 +127,8 @@ public class SimpleDbExceptionTranslatorTest {
 		assertThat(dataAccessException, is(instanceOf(UncategorizedSpringDaoException.class)));
 
 		assertThat(dataAccessException, is(notNullValue()));
-		assertThat(dataAccessException.getLocalizedMessage(), StringContains.containsString("Amazon internal client exception"));
+		assertThat(dataAccessException.getLocalizedMessage(),
+				StringContains.containsString("Amazon internal client exception"));
 	}
 
 	@Test
