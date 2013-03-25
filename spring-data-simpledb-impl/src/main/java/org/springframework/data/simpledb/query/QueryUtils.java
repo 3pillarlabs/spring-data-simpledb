@@ -1,5 +1,7 @@
 package org.springframework.data.simpledb.query;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
@@ -8,7 +10,6 @@ import org.springframework.data.simpledb.reflection.SupportedCoreTypes;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -26,25 +27,20 @@ public final class QueryUtils {
 	private static final String BIND_PARAMETER_REGEX = "(\\?)";
 	private static final String SINGLE_QUOTE = "'";
 
+
     private QueryUtils() {
     }
 
-    public static String bindQueryParameters(SimpleDbQueryMethod queryMethod, Class<?> domainClazz,
-                                             Object... parameterValues) {
+    public static String bindQueryParameters(SimpleDbQueryMethod queryMethod, Object... parameterValues) {
         final String rawQuery = queryMethod.getAnnotatedQuery();
-        String completedQuery = null;
 
-        if(hasNamedParameter(queryMethod)) {
-            completedQuery = bindNamedParameters(queryMethod, parameterValues);
+        if(hasNamedParameter(queryMethod) || hasBindParameter(rawQuery)) {
+            final Parameters parameters = queryMethod.getParameters();
+            return buildQuery(rawQuery, parameters, parameterValues);
 
-        } else if(hasBindParameter(rawQuery)) {
-            completedQuery = bindIndexPositionParameters(rawQuery, parameterValues);
-
-        } else {
-            completedQuery = rawQuery;
         }
 
-        return completedQuery;
+        return rawQuery;
     }
 
     public static boolean hasNamedParameter(SimpleDbQueryMethod queryMethod) {
@@ -74,7 +70,7 @@ public final class QueryUtils {
     /**
      * Supported types: primitives & core java types (Date, primitive arrays, primitive wrappers)
      */
-    public static void validateBindParametersTypes(Parameters parameters, Object... parameterValues) {
+    public static void validateBindParametersTypes(Parameters parameters) {
         final Iterator<Parameter> it = parameters.iterator();
 
         while(it.hasNext()) {
@@ -112,71 +108,54 @@ public final class QueryUtils {
         return query.toLowerCase().contains("count(");
     }
 
-    static String bindNamedParameters(SimpleDbQueryMethod queryMethod, Object... parameterValues) {
-        final Parameters parameters = queryMethod.getParameters();
-        final String rawQuery = queryMethod.getAnnotatedQuery();
+    static String replaceOneParameterInQuery(String rawQuery, Parameter parameter, Object parameterValue){
+        final String bindEndCharacter = "\\b";
 
-        return buildQueryConditionsWithParameters(rawQuery, parameters, parameterValues);
+        String namedParameter;
+        if(parameter.isNamedParameter()){
+            namedParameter = parameter.getPlaceholder()+bindEndCharacter;
+        }else{
+            namedParameter = "\\?";
+        }
+
+        Assert.isTrue(rawQuery.matches("(.*)(" + namedParameter + ")(.*)"));
+
+        String replacedValue;
+        if(isInOperation(rawQuery, namedParameter)){
+            replacedValue = createInOperatorStatement(parameterValue);
+        } else {
+            replacedValue = createParameterValueWithQuotes(parameterValue);
+        }
+        rawQuery = rawQuery.replaceFirst(namedParameter, replacedValue);
+        return rawQuery;
     }
 
-    static String buildQueryConditionsWithParameters(String rawQuery, Parameters params, Object... parameterValues) {
-
-        final StringBuilder stringBuilder = new StringBuilder(rawQuery);
-        for(Iterator<Parameter> iterator = params.iterator(); iterator.hasNext();) {
+    static String buildQuery(final String rawQuery, Parameters parameters, Object... parameterValues) {
+        String replacedRawQuery = rawQuery;
+        for(Iterator<Parameter> iterator = parameters.iterator(); iterator.hasNext();) {
 
             Parameter eachParameter = iterator.next();
-            String namedParameter = eachParameter.getPlaceholder();
-
-            int startPointOfParameter = stringBuilder.indexOf(namedParameter);
-            Assert.isTrue(startPointOfParameter > -1);
-
-            String beforeNamedParameter = stringBuilder.substring(0, startPointOfParameter);
-            String replacedValue;
-            if(isInOperation(beforeNamedParameter)){
-                replacedValue = createInOperatorStatement(parameterValues[eachParameter.getIndex()]);
-            } else {
-                replacedValue = createParameterValueWithQuotes(parameterValues[eachParameter.getIndex()]);
-            }
-            stringBuilder.replace(startPointOfParameter, startPointOfParameter+namedParameter.length(), replacedValue);
-        }
-
-        return stringBuilder.toString().trim();
-    }
-
-    static String bindIndexPositionParameters(String queryString, Object... values) {
-
-        final Pattern pattern = Pattern.compile(BIND_PARAMETER_REGEX);
-        final StringBuilder builder = new StringBuilder();
-
-        final List<String> dividedQuery = Arrays.asList(queryString.trim().split(pattern.toString()));
-        int idx = 0;
-
-        try {
-            for(Iterator<String> iterator = dividedQuery.iterator(); iterator.hasNext(); ++idx) {
-                String partialQuery = iterator.next();
-                builder.append(partialQuery);
-                if(isInOperation(partialQuery)){
-                    builder.append(createInOperatorStatement(values[idx]));
-                }else{
-                    builder.append(createParameterValueWithQuotes(values[idx]));
-                }
+            if(Pageable.class.isAssignableFrom(eachParameter.getType()) ||  Sort.class.isAssignableFrom(eachParameter.getType())){
+                continue;
             }
 
-        } catch(RuntimeException e) {
-            throw new MappingException(
-                    "Invalid Query! Number of binding parameters in method must match number of query binding parameters",
-                    e);
+            replacedRawQuery = replaceOneParameterInQuery(replacedRawQuery, eachParameter, parameterValues[eachParameter.getIndex()]);
         }
 
-        return builder.toString();
+        return replacedRawQuery.trim();
     }
 
-    private static boolean isInOperation(String queryPart){
-        final String trimedString = queryPart.trim().toLowerCase();
-        if(trimedString.length()>=2){
-            return trimedString.endsWith("in");
-        }
-        return false;
+    private static boolean isInOperation(String rawQuery, String parameterName){
+        final String matchingString = "(.*)\\s(in)((\\s)*)"+parameterName+"(.*)";
+        return rawQuery.matches(matchingString);
+
+
+
+//        final String trimedString = queryPart.trim().toLowerCase();
+//        if(trimedString.length()>=2){
+//            return trimedString.endsWith("in");
+//        }
+//        return false;
     }
 
     private static String createParameterValueWithQuotes(Object parameterValue){

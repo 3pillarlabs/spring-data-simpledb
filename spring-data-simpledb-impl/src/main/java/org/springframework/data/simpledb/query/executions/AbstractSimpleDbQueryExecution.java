@@ -25,10 +25,10 @@ public abstract class AbstractSimpleDbQueryExecution {
 
 		// Demeter's Law
 		QueryUtils.validateBindParametersCount(queryMethod.getParameters(), parameterValues);
-		QueryUtils.validateBindParametersTypes(queryMethod.getParameters(), parameterValues);
+		QueryUtils.validateBindParametersTypes(queryMethod.getParameters());
 
 		Class<?> domainClass = queryMethod.getDomainClazz();
-		String query = QueryUtils.bindQueryParameters(queryMethod, domainClass, parameterValues);
+		String query = QueryUtils.bindQueryParameters(queryMethod, parameterValues);
 
 		SimpleDbQueryRunner queryRunner;
 

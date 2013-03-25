@@ -1,13 +1,9 @@
 package org.springframework.data.simpledb.sample.simpledb.repository.query;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.List;
-import java.util.Set;
-
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.simpledb.exception.InvalidSimpleDBQueryException;
@@ -16,6 +12,13 @@ import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
+import java.util.Set;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-consistent-repository-context.xml")
@@ -62,7 +65,7 @@ public class AnnotatedQueryTest {
 		assertNotNull(result);
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void customSelectWithIndexedParams_should_return_a_list_of() {
         //created in setup a list of 3 SimpleDbUser - first Item_0
 

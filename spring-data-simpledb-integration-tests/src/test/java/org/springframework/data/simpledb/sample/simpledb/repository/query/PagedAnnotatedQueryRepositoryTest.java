@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.simpledb.parser.TokenMgrError;
 import org.springframework.data.simpledb.sample.simpledb.domain.SimpleDbUser;
 import org.springframework.data.simpledb.sample.simpledb.repository.util.SimpleDbUserBuilder;
 import org.springframework.test.context.ContextConfiguration;
@@ -97,7 +98,7 @@ public class PagedAnnotatedQueryRepositoryTest {
 		assertNotNull(page.getContent());
 	}
 
-	@Test(expected = Exception.class)
+	@Test(expected = TokenMgrError.class)
 	public void paged_request_for_invalid_query_should_throw_exception() {
 		final int pageNumber = 1;
 		final int pageSize = 1;

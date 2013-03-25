@@ -35,9 +35,9 @@ public class SimpleDbNamedQueryMethodBindedTest {
 				SampleEntity.class);
 		final String toProcessRawQuery = repositoryMethod.getAnnotatedQuery();
 
-		final Parameters parameters = getMockParameters(":sampleAttribute", ":item_id");
+		final Parameters parameters = getMockParameters(new String[]{":sampleAttribute", ":item_id"}, new Class[]{String.class, String.class});
 
-		String resultedQuery = QueryUtils.buildQueryConditionsWithParameters(toProcessRawQuery, parameters, "3", "5");
+		String resultedQuery = QueryUtils.buildQuery(toProcessRawQuery, parameters, "3", "5");
 
 		assertThat(resultedQuery, is(expectedQuery));
 	}
@@ -53,9 +53,9 @@ public class SimpleDbNamedQueryMethodBindedTest {
 				SampleEntity.class);
 		final String toProcessRawQuery = repositoryMethod.getAnnotatedQuery();
 
-		final Parameters parameters = getMockParameters(":attribute", ":item");
+		final Parameters parameters = getMockParameters(new String[]{":attribute", ":item"}, new Class[]{String.class, String.class});
 
-		String resultedQuery = QueryUtils.buildQueryConditionsWithParameters(toProcessRawQuery, parameters, "3", "5");
+		String resultedQuery = QueryUtils.buildQuery(toProcessRawQuery, parameters, "3", "5");
 
 		assertThat(resultedQuery, is(expectedQuery));
 	}
@@ -74,9 +74,9 @@ public class SimpleDbNamedQueryMethodBindedTest {
 				SampleEntity.class);
 		final String toProcessRawQuery = repositoryMethod.getAnnotatedQuery();
 
-		final Parameters parameters = getMockParameters(":attribute", ":item");
+		final Parameters parameters = getMockParameters(new String[]{":attribute", ":item"}, new Class[]{String.class, int.class});
 
-		String resultedQuery = QueryUtils.buildQueryConditionsWithParameters(toProcessRawQuery, parameters, "3", 5);
+		String resultedQuery = QueryUtils.buildQuery(toProcessRawQuery, parameters, "3", 5);
 
 		assertThat(resultedQuery, is(expectedQuery));
 	}
