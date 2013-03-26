@@ -12,8 +12,6 @@ import static org.junit.Assert.assertTrue;
 
 public class MetadataParserFieldDefinitionTest {
 
-	private static final String SAMPLE_ITEM = "SAMPLE_ITEM";
-
 	@Test
 	public void getSupportedFields_should_return_list_of_primitives_wrappers() throws Exception {
 		List<Field> returnedPrimitiveWrappers = MetadataParser.getSupportedFields(SamplePrimitivesWrapper.class);

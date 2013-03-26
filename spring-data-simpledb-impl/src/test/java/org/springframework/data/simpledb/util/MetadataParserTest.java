@@ -91,7 +91,6 @@ public class MetadataParserTest {
 		MetadataParser.getIdField(new TwoIdsShouldFail());
 	}
 
-	@SuppressWarnings("unused")
 	static class SampleDeclaredPrimitives {
 
 		@Transient

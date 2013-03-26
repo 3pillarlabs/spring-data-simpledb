@@ -47,6 +47,7 @@ public class SimpleDbSampleEntity {
 		return atts;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static SimpleDbEntityInformation<SimpleDbSampleEntity, String> entityInformation() {
 		return (SimpleDbEntityInformation<SimpleDbSampleEntity, String>) SimpleDbEntityInformationSupport.getMetadata(
 				SimpleDbSampleEntity.class, "simpleDbSampleEntity");

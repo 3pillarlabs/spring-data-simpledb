@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 /**
@@ -125,6 +125,7 @@ public class MultipleResultExecutionTest {
 
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private SimpleDbQueryMethod prepareQueryMethodToTest(String methodName, Class<?> entityClass) throws Exception {
 		RepositoryMetadata repositoryMetadata = Mockito.mock(RepositoryMetadata.class);
 		when(repositoryMetadata.getDomainType()).thenReturn((Class) entityClass);

@@ -18,11 +18,11 @@ import org.springframework.data.simpledb.core.SimpleDbDomain;
 import org.springframework.data.simpledb.query.SampleEntity;
 import org.springframework.data.simpledb.query.SimpleDbQueryMethod;
 import org.springframework.data.simpledb.query.SimpleDbQueryRunner;
-import org.springframework.data.simpledb.query.SimpleDbRepositoryQuery;
 
 public class PagedResultExecutionTest {
 
 	@Test
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void doExecute_should_return_Page_type() throws Exception {
 		final SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectAllIntoPage", SampleEntity.class);
 		final PagedResultExecution execution = new PagedResultExecution(null);
@@ -36,6 +36,7 @@ public class PagedResultExecutionTest {
 	}
 
 	@Test
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void doExecute_should_return_List_type() throws Exception {
 		final SimpleDbQueryMethod repositoryMethod = prepareQueryMethodToTest("selectAllIntoList", SampleEntity.class);
 		final PagedResultExecution execution = new PagedResultExecution(null);
@@ -58,6 +59,7 @@ public class PagedResultExecutionTest {
 
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private SimpleDbQueryMethod prepareQueryMethodToTest(String methodName, Class<?> entityClass) throws Exception {
 		RepositoryMetadata repositoryMetadata = Mockito.mock(RepositoryMetadata.class);
 		when(repositoryMetadata.getDomainType()).thenReturn((Class) entityClass);

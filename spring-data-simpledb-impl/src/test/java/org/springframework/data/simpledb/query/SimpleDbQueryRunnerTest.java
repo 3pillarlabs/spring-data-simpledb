@@ -12,7 +12,6 @@ import org.springframework.data.simpledb.core.SimpleDbOperations;
 
 public class SimpleDbQueryRunnerTest {
 
-	@SuppressWarnings("unchecked")
 	@Test(expected = IllegalArgumentException.class)
 	public void executeSingleResultQuery_should_fail_if_multiple_results_are_retrieved() {
 

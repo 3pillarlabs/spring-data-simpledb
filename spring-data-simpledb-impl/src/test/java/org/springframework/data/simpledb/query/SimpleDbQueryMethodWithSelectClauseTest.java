@@ -45,6 +45,7 @@ public class SimpleDbQueryMethodWithSelectClauseTest {
 		List<SampleEntity> selectByEmptyString();
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private SimpleDbQueryMethod prepareQueryMethodToTest(String methodName, Class<?> entityClass) throws Exception {
 		RepositoryMetadata repositoryMetadata = Mockito.mock(RepositoryMetadata.class);
 		when(repositoryMetadata.getDomainType()).thenReturn((Class) entityClass);

@@ -29,7 +29,7 @@ public abstract class IncrementalWait<T> {
 			ret = execute();
 			retries++;
 			try {
-				Thread.currentThread().sleep(INCREEMENT_WAIT_MILLIS);
+				Thread.sleep(INCREEMENT_WAIT_MILLIS);
 			} catch(InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -44,7 +44,7 @@ public abstract class IncrementalWait<T> {
 			ret = execute();
 			retries++;
 			try {
-				Thread.currentThread().sleep(INCREEMENT_WAIT_MILLIS);
+				Thread.sleep(INCREEMENT_WAIT_MILLIS);
 			} catch(InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -58,7 +58,7 @@ public abstract class IncrementalWait<T> {
 			ret = execute();
 			retries++;
 			try {
-				Thread.currentThread().sleep(INCREEMENT_WAIT_MILLIS);
+				Thread.sleep(INCREEMENT_WAIT_MILLIS);
 			} catch(InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -70,7 +70,7 @@ public abstract class IncrementalWait<T> {
 		while(condition() && retries < MAX_RETRIES) {
 			retries++;
 			try {
-				Thread.currentThread().sleep(INCREEMENT_WAIT_MILLIS);
+				Thread.sleep(INCREEMENT_WAIT_MILLIS);
 			} catch(InterruptedException e) {
 				e.printStackTrace();
 			}

@@ -9,8 +9,7 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class DomainItemBuilderTest {
 

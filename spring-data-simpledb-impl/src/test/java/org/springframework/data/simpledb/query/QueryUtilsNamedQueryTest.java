@@ -149,7 +149,7 @@ public class QueryUtilsNamedQueryTest {
 		assertThat(resultedQuery, is(expectedQuery));
 	}
 
-	static final List<Class<?>> TYPES = Arrays.asList(Pageable.class, Sort.class);
+	static final List<Class<?>> TYPES = Arrays.<Class<?>>asList(Pageable.class, Sort.class);
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Parameter getMockParameter(String placeHolder, Integer idx, Class clazz) {

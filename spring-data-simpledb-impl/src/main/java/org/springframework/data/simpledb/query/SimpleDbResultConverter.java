@@ -42,7 +42,7 @@ public final class SimpleDbResultConverter {
 			}
 			return rows;
 		} else {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 	}
 

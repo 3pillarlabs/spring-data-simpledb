@@ -14,11 +14,11 @@ public class QueryBuilder {
 
 	private StringBuilder query;
 
-	public QueryBuilder(SimpleDbEntityInformation entityInformation) {
+	public QueryBuilder(SimpleDbEntityInformation<?, ?> entityInformation) {
 		this(entityInformation, false);
 	}
 
-	public QueryBuilder(SimpleDbEntityInformation entityInformation, boolean shouldCount) {
+	public QueryBuilder(SimpleDbEntityInformation<?, ?> entityInformation, boolean shouldCount) {
 		query = new StringBuilder();
 		query.append("select");
 
@@ -51,8 +51,8 @@ public class QueryBuilder {
 		return this;
 	}
 
-	public QueryBuilder withIds(Iterable iterable) {
-		Iterator iterator = iterable.iterator();
+	public QueryBuilder withIds(Iterable<?> iterable) {
+		Iterator<?> iterator = iterable.iterator();
 		appendWhereOrEndClause(query);
 
 		query.append("(");

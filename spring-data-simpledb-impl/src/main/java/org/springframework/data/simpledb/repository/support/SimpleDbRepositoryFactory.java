@@ -31,6 +31,7 @@ public class SimpleDbRepositoryFactory extends RepositoryFactorySupport {
 	 * org.springframework.data.repository.core.support.RepositoryFactorySupport#getTargetRepository(org.springframework
 	 * .data.repository.core.RepositoryMetadata)
 	 */
+	@SuppressWarnings( { "unchecked", "rawtypes" })
 	@Override
 	protected Object getTargetRepository(RepositoryMetadata metadata) {
 		SimpleDbEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());

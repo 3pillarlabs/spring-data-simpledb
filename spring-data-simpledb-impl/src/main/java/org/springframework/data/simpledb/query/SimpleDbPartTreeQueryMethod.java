@@ -22,7 +22,7 @@ public class SimpleDbPartTreeQueryMethod extends SimpleDbQueryMethod {
 		super(method, metadata, simpleDbDomain);
 		
 		final String domainName = simpleDbDomain.getDomain(metadata.getDomainType());
-		final SimpleDbEntityInformation entityInformation = SimpleDbEntityInformationSupport.getMetadata(metadata.getDomainType(), domainName);
+		final SimpleDbEntityInformation<?, ?> entityInformation = SimpleDbEntityInformationSupport.getMetadata(metadata.getDomainType(), domainName);
 		
 		whereExpression = PartTreeConverter.toIndexedQuery(new PartTree(method.getName(), entityInformation.getJavaType()));
 	}

@@ -51,7 +51,7 @@ public class QueryUtilsArrayTest {
         assertThat(resultedQuery, is(expectedQuery));
     }
 
-	static final List<Class<?>> TYPES = Arrays.asList(Pageable.class, Sort.class);
+	static final List<Class<?>> TYPES = Arrays.<Class<?>>asList(Pageable.class, Sort.class);
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Parameter getMockParameter(String placeHolder, Integer idx, Class clazz) {
@@ -64,10 +64,6 @@ public class QueryUtilsArrayTest {
 		Mockito.when(mockParameter.isSpecialParameter()).thenReturn(TYPES.contains(clazz));
 
 		return mockParameter;
-	}
-
-	private Parameters getMockParameters(String... placeHolders) {
-		return getMockParameters(placeHolders, new Class[placeHolders.length]);
 	}
 
 	@SuppressWarnings({ "rawtypes" })

@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class SimpleDbAttributeValueSplitterTest {
 

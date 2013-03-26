@@ -23,9 +23,6 @@ import java.lang.reflect.Method;
 public final class SimpleDbQueryLookupStrategy implements QueryLookupStrategy {
 
 	private SimpleDbOperations simpleDbOperations;
-	
-	private SimpleDbQueryLookupStrategy() {
-	}
 
 	public SimpleDbQueryLookupStrategy(SimpleDbOperations simpleDbOperations) {
 		this.simpleDbOperations = simpleDbOperations;

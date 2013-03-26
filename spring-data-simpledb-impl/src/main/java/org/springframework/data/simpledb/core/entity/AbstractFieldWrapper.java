@@ -42,6 +42,11 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 	public Field getField() {
 		return this.field;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public Class<T> getFieldType() {
+		return (Class<T>) getField().getType();
+	}
 
 	/**
 	 * Sets value via setter

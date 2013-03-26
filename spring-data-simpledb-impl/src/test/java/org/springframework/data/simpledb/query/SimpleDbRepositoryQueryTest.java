@@ -5,6 +5,7 @@ import org.mockito.Mockito;
 
 public class SimpleDbRepositoryQueryTest {
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test(expected = IllegalArgumentException.class)
 	public void assertNotHavingNestedQueryParameters_should_fail_for_nested_attributes() {
 		SimpleDbQueryMethod method = Mockito.mock(SimpleDbQueryMethod.class);

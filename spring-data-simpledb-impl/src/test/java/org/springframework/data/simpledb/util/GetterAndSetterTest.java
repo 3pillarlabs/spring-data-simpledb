@@ -48,7 +48,6 @@ public class GetterAndSetterTest {
 		private String withoutGetterAndSetter;
 		private Integer withGetterAndSetter;
 		private Boolean onlyWithGetter;
-		private Double onlyWithSetter;
 
 		public Integer getWithGetterAndSetter() {
 			return withGetterAndSetter;
@@ -61,9 +60,6 @@ public class GetterAndSetterTest {
 		public Boolean getOnlyWithGetter() {
 			return onlyWithGetter;
 		}
-
-		public void setOnlyWithSetter(Double onlyWithSetter) {
-			this.onlyWithSetter = onlyWithSetter;
-		}
+		
 	}
 }

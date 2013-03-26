@@ -80,6 +80,7 @@ public class JsonMarshallerTest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void should_marshal_unmarshal_maps_of_Strings() {
 		Map<String, String> map = new LinkedHashMap<String, String>();
 		map.put("TestKey", "Test Value");

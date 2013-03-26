@@ -53,7 +53,7 @@ public class SimpleDbIndexByQueryMethodBindedTest {
 
 		// @Query(select = {"item_id", "sampleAttribute"}, where = " item_id <= ? <= ? or sampleAttribute = ? ")
         final Parameters parameters = getMockParameters(new String[]{"?","?"}, new Class[]{int.class, String.class});
-        final String resultedQuery = QueryUtils.buildQuery(toProcessParsedQuery, parameters, age, email);
+        QueryUtils.buildQuery(toProcessParsedQuery, parameters, age, email);
 	}
 
 	public interface AnnotatedQueryRepository {
@@ -65,6 +65,7 @@ public class SimpleDbIndexByQueryMethodBindedTest {
 		List<SampleEntity> selectWithWrongTrickyIndexByParameters();
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private SimpleDbQueryMethod prepareQueryMethodToTest(String methodName, Class<?> entityClass) throws Exception {
 		RepositoryMetadata repositoryMetadata = Mockito.mock(RepositoryMetadata.class);
 		when(repositoryMetadata.getDomainType()).thenReturn((Class) entityClass);
@@ -75,7 +76,7 @@ public class SimpleDbIndexByQueryMethodBindedTest {
 		return new SimpleDbQueryMethod(testMethod, repositoryMetadata, simpleDbDomain);
 	}
 
-    static final List<Class<?>> TYPES = Arrays.asList(Pageable.class, Sort.class);
+    static final List<Class<?>> TYPES = Arrays.<Class<?>>asList(Pageable.class, Sort.class);
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private Parameter getMockParameter(String placeHolder, Integer idx, Class clazz) {
@@ -88,10 +89,6 @@ public class SimpleDbIndexByQueryMethodBindedTest {
         Mockito.when(mockParameter.isSpecialParameter()).thenReturn(TYPES.contains(clazz));
 
         return mockParameter;
-    }
-
-    private Parameters getMockParameters(String... placeHolders) {
-        return getMockParameters(placeHolders, new Class[placeHolders.length]);
     }
 
     @SuppressWarnings({ "rawtypes" })

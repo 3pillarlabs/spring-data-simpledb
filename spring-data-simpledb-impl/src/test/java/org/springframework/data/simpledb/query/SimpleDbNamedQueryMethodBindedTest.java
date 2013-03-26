@@ -94,8 +94,9 @@ public class SimpleDbNamedQueryMethodBindedTest {
 	}
 
 	// -------------------------------- Reused/Mocks --------------------------------- //
-	static final List<Class<?>> TYPES = Arrays.asList(Pageable.class, Sort.class);
+	static final List<Class<?>> TYPES = Arrays.<Class<?>>asList(Pageable.class, Sort.class);
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Parameter getMockParameter(String placeHolder, Integer idx, Class clazz) {
 		Parameter mockParameter = Mockito.mock(Parameter.class);
 
@@ -106,10 +107,6 @@ public class SimpleDbNamedQueryMethodBindedTest {
 		Mockito.when(mockParameter.isSpecialParameter()).thenReturn(TYPES.contains(clazz));
 
 		return mockParameter;
-	}
-
-	private Parameters getMockParameters(String... placeHolders) {
-		return getMockParameters(placeHolders, new Class[placeHolders.length]);
 	}
 
 	@SuppressWarnings({ "rawtypes" })
@@ -127,6 +124,7 @@ public class SimpleDbNamedQueryMethodBindedTest {
 		return mockParameters;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private SimpleDbQueryMethod prepareQueryMethodToTest(String methodName, Class<?> entityClass) throws Exception {
 		RepositoryMetadata repositoryMetadata = Mockito.mock(RepositoryMetadata.class);
 		when(repositoryMetadata.getDomainType()).thenReturn((Class) entityClass);
