@@ -1,11 +1,11 @@
 package org.springframework.data.simpledb.core.entity;
 
+import org.springframework.data.simpledb.reflection.ReflectionUtils;
+import org.springframework.util.Assert;
+
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Map;
-
-import org.springframework.data.simpledb.util.ReflectionUtils;
-import org.springframework.util.Assert;
 
 public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 
@@ -41,6 +41,11 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 
 	public Field getField() {
 		return this.field;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Class<T> getFieldType() {
+		return (Class<T>) getField().getType();
 	}
 
 	/**

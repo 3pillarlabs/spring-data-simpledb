@@ -9,8 +9,8 @@ import org.springframework.data.simpledb.query.executions.AbstractSimpleDbQueryE
 import org.springframework.data.simpledb.query.executions.MultipleResultExecution;
 import org.springframework.data.simpledb.query.executions.PagedResultExecution;
 import org.springframework.data.simpledb.query.executions.SingleResultExecution;
-import org.springframework.data.simpledb.util.FieldType;
-import org.springframework.data.simpledb.util.FieldTypeIdentifier;
+import org.springframework.data.simpledb.reflection.FieldType;
+import org.springframework.data.simpledb.reflection.FieldTypeIdentifier;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -54,7 +54,6 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
 		return queryMethod.getAnnotatedQuery() == null ? null : new SimpleDbRepositoryQuery(queryMethod,
 				simpleDbOperations);
 	}
-
 
 	protected AbstractSimpleDbQueryExecution getExecution() {
 		String query = method.getAnnotatedQuery();

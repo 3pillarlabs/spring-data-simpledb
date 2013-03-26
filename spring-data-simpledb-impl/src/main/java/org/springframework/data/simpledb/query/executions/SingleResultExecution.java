@@ -4,7 +4,7 @@ import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.query.QueryUtils;
 import org.springframework.data.simpledb.query.SimpleDbQueryMethod;
 import org.springframework.data.simpledb.query.SimpleDbQueryRunner;
-import org.springframework.data.simpledb.util.ReflectionUtils;
+import org.springframework.data.simpledb.reflection.ReflectionUtils;
 import org.springframework.util.Assert;
 
 public class SingleResultExecution extends AbstractSimpleDbQueryExecution {

@@ -15,12 +15,12 @@
  */
 package org.springframework.data.simpledb.repository.support.entityinformation;
 
+import org.springframework.data.simpledb.reflection.MetadataParser;
+
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.data.simpledb.util.MetadataParser;
 
 public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> extends
 		SimpleDbEntityInformationSupport<T, ID> {

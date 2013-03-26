@@ -174,7 +174,7 @@ Or write a test client using the SimpleDb template:
         public void save_should_persist_single_item() {
             String itemName = "FirstItem";
     
-        	SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
+            SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
     		operations.createOrUpdate(user);
     		
     		SimpleDbUser foundUser = operations.read(user.getItemName(), user.getClass());
@@ -211,6 +211,29 @@ Queries are validated against method's returned type. The following query won't 
     @Query(value = "select * from `testDB.simpleDbUser`")
     List<String> customSelectAllWrongReturnType();
 
+Custom queries can also be derived directly from the method name. For example, the following query
+
+    List<SimpleDbUser> findByPrimitiveFieldGreaterThan(final float value);
+
+is a valid query and will return all SimpleDbUsers having primitiveField greater than the specified value. Spring data supports a set of operators you can apply uppon your attributes, but we only support the ones that have an equivalent operator in simpleDb.
+
+The following is the list of supported operators:
+
+* Is, Equals, IsNot, Not
+* IsGreaterThan, GreaterThan, IsLessThan, LessThan
+* IsGreaterThanEqual, GreaterThanEqual, IsLessThanEqual, LessThanEqual
+* Like, NotLike
+* Between, IsBetween
+* IsNotNull, IsNull
+* In
+
+To be noted: when using the LIKE operator, the provided method parametr must be of one of the following forms (from the simpleDb simpleDb API):
+
+* %value
+* value%
+* %value% 
+
+Using an unsupported operator will result into a MappingException.
 ####@Query annotation ####
 
 Query annotation may have the fallowing parameters:
@@ -471,6 +494,18 @@ The links between the domains are specified via SimpleDB attributes as shown bel
     testDB.simpleDbReferences.firstNestedEntity = "first"
     testDB.firstNestedEntity.secondNestedEntity = "second"
 
+## Retries ##
+Being a fully restfull database, the probability to retrieve an un-expected Service Unavailable Exception (Http 503 Exception) has to be handled appropriatelly.
+An "abstraction" over the API is implemented that simplifies the user interaction with SimpleDB database.
+
+The Service Unavailable Exception is a resource-not-being-available exception, for eg: the server communication is overloaded;
+
+Curent release resolves this problem, by implementing an alghorithm for retry query the database when this exception is thrown by the database layer.
+The retry mechanism is configurable, from Java Configuration Bean, or from within the context configuration xml file. The xml configuration overwrites the Java Configuration.
+
+## Mapped SimpleDb Exception to Spring Exceptions ##
+Each possible thrown SimpleDb Exception are mapped and translated to Spring Core, or Spring Data related Exceptions.
+
 ## Known Limitations ##
 
 ### Serialization limitations
@@ -521,6 +556,10 @@ Nevertheless, querying an entire entity would correctly deserialize the chuncked
 
     select * from `testDb.company`
 
+Although Spring Data supports nested attributes in query methods, simpleDb custom queries derived from method names cannot use attributes from nested entities. For instance, the following query is not valid:
+
+    SimpleDbUser findByNesteEntity_NesteField(int value);
+
 ### Paging
 Currently, paginating partial annotated queries will return a collection of the queried entity instead of a collection of the queried partial fields. The following example is a valid partial query and each item in the collection will have the itemName and the requested partial fields populated with values. All the other fields will be empty.
 
@@ -529,6 +568,10 @@ Currently, paginating partial annotated queries will return a collection of the 
     
 ### Reference
 Currently, @Reference serialization and deserialization is not supported for custom queries: fields marked with @Reference annotations are not allowed in the where clause of a custom query.
+
+### Retries
+The current timeout defaults to a fixed 400ms between each retry. This limitation needs to be translated to the Exponential Backoff algorithm( for eg: the first retry 400ms, the second 600ms, the third 1200ms )
+
 
 ### Design notes
 [Repository Generation sequence diagram](http://www.websequencediagrams.com/?lz=dGl0bGUgUmVwb3NpdG9yeSBHZW5lcmF0aW9uCgpDbGllbnQtLT5TcHJpbmdEYXRhQ29yZToAHQhlIG15IHIANAhpZXMKbm90ZSByaWdodCBvZiBTaW1wbGVEYk9wAEwHczoAARMgaW50ZXJmYWNlXG5oYXMgYSBzaW5nbGUgY29uY3JldGUgAEIFbWVudACBEwVcbigAUQhUZW1wbGF0ZS5jbGFzcylcbnNpbWlsYXIgd2l0aCBIaWJlcm5hdGUAHwgKCgCBOw4tPgCBDhRpbnN0YW50aQAUHQCCKApGYWN0b3J5AH0GADENAIEeCQCBdgopCgpsb29wIEZvciBlYWNoIGphdmEgZmlsZSBpbgCCQQp5IHBhY2thZ2UAgR8SAIJ7D3BhcnMAgzQMTWV0YWRhdGEAggwGAIEOMmdldFRhcmdldACECQooAEwSKQoAgWkfAIQiEgCCJxJJbXBsCmVuZACDBRAtPgCEcgY6AIRODCByZWFkeSBmb3IgQEF1dG93aXJl&s=rose) 

@@ -5,7 +5,7 @@ import org.springframework.data.simpledb.query.QueryUtils;
 import org.springframework.data.simpledb.query.SimpleDbQueryMethod;
 import org.springframework.data.simpledb.query.SimpleDbQueryRunner;
 import org.springframework.data.simpledb.query.SimpleDbResultConverter;
-import org.springframework.data.simpledb.util.ReflectionUtils;
+import org.springframework.data.simpledb.reflection.ReflectionUtils;
 
 import java.util.List;
 import java.util.Set;

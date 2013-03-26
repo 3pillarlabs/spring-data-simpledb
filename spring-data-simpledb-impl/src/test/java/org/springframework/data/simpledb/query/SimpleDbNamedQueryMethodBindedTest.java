@@ -1,14 +1,5 @@
 package org.springframework.data.simpledb.query;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +8,17 @@ import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.simpledb.annotation.Query;
+import org.springframework.data.simpledb.attributeutil.SimpleDBAttributeConverter;
 import org.springframework.data.simpledb.core.SimpleDbDomain;
-import org.springframework.data.simpledb.util.SimpleDBAttributeConverter;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 public class SimpleDbNamedQueryMethodBindedTest {
 
@@ -35,9 +35,9 @@ public class SimpleDbNamedQueryMethodBindedTest {
 				SampleEntity.class);
 		final String toProcessRawQuery = repositoryMethod.getAnnotatedQuery();
 
-		final Parameters parameters = getMockParameters(":sampleAttribute", ":item_id");
+		final Parameters parameters = getMockParameters(new String[]{":sampleAttribute", ":item_id"}, new Class[]{String.class, String.class});
 
-		String resultedQuery = QueryUtils.buildQueryConditionsWithParameters(toProcessRawQuery, parameters, "3", "5");
+		String resultedQuery = QueryUtils.buildQuery(toProcessRawQuery, parameters, "3", "5");
 
 		assertThat(resultedQuery, is(expectedQuery));
 	}
@@ -53,9 +53,9 @@ public class SimpleDbNamedQueryMethodBindedTest {
 				SampleEntity.class);
 		final String toProcessRawQuery = repositoryMethod.getAnnotatedQuery();
 
-		final Parameters parameters = getMockParameters(":attribute", ":item");
+		final Parameters parameters = getMockParameters(new String[]{":attribute", ":item"}, new Class[]{String.class, String.class});
 
-		String resultedQuery = QueryUtils.buildQueryConditionsWithParameters(toProcessRawQuery, parameters, "3", "5");
+		String resultedQuery = QueryUtils.buildQuery(toProcessRawQuery, parameters, "3", "5");
 
 		assertThat(resultedQuery, is(expectedQuery));
 	}
@@ -74,9 +74,9 @@ public class SimpleDbNamedQueryMethodBindedTest {
 				SampleEntity.class);
 		final String toProcessRawQuery = repositoryMethod.getAnnotatedQuery();
 
-		final Parameters parameters = getMockParameters(":attribute", ":item");
+		final Parameters parameters = getMockParameters(new String[]{":attribute", ":item"}, new Class[]{String.class, int.class});
 
-		String resultedQuery = QueryUtils.buildQueryConditionsWithParameters(toProcessRawQuery, parameters, "3", 5);
+		String resultedQuery = QueryUtils.buildQuery(toProcessRawQuery, parameters, "3", 5);
 
 		assertThat(resultedQuery, is(expectedQuery));
 	}
@@ -94,8 +94,9 @@ public class SimpleDbNamedQueryMethodBindedTest {
 	}
 
 	// -------------------------------- Reused/Mocks --------------------------------- //
-	static final List<Class<?>> TYPES = Arrays.asList(Pageable.class, Sort.class);
+	static final List<Class<?>> TYPES = Arrays.<Class<?>>asList(Pageable.class, Sort.class);
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Parameter getMockParameter(String placeHolder, Integer idx, Class clazz) {
 		Parameter mockParameter = Mockito.mock(Parameter.class);
 
@@ -106,10 +107,6 @@ public class SimpleDbNamedQueryMethodBindedTest {
 		Mockito.when(mockParameter.isSpecialParameter()).thenReturn(TYPES.contains(clazz));
 
 		return mockParameter;
-	}
-
-	private Parameters getMockParameters(String... placeHolders) {
-		return getMockParameters(placeHolders, new Class[placeHolders.length]);
 	}
 
 	@SuppressWarnings({ "rawtypes" })
@@ -127,6 +124,7 @@ public class SimpleDbNamedQueryMethodBindedTest {
 		return mockParameters;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private SimpleDbQueryMethod prepareQueryMethodToTest(String methodName, Class<?> entityClass) throws Exception {
 		RepositoryMetadata repositoryMetadata = Mockito.mock(RepositoryMetadata.class);
 		when(repositoryMetadata.getDomainType()).thenReturn((Class) entityClass);

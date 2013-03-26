@@ -1,15 +1,15 @@
 package org.springframework.data.simpledb.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.simpledb.core.NestedDomainEntitiesTest.AClass.BClass;
+import org.springframework.data.simpledb.reflection.MetadataParser;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
-import org.junit.Test;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.simpledb.core.NestedDomainEntitiesTest.AClass.BClass;
-import org.springframework.data.simpledb.util.MetadataParser;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class NestedDomainEntitiesTest {
 
