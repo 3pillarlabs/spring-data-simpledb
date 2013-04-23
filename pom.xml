@@ -112,7 +112,13 @@
         </plugins>
     </build>
     
-   
+	<distributionManagement>
+		<snapshotRepository>
+			<id>3pillarlabs</id>
+			<name>3pillarlabs-snapshots</name>
+			<url>http://labs.3pillarglobal.com:11001/artifactory/libs-snapshot-local</url>
+		</snapshotRepository>
+	</distributionManagement>
  
     <modules>
         <module>spring-data-simpledb-impl</module>
