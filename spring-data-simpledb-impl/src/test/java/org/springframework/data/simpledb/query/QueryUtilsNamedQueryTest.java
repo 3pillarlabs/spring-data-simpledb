@@ -149,6 +149,18 @@ public class QueryUtilsNamedQueryTest {
 		assertThat(resultedQuery, is(expectedQuery));
 	}
 
+    @Test
+    public void like_operators_should_be_wrapped_in_quotes() {
+    	final String expectedQuery = "select * from spring_data where first_name like '%joe' and last_name like 'dev%' and middle_name like '%o%'";
+		final String rawQuery = "select * from spring_data where first_name like %:fname and last_name like :lname% and middle_name like %:mname%";
+		final Parameters parameters = getMockParameters(new String[]{":fname", ":lname", ":mname"}, new Class[]{String.class, String.class, String.class});
+
+		String resultedQuery = QueryUtils.buildQuery(rawQuery, parameters, "joe",
+				"dev", "o");
+
+		assertThat(resultedQuery, is(expectedQuery));
+    }
+    
 	static final List<Class<?>> TYPES = Arrays.<Class<?>>asList(Pageable.class, Sort.class);
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

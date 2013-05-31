@@ -8,7 +8,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.simpledb.domain.demo.Source;
 import org.springframework.data.simpledb.domain.demo.UserJob;
-import org.springframework.data.simpledb.repository.demo.UserJobRepository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -39,8 +38,12 @@ public class UserJobTest {
 
 		userJob = userJobRepository.save(userJob);
 
-		final UserJob foundUserJob = userJobRepository.findOne(userJob.getItemId());
+		final UserJob foundUserJob = userJobRepository.findOne(userJob
+				.getItemId());
 
-		assertNull(foundUserJob.getSource().getToken());
+		// XXX: Fixed incorrect assertion & this fails the test!
+		// assertNull(foundUserJob.getSource().getToken());
+		assertNull(foundUserJob.getSource());
 	}
+
 }
