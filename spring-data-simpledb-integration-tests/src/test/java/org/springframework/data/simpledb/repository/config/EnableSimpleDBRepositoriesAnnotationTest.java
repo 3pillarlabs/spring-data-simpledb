@@ -28,7 +28,7 @@ public class EnableSimpleDBRepositoriesAnnotationTest {
 		// The Template bean is needed by core framework so it needs to be provided
 		@Bean
 		public SimpleDbOperations simpleDBTemplate() throws Exception {
-			SimpleDb simpleDb = new SimpleDb("AKIAIVX775TRPPSZTEMQ", "Nzy6w0iq8JI+DHgdiPPiuqixiMoWQmPhWFgQzOZY");
+			SimpleDb simpleDb = new SimpleDb("accessID", "secretKey");
 			simpleDb.setConsistentRead(true);
 			simpleDb.setDomainPrefix(HostNameResolver.readHostname() + "testDB");
 			simpleDb.afterPropertiesSet();

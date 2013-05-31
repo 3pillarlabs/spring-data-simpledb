@@ -2,31 +2,46 @@ package org.springframework.data.simpledb.domain;
 
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.simpledb.core.SimpleDb;
 import org.springframework.data.simpledb.core.domain.DomainManagementPolicy;
 import org.springframework.data.simpledb.core.domain.DomainManager;
-import org.springframework.data.simpledb.domain.AmazonSimpleDBClientFactory;
 import org.springframework.data.simpledb.util.HostNameResolver;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.amazonaws.services.simpledb.AmazonSimpleDB;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:simpledb-repository-context.xml")
 public class DomainManagerTest {
 
+	@Autowired
+	private ApplicationContext appContext;
+	private AmazonSimpleDB sdb;
+	
+	@Before
+	public void setup() {
+		SimpleDb simpleDb = appContext.getBean(SimpleDb.class);
+		sdb = simpleDb.getSimpleDbClient();
+	}
+	
 	@Test
 	public void manageDomains_with_DROP_CREATE_should_create_new_domain() {
 		final String domainName = getDomainName("test_domain");
 		
 		DomainManager manager = DomainManager.getInstance(); 
-		manager.manageDomain(domainName, DomainManagementPolicy.DROP_CREATE, AmazonSimpleDBClientFactory.getTestClient());
+		manager.manageDomain(domainName, DomainManagementPolicy.DROP_CREATE, sdb);
 
-		assertTrue(manager.exists(domainName, AmazonSimpleDBClientFactory.getTestClient()));
+		assertTrue(manager.exists(domainName, sdb));
 
 		// cleanup
-		manager.dropDomain(domainName, AmazonSimpleDBClientFactory.getTestClient());
+		manager.dropDomain(domainName, sdb);
 	}
 
 	@Test
@@ -34,11 +49,11 @@ public class DomainManagerTest {
 		final String domainName = getDomainName("sample");
 		
 		DomainManager manager = DomainManager.getInstance();
-		manager.manageDomain(domainName, DomainManagementPolicy.NONE, AmazonSimpleDBClientFactory.getTestClient());
+		manager.manageDomain(domainName, DomainManagementPolicy.NONE, sdb);
 
-		assertFalse(manager.exists(domainName, AmazonSimpleDBClientFactory.getTestClient()));
+		assertFalse(manager.exists(domainName, sdb));
 
-        manager.dropDomain(domainName, AmazonSimpleDBClientFactory.getTestClient());
+        manager.dropDomain(domainName, sdb);
 	}
 
 	@Test
@@ -46,12 +61,12 @@ public class DomainManagerTest {
 		final String domainName = getDomainName("sample_update");
 		
 		DomainManager manager = DomainManager.getInstance();
-		manager.manageDomain(domainName, DomainManagementPolicy.UPDATE, AmazonSimpleDBClientFactory.getTestClient());
+		manager.manageDomain(domainName, DomainManagementPolicy.UPDATE, sdb);
 
-		assertTrue(manager.exists(domainName, AmazonSimpleDBClientFactory.getTestClient()));
+		assertTrue(manager.exists(domainName, sdb));
 
 		// cleanup
-		manager.dropDomain(domainName, AmazonSimpleDBClientFactory.getTestClient());
+		manager.dropDomain(domainName, sdb);
 	}
 
 	@Test
@@ -59,11 +74,11 @@ public class DomainManagerTest {
 		final String domainName = getDomainName("test_domain_update");
 		
 		DomainManager manager = DomainManager.getInstance();
-		manager.manageDomain(domainName, null, AmazonSimpleDBClientFactory.getTestClient());
+		manager.manageDomain(domainName, null, sdb);
 
-		assertTrue(manager.exists(domainName, AmazonSimpleDBClientFactory.getTestClient()));
+		assertTrue(manager.exists(domainName, sdb));
 
-        manager.dropDomain(domainName, AmazonSimpleDBClientFactory.getTestClient());
+        manager.dropDomain(domainName, sdb);
 	}
 	
 	@Test
@@ -71,11 +86,11 @@ public class DomainManagerTest {
 		final String domainName = getDomainName("test_domain_multiple");
 		
 		DomainManager manager = DomainManager.getInstance();
-		boolean result = manager.manageDomain(domainName, null, AmazonSimpleDBClientFactory.getTestClient());
+		boolean result = manager.manageDomain(domainName, null, sdb);
 
 		assertTrue(result);
 		
-		result = manager.manageDomain(domainName, null, AmazonSimpleDBClientFactory.getTestClient());
+		result = manager.manageDomain(domainName, null, sdb);
 		
 		assertFalse(result);
 	}
@@ -83,7 +98,7 @@ public class DomainManagerTest {
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void manageDomain_should_throw_AmazonClientException_translated_to_spring_dao_core_exception() {
         DomainManager manager = DomainManager.getInstance();
-        manager.dropDomain(null, AmazonSimpleDBClientFactory.getTestClient());
+        manager.dropDomain(null, sdb);
     }
     
     private String getDomainName(final String domain) {

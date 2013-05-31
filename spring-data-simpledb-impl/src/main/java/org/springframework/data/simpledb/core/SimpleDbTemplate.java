@@ -98,6 +98,7 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 
     @Override
     public SelectResult invokeFindImpl(boolean consistentRead, String escapedQuery) {
+    	LOGGER.debug("Query: {}", escapedQuery);
         return getDB().select(new SelectRequest(escapedQuery, consistentRead));
     }
 
