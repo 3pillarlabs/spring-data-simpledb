@@ -1,6 +1,12 @@
 package org.springframework.data.simpledb.core;
 
-import com.amazonaws.services.simpledb.model.*;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -16,12 +22,12 @@ import org.springframework.data.simpledb.repository.support.EmptyResultDataAcces
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.util.Assert;
 
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import com.amazonaws.services.simpledb.model.Attribute;
+import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
+import com.amazonaws.services.simpledb.model.Item;
+import com.amazonaws.services.simpledb.model.PutAttributesRequest;
+import com.amazonaws.services.simpledb.model.SelectRequest;
+import com.amazonaws.services.simpledb.model.SelectResult;
 
 /**
  * Primary implementation of {@link SimpleDbOperations}
@@ -52,7 +58,7 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 
         delete(entity.getDomain(), entity.getItemName());
 
-        Map<String, String> rawAttributes = entity.serialize();
+        Map<String, List<String>> rawAttributes = entity.toMultiValueAttributes();
         List<PutAttributesRequest> putAttributesRequests = SimpleDbRequestBuilder.createPutAttributesRequests(
                 entity.getDomain(), entity.getItemName(), rawAttributes);
 

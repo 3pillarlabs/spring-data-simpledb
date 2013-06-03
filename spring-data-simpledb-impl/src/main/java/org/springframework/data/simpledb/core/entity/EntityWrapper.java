@@ -1,5 +1,14 @@
 package org.springframework.data.simpledb.core.entity;
 
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
+
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.attributeutil.AttributesKeySplitter;
 import org.springframework.data.simpledb.attributeutil.SimpleDbAttributeValueSplitter;
@@ -7,14 +16,6 @@ import org.springframework.data.simpledb.reflection.FieldType;
 import org.springframework.data.simpledb.reflection.FieldTypeIdentifier;
 import org.springframework.data.simpledb.reflection.MetadataParser;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
 
 public class EntityWrapper<T, ID extends Serializable> {
 
@@ -102,15 +103,12 @@ public class EntityWrapper<T, ID extends Serializable> {
 			}
 		}
 
-		return SimpleDbAttributeValueSplitter.splitAttributeValuesWithExceedingLengths(result);
+		return result;
 	}
 
 	public Object deserialize(final Map<String, String> attributes) {
-		Map<String, String> rawAttributes = SimpleDbAttributeValueSplitter
-				.combineAttributeValuesWithExceedingLengths(attributes);
-
 		final Map<String, Map<String, String>> nestedFields = AttributesKeySplitter
-				.splitNestedAttributeKeys(rawAttributes);
+				.splitNestedAttributeKeys(attributes);
 
 		for(final Entry<String, Map<String, String>> nestedField : nestedFields.entrySet()) {
 			/* call deserialize field with Map<String, String> */
@@ -122,7 +120,7 @@ public class EntityWrapper<T, ID extends Serializable> {
 			fieldWrapper.setFieldValue(convertedValue);
 		}
 
-		final Map<String, String> simpleFields = AttributesKeySplitter.splitSimpleAttributesKeys(rawAttributes);
+		final Map<String, String> simpleFields = AttributesKeySplitter.splitSimpleAttributesKeys(attributes);
 		for(final Entry<String, String> simpleField : simpleFields.entrySet()) {
 			final String fieldName = simpleField.getKey();
 
@@ -140,5 +138,17 @@ public class EntityWrapper<T, ID extends Serializable> {
 
 	private AbstractFieldWrapper<T, ID> getWrapper(String fieldName) {
 		return wrappedFields.get(fieldName);
+	}
+
+	public Map<String, List<String>> toMultiValueAttributes() {
+		final Map<String, String> result = new HashMap<String, String>();
+
+		for(final AbstractFieldWrapper<T, ID> wrappedField : wrappedFields.values()) {
+			if(wrappedField.getFieldValue() != null) {
+				result.putAll(wrappedField.serialize(""));
+			}
+		}
+
+		return SimpleDbAttributeValueSplitter.splitAttributeValuesWithExceedingLengths(result);
 	}
 }

@@ -1,8 +1,18 @@
 package org.springframework.data.simpledb.attributeutil;
 
-import org.springframework.data.simpledb.util.AlphanumStringComparator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import java.util.*;
+import org.springframework.dao.DataIntegrityViolationException;
 
 /**
  * Used to split, combine attribute values exceeding Simple Db Length limitation: 1024
@@ -13,33 +23,20 @@ public final class SimpleDbAttributeValueSplitter {
 		// utility class
 	}
 
-	public static final int MAX_SIMPLE_DB_ATTRIBUTE_VALUE_LENGTH = 1024;
+	public static final int MAX_ATTR_VALUE_LEN = 1024;
 
-	public static Map<String, String> splitAttributeValuesWithExceedingLengths(Map<String, String> rawAttributes) {
-		Map<String, String> splitAttributes = new LinkedHashMap<String, String>();
+	public static Map<String, List<String>> splitAttributeValuesWithExceedingLengths(Map<String, String> rawAttributes) {
+		Map<String, List<String>> splitAttributes = new LinkedHashMap<String, List<String>>();
 
 		Set<Map.Entry<String, String>> rawEntries = rawAttributes.entrySet();
 
 		for(Map.Entry<String, String> rawEntry : rawEntries) {
-			if(rawEntry.getValue().length() > MAX_SIMPLE_DB_ATTRIBUTE_VALUE_LENGTH) {
-				splitAttributes.putAll(splitAttributeWithExceedingValue(rawEntry.getKey(), rawEntry.getValue()));
+			splitAttributes.put(rawEntry.getKey(), new ArrayList<String>());
+			if(rawEntry.getValue().length() > MAX_ATTR_VALUE_LEN) {
+				splitAttributes.get(rawEntry.getKey()).addAll(splitExceedingValue(rawEntry.getValue()));
 			} else {
-				splitAttributes.put(rawEntry.getKey(), rawEntry.getValue());
+				splitAttributes.get(rawEntry.getKey()).add(rawEntry.getValue());
 			}
-		}
-
-		return splitAttributes;
-	}
-
-	private static Map<String, String> splitAttributeWithExceedingValue(String initialAttributeKey,
-			String initialAttributeValue) {
-		Map<String, String> splitAttributes = new LinkedHashMap<String, String>();
-		List<String> splitValues = splitExceedingValue(initialAttributeValue);
-		int i = 0;
-		for(String splitValue : splitValues) {
-			String splitAttributeKey = SimpleDbAttributeKeySplitter.convertKey(initialAttributeKey, i);
-			splitAttributes.put(splitAttributeKey, splitValue);
-			i++;
 		}
 
 		return splitAttributes;
@@ -47,40 +44,59 @@ public final class SimpleDbAttributeValueSplitter {
 
 	private static List<String> splitExceedingValue(String attributeValue) {
 		List<String> splitValues = new LinkedList<String>();
-		int length = attributeValue.length();
-		for(int i = 0; i < length; i += MAX_SIMPLE_DB_ATTRIBUTE_VALUE_LENGTH) {
-			splitValues.add(attributeValue.substring(i, Math.min(length, i + MAX_SIMPLE_DB_ATTRIBUTE_VALUE_LENGTH)));
+		int length = attributeValue.length(); 
+		// calculate number of chunks correcting for added qualifiers
+		int numChunks = (length <= MAX_ATTR_VALUE_LEN ? 1 : ((length / MAX_ATTR_VALUE_LEN) + 1));
+		int maxChunkLength = MAX_ATTR_VALUE_LEN - String.format("%d@", numChunks).length();
+		numChunks = (length <= maxChunkLength ? 1 : ((length / maxChunkLength) + 1));
+		int chunkCount = 0;
+		for(int i = 0; i < length; i += maxChunkLength) {
+			String e = attributeValue.substring(i, Math.min(length, i + maxChunkLength));
+			splitValues.add(String.format("%d@%s", chunkCount++, e));
 		}
 		return splitValues;
 	}
 
-	public static Map<String, String> combineAttributeValuesWithExceedingLengths(Map<String, String> splitAttributes) {
-		Map<String, String> raw = new LinkedHashMap<String, String>();
-		List<List<String>> attributeKeyGroups = SimpleDbAttributeKeySplitter.getAttributeKeyGroups(splitAttributes
-				.keySet());
-		for(List<String> keyGroup : attributeKeyGroups) {
-			if(keyGroup.size() == 1) {
-				// was not split
-				String key = keyGroup.get(0);
-				raw.put(key, splitAttributes.get(key));
+	public static Map<String, String> combineAttributeValuesWithExceedingLengths(Map<String, List<String>> multiValueAttributes) {
+		final Map<String, String> attributes = new HashMap<String, String>();
+		for (Map.Entry<String, List<String>> entry : multiValueAttributes.entrySet()) {
+			List<String> values = entry.getValue();
+			if (values.size() == 1) {
+				attributes.put(entry.getKey(), values.get(0));
 			} else {
-				raw.put(SimpleDbAttributeKeySplitter.getKeyGroupSourceAttributeName(keyGroup),
-						combineAttributeValues(keyGroup, splitAttributes));
+				Collections.sort(values, new Comparator<String>() {
+
+					@Override
+					public int compare(String o1, String o2) {
+						int c = 0;
+						Pattern p = Pattern.compile("^(\\d+)@");
+						Matcher m1 = p.matcher(o1);
+						Matcher m2 = p.matcher(o2);
+						if (m1.find() && m2.find()) {
+							Integer i1 = Integer.valueOf(m1.group(1));
+							Integer i2 = Integer.valueOf(m2.group(1));
+							c = i1.compareTo(i2);
+						} else {
+							throw new DataIntegrityViolationException("Multivalue attribute without digit@ pattern");
+						}
+						return c;
+					}
+				});
+				StringBuilder builder = new StringBuilder();
+				for (String vwp : values) {
+					Pattern p = Pattern.compile("^\\d+@(.+?)$");
+					Matcher m = p.matcher(vwp);
+					if (m.find()) {
+						builder.append(m.group(1));
+					} else {
+						throw new DataIntegrityViolationException("Multivalue attribute with digit@ pattern but no following value");
+					}
+				}
+				attributes.put(entry.getKey(), builder.toString());
 			}
 		}
-		return raw;
-	}
-
-	static String combineAttributeValues(List<String> keyGroup, Map<String, String> splitAttributes) {
-		Collections.sort(keyGroup, new AlphanumStringComparator());
-
-		StringBuilder builder = new StringBuilder();
-		for(String key : keyGroup) {
-			builder.append(splitAttributes.get(key));
-		}
-
-		return builder.toString();
-
+		
+		return attributes;
 	}
 
 }

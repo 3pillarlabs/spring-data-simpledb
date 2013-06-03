@@ -1,8 +1,8 @@
 package org.springframework.data.simpledb.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,18 +16,20 @@ public class MapUtilsTest {
 	@Test
 	public void splitToChunksOfSize_should_split_entries_exceeding_size() throws Exception {
 
-		Map<String, String> attributes = new LinkedHashMap<String, String>();
+		Map<String, List<String>> attributes = new LinkedHashMap<String, List<String>>();
 		for(int i = 0; i < SAMPLE_MAP_SIZE + 100; i++) {
-			attributes.put("Key: " + i, "Value: " + i);
+			List<String> list = new ArrayList<String>();
+			list.add("Value: " + i);
+			attributes.put("Key: " + i, list);
 		}
 
-		List<Map<String, String>> chunks = MapUtils.splitToChunksOfSize(attributes, SAMPLE_MAP_SIZE);
+		List<Map<String, List<String>>> chunks = MapUtils.splitToChunksOfSize(attributes, SAMPLE_MAP_SIZE);
 		assertEquals(2, chunks.size());
 
-		Map<String, String> firstChunk = chunks.get(0);
+		Map<String, List<String>> firstChunk = chunks.get(0);
 		assertEquals(SAMPLE_MAP_SIZE, firstChunk.size());
 
-		Map<String, String> secondChunk = chunks.get(1);
+		Map<String, List<String>> secondChunk = chunks.get(1);
 		assertEquals(100, secondChunk.size());
 		assertTrue(secondChunk.containsKey("Key: " + 256));
 		assertTrue(secondChunk.containsKey("Key: " + 355));

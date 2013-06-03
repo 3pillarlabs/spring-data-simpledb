@@ -1,10 +1,13 @@
 package org.springframework.data.simpledb.attributeutil;
 
-import org.junit.Test;
-
-import java.util.*;
-
 import static org.junit.Assert.*;
+
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Test;
 
 public class SimpleDbAttributeValueSplitterTest {
 
@@ -13,7 +16,7 @@ public class SimpleDbAttributeValueSplitterTest {
 
 	static {
 		StringBuilder builder = new StringBuilder();
-		for(int i = 0; i < SimpleDbAttributeValueSplitter.MAX_SIMPLE_DB_ATTRIBUTE_VALUE_LENGTH; i++) {
+		for(int i = 0; i < SimpleDbAttributeValueSplitter.MAX_ATTR_VALUE_LEN; i++) {
 			builder.append("x");
 		}
 
@@ -25,12 +28,16 @@ public class SimpleDbAttributeValueSplitterTest {
 		Map<String, String> rawAttributes = new LinkedHashMap<String, String>();
 		rawAttributes.put(SAMPLE_ATT_NAME, STRING_OF_MAX_SIMPLE_DB_LENGTH + "c");
 
-		Map<String, String> splitAttributes = SimpleDbAttributeValueSplitter
+		Map<String, List<String>> splitAttributes = SimpleDbAttributeValueSplitter
 				.splitAttributeValuesWithExceedingLengths(rawAttributes);
-		assertEquals(2, splitAttributes.keySet().size());
-
-		String firstSplitAttribute = splitAttributes.values().iterator().next();
-		assertEquals(STRING_OF_MAX_SIMPLE_DB_LENGTH, firstSplitAttribute);
+		assertEquals("count(keys) == 1", 1, splitAttributes.keySet().size());
+		Iterator<List<String>> iterator = splitAttributes.values().iterator();
+		List<String> next = null;
+		if (iterator.hasNext()) {
+			next = iterator.next(); 
+		}
+		assertNotNull(next);
+		assertEquals("count(values) == 2", 2, next.size());
 	}
 
 	@Test
@@ -38,12 +45,12 @@ public class SimpleDbAttributeValueSplitterTest {
 		Map<String, String> rawAttributes = new LinkedHashMap<String, String>();
 		rawAttributes.put(SAMPLE_ATT_NAME, "shortValue");
 
-		Map<String, String> splitAttributes = SimpleDbAttributeValueSplitter
+		Map<String, List<String>> splitAttributes = SimpleDbAttributeValueSplitter
 				.splitAttributeValuesWithExceedingLengths(rawAttributes);
 		assertEquals(1, splitAttributes.keySet().size());
 
-		String firstSplitAttribute = splitAttributes.values().iterator().next();
-		assertEquals("shortValue", firstSplitAttribute);
+		List<String> firstSplitAttribute = splitAttributes.values().iterator().next();
+		assertEquals("shortValue", firstSplitAttribute.get(0));
 	}
 
 	@Test
@@ -51,42 +58,13 @@ public class SimpleDbAttributeValueSplitterTest {
 		Map<String, String> rawAttributes = new LinkedHashMap<String, String>();
 		rawAttributes.put(SAMPLE_ATT_NAME, STRING_OF_MAX_SIMPLE_DB_LENGTH + "c");
 
-		Map<String, String> splitAttributes = SimpleDbAttributeValueSplitter
+		Map<String, List<String>> splitAttributes = SimpleDbAttributeValueSplitter
 				.splitAttributeValuesWithExceedingLengths(rawAttributes);
 
 		Map<String, String> recombinedAtts = SimpleDbAttributeValueSplitter
 				.combineAttributeValuesWithExceedingLengths(splitAttributes);
 
 		assertEquals(recombinedAtts.size(), rawAttributes.size());
-	}
-
-	@Test
-	public void combineAttributeValue_should_return_initial_value() {
-		Map<String, String> splitAttributes = new HashMap<String, String>();
-		splitAttributes.put(SimpleDbAttributeKeySplitter.convertKey("key", 2), "value2");
-		splitAttributes.put(SimpleDbAttributeKeySplitter.convertKey("key", 1), "value1");
-		splitAttributes.put(SimpleDbAttributeKeySplitter.convertKey("key", 3), "value3");
-
-		List<String> keyGroup = new ArrayList<String>(splitAttributes.keySet());
-
-		String rawAttributeValue = SimpleDbAttributeValueSplitter.combineAttributeValues(keyGroup, splitAttributes);
-		assertEquals("value1" + "value2" + "value3", rawAttributeValue);
-	}
-
-	@Test
-	public void combineAttributeValue_should_return_initial_value_for_large_chunk_numbers() {
-		Map<String, String> splitAttributes = new HashMap<String, String>();
-		StringBuilder expectedCombinedStringBuilder = new StringBuilder();
-		for(int i = 0; i < 25; i++) {
-			splitAttributes.put(SimpleDbAttributeKeySplitter.convertKey("key", i), "value" + i);
-			expectedCombinedStringBuilder.append("value" + i);
-		}
-
-		List<String> keyGroup = new ArrayList<String>(splitAttributes.keySet());
-
-		String rawAttributeValue = SimpleDbAttributeValueSplitter.combineAttributeValues(keyGroup, splitAttributes);
-
-		assertEquals(expectedCombinedStringBuilder.toString(), rawAttributeValue);
 	}
 
 }

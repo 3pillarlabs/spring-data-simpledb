@@ -1,16 +1,18 @@
 package org.springframework.data.simpledb.core;
 
-import com.amazonaws.services.simpledb.model.Attribute;
-import com.amazonaws.services.simpledb.model.Item;
-import com.amazonaws.services.simpledb.model.SelectResult;
-import org.springframework.data.simpledb.core.entity.EntityWrapper;
-import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.data.simpledb.attributeutil.SimpleDbAttributeValueSplitter;
+import org.springframework.data.simpledb.core.entity.EntityWrapper;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
+
+import com.amazonaws.services.simpledb.model.Attribute;
+import com.amazonaws.services.simpledb.model.Item;
+import com.amazonaws.services.simpledb.model.SelectResult;
 
 public class DomainItemBuilder<T> {
 
@@ -45,12 +47,14 @@ public class DomainItemBuilder<T> {
 	}
 
 	private Map<String, String> convertSimpleDbAttributes(List<Attribute> simpleDbAttributes) {
-		final Map<String, String> attributes = new HashMap<String, String>();
-
-		for(Attribute attr : simpleDbAttributes) {
-			attributes.put(attr.getName(), attr.getValue());
+		final Map<String, List<String>> multiValueAttributes = new HashMap<String, List<String>>();
+		for (Attribute attr : simpleDbAttributes) {
+			if (!multiValueAttributes.containsKey(attr.getName())) {
+				multiValueAttributes.put(attr.getName(), new ArrayList<String>());
+			}
+			multiValueAttributes.get(attr.getName()).add(attr.getValue());
 		}
 
-		return attributes;
+		return SimpleDbAttributeValueSplitter.combineAttributeValuesWithExceedingLengths(multiValueAttributes);
 	}
 }
