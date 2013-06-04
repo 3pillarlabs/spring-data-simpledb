@@ -2,7 +2,9 @@ package org.springframework.data.simpledb.repository.demo;
 
 import static org.junit.Assert.*;
 
-import org.junit.After;
+import java.util.List;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +32,8 @@ public class UserJobTest {
 	@Autowired
 	private UserJobRepository userJobRepository;
 
-	@After
-	public void tearDown() {
+	@Before
+	public void setup() {
 		userJobRepository.deleteAll();
 	}
 
@@ -50,8 +52,7 @@ public class UserJobTest {
 
 		userJob = userJobRepository.save(userJob);
 
-		final UserJob foundUserJob = userJobRepository.findOne(userJob
-				.getItemId());
+		final UserJob foundUserJob = userJobRepository.findOne(userJob.getItemId());
 
 		// XXX: Fixed incorrect assertion & this fails the test!
 		// assertNull(foundUserJob.getSource().getToken());
@@ -68,12 +69,25 @@ public class UserJobTest {
 
 		userJob = userJobRepository.save(userJob);
 
-		final UserJob foundUserJob = userJobRepository.findOne(userJob
-				.getItemId());
+		final UserJob foundUserJob = userJobRepository.findOne(userJob.getItemId());
 		assertNotNull(foundUserJob);
-		assertEquals("long tokens match", source.getToken(), foundUserJob
-				.getSource().getToken());
+		assertEquals("long tokens match", source.getToken(), foundUserJob.getSource().getToken());
 
+	}
+	
+	@Test
+	public void like_query_on_split_columns_should_return_results() {
+		UserJob userJob = new UserJob();
+		userJob.setStringField("test");
+		Source source = new Source();
+		source.setToken(STRING_OF_MAX_SIMPLE_DB_LENGTH + "c");
+		userJob.setSource(source);
+
+		userJob = userJobRepository.save(userJob);
+
+		final List<UserJob> jobs = userJobRepository.findAllByMatchingSourceToken("xxxx");
+		assertTrue("count(jobs) > 0", jobs.size() > 0);
+		
 	}
 
 }
