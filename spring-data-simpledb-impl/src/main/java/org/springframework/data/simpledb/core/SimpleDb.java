@@ -1,11 +1,11 @@
 package org.springframework.data.simpledb.core;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.data.simpledb.core.domain.DomainManagementPolicy;
+
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.data.simpledb.core.domain.DomainManagementPolicy;
 
 /**
  * A configuration class to create and instance of {@link AmazonSimpleDB} from user credentials and to hold few extra
@@ -15,18 +15,16 @@ import org.springframework.data.simpledb.core.domain.DomainManagementPolicy;
 public class SimpleDb implements InitializingBean {
 
 	private AmazonSimpleDB simpleDbClient;
-	private DomainManagementPolicy policy = DomainManagementPolicy.UPDATE;
 
 	private String accessID;
 	private String secretKey;
 
-	private String domainManagementPolicy;
+	private DomainManagementPolicy domainManagementPolicy = DomainManagementPolicy.UPDATE;
 	private boolean consistentRead = false;
 
 	private int unavailableServiceRetries = 1;
 
 	private String domainPrefix;
-	private boolean dev;
 
 	private SimpleDbDomain simpleDbDomain = new SimpleDbDomain();
 
@@ -44,26 +42,52 @@ public class SimpleDb implements InitializingBean {
 		return simpleDbClient;
 	}
 
+	/**
+	 * Set the Amazon AWS access key ID
+	 * 
+	 * @param accessID
+	 */
 	public void setAccessID(String accessID) {
 		this.accessID = accessID;
 	}
 
+	/**
+	 * Set the Amazon AWS secret key
+	 * 
+	 * @param secretKey
+	 */
 	public void setSecretKey(String secretKey) {
 		this.secretKey = secretKey;
 	}
 
-	public void setDomainManagementPolicy(String domainManagementPolicy) {
+	/**
+	 * Set the domain management policy. This can be one of:
+	 * <ul>
+	 * <li><b>DROP_CREATE</b>: The domain will be dropped if it exists and created again
+	 * <li><b>UPDATE</b>: The domain will be created if it does not exist, this is the default policy
+	 * <li><b>NONE</b>: No action taken, domain must be created by separate API call
+	 * </ul>
+	 * 
+	 * @param domainManagementPolicy
+	 */
+	public void setDomainManagementPolicy(DomainManagementPolicy domainManagementPolicy) {
 		this.domainManagementPolicy = domainManagementPolicy;
 	}
 
 	public DomainManagementPolicy getDomainManagementPolicy() {
-		return policy;
+		return this.domainManagementPolicy;
 	}
 
 	public String getDomainPrefix() {
 		return this.domainPrefix;
 	}
 
+	/**
+	 * Set the domain prefix. All domains created will be of format <tt>$domainPrefix.$domainName</tt>.<br/>
+	 * If not set, no domain prefix is used and the domain will be of format <tt>$domainName</tt>.
+	 * 
+	 * @param domainPrefix
+	 */
 	public void setDomainPrefix(String domainPrefix) {
 		this.domainPrefix = domainPrefix;
 	}
@@ -72,18 +96,31 @@ public class SimpleDb implements InitializingBean {
 		return consistentRead;
 	}
 
+	/**
+	 * Amazon SimpleDB uses an eventual consistency model by default. This means
+	 * a <i>create</i> or an <i>update</i> followed by an immediate <i>select</i>
+	 * may not reflect the changes. By setting a <tt>true</tt> value, this can
+	 * be avoided, however, this carries a performance penalty as every create and
+	 * update is followed by an implicit consistent select operation; defaults to 
+	 * <b>false</b>.
+	 * 
+	 * @param consistentRead
+	 */
 	public void setConsistentRead(boolean consistentRead) {
 		this.consistentRead = consistentRead;
-	}
-
-	public void setDev(boolean dev) {
-		this.dev = dev;
 	}
 
 	public SimpleDbDomain getSimpleDbDomain() {
 		return simpleDbDomain;
 	}
 
+	/**
+	 * Set the number of attempts to retry ALL SimpleDB operations in case of
+	 * service unavailability. Defaults to 1, which means, operations are NOT
+	 * retried by default.
+	 * 
+	 * @param unavailableServiceRetries
+	 */
 	public void setUnavailableServiceRetries(int unavailableServiceRetries) {
 		this.unavailableServiceRetries = unavailableServiceRetries;
 	}
@@ -109,11 +146,7 @@ public class SimpleDb implements InitializingBean {
 
 		this.simpleDbClient = new AmazonSimpleDBClient(awsCredentials);
 
-		if(!StringUtils.isEmpty(domainManagementPolicy)) {
-			policy = DomainManagementPolicy.valueOf(domainManagementPolicy);
-		}
-
-		simpleDbDomain = new SimpleDbDomain(domainPrefix, dev);
+		simpleDbDomain = new SimpleDbDomain(domainPrefix);
 	}
 
 	public String getDomain(Class<?> clazz) {
