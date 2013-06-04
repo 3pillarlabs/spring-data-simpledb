@@ -19,7 +19,7 @@
 		<property name="secretKey" value="${secretKey}" />
 		<property name="domainPrefix" value="${user.name}SimpleDB" />
 		<property name="consistentRead" value="true" />
-		<property name="dev" value="true" />
+		<property name="domainManagementPolicy" value="DROP_CREATE" />
 	</bean>
 
 	<bean id="simpleDbTemplate" class="org.springframework.data.simpledb.core.SimpleDbTemplate">

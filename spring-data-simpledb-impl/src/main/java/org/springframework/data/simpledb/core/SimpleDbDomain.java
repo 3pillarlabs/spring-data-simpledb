@@ -1,22 +1,18 @@
 package org.springframework.data.simpledb.core;
 
 import org.springframework.data.simpledb.annotation.DomainPrefix;
-import org.springframework.data.simpledb.util.HostNameResolver;
 import org.springframework.data.simpledb.util.StringUtil;
 
 public class SimpleDbDomain {
 
 	private String domainPrefix;
-	private boolean dev;
-	private String devDomainPrefix;
 
 	public SimpleDbDomain() {
 		
 	}
 	
-	public SimpleDbDomain(final String domainPrefix, final boolean dev) {
+	public SimpleDbDomain(final String domainPrefix) {
 		this.domainPrefix = domainPrefix;
-		this.dev = dev;
 	}
 	
 	/**
@@ -42,19 +38,15 @@ public class SimpleDbDomain {
 	}
 	
 	private String getDomainPrefix(Class<?> clazz) {
-		if(this.dev) {
-			if(devDomainPrefix == null) {
-				devDomainPrefix = HostNameResolver.readHostname();
-			}
-			return devDomainPrefix;
+		String prefix = null;
+		DomainPrefix annotatedDomainPrefix = clazz.getAnnotation(DomainPrefix.class);
+		if (annotatedDomainPrefix != null) {
+			prefix = annotatedDomainPrefix.value();
+		} else {
+			prefix = this.domainPrefix;
 		}
 
-		DomainPrefix annotatedDomainPrefix = (DomainPrefix) clazz.getAnnotation(DomainPrefix.class);
-		if(annotatedDomainPrefix != null) {
-			return annotatedDomainPrefix.value();
-		}
-
-		return this.domainPrefix;
+		return prefix;
 	}
 	
 }

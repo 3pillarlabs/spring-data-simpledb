@@ -6,7 +6,6 @@ import java.util.Properties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.simpledb.core.SimpleDb;
 import org.springframework.data.simpledb.repository.config.EnableSimpleDBRepositories;
-import org.springframework.data.simpledb.util.HostNameResolver;
 
 @EnableSimpleDBRepositories(basePackages = "org.springframework.data.simpledb.repository")
 @Configuration
@@ -16,16 +15,18 @@ public class SimpleDBJavaConfiguration extends AbstractSimpleDBConfiguration {
 	public AWSCredentials getAWSCredentials() {
 		Properties keys = new Properties();
 		try {
-			keys.load(this.getClass().getResourceAsStream("/aws-keys.properties"));
+			keys.load(this.getClass().getResourceAsStream(
+					"/aws-keys.properties"));
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
-		return new AWSCredentials(keys.getProperty("accessID"), keys.getProperty("secretKey"));
+		return new AWSCredentials(keys.getProperty("accessID"),
+				keys.getProperty("secretKey"));
 	}
 
 	@Override
 	public void setExtraProperties(SimpleDb simpleDb) {
 		simpleDb.setConsistentRead(true);
-		simpleDb.setDomainPrefix(HostNameResolver.readHostname() + "testDB");
+		simpleDb.setDomainPrefix(System.getProperty("user.name") + "SimpleDB");
 	}
 }

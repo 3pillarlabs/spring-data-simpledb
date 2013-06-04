@@ -13,6 +13,7 @@
         <property name="accessID" value="${accessID}"/>
         <property name="secretKey" value="${secretKey}"/>
         <property name="domainPrefix" value="${user.name}SimpleDB" />
+        <property name="domainManagementPolicy" value="DROP_CREATE" />
     </bean>
     
 	<bean id="simpleDBTemplate1" class="org.springframework.data.simpledb.core.SimpleDbTemplate">

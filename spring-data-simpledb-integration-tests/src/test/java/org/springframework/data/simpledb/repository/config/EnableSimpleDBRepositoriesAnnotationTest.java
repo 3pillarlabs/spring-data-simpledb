@@ -1,6 +1,6 @@
 package org.springframework.data.simpledb.repository.config;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,8 +11,6 @@ import org.springframework.data.simpledb.core.SimpleDb;
 import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.core.SimpleDbTemplate;
 import org.springframework.data.simpledb.repository.BasicSimpleDbUserRepository;
-import org.springframework.data.simpledb.repository.config.EnableSimpleDBRepositories;
-import org.springframework.data.simpledb.util.HostNameResolver;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -30,7 +28,7 @@ public class EnableSimpleDBRepositoriesAnnotationTest {
 		public SimpleDbOperations simpleDBTemplate() throws Exception {
 			SimpleDb simpleDb = new SimpleDb("accessID", "secretKey");
 			simpleDb.setConsistentRead(true);
-			simpleDb.setDomainPrefix(HostNameResolver.readHostname() + "testDB");
+			simpleDb.setDomainPrefix(System.getProperty("user.name") + "SimpleDB");
 			simpleDb.afterPropertiesSet();
 			return new SimpleDbTemplate(simpleDb);
 		}

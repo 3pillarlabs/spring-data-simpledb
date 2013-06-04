@@ -11,7 +11,6 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.simpledb.core.SimpleDb;
 import org.springframework.data.simpledb.core.domain.DomainManagementPolicy;
 import org.springframework.data.simpledb.core.domain.DomainManager;
-import org.springframework.data.simpledb.util.HostNameResolver;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -102,6 +101,6 @@ public class DomainManagerTest {
     }
     
     private String getDomainName(final String domain) {
-    	return HostNameResolver.readHostname() + "." + domain;
+    	return System.getProperty("user.name") + "." + domain;
     }
 }
