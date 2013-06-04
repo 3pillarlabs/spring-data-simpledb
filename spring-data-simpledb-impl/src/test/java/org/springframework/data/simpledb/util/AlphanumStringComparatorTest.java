@@ -1,28 +1,17 @@
 package org.springframework.data.simpledb.util;
 
-import org.junit.Test;
+import static junit.framework.TestCase.*;
 
-import static junit.framework.TestCase.assertTrue;
+import org.junit.Test;
 
 public class AlphanumStringComparatorTest {
 
 	@Test
 	public void should_correctly_compare_alphanumerical_strings() throws Exception {
 		AlphanumStringComparator comparator = new AlphanumStringComparator();
-
-		int result = comparator.compare("foo@10", "foo@2");
-
-		assertTrue(result > 0);
-
+		assertTrue(comparator.compare("10@foo", "2@foo") > 0);
+		assertTrue(comparator.compare("2@foo", "10@foo") < 0);
+		assertTrue(comparator.compare("10@foo", "10@foo") == 0);
 	}
 
-	@Test
-	public void should_correctly_compare_long_alphanumerical_strings() throws Exception {
-		AlphanumStringComparator comparator = new AlphanumStringComparator();
-
-		int result = comparator.compare("foo@10abcd1", "foo@10abcd10");
-
-		assertTrue(result < 0);
-
-	}
 }

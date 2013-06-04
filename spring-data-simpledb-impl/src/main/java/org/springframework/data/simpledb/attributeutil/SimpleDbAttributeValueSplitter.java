@@ -2,7 +2,6 @@ package org.springframework.data.simpledb.attributeutil;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -13,12 +12,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.simpledb.util.AlphanumStringComparator;
 
 /**
  * Used to split, combine attribute values exceeding Simple Db Length limitation: 1024
  */
 public final class SimpleDbAttributeValueSplitter {
 
+	private static Pattern multiValueRexp = Pattern.compile("^\\d+@(.+?)$");
+	private static AlphanumStringComparator multiValueComparator = new AlphanumStringComparator();
+	
+	
 	private SimpleDbAttributeValueSplitter() {
 		// utility class
 	}
@@ -64,28 +68,10 @@ public final class SimpleDbAttributeValueSplitter {
 			if (values.size() == 1) {
 				attributes.put(entry.getKey(), values.get(0));
 			} else {
-				Collections.sort(values, new Comparator<String>() {
-
-					@Override
-					public int compare(String o1, String o2) {
-						int c = 0;
-						Pattern p = Pattern.compile("^(\\d+)@");
-						Matcher m1 = p.matcher(o1);
-						Matcher m2 = p.matcher(o2);
-						if (m1.find() && m2.find()) {
-							Integer i1 = Integer.valueOf(m1.group(1));
-							Integer i2 = Integer.valueOf(m2.group(1));
-							c = i1.compareTo(i2);
-						} else {
-							throw new DataIntegrityViolationException("Multivalue attribute without digit@ pattern");
-						}
-						return c;
-					}
-				});
+				Collections.sort(values, multiValueComparator);
 				StringBuilder builder = new StringBuilder();
 				for (String vwp : values) {
-					Pattern p = Pattern.compile("^\\d+@(.+?)$");
-					Matcher m = p.matcher(vwp);
+					Matcher m = multiValueRexp.matcher(vwp);
 					if (m.find()) {
 						builder.append(m.group(1));
 					} else {
