@@ -9,8 +9,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.data.annotation.Id;
 
 /**
- * TODO: extend with other types to be tested as other type handlers are implemented. One sample for each supported
- * type. Each particular instance and other tests should be included as Regular Junit Tests
+ * TODO: extend with other types to be tested as other type handlers are
+ * implemented. One sample for each supported type. Each particular instance and
+ * other tests should be included as Regular Junit Tests
  */
 public class SimpleDbUser {
 
@@ -101,13 +102,15 @@ public class SimpleDbUser {
 		return mapOfStringAndObject;
 	}
 
-	public void setMapOfStringAndObject(Map<String, JSONCompatibleClass> mapOfStringAndObject) {
+	public void setMapOfStringAndObject(
+			Map<String, JSONCompatibleClass> mapOfStringAndObject) {
 		this.mapOfStringAndObject = mapOfStringAndObject;
 	}
 
 	public static class NestedEntity {
 
 		private int nestedPrimitiveField;
+		private InnerNestedEntity innerNestedEntity;
 
 		public int getNestedPrimitiveField() {
 			return nestedPrimitiveField;
@@ -115,6 +118,14 @@ public class SimpleDbUser {
 
 		public void setNestedPrimitiveField(int nestedPrimitiveField) {
 			this.nestedPrimitiveField = nestedPrimitiveField;
+		}
+
+		public InnerNestedEntity getInnerNestedEntity() {
+			return innerNestedEntity;
+		}
+
+		public void setInnerNestedEntity(InnerNestedEntity innerNestedEntity) {
+			this.innerNestedEntity = innerNestedEntity;
 		}
 
 		/**
@@ -133,6 +144,36 @@ public class SimpleDbUser {
 		@Override
 		public String toString() {
 			return ToStringBuilder.reflectionToString(this);
+		}
+
+		public static class InnerNestedEntity {
+			private String innerNestedField;
+
+			public String getInnerNestedField() {
+				return innerNestedField;
+			}
+
+			public void setInnerNestedField(String innerNestedField) {
+				this.innerNestedField = innerNestedField;
+			}
+
+			@Override
+			public int hashCode() {
+				return HashCodeBuilder
+						.reflectionHashCode(InnerNestedEntity.this);
+			}
+
+			@Override
+			public boolean equals(Object obj) {
+				return EqualsBuilder.reflectionEquals(InnerNestedEntity.this,
+						obj);
+			}
+
+			@Override
+			public String toString() {
+				return ToStringBuilder.reflectionToString(this);
+			}
+
 		}
 	}
 

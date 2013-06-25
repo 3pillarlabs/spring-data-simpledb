@@ -52,10 +52,9 @@ public class UserJobTest {
 
 		userJob = userJobRepository.save(userJob);
 
-		final UserJob foundUserJob = userJobRepository.findOne(userJob.getItemId());
+		final UserJob foundUserJob = userJobRepository.findOne(userJob
+				.getItemId());
 
-		// XXX: Fixed incorrect assertion & this fails the test!
-		// assertNull(foundUserJob.getSource().getToken());
 		assertNull(foundUserJob.getSource());
 	}
 
@@ -69,12 +68,14 @@ public class UserJobTest {
 
 		userJob = userJobRepository.save(userJob);
 
-		final UserJob foundUserJob = userJobRepository.findOne(userJob.getItemId());
+		final UserJob foundUserJob = userJobRepository.findOne(userJob
+				.getItemId());
 		assertNotNull(foundUserJob);
-		assertEquals("long tokens match", source.getToken(), foundUserJob.getSource().getToken());
+		assertEquals("long tokens match", source.getToken(), foundUserJob
+				.getSource().getToken());
 
 	}
-	
+
 	@Test
 	public void like_query_on_split_columns_should_return_results() {
 		UserJob userJob = new UserJob();
@@ -85,9 +86,10 @@ public class UserJobTest {
 
 		userJob = userJobRepository.save(userJob);
 
-		final List<UserJob> jobs = userJobRepository.findAllByMatchingSourceToken("xxxx");
+		final List<UserJob> jobs = userJobRepository
+				.findAllByMatchingSourceToken("xxxx");
 		assertTrue("count(jobs) > 0", jobs.size() > 0);
-		
+
 	}
 
 }

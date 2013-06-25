@@ -6,7 +6,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.domain.SimpleDbUser;
 import org.springframework.data.simpledb.repository.util.SimpleDbUserBuilder;
 import org.springframework.test.context.ContextConfiguration;
@@ -28,10 +27,12 @@ public class SimpleDbTemplateTest {
 	public void save_should_persist_single_item() {
 		String itemName = "FirstItem";
 
-		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
+		SimpleDbUser user = SimpleDbUserBuilder
+				.createUserWithSampleAttributes(itemName);
 		operations.createOrUpdate(user);
 
-		SimpleDbUser foundUser = operations.read(user.getItemName(), user.getClass());
+		SimpleDbUser foundUser = operations.read(user.getItemName(),
+				user.getClass());
 
 		assertEquals(user.getItemName(), foundUser.getItemName());
 		assertEquals(user, foundUser);
@@ -40,14 +41,16 @@ public class SimpleDbTemplateTest {
 	@Test
 	public void save_should_create_new_item_for_modified_item_name() {
 		String itemName = "FirstItem";
-		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
+		SimpleDbUser user = SimpleDbUserBuilder
+				.createUserWithSampleAttributes(itemName);
 		operations.createOrUpdate(user);
 
 		itemName = "SecondItem";
 		user.setItemName(itemName);
 		operations.createOrUpdate(user);
 
-		SimpleDbUser foundUser = operations.read("SecondItem", SimpleDbUser.class);
+		SimpleDbUser foundUser = operations.read("SecondItem",
+				SimpleDbUser.class);
 
 		assertNotNull(foundUser);
 		assertEquals(user, foundUser);
@@ -59,7 +62,8 @@ public class SimpleDbTemplateTest {
 	@Test
 	public void delete_should_remove_item() {
 		String itemName = "FirstItem";
-		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
+		SimpleDbUser user = SimpleDbUserBuilder
+				.createUserWithSampleAttributes(itemName);
 		user = operations.createOrUpdate(user);
 
 		operations.delete(user);
@@ -72,7 +76,8 @@ public class SimpleDbTemplateTest {
 	public void consistent_count_should_return_total_number_of_item_with_no_delay() {
 		String itemName = "FirstItem";
 
-		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(itemName);
+		SimpleDbUser user = SimpleDbUserBuilder
+				.createUserWithSampleAttributes(itemName);
 		operations.createOrUpdate(user);
 		assertEquals(1, operations.count(user.getClass()));
 
@@ -83,10 +88,35 @@ public class SimpleDbTemplateTest {
 	@Test
 	public void save_should_generateId() {
 
-		SimpleDbUser user = SimpleDbUserBuilder.createUserWithSampleAttributes(null);
+		SimpleDbUser user = SimpleDbUserBuilder
+				.createUserWithSampleAttributes(null);
 
 		user = operations.createOrUpdate(user);
 
 		assertNotNull(user.getItemName());
 	}
+
+	@Test
+	public void save_should_persist_inner_nested_entities() {
+		String itemName = "FirstItem";
+
+		SimpleDbUser user = SimpleDbUserBuilder
+				.createUserWithSampleAttributes(itemName);
+		SimpleDbUser.NestedEntity.InnerNestedEntity innerNestedEntity = new SimpleDbUser.NestedEntity.InnerNestedEntity();
+		final String innerNestedFieldValue = "innerNestedFieldValue";
+		innerNestedEntity.setInnerNestedField(innerNestedFieldValue);
+		user.getNestedEntity().setInnerNestedEntity(innerNestedEntity);
+
+		operations.createOrUpdate(user);
+
+		SimpleDbUser foundUser = operations.read(user.getItemName(),
+				user.getClass());
+
+		assertEquals(user.getItemName(), foundUser.getItemName());
+		assertEquals(user, foundUser);
+		assertEquals(innerNestedFieldValue, user.getNestedEntity()
+				.getInnerNestedEntity().getInnerNestedField());
+
+	}
+
 }

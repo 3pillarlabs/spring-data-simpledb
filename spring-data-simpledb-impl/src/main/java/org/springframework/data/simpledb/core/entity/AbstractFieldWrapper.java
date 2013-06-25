@@ -1,17 +1,18 @@
 package org.springframework.data.simpledb.core.entity;
 
-import org.springframework.data.simpledb.reflection.ReflectionUtils;
-import org.springframework.util.Assert;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Map;
+
+import org.springframework.data.simpledb.reflection.ReflectionUtils;
+import org.springframework.util.Assert;
 
 public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 
 	/* field metadata */
 	private final Field field;
 	private final EntityWrapper<T, ID> parentWrapper;
+	private final boolean isNewParent;
 
 	protected AbstractFieldWrapper(final Field field, final EntityWrapper<T, ID> parentWrapper,
 			final boolean isNewParent) {
@@ -23,9 +24,11 @@ public abstract class AbstractFieldWrapper<T, ID extends Serializable> {
 
 		this.field.setAccessible(Boolean.TRUE);
 
-		if(isNewParent) {
-			createInstance();
-		}
+		this.isNewParent = isNewParent;
+	}
+
+	protected boolean isNewParent() {
+		return isNewParent;
 	}
 
 	public abstract Map<String, String> serialize(String prefix);

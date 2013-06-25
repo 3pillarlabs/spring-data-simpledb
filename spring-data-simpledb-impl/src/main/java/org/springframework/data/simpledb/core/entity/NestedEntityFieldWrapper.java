@@ -46,12 +46,15 @@ public class NestedEntityFieldWrapper<T, ID extends Serializable> extends Abstra
 	@Override
 	public Object deserialize(Map<String, String> values) {
 		/* recursive call */
+		if (isNewParent() && wrappedNestedEntity == null) {
+			createInstance();
+		}
 		return wrappedNestedEntity.deserialize(values);
 	}
 
 	@Override
 	public void createInstance() {
-		/* instantiation is handled by the EntityWrapper */
+		/* instantiation is on demand during de-serialization */
 		final SimpleDbEntityInformation<T, ?> entityMetadata = SimpleDbEntityInformationSupport.getMetadata(
 				getFieldType(), getParentWrapper().getDomain());
 		wrappedNestedEntity = new EntityWrapper<T, ID>(entityMetadata);
