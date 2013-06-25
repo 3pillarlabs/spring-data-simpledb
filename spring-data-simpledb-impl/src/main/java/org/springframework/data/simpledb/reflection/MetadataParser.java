@@ -104,11 +104,14 @@ public final class MetadataParser {
 	}
 
 	private static boolean isSerializableFieldForObject(Class<?> clazz, Field field) {
-		return (ReflectionUtils.isPersistentField(field) || ReflectionUtils.hasDeclaredGetterAndSetter(field, clazz)) && 
-				FieldTypeIdentifier.isSerializableField(field) && 
-				!hasUnsupportedAnnotations(field) &&
-				!isTransientField(field) &&
-				!isIdForDomainClass(field, clazz);
+		boolean isSerializable = (ReflectionUtils.isPersistentField(field) || 
+					ReflectionUtils.hasDeclaredGetterAndSetter(field, clazz));
+		isSerializable &= FieldTypeIdentifier.isSerializableField(field);
+		isSerializable &= !hasUnsupportedAnnotations(field);
+		isSerializable &= !isTransientField(field);
+		isSerializable &= !isIdForDomainClass(field, clazz);
+		
+		return isSerializable;
 	}
 
 	private static boolean hasUnsupportedAnnotations(Field field) {

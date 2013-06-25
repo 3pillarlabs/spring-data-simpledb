@@ -52,7 +52,7 @@ public final class ReflectionUtils {
 		}
 	}
 
-	private static Object getPersistentFieldValue(Field field, Object obj) throws IllegalArgumentException, IllegalAccessException {
+	private static Object getPersistentFieldValue(Field field, Object obj) throws IllegalAccessException {
 		boolean fieldAccessible = field.isAccessible();
 		try {
 			if (!fieldAccessible) {
@@ -85,7 +85,7 @@ public final class ReflectionUtils {
 		}
 	}
 
-	private static void setPersistentFieldValue(Field field, Object obj, Object fieldValue) throws IllegalArgumentException, IllegalAccessException {
+	private static void setPersistentFieldValue(Field field, Object obj, Object fieldValue) throws IllegalAccessException {
 		boolean fieldAccessible = field.isAccessible();
 		try {
 			if (!fieldAccessible) {
