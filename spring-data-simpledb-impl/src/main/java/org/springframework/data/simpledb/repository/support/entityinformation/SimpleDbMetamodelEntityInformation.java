@@ -15,17 +15,17 @@
  */
 package org.springframework.data.simpledb.repository.support.entityinformation;
 
-import org.springframework.data.simpledb.reflection.MetadataParser;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.simpledb.reflection.MetadataParser;
+
 public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> extends
 		SimpleDbEntityInformationSupport<T, ID> {
 
-	private String simpleDbDomain;
+	private final String simpleDbDomain;
 
 	/**
 	 * @param domainClass
@@ -57,7 +57,8 @@ public class SimpleDbMetamodelEntityInformation<T, ID extends Serializable> exte
 	@SuppressWarnings("unchecked")
 	@Override
 	public Class<ID> getIdType() {
-		return (Class<ID>) String.class;
+		Field idField = MetadataParser.getIdField(getJavaType());
+		return (Class<ID>) idField.getType();
 	}
 
 	@Override
