@@ -7,6 +7,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Persistent;
 
 /**
  * TODO: extend with other types to be tested as other type handlers are
@@ -33,6 +34,19 @@ public class SimpleDbUser {
 	private long[] primitiveArrayField;
 
 	private Map<String, JSONCompatibleClass> mapOfStringAndObject;
+
+	@SuppressWarnings("unused")
+	@Persistent
+	private String persistedField;
+
+	public SimpleDbUser() {
+		super();
+	}
+
+	public SimpleDbUser(String persistedField) {
+		this();
+		this.persistedField = persistedField;
+	}
 
 	public void setItemName(String itemName) {
 		this.itemName = itemName;
@@ -79,7 +93,7 @@ public class SimpleDbUser {
 	}
 
 	public long[] getPrimitiveArrayField() {
-		return primitiveArrayField.clone();
+		return (primitiveArrayField != null ? primitiveArrayField.clone() : null);
 	}
 
 	public void setCoreTypeList(List<Integer> coreTypeList) {

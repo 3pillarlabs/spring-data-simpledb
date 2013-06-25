@@ -1,16 +1,21 @@
 package org.springframework.data.simpledb.reflection;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Persistent;
 import org.springframework.data.annotation.Reference;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.util.Assert;
-
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class ReflectionUtils {
 
@@ -23,11 +28,20 @@ public final class ReflectionUtils {
 	}
 
 	public static Object callGetter(Object obj, String fieldName) {
+		Object object = null;
 		try {
-			Method getterMethod = retrieveGetterFrom(obj.getClass(), fieldName);
-			Assert.notNull(getterMethod, "No getter found for: " + fieldName);
+			if (obj != null) {
+				Field field = getField(obj.getClass(), fieldName);
+				if (isPersistentField(field)) {
+					 object = getPersistentFieldValue(field, obj);
+				} else {
+					Method getterMethod = retrieveGetterFrom(obj.getClass(), fieldName);
+					Assert.notNull(getterMethod, "No getter found for: " + fieldName);
 
-			return getterMethod.invoke(obj);
+					object = getterMethod.invoke(obj);
+				}
+			}
+			return object;
 
 		} catch(IllegalAccessException e) {
 			throw toMappingException(e, METHOD_GETTER, fieldName, obj);
@@ -38,11 +52,29 @@ public final class ReflectionUtils {
 		}
 	}
 
+	private static Object getPersistentFieldValue(Field field, Object obj) throws IllegalArgumentException, IllegalAccessException {
+		boolean fieldAccessible = field.isAccessible();
+		try {
+			if (!fieldAccessible) {
+				field.setAccessible(true);
+			}
+			return field.get(obj);
+			
+		} finally {
+			field.setAccessible(fieldAccessible);
+		}
+	}
+
 	public static void callSetter(Object obj, String fieldName, Object fieldValue) {
 		try {
-			Method setterMethod = retrieveSetterFrom(obj.getClass(), fieldName);
-			Assert.notNull(setterMethod, "No setter found for: " + fieldName);
-			setterMethod.invoke(obj, fieldValue);
+			Field field = getField(obj.getClass(), fieldName);
+			if (isPersistentField(field)) {
+				setPersistentFieldValue(field, obj, fieldValue);
+			} else {
+				Method setterMethod = retrieveSetterFrom(obj.getClass(), fieldName);
+				Assert.notNull(setterMethod, "No setter found for: " + fieldName);
+				setterMethod.invoke(obj, fieldValue);
+			}
 
 		} catch(IllegalAccessException e) {
 			throw toMappingException(e, METHOD_SETTER, fieldName, obj);
@@ -50,6 +82,19 @@ public final class ReflectionUtils {
 			throw toMappingException(e, METHOD_SETTER, fieldName, obj);
 		} catch(IllegalArgumentException e) {
 			throw toMappingException(e, METHOD_SETTER, fieldName, obj);
+		}
+	}
+
+	private static void setPersistentFieldValue(Field field, Object obj, Object fieldValue) throws IllegalArgumentException, IllegalAccessException {
+		boolean fieldAccessible = field.isAccessible();
+		try {
+			if (!fieldAccessible) {
+				field.setAccessible(true);
+			}
+			field.set(obj, fieldValue);
+			
+		} finally {
+			field.setAccessible(fieldAccessible);
 		}
 	}
 
@@ -208,4 +253,9 @@ public final class ReflectionUtils {
 	public static boolean isReference(Field field) {
 		return field.getAnnotation(Reference.class) != null;
 	}
+	
+	public static boolean isPersistentField(Field field) {
+		return field.isAnnotationPresent(Persistent.class);
+	}
+
 }

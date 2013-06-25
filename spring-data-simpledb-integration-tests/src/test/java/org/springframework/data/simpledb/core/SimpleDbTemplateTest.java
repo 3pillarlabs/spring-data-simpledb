@@ -2,6 +2,8 @@ package org.springframework.data.simpledb.core;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Field;
+
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -116,6 +118,28 @@ public class SimpleDbTemplateTest {
 		assertEquals(user, foundUser);
 		assertEquals(innerNestedFieldValue, user.getNestedEntity()
 				.getInnerNestedEntity().getInnerNestedField());
+
+	}
+
+	@Test
+	public void save_should_persist_fields_with_persistent_annotation()
+			throws Exception {
+
+		final String fieldValue = "persistedFieldValue";
+		SimpleDbUser user = new SimpleDbUser(fieldValue);
+		operations.createOrUpdate(user);
+
+		SimpleDbUser foundUser = operations.read(user.getItemName(),
+				user.getClass());
+		assertNotNull(foundUser);
+
+		Field persistentField = foundUser.getClass().getDeclaredField(
+				"persistedField");
+		if (!persistentField.isAccessible()) {
+			persistentField.setAccessible(true);
+		}
+		String foundFieldValue = (String) persistentField.get(foundUser);
+		assertEquals(fieldValue, foundFieldValue);
 
 	}
 
