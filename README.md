@@ -494,6 +494,10 @@ The links between the domains are specified via SimpleDB attributes as shown bel
     testDB.simpleDbReferences.firstNestedEntity = "first"
     testDB.firstNestedEntity.secondNestedEntity = "second"
 
+### @Persistent ###
+
+The Spring Data standard `@Persistent` annotation is supported on a field. A field thus annotated will be persisted and populated even if there are no public getter and setter methods for the field. This can be useful for persisting properties which are not directly accessible to clients but are needed for transformation by other methods.
+
 ## Retries ##
 Being a fully restfull database, the probability to retrieve an un-expected Service Unavailable Exception (Http 503 Exception) has to be handled appropriatelly.
 An "abstraction" over the API is implemented that simplifies the user interaction with SimpleDB database.
