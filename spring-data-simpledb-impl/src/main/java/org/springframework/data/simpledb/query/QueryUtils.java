@@ -114,7 +114,7 @@ public final class QueryUtils {
 		return query.toLowerCase().contains("count(");
 	}
 
-	static String replaceOneParameterInQuery(String rawQuery,
+	static String replaceOneParameterInQuery(String aRawQuery,
 			Parameter parameter, Object parameterValue) {
 		final String bindEndCharacter = "\\b";
 
@@ -125,6 +125,7 @@ public final class QueryUtils {
 			namedParameter = "\\?";
 		}
 
+		String rawQuery = aRawQuery;
 		Assert.isTrue(rawQuery.matches("(.*)(" + namedParameter + ")(.*)"));
 
 		if (isInOperation(rawQuery, namedParameter)) {

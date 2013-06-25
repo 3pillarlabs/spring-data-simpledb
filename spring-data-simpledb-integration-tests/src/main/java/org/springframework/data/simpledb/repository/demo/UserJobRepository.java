@@ -10,8 +10,8 @@ import org.springframework.data.simpledb.domain.demo.UserJob;
 public interface UserJobRepository extends CrudRepository<UserJob, String> {
 
 	@Query(where = "`source.token` = :token")
-	public UserJob findBySourceToken(@Param("token") String token);
-	
+	UserJob findBySourceToken(@Param("token") String token);
+
 	@Query(where = "`source.token` like %:token%")
-	public List<UserJob> findAllByMatchingSourceToken(@Param("token") String token);
+	List<UserJob> findAllByMatchingSourceToken(@Param("token") String token);
 }
