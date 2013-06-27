@@ -143,4 +143,18 @@ public class SimpleDbTemplateTest {
 
 	}
 
+	@Test
+	public void save_should_not_persist_transient_fields() {
+		String itemName = "FirstItem";
+
+		SimpleDbUser user = SimpleDbUserBuilder
+				.createUserWithSampleAttributes(itemName);
+		user.setTransientField("transientFieldValue");
+		operations.createOrUpdate(user);
+
+		SimpleDbUser foundUser = operations.read(user.getItemName(),
+				user.getClass());
+		assertNull(foundUser.getTransientField());
+	}
+
 }

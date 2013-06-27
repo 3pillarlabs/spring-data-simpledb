@@ -8,6 +8,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Persistent;
+import org.springframework.data.annotation.Transient;
 
 /**
  * TODO: extend with other types to be tested as other type handlers are
@@ -38,6 +39,9 @@ public class SimpleDbUser {
 	@SuppressWarnings("unused")
 	@Persistent
 	private String persistedField;
+
+	@Transient
+	private String transientField;
 
 	public SimpleDbUser() {
 		super();
@@ -93,7 +97,8 @@ public class SimpleDbUser {
 	}
 
 	public long[] getPrimitiveArrayField() {
-		return (primitiveArrayField != null ? primitiveArrayField.clone() : null);
+		return (primitiveArrayField != null ? primitiveArrayField.clone()
+				: null);
 	}
 
 	public void setCoreTypeList(List<Integer> coreTypeList) {
@@ -119,6 +124,14 @@ public class SimpleDbUser {
 	public void setMapOfStringAndObject(
 			Map<String, JSONCompatibleClass> mapOfStringAndObject) {
 		this.mapOfStringAndObject = mapOfStringAndObject;
+	}
+
+	public String getTransientField() {
+		return transientField;
+	}
+
+	public void setTransientField(String transientField) {
+		this.transientField = transientField;
 	}
 
 	public static class NestedEntity {
