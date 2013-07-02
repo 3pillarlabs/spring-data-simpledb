@@ -2,6 +2,7 @@ package org.springframework.data.simpledb.core;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,5 +59,60 @@ public interface SimpleDbOperations {
 	<T> long count(String query, Class<T> entityClass);
 
 	<T> long count(String query, Class<T> entityClass, boolean consistentRead);
+
+	/**
+	 * Updates an entity with the property map provided. The keys for the 
+	 * property map would be the attribute names to be updated with corresponding
+	 * values. In order to update nested properties, the key should be a {@code .}
+	 * (dot) separated property path of the form {@code a.b.c}, where each token
+	 * is a field name of the parent entity. 
+	 * <p>
+	 * For example:<br/>
+	 * <pre>
+	 * public class A {
+	 *   String id;
+	 *   B b;
+	 *   // getters & setters not shown
+	 * }
+	 * 
+	 * public class B {
+	 *   String id;
+	 *   String name;
+	 *   // getters & setters not shown
+	 * }
+	 * </pre>
+	 * In order to perform a selective update of only {@code B#name}, given an 
+	 * instance of class A:
+	 * <pre>
+	 * // simpleDbOperations = ...; (injected)
+	 * Map<String, Object> map = new HashMap<String, Object>();
+	 * map.put("b.name", "droid");
+	 * simpleDbOperations.update(A.class, "qxua", map); 
+	 * </pre> 
+	 * <p>
+	 * For an candidate attribute, if it is a nested entity or a Map, the key
+	 * is used as <i>prefix</i>. The nested entity must not be a {@code Reference}
+	 * entity, the behavior can not be guaranteed in this case.
+	 * <p>
+	 * The consistent read property of this operation will be determined by
+	 * {@link SimpleDb#setConsistentRead(boolean)} setting.
+	 * 
+	 * @param entityClass
+	 * @param id
+	 * @param propertyMap
+	 */
+	<T, ID> void update(ID id, Class<T> entityClass, Map<String, Object> propertyMap);
+	
+	/**
+	 * Overloaded form of {@link #update(Class, Object, Map)}. If the additional
+	 * boolean argument is false, the method will return immediately, else,
+	 * the update is guaranteed before method return.
+	 * 
+	 * @param entityClass
+	 * @param id
+	 * @param propertyMap
+	 * @param consistentRead
+	 */
+	<T, ID> void update(ID id, Class<T> entityClass, Map<String, Object> propertyMap, boolean consistentRead);
 
 }

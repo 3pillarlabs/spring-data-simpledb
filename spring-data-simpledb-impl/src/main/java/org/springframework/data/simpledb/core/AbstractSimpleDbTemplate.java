@@ -1,7 +1,11 @@
 package org.springframework.data.simpledb.core;
 
-import com.amazonaws.services.simpledb.AmazonSimpleDB;
-import com.amazonaws.services.simpledb.model.SelectResult;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.simpledb.core.domain.DomainManager;
@@ -11,10 +15,8 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 import org.springframework.util.Assert;
 
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+import com.amazonaws.services.simpledb.AmazonSimpleDB;
+import com.amazonaws.services.simpledb.model.SelectResult;
 
 /**
  * Performs Domain Management based on Domain Management Policy on each operation
@@ -60,6 +62,8 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
     public abstract <T> List<T> findImpl(SimpleDbEntityInformation<T, ?> entityInformation, String query,
                                          String nextToken, boolean consistentRead);
 
+    protected abstract <T, ID> void updateImpl(ID id, Class<T> entityClass, Map<String, Object> propertyMap, boolean consistentRead);
+    
     @Override
     public final AmazonSimpleDB getDB() {
         return simpleDb.getSimpleDbClient();
@@ -300,7 +304,25 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
         return pages.isEmpty() ? null : pages.get(0);
     }
 
-    protected final <T> EntityWrapper<T, ?> getEntityWrapper(T domainItem,
+    @Override
+	public <T, ID> void update(ID id, Class<T> entityClass, Map<String, Object> propertyMap) {
+    	update(id, entityClass, propertyMap, simpleDb.isConsistentRead());
+	}
+
+	@Override
+	public <T, ID> void update(final ID id, final Class<T> entityClass, 
+			final Map<String, Object> propertyMap, final boolean consistentRead) {
+		
+		new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
+			
+			@Override
+			public void execute() {
+				updateImpl(id, entityClass, propertyMap, consistentRead);
+			}
+		}.executeWithRetries();
+	}
+
+	protected final <T> EntityWrapper<T, ?> getEntityWrapper(T domainItem,
                                                              SimpleDbEntityInformation<T, ?> entityInformation) {
         final EntityWrapper<T, ?> entityWrapper = new EntityWrapper<T, Serializable>(entityInformation, domainItem);
 

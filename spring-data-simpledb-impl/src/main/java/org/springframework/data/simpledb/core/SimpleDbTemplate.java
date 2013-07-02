@@ -4,22 +4,30 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.simpledb.attributeutil.SimpleDBAttributeConverter;
+import org.springframework.data.simpledb.attributeutil.SimpleDbAttributeValueSplitter;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
+import org.springframework.data.simpledb.core.entity.json.JsonMarshaller;
 import org.springframework.data.simpledb.exception.InvalidSimpleDBQueryException;
 import org.springframework.data.simpledb.parser.SimpleDBParser;
 import org.springframework.data.simpledb.query.QueryUtils;
+import org.springframework.data.simpledb.reflection.FieldType;
+import org.springframework.data.simpledb.reflection.FieldTypeIdentifier;
 import org.springframework.data.simpledb.reflection.MetadataParser;
 import org.springframework.data.simpledb.reflection.ReflectionUtils;
 import org.springframework.data.simpledb.repository.support.EmptyResultDataAccessException;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
+import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 import org.springframework.util.Assert;
 
 import com.amazonaws.services.simpledb.model.Attribute;
@@ -265,6 +273,62 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
         return domainItemBuilder.populateDomainItems(entityInformation, selectResult);
     }
 
+	@SuppressWarnings("unchecked")
+	@Override
+	protected <T, ID> void updateImpl(ID id, Class<T> entityClass, 
+			Map<String, Object> propertyMap, boolean consistentRead) {
+		// From the propertyMap, retrieve the Field which will be updated,
+    	// from the Field, serialize the corresponding Object value as per
+    	// FieldWrapper#serialize semantics, plug into the scheme to convert
+    	// to item and send a put request.
+		String domainName = getDomainName(entityClass);
+    	Map<String, String> serializedValues = new LinkedHashMap<String, String>();
+		for (Map.Entry<String, Object> entry : propertyMap.entrySet()) {
+    		String propertyPath = entry.getKey();
+    		Object propertyValue = entry.getValue();
+    		String serializedPropertyValue = null;
+    		Field propertyField = ReflectionUtils.getPropertyField(entityClass, propertyPath);
+    		if (FieldTypeIdentifier.isOfType(propertyField, FieldType.PRIMITIVE, FieldType.CORE_TYPE)) {
+    			serializedPropertyValue = SimpleDBAttributeConverter.encode(propertyValue);
+    		
+    		} else if (FieldTypeIdentifier.isOfType(propertyField, FieldType.COLLECTION, FieldType.ARRAY, FieldType.MAP)) {
+    			serializedPropertyValue = JsonMarshaller.getInstance().marshall(propertyValue);
+    		
+    		} else if (FieldTypeIdentifier.isOfType(propertyField, FieldType.NESTED_ENTITY)) {
+			
+    			SimpleDbEntityInformation<T, Serializable> entityMetadata = (SimpleDbEntityInformation<T, Serializable>) SimpleDbEntityInformationSupport.getMetadata(propertyValue.getClass(), domainName);
+				EntityWrapper<T, Serializable> entity = new EntityWrapper<T, Serializable>(entityMetadata, (T) propertyValue);
+				Map<String, String> nestedAttributes = entity.serialize();
+				// add to serializedValues after prefixing propertyPath
+				for (Map.Entry<String, String> e : nestedAttributes.entrySet()) {
+					String key = String.format("%s.%s", propertyPath, e.getKey());
+					serializedValues.put(key, e.getValue());
+				}
+    		}
+    		if (serializedPropertyValue != null) {
+    			serializedValues.put(propertyPath, serializedPropertyValue);
+    		}
+    	}
+		Map<String, List<String>> rawAttributes = SimpleDbAttributeValueSplitter.splitAttributeValuesWithExceedingLengths(serializedValues);
+		List<PutAttributesRequest> putAttributesRequests = SimpleDbRequestBuilder.createPutAttributesRequests(
+				domainName, (String) id, rawAttributes);
+
+        for (PutAttributesRequest request : putAttributesRequests) {
+            getDB().putAttributes(request);
+        }
+    	
+		if (consistentRead) {
+			List<String> quotedPropertyNames = new ArrayList<String>(serializedValues.size());
+			for (String key : serializedValues.keySet()) {
+				quotedPropertyNames.add(String.format("`%s`", key));
+			}
+			getDB().select(
+					new SelectRequest(String.format("SELECT %s FROM `%s`",
+							StringUtils.join(quotedPropertyNames, ","),
+							domainName), true));
+		}
+	}
+
     private <T> String getEscapedQuery(String query, SimpleDbEntityInformation<T, ?> entityInformation) {
         return QueryUtils.escapeQueryAttributes(query, MetadataParser.getIdField(entityInformation.getJavaType())
                 .getName());
@@ -307,4 +371,5 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
     private void logOperation(String operation, EntityWrapper<?, ?> entity) {
         LOGGER.debug(operation + " \"{}\" ItemName \"{}\"", entity.getDomain(), entity.getItemName());
     }
+
 }

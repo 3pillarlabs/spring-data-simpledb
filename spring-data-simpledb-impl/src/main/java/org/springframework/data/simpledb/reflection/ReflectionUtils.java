@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.data.annotation.Persistent;
 import org.springframework.data.annotation.Reference;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 public final class ReflectionUtils {
 
@@ -256,6 +258,34 @@ public final class ReflectionUtils {
 	
 	public static boolean isPersistentField(Field field) {
 		return field.isAnnotationPresent(Persistent.class);
+	}
+	
+	/**
+	 * Retrieve the {@link Field} corresponding to the propertyPath in the given
+	 * class.
+	 * 
+	 * @param clazz
+	 * @param propertyPath
+	 * @return
+	 */
+	public static Field getPropertyField(Class<?> clazz, String propertyPath) {
+		
+		Field propertyField = null;
+		try {
+			String[] properties = propertyPath.split("\\.");
+			Field carField = clazz.getDeclaredField(properties[0]);
+			if (properties.length == 1) {
+				propertyField = carField;
+			} else {
+				String cdr = StringUtils.arrayToDelimitedString(
+						Arrays.copyOfRange(properties, 1, properties.length), ".");
+				propertyField = getPropertyField(carField.getType(), cdr);
+			}
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Error accessing propertyPath: " + propertyPath + 
+					" on class: " + clazz.getName(), e);
+		}
+		return propertyField;
 	}
 
 }

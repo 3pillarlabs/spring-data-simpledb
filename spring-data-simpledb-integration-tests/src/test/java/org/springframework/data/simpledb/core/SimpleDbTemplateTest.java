@@ -3,6 +3,9 @@ package org.springframework.data.simpledb.core;
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Test;
@@ -155,6 +158,40 @@ public class SimpleDbTemplateTest {
 		SimpleDbUser foundUser = operations.read(user.getItemName(),
 				user.getClass());
 		assertNull(foundUser.getTransientField());
+	}
+
+	@Test
+	public void update_entity_should_update_all_given_fields() {
+		String itemName = "FirstItem";
+		SimpleDbUser user = SimpleDbUserBuilder
+				.createUserWithSampleAttributes(itemName);
+		operations.createOrUpdate(user);
+
+		Map<String, Object> propertyMap = new HashMap<String, Object>();
+		propertyMap.put("primitiveField", 0.02f);
+		propertyMap.put("coreField", "test_string$");
+		propertyMap.put("primitiveArrayField", new long[] { 1235L, 1236L });
+		propertyMap.put("coreTypeList", Arrays.asList(Integer.valueOf(123),
+				Integer.valueOf(23), Integer.valueOf(3)));
+		propertyMap.put("nestedEntity.nestedPrimitiveField", 12);
+		SimpleDbUser.NestedEntity.InnerNestedEntity sni = new SimpleDbUser.NestedEntity.InnerNestedEntity();
+		sni.setInnerNestedField("innerNestedFieldValue");
+		propertyMap.put("nestedEntity.innerNestedEntity", sni);
+		operations.update(itemName, SimpleDbUser.class, propertyMap, true);
+
+		SimpleDbUser found = operations.read(user.getItemName(),
+				SimpleDbUser.class);
+		assertEquals(propertyMap.get("primitiveField"),
+				found.getPrimitiveField());
+		assertEquals(propertyMap.get("coreField"), found.getCoreField());
+		assertArrayEquals((long[]) propertyMap.get("primitiveArrayField"),
+				found.getPrimitiveArrayField());
+		assertEquals(propertyMap.get("coreTypeList"), found.getCoreTypeList());
+		assertEquals(propertyMap.get("nestedEntity.nestedPrimitiveField"),
+				found.getNestedEntity().getNestedPrimitiveField());
+		assertEquals(propertyMap.get("nestedEntity.innerNestedEntity"), found
+				.getNestedEntity().getInnerNestedEntity());
+
 	}
 
 }
