@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -25,12 +24,13 @@ import org.springframework.data.simpledb.reflection.FieldType;
 import org.springframework.data.simpledb.reflection.FieldTypeIdentifier;
 import org.springframework.data.simpledb.reflection.MetadataParser;
 import org.springframework.data.simpledb.reflection.ReflectionUtils;
-import org.springframework.data.simpledb.repository.support.EmptyResultDataAccessException;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
 import org.springframework.util.Assert;
 
 import com.amazonaws.services.simpledb.model.Attribute;
+import com.amazonaws.services.simpledb.model.BatchDeleteAttributesRequest;
+import com.amazonaws.services.simpledb.model.DeletableItem;
 import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.PutAttributesRequest;
@@ -48,7 +48,7 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
         super(simpleDb);
     }
 
-    @Override
+	@Override
     public <T> T createOrUpdateImpl(T domainItem, EntityWrapper<T, ?> entity) {
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
 
@@ -73,6 +73,7 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
         for (PutAttributesRequest request : putAttributesRequests) {
             getDB().putAttributes(request);
         }
+        
         return entity.getItem();
     }
 
@@ -87,23 +88,15 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
     }
 
     @Override
-    public <T> void deleteImpl(T domainItem, boolean consistentRead, SimpleDbEntityInformation<T, ?> entityInformation,
+    public <T> void deleteImpl(T domainItem, SimpleDbEntityInformation<T, ?> entityInformation,
                                EntityWrapper<T, ?> entity) {
-        if (consistentRead) {
-            T persistedEntity = read(entity.getItemName(), entityInformation.getJavaType(), consistentRead);
-
-            if (persistedEntity == null) {
-                throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!",
-                        entityInformation.getJavaType(), entity.getItemName()));
-            }
-        }
 
         for (final Field field : ReflectionUtils.getFirstLevelOfReferenceAttributes(domainItem.getClass())) {
             final Object referenceEntity = ReflectionUtils.callGetter(domainItem, field.getName());
 
 			/* recursive call */
             if (referenceEntity != null) {
-                delete(referenceEntity, consistentRead);
+                delete(referenceEntity);
             }
         }
 
@@ -111,6 +104,32 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
     }
 
     @Override
+	public <T, ID> void delete(Class<T> entityClass, Iterable<? extends ID> ids) {
+
+    	if (ids.iterator().hasNext()) {
+    		String domainName = getDomainName(entityClass);
+    		
+			List<DeletableItem> deleteList = new ArrayList<DeletableItem>();
+			for (ID id : ids) {
+				deleteList.add(new DeletableItem().withName((String) id));
+			}
+			// max allowed batch size is 25
+			List<DeletableItem> batch = new ArrayList<DeletableItem>(25);
+			for (int i = 0; i < deleteList.size(); i += 25) {
+				int batchIndex = ((i + 25) < deleteList.size()) ? (i + 25)
+						: deleteList.size();
+				for (int j = i; j < batchIndex; j++) {
+					batch.add(deleteList.get(j));
+				}
+				LOGGER.debug(String.format("Batch size: %d", batch.size()));
+				getDB().batchDeleteAttributes(new BatchDeleteAttributesRequest(
+						domainName, batch));
+				batch.clear();
+			}
+		}
+	}
+
+	@Override
     public SelectResult invokeFindImpl(boolean consistentRead, String escapedQuery) {
     	LOGGER.debug("Query: {}", escapedQuery);
         return getDB().select(new SelectRequest(escapedQuery, consistentRead));
@@ -276,7 +295,7 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <T, ID> void updateImpl(ID id, Class<T> entityClass, 
-			Map<String, Object> propertyMap, boolean consistentRead) {
+			Map<String, Object> propertyMap) {
 		// From the propertyMap, retrieve the Field which will be updated,
     	// from the Field, serialize the corresponding Object value as per
     	// FieldWrapper#serialize semantics, plug into the scheme to convert
@@ -286,6 +305,9 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 		for (Map.Entry<String, Object> entry : propertyMap.entrySet()) {
     		String propertyPath = entry.getKey();
     		Object propertyValue = entry.getValue();
+    		if (propertyValue == null) {
+    			continue;
+    		}
     		String serializedPropertyValue = null;
     		Field propertyField = ReflectionUtils.getPropertyField(entityClass, propertyPath);
     		if (FieldTypeIdentifier.isOfType(propertyField, FieldType.PRIMITIVE, FieldType.CORE_TYPE)) {
@@ -316,17 +338,6 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
         for (PutAttributesRequest request : putAttributesRequests) {
             getDB().putAttributes(request);
         }
-    	
-		if (consistentRead) {
-			List<String> quotedPropertyNames = new ArrayList<String>(serializedValues.size());
-			for (String key : serializedValues.keySet()) {
-				quotedPropertyNames.add(String.format("`%s`", key));
-			}
-			getDB().select(
-					new SelectRequest(String.format("SELECT %s FROM `%s`",
-							StringUtils.join(quotedPropertyNames, ","),
-							domainName), true));
-		}
 	}
 
     private <T> String getEscapedQuery(String query, SimpleDbEntityInformation<T, ?> entityInformation) {

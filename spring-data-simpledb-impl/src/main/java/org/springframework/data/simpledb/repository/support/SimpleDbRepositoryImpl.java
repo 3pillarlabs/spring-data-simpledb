@@ -98,7 +98,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 
 	@Override
 	public void delete(T entity) {
-		operations.delete(entity, consistentRead);
+		operations.delete(entity);
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 	// --------------------------------------------------
 	@Override
 	public <S extends T> S save(S entity, boolean consistentRead) {
-		return (S) operations.createOrUpdate(entity);
+		return operations.createOrUpdate(entity);
 	}
 
 	@Override
@@ -129,36 +129,43 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 		return result;
 	}
 
+	@Override
 	public T findOne(ID id, boolean consistentRead) {
 		Assert.notNull(id, "The given id must not be null!");
 		return operations.read(id, entityInformation.getJavaType(), consistentRead);
 	}
 
+	@Override
 	public boolean exists(ID id, boolean consistentRead) {
 		Assert.notNull(id, "The given id must not be null!");
 		return findOne(id, consistentRead) != null;
 	}
 
+	@Override
 	public List<T> findAll(boolean consistentRead) {
 		return operations.find(entityInformation.getJavaType(), new QueryBuilder(entityInformation).toString(),
 				consistentRead);
 	}
 
+	@Override
 	public List<T> findAll(Iterable<ID> ids, boolean consistentRead) {
 		return operations.find(entityInformation.getJavaType(), new QueryBuilder(entityInformation).withIds(ids)
 				.toString(), consistentRead);
 	}
 
+	@Override
 	public List<T> findAll(Sort sort, boolean consistentRead) {
 		return operations.find(entityInformation.getJavaType(), new QueryBuilder(entityInformation).with(sort)
 				.toString(), consistentRead);
 	}
 
+	@Override
 	public Page<T> findAll(Pageable pageable, boolean consistentRead) {
 		return operations.executePagedQuery(entityInformation.getJavaType(),
 				new QueryBuilder(entityInformation).toString(), pageable, consistentRead);
 	}
 
+	@Override
 	public long count(boolean consistentRead) {
 		return operations.count(entityInformation.getJavaType(), consistentRead);
 	}
@@ -176,7 +183,7 @@ public class SimpleDbRepositoryImpl<T, ID extends Serializable> implements Pagin
 			}
 		}
 
-operations.delete(entityInformation.getDomain(), (String) id);
+		operations.delete(entityInformation.getDomain(), (String) id);
 	}
 
 	@Override
@@ -195,6 +202,6 @@ operations.delete(entityInformation.getDomain(), (String) id);
 
 	@Override
 	public void deleteAll(boolean consistentRead) {
-operations.deleteAll(entityInformation.getJavaType(), consistentRead);
+		operations.deleteAll(entityInformation.getJavaType());
 	}
 }

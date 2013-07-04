@@ -177,7 +177,7 @@ public class SimpleDbTemplateTest {
 		SimpleDbUser.NestedEntity.InnerNestedEntity sni = new SimpleDbUser.NestedEntity.InnerNestedEntity();
 		sni.setInnerNestedField("innerNestedFieldValue");
 		propertyMap.put("nestedEntity.innerNestedEntity", sni);
-		operations.update(itemName, SimpleDbUser.class, propertyMap, true);
+		operations.update(itemName, SimpleDbUser.class, propertyMap);
 
 		SimpleDbUser found = operations.read(user.getItemName(),
 				SimpleDbUser.class);

@@ -1,5 +1,8 @@
 package org.springframework.data.simpledb.query;
 
+import java.lang.reflect.Field;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.QueryMethod;
@@ -11,9 +14,7 @@ import org.springframework.data.simpledb.query.executions.PagedResultExecution;
 import org.springframework.data.simpledb.query.executions.SingleResultExecution;
 import org.springframework.data.simpledb.reflection.FieldType;
 import org.springframework.data.simpledb.reflection.FieldTypeIdentifier;
-
-import java.lang.reflect.Field;
-import java.util.List;
+import org.springframework.data.simpledb.reflection.ReflectionUtils;
 
 /**
  * {@link RepositoryQuery} implementation that inspects a {@link SimpleDbQueryMethod} for the existence of an
@@ -82,7 +83,7 @@ public class SimpleDbRepositoryQuery implements RepositoryQuery {
 		final Class<?> domainClass = method.getDomainClazz();
 		for(String attribute : attributesFromQuery) {
 			try {
-				Field field = domainClass.getDeclaredField(attribute);
+				Field field = ReflectionUtils.getDeclaredFieldInHierarchy(domainClass, attribute); 
 				if(FieldTypeIdentifier.isOfType(field, FieldType.NESTED_ENTITY)) {
 					throw new IllegalArgumentException("Invalid query parameter :" + attribute + " is nested object");
 				}

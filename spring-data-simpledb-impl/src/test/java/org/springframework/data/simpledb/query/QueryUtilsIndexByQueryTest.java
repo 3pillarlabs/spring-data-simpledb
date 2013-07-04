@@ -1,5 +1,13 @@
 package org.springframework.data.simpledb.query;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -9,14 +17,6 @@ import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.simpledb.attributeutil.SimpleDBAttributeConverter;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 /**
  * @author cclaudiu
@@ -163,6 +163,23 @@ public class QueryUtilsIndexByQueryTest {
 		assertThat(resultedQuery, is(expectedQuery));
 	}
 
+	@Test
+	public void replaceOneParameterInQuery_should_parse_positional_parameters() {
+		
+		final String paramPlaceholder = "\\?";
+		final String rawQuery = "a = ? AND (`b.c` = ? OR d IN ?) ORDER BY x";
+		
+		String replacedQuery = QueryUtils.replaceOneParameterInQuery(rawQuery, 
+				paramPlaceholder, 0.01F);
+		replacedQuery = QueryUtils.replaceOneParameterInQuery(replacedQuery, 
+				paramPlaceholder, "baz");
+		replacedQuery = QueryUtils.replaceOneParameterInQuery( replacedQuery,
+				paramPlaceholder, new String[] {"foo", "bar"});
+		
+		assertEquals("a = '" + SimpleDBAttributeConverter.encode(0.01F) + 
+				"' AND (`b.c` = 'baz' OR d IN ('foo','bar')) ORDER BY x", replacedQuery);
+	}
+	
     static final List<Class<?>> TYPES = Arrays.<Class<?>>asList(Pageable.class, Sort.class);
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

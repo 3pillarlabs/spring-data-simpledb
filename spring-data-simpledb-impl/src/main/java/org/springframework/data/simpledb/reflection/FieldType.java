@@ -1,13 +1,13 @@
 package org.springframework.data.simpledb.reflection;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.simpledb.annotation.Attributes;
-import org.springframework.util.Assert;
-
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.simpledb.annotation.Attributes;
+import org.springframework.util.Assert;
 
 public enum FieldType {
 
@@ -92,8 +92,9 @@ public enum FieldType {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-			return !isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, COLLECTION, ARRAY, MAP, OBJECT,
-					REFERENCE_ENTITY);
+			return !(field.getType().equals(Class.class) || 
+					isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, 
+							COLLECTION, ARRAY, MAP, OBJECT, REFERENCE_ENTITY));
 		}
 	},
 

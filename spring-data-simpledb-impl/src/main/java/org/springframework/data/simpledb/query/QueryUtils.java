@@ -114,7 +114,7 @@ public final class QueryUtils {
 		return query.toLowerCase().contains("count(");
 	}
 
-	static String replaceOneParameterInQuery(String aRawQuery,
+	static String replaceOneParameterInQuery(String rawQuery,
 			Parameter parameter, Object parameterValue) {
 		final String bindEndCharacter = "\\b";
 
@@ -125,18 +125,51 @@ public final class QueryUtils {
 			namedParameter = "\\?";
 		}
 
-		String rawQuery = aRawQuery;
 		Assert.isTrue(rawQuery.matches("(.*)(" + namedParameter + ")(.*)"));
+//		String rawQuery = aRawQuery;
 
-		if (isInOperation(rawQuery, namedParameter)) {
-			String replacedValue = createInOperatorStatement(parameterValue);
-			rawQuery = rawQuery.replaceFirst(namedParameter, replacedValue);
+//		if (isInOperation(rawQuery, namedParameter)) {
+//			String replacedValue = createInOperatorStatement(parameterValue);
+//			rawQuery = rawQuery.replaceFirst(namedParameter, replacedValue);
+//		} else {
+//			// handle LIKE queries & quoting together
+//			String encodedValue = SimpleDBAttributeConverter.encode(parameterValue);
+//			StringBuilder namedParamBuilder = new StringBuilder();
+//			StringBuilder paramValueBuilder = new StringBuilder();
+//			Pattern likeOperatorPattern = Pattern.compile("(%?)" + namedParameter + "(%?)");
+//			Matcher m = likeOperatorPattern.matcher(rawQuery);
+//			if (m.find()) {
+//				paramValueBuilder.append(SINGLE_QUOTE);
+//				if (!m.group(1).isEmpty()) {
+//					namedParamBuilder.append("%");
+//					paramValueBuilder.append("%");
+//				}
+//				namedParamBuilder.append(namedParameter);
+//				paramValueBuilder.append(encodedValue);
+//				if (!m.group(2).isEmpty()) {
+//					namedParamBuilder.append("%");
+//					paramValueBuilder.append("%");
+//				}
+//				paramValueBuilder.append(SINGLE_QUOTE);
+//				rawQuery = rawQuery.replaceFirst(namedParamBuilder.toString(), paramValueBuilder.toString());
+//			}
+//		}
+		return replaceOneParameterInQuery(rawQuery, namedParameter, parameterValue);
+	}
+
+	public static String replaceOneParameterInQuery(String rawQuery, 
+			String paramPlaceholder, Object paramValue) {
+
+		String replacedQuery = null;
+		if (paramValue.getClass().isArray() && isInOperation(rawQuery, paramPlaceholder)) {
+			String replacedValue = createInOperatorStatement(paramValue);
+			replacedQuery = rawQuery.replaceFirst(paramPlaceholder, replacedValue);
 		} else {
 			// handle LIKE queries & quoting together
-			String encodedValue = SimpleDBAttributeConverter.encode(parameterValue);
+			String encodedValue = SimpleDBAttributeConverter.encode(paramValue);
 			StringBuilder namedParamBuilder = new StringBuilder();
 			StringBuilder paramValueBuilder = new StringBuilder();
-			Pattern likeOperatorPattern = Pattern.compile("(%?)" + namedParameter + "(%?)");
+			Pattern likeOperatorPattern = Pattern.compile("(%?)" + paramPlaceholder + "(%?)");
 			Matcher m = likeOperatorPattern.matcher(rawQuery);
 			if (m.find()) {
 				paramValueBuilder.append(SINGLE_QUOTE);
@@ -144,19 +177,21 @@ public final class QueryUtils {
 					namedParamBuilder.append("%");
 					paramValueBuilder.append("%");
 				}
-				namedParamBuilder.append(namedParameter);
+				namedParamBuilder.append(paramPlaceholder);
 				paramValueBuilder.append(encodedValue);
 				if (!m.group(2).isEmpty()) {
 					namedParamBuilder.append("%");
 					paramValueBuilder.append("%");
 				}
 				paramValueBuilder.append(SINGLE_QUOTE);
-				rawQuery = rawQuery.replaceFirst(namedParamBuilder.toString(), paramValueBuilder.toString());
+				replacedQuery = rawQuery.replaceFirst(
+						namedParamBuilder.toString(), paramValueBuilder.toString());
 			}
 		}
-		return rawQuery;
+		
+		return replacedQuery;
 	}
-
+	
 	static String buildQuery(final String rawQuery, Parameters parameters,
 			Object... parameterValues) {
 		String replacedRawQuery = rawQuery;
@@ -179,7 +214,7 @@ public final class QueryUtils {
 	private static boolean isInOperation(String rawQuery, String parameterName) {
 		final String matchingString = "(.*)\\s(in)((\\s)*)" + parameterName
 				+ "(.*)";
-		return rawQuery.matches(matchingString);
+		return rawQuery.toLowerCase().matches(matchingString);
 	}
 
 	private static String createInOperatorStatement(Object parameterValue) {

@@ -15,6 +15,7 @@ import org.springframework.data.simpledb.attributeutil.SimpleDbAttributeValueSpl
 import org.springframework.data.simpledb.reflection.FieldType;
 import org.springframework.data.simpledb.reflection.FieldTypeIdentifier;
 import org.springframework.data.simpledb.reflection.MetadataParser;
+import org.springframework.data.simpledb.reflection.ReflectionUtils;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 
 public class EntityWrapper<T, ID extends Serializable> {
@@ -80,7 +81,9 @@ public class EntityWrapper<T, ID extends Serializable> {
 	public void setId(String itemName) {
 		final Field idField;
 		try {
-			idField = item.getClass().getDeclaredField(entityInformation.getItemNameFieldName(item));
+			idField = ReflectionUtils.getDeclaredFieldInHierarchy(
+					item.getClass(), 
+					entityInformation.getItemNameFieldName(item)); 
 			idField.setAccessible(Boolean.TRUE);
 			idField.set(item, itemName);
 		} catch(NoSuchFieldException e) {

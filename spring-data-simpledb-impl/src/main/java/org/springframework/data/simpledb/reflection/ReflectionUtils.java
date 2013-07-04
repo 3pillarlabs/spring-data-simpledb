@@ -124,7 +124,7 @@ public final class ReflectionUtils {
 
 	public static Field getField(final Class<?> entityClazz, final String fieldName) {
 		try {
-			return entityClazz.getDeclaredField(fieldName);
+			return getDeclaredFieldInHierarchy(entityClazz, fieldName);
 		} catch(NoSuchFieldException e) {
 			throw new IllegalArgumentException("Field doesn't exist in entity :" + fieldName, e);
 		}
@@ -132,7 +132,7 @@ public final class ReflectionUtils {
 
 	public static boolean isOfType(Type type, final Class<?> entityClazz, final String fieldName) {
 		try {
-			Field field = entityClazz.getDeclaredField(fieldName);
+			Field field = getDeclaredFieldInHierarchy(entityClazz, fieldName); 
 			Type fieldType = field.getGenericType();
 
 			return isSameConcreteType(type, fieldType);
@@ -273,7 +273,7 @@ public final class ReflectionUtils {
 		Field propertyField = null;
 		try {
 			String[] properties = propertyPath.split("\\.");
-			Field carField = clazz.getDeclaredField(properties[0]);
+			Field carField = getDeclaredFieldInHierarchy(clazz, properties[0]); 
 			if (properties.length == 1) {
 				propertyField = carField;
 			} else {
@@ -288,4 +288,49 @@ public final class ReflectionUtils {
 		return propertyField;
 	}
 
+	/**
+	 * Finds a declared field in given <tt>clazz</tt> and continues to search
+	 * up the superclass until no more super class is present.
+	 * 
+	 * @param clazz
+	 * @param fieldName
+	 * @return
+	 * @throws NoSuchFieldException 
+	 */
+	public static Field getDeclaredFieldInHierarchy(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+		
+		Field field = null;
+		for (Class<?> acls = clazz; acls != null; acls = acls.getSuperclass()) {
+			try {
+				field = acls.getDeclaredField(fieldName);
+				break;
+			} catch (NoSuchFieldException e) {
+				// ignore
+			}
+		}
+		if (field == null) {
+			throw new NoSuchFieldException("Could not find field '" + fieldName + "' in class '" + clazz.getName() + "' or its super classes");
+		}
+		
+		return field;
+	}
+	
+	/**
+	 * Finds all declared fields in given <tt>clazz</tt> and its super classes.
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	public static Field[] getDeclaredFieldsInHierarchy(Class<?> clazz) {
+		
+		List<Field> fields = new ArrayList<Field>();
+		for (Class<?> acls = clazz; acls != null; acls = acls.getSuperclass()) {
+			for (Field field : acls.getDeclaredFields()) {
+				fields.add(field);
+			}
+		}
+		
+		return fields.toArray(new Field[fields.size()]);
+	}
+	
 }

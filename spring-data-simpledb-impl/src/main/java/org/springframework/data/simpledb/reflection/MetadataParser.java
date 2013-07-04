@@ -45,7 +45,7 @@ public final class MetadataParser {
 	public static Field getIdField(Class<?> clazz) {
 		Field idField = null;
 
-		for(Field f : clazz.getDeclaredFields()) {
+		for(Field f : ReflectionUtils.getDeclaredFieldsInHierarchy(clazz)) {
 			// named id or annotated with Id
 			if(f.getName().equals(FIELD_NAME_DEFAULT_ID) || f.getAnnotation(Id.class) != null) {
 				if(idField != null) {
@@ -93,7 +93,7 @@ public final class MetadataParser {
 	public static List<Field> getSupportedFields(Class<?> clazz) {
 		List<Field> supportedFields = new ArrayList<Field>();
 
-		for(Field field : clazz.getDeclaredFields()) {
+		for(Field field : ReflectionUtils.getDeclaredFieldsInHierarchy(clazz)) {
 
 			if(isSerializableFieldForObject(clazz, field)) {
 				supportedFields.add(field);

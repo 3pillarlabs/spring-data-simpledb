@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.simpledb.query.SdbItemQuery;
 
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 
@@ -30,11 +31,13 @@ public interface SimpleDbOperations {
 	
 	<T> void delete(T entity);
 	
-	<T> void delete(T entity, boolean consistentRead);
-
-	<T> void deleteAll(Class<T> entityClass);
+	<T, ID> void delete(Class<T> entityClass, ID id);
 	
-	<T> void deleteAll(Class<T> entityClass, boolean consistentRead);
+	<T> void delete(Iterable<? extends T> entities);
+	
+	<T, ID> void delete(Class<T> entityClass, Iterable<? extends ID> id);
+	
+	<T> void deleteAll(Class<T> entityClass);
 	
 	<T, ID extends Serializable> T read(ID id, Class<T> entityClass);
 
@@ -43,6 +46,10 @@ public interface SimpleDbOperations {
 	<T> long count(Class<T> entityClass);
 
 	<T> long count(Class<T> entityClass, boolean consistentRead);
+
+	<T> long count(String query, Class<T> entityClass);
+
+	<T> long count(String query, Class<T> entityClass, boolean consistentRead);
 
 	<T> List<T> findAll(Class<T> entityClass);
 
@@ -55,10 +62,6 @@ public interface SimpleDbOperations {
 	<T> Page<T> executePagedQuery(Class<T> entityClass, String query, Pageable pageable);
 
 	<T> Page<T> executePagedQuery(Class<T> entityClass, String query, Pageable pageable, boolean consistentRead);
-
-	<T> long count(String query, Class<T> entityClass);
-
-	<T> long count(String query, Class<T> entityClass, boolean consistentRead);
 
 	/**
 	 * Updates an entity with the property map provided. The keys for the 
@@ -102,17 +105,20 @@ public interface SimpleDbOperations {
 	 * @param propertyMap
 	 */
 	<T, ID> void update(ID id, Class<T> entityClass, Map<String, Object> propertyMap);
-	
+
 	/**
-	 * Overloaded form of {@link #update(Class, Object, Map)}. If the additional
-	 * boolean argument is false, the method will return immediately, else,
-	 * the update is guaranteed before method return.
+	 * Creates an object suitable for use with any of the query based methods
+	 * (and <i>consistentRead</i> variations) on {@link SimpleDbOperations}:
+	 * <ul>
+	 * <li>{@link #find(Class, String)}
+	 * <li>{@link #executePagedQuery(Class, String, Pageable)}
+	 * <li>{@link #count(String, Class)}
+	 * </ul>
 	 * 
 	 * @param entityClass
-	 * @param id
-	 * @param propertyMap
-	 * @param consistentRead
+	 * @param whereClause
+	 * @param queryParams
+	 * @return a {@link SdbItemQuery} object for executing the finder methods
 	 */
-	<T, ID> void update(ID id, Class<T> entityClass, Map<String, Object> propertyMap, boolean consistentRead);
-
+	<T> SdbItemQuery<T> createQuery(Class<T> entityClass, String whereClause, Object...queryParams);
 }

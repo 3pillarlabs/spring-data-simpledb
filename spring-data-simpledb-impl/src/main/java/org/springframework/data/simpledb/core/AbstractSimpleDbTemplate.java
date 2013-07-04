@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.simpledb.core.domain.DomainManager;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
+import org.springframework.data.simpledb.query.QueryUtils;
+import org.springframework.data.simpledb.query.SdbItemQuery;
 import org.springframework.data.simpledb.reflection.ReflectionUtils;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformation;
 import org.springframework.data.simpledb.repository.support.entityinformation.SimpleDbEntityInformationSupport;
@@ -41,8 +43,7 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
 
     public abstract void deleteAttributesImpl(String domainName, String itemName);
 
-    public abstract <T> void deleteImpl(T domainItem, boolean consistentRead,
-                                        SimpleDbEntityInformation<T, ?> entityInformation, EntityWrapper<T, ?> entity);
+    public abstract <T> void deleteImpl(T domainItem, SimpleDbEntityInformation<T, ?> entityInformation, EntityWrapper<T, ?> entity);
 
     public abstract <T> List<T> findAllQueryImpl(Class<T> entityClass, SimpleDbEntityInformation<T, ?> entityInformation);
 
@@ -62,7 +63,7 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
     public abstract <T> List<T> findImpl(SimpleDbEntityInformation<T, ?> entityInformation, String query,
                                          String nextToken, boolean consistentRead);
 
-    protected abstract <T, ID> void updateImpl(ID id, Class<T> entityClass, Map<String, Object> propertyMap, boolean consistentRead);
+    protected abstract <T, ID> void updateImpl(ID id, Class<T> entityClass, Map<String, Object> propertyMap);
     
     @Override
     public final AmazonSimpleDB getDB() {
@@ -99,7 +100,7 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
         return items.size() > 0 ? items.get(0) : null;
     }
 
-    @Override
+	@Override
     public final void delete(final String domainName, final String itemName) {
         manageSimpleDbDomain(domainName);
 
@@ -113,12 +114,7 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
     }
 
     @Override
-    public final <T> void delete(T entity) {
-        delete(entity, simpleDb.isConsistentRead());
-    }
-
-    @Override
-    public final <T> void delete(final T domainItem, final boolean consistentRead) {
+    public final <T> void delete(final T domainItem) {
         final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(domainItem.getClass());
         final EntityWrapper<T, ?> entity = getEntityWrapper(domainItem, entityInformation);
 
@@ -126,19 +122,26 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
 
             @Override
             public void execute() {
-                deleteImpl(domainItem, consistentRead, entityInformation, entity);
+                deleteImpl(domainItem, entityInformation, entity);
             }
         }.executeWithRetries();
     }
 
     @Override
-    public final <T> void deleteAll(Class<T> entityClass) {
-        deleteAll(entityClass, simpleDb.isConsistentRead());
-    }
+	public <T, ID> void delete(Class<T> entityClass, ID id) {
+    	delete(getDomainName(entityClass), (String) id);
+	}
 
-    @Override
-    public final <T> void deleteAll(Class<T> entityClass, boolean consistentRead) {
-        for (T element : findAll(entityClass, consistentRead)) {
+	@Override
+	public <T> void delete(Iterable<? extends T> entities) {
+		for (T entity : entities) {
+			delete(entity);
+		}
+	}
+
+	@Override
+    public final <T> void deleteAll(Class<T> entityClass) {
+        for (T element : findAll(entityClass, true)) {
             delete(element);
         }
     }
@@ -305,21 +308,35 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
     }
 
     @Override
-	public <T, ID> void update(ID id, Class<T> entityClass, Map<String, Object> propertyMap) {
-    	update(id, entityClass, propertyMap, simpleDb.isConsistentRead());
-	}
-
-	@Override
 	public <T, ID> void update(final ID id, final Class<T> entityClass, 
-			final Map<String, Object> propertyMap, final boolean consistentRead) {
-		
+			final Map<String, Object> propertyMap) {
+
 		new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
 			
 			@Override
 			public void execute() {
-				updateImpl(id, entityClass, propertyMap, consistentRead);
+				updateImpl(id, entityClass, propertyMap);
 			}
 		}.executeWithRetries();
+    }
+
+	@Override
+	public <T> SdbItemQuery<T> createQuery(Class<T> entityClass, String rawWhereClause, Object...queryParams) {
+		
+		String whereClause = rawWhereClause;
+		
+		// replace positional parameters
+		final String paramPlaceholder = "\\?";
+		for (int i = 0; QueryUtils.hasBindParameter(whereClause); i++) {
+			whereClause = QueryUtils.replaceOneParameterInQuery(
+					whereClause, paramPlaceholder, queryParams[i]);
+		}
+		
+		// add select * from `domainName`
+		String query = String.format("SELECT * FROM `%s` WHERE %s", 
+				getDomainName(entityClass), whereClause);
+		
+		return new SdbItemQuery<T>(entityClass, query, this);
 	}
 
 	protected final <T> EntityWrapper<T, ?> getEntityWrapper(T domainItem,
