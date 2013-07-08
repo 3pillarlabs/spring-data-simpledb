@@ -12,14 +12,15 @@ package org.springframework.data.simpledb.attributeutil;
  *
  */
 
-import org.apache.commons.codec.binary.Base64;
-import org.springframework.data.mapping.model.MappingException;
-
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
+
+import org.apache.commons.codec.binary.Base64;
+import org.springframework.data.mapping.model.MappingException;
 
 /**
  * Provides collection of static functions for conversion of various values into strings that may be compared
@@ -28,10 +29,11 @@ import java.util.Date;
  */
 public final class AmazonSimpleDBUtil {
 
+	private static final String UTC_TZ_ID = "UTC";
 	/**
 	 * static value hardcoding date format used for conversation of Date into String
 	 */
-	private static String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+	private static String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 	private static final int LONG_DIGITS = 20;
 	private static final BigDecimal OFFSET_VALUE = new BigDecimal(Long.MIN_VALUE).negate();
 	private static final String UTF8_ENCODING = "UTF-8";
@@ -140,6 +142,7 @@ public final class AmazonSimpleDBUtil {
 	 */
 	public static String encodeDate(Date date) {
 		SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormat);
+		dateFormatter.setTimeZone(TimeZone.getTimeZone(UTC_TZ_ID));
 		/* Java doesn't handle ISO8601 nicely: need to add ':' manually */
 		String result = dateFormatter.format(date);
 		return result.substring(0, result.length() - ENCODE_DATE_COLONS_INDEX) + ":"
@@ -157,6 +160,7 @@ public final class AmazonSimpleDBUtil {
 		String javaValue = value.substring(0, value.length() - DECODE_DATE_COLONS_INDEX)
 				+ value.substring(value.length() - ENCODE_DATE_COLONS_INDEX);
 		SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormat);
+		dateFormatter.setTimeZone(TimeZone.getTimeZone(UTC_TZ_ID));
 		return dateFormatter.parse(javaValue);
 	}
 
