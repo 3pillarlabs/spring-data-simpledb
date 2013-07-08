@@ -42,7 +42,8 @@ import com.amazonaws.services.simpledb.model.SelectResult;
  */
 public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbTemplate.class);
+    private static final int MAX_BATCH_SIZE = 25;
+	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDbTemplate.class);
 
     public SimpleDbTemplate(SimpleDb simpleDb) {
         super(simpleDb);
@@ -114,9 +115,9 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 				deleteList.add(new DeletableItem().withName((String) id));
 			}
 			// max allowed batch size is 25
-			List<DeletableItem> batch = new ArrayList<DeletableItem>(25);
-			for (int i = 0; i < deleteList.size(); i += 25) {
-				int batchIndex = ((i + 25) < deleteList.size()) ? (i + 25)
+			List<DeletableItem> batch = new ArrayList<DeletableItem>(MAX_BATCH_SIZE);
+			for (int i = 0; i < deleteList.size(); i += MAX_BATCH_SIZE) {
+				int batchIndex = ((i + MAX_BATCH_SIZE) < deleteList.size()) ? (i + MAX_BATCH_SIZE)
 						: deleteList.size();
 				for (int j = i; j < batchIndex; j++) {
 					batch.add(deleteList.get(j));
