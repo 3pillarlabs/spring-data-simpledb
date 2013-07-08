@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.simpledb.core.domain.DomainManagementPolicy;
 import org.springframework.data.simpledb.core.domain.DomainManager;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.query.QueryUtils;
@@ -18,12 +20,13 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 import org.springframework.util.Assert;
 
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
+import com.amazonaws.services.simpledb.model.ListDomainsResult;
 import com.amazonaws.services.simpledb.model.SelectResult;
 
 /**
  * Performs Domain Management based on Domain Management Policy on each operation
  */
-public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
+public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, InitializingBean {
 
     private final int serviceUnavailableMaxRetries;
     private final SimpleDb simpleDb;
@@ -102,7 +105,6 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
 
 	@Override
     public final void delete(final String domainName, final String itemName) {
-        manageSimpleDbDomain(domainName);
 
         new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
 
@@ -156,8 +158,6 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
                                                      final boolean consistentRead) {
         final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
 
-        manageSimpleDbDomains(entityInformation);
-
         final List<T> items = new ArrayList<T>();
 
         new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
@@ -185,8 +185,6 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
     public final <T> long count(final String query, final Class<T> entityClass, final boolean consistentRead) {
         final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
 
-        manageSimpleDbDomains(entityInformation);
-
         final List<Long> items = new ArrayList<Long>();
 
         new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
@@ -203,8 +201,6 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
     @Override
     public final <T> long count(final Class<T> entityClass, final boolean consistentRead) {
         final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
-
-        manageSimpleDbDomains(entityInformation);
 
         final List<Long> items = new ArrayList<Long>();
 
@@ -228,8 +224,6 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
     public <T> List<T> find(final Class<T> entityClass, final String query, final boolean consistentRead) {
         final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
 
-        manageSimpleDbDomains(entityInformation);
-
         final List<T> items = new ArrayList<T>();
 
         new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
@@ -245,7 +239,6 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
 
     protected <T> List<T> find(final SimpleDbEntityInformation<T, ?> entityInformation, final String query,
                                final String nextToken, final boolean consistentRead) {
-        manageSimpleDbDomains(entityInformation);
 
         final List<T> items = new ArrayList<T>();
 
@@ -268,8 +261,6 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
     @Override
     public final <T> List<T> findAll(final Class<T> entityClass, final boolean consistentRead) {
         final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
-
-        manageSimpleDbDomains(entityInformation);
 
         final List<T> items = new ArrayList<T>();
 
@@ -354,7 +345,9 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
     }
 
     private <T> void manageSimpleDbDomain(final String domainName) {
-        DomainManager.getInstance().manageDomain(domainName, simpleDb.getDomainManagementPolicy(), simpleDbClient);
+        if (simpleDb.getDomainManagementPolicy().equals(DomainManagementPolicy.UPDATE)) {
+        	DomainManager.getInstance().manageDomain(domainName, simpleDb.getDomainManagementPolicy(), simpleDbClient);
+        }
     }
 
     private <T> void manageSimpleDbDomains(final SimpleDbEntityInformation<T, ?> entityInformation) {
@@ -368,4 +361,21 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
 
         manageSimpleDbDomain(entityInformation.getDomain());
     }
+
+	@Override
+	public void afterPropertiesSet() {
+		if (simpleDb.getDomainManagementPolicy().equals(DomainManagementPolicy.DROP_CREATE)) {
+			String domainPrefix = simpleDb.getDomainPrefix();
+			ListDomainsResult result = simpleDbClient.listDomains();
+			List<String> domainNames = result.getDomainNames();
+			for (String name : domainNames) {
+				if (domainPrefix == null || name.startsWith(domainPrefix)) {
+					DomainManager.getInstance().manageDomain(name, 
+							simpleDb.getDomainManagementPolicy(), simpleDbClient);					
+				}
+			}
+		}
+	}
+    
+    
 }
