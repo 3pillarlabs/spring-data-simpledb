@@ -94,7 +94,6 @@ public final class MetadataParser {
 		List<Field> supportedFields = new ArrayList<Field>();
 
 		for(Field field : ReflectionUtils.getDeclaredFieldsInHierarchy(clazz)) {
-
 			if(isSerializableFieldForObject(clazz, field)) {
 				supportedFields.add(field);
 			}
@@ -106,7 +105,6 @@ public final class MetadataParser {
 	private static boolean isSerializableFieldForObject(Class<?> clazz, Field field) {
 		boolean isSerializable = (ReflectionUtils.isPersistentField(field) || 
 					ReflectionUtils.hasDeclaredGetterAndSetter(field, clazz));
-		isSerializable &= FieldTypeIdentifier.isSerializableField(field);
 		isSerializable &= !hasUnsupportedAnnotations(field);
 		isSerializable &= !isTransientField(field);
 		isSerializable &= !isIdForDomainClass(field, clazz);

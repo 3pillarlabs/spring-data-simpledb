@@ -92,7 +92,7 @@ public enum FieldType {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-			return !(field.getType().equals(Class.class) || 
+			return !(field.getType().equals(Class.class) || field.getType().isEnum() || 
 					isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, 
 							COLLECTION, ARRAY, MAP, OBJECT, REFERENCE_ENTITY));
 		}
@@ -109,12 +109,6 @@ public enum FieldType {
 	};
 
 	abstract boolean isOfType(Field field);
-
-	public static FieldType[] getSerializableFieldTypes() {
-		return new FieldType[] { FieldType.PRIMITIVE, FieldType.CORE_TYPE, FieldType.NESTED_ENTITY,
-				FieldType.REFERENCE_ENTITY, FieldType.COLLECTION, FieldType.ARRAY, FieldType.MAP,
-				FieldType.OBJECT };
-	}
 
 	static boolean isOfType(final Class<?> fieldType, final Set<Class<?>> supportedTypes) {
 		Assert.notNull(fieldType);

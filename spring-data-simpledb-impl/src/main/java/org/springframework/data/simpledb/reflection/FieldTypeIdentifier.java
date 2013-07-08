@@ -8,11 +8,6 @@ public class FieldTypeIdentifier {
 		/* utility class */
 	}
 
-	public static boolean isSerializableField(Field field) {
-		return (isOfType(field, FieldType.getSerializableFieldTypes()) || 
-				field.getType().equals(Class.class));
-	}
-
 	public static boolean isOfType(final Field field, FieldType... fieldTypes) {
 		for(final FieldType fieldType : fieldTypes) {
 			if(fieldType.isOfType(field)) {
