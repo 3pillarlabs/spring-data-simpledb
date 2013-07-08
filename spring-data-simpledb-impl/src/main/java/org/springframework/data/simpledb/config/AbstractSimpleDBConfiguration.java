@@ -31,11 +31,11 @@ public abstract class AbstractSimpleDBConfiguration {
     public void setExtraProperties(SimpleDb simpleDb){
     }
 
+    @Bean
     public SimpleDb simpleDb(){
         AWSCredentials credentials = getAWSCredentials();
         SimpleDb simpleDb = new SimpleDb(credentials.getAccessID(), credentials.getSecretKey());
         setExtraProperties(simpleDb);
-        simpleDb.afterPropertiesSet();
         return simpleDb;
     }
 

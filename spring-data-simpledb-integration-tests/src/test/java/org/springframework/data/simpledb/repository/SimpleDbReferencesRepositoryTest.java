@@ -1,15 +1,12 @@
 package org.springframework.data.simpledb.repository;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +15,6 @@ import org.springframework.data.simpledb.core.SimpleDbOperations;
 import org.springframework.data.simpledb.domain.SimpleDbReferences;
 import org.springframework.data.simpledb.domain.SimpleDbReferences.FirstNestedEntity;
 import org.springframework.data.simpledb.domain.SimpleDbReferences.SecondNestedEntity;
-import org.springframework.data.simpledb.repository.SimpleDbReferencesRepository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -36,7 +32,7 @@ public class SimpleDbReferencesRepositoryTest {
 	@Autowired
 	SimpleDbOperations operations;
 
-	@Before
+	@After
 	public void tearDown() {
 		repository.deleteAll();
 
