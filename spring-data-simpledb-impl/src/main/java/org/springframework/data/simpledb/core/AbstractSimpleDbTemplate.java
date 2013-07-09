@@ -105,8 +105,10 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
 
 	@Override
     public final void delete(final String domainName, final String itemName) {
-
-        new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
+		
+		manageSimpleDbDomain(domainName);
+        
+		new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
 
             @Override
             public void execute() {
@@ -120,6 +122,8 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
         final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(domainItem.getClass());
         final EntityWrapper<T, ?> entity = getEntityWrapper(domainItem, entityInformation);
 
+        manageSimpleDbDomain(entityInformation.getDomain());
+        
         new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
 
             @Override
@@ -156,8 +160,9 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
     @Override
     public final <T, ID extends Serializable> T read(final ID id, final Class<T> entityClass,
                                                      final boolean consistentRead) {
-        final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
-
+        
+    	final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
+        manageSimpleDbDomain(entityInformation.getDomain());
         final List<T> items = new ArrayList<T>();
 
         new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
@@ -183,8 +188,9 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
 
     @Override
     public final <T> long count(final String query, final Class<T> entityClass, final boolean consistentRead) {
-        final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
-
+        
+    	final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
+        manageSimpleDbDomain(entityInformation.getDomain());
         final List<Long> items = new ArrayList<Long>();
 
         new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
@@ -200,8 +206,9 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
 
     @Override
     public final <T> long count(final Class<T> entityClass, final boolean consistentRead) {
-        final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
-
+        
+    	final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
+    	manageSimpleDbDomain(entityInformation.getDomain());
         final List<Long> items = new ArrayList<Long>();
 
         new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
@@ -222,8 +229,9 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
 
     @Override
     public <T> List<T> find(final Class<T> entityClass, final String query, final boolean consistentRead) {
-        final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
-
+        
+    	final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
+    	manageSimpleDbDomain(entityInformation.getDomain());
         final List<T> items = new ArrayList<T>();
 
         new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
@@ -240,6 +248,7 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
     protected <T> List<T> find(final SimpleDbEntityInformation<T, ?> entityInformation, final String query,
                                final String nextToken, final boolean consistentRead) {
 
+    	manageSimpleDbDomain(entityInformation.getDomain());
         final List<T> items = new ArrayList<T>();
 
         new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
@@ -260,8 +269,9 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
 
     @Override
     public final <T> List<T> findAll(final Class<T> entityClass, final boolean consistentRead) {
-        final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
-
+        
+    	final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
+    	manageSimpleDbDomain(entityInformation.getDomain());
         final List<T> items = new ArrayList<T>();
 
         new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
@@ -283,8 +293,9 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
     @Override
     public final <T> Page<T> executePagedQuery(final Class<T> entityClass, final String query, final Pageable pageable,
                                                final boolean consistentRead) {
-        final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
-
+        
+    	final SimpleDbEntityInformation<T, ?> entityInformation = getEntityInformation(entityClass);
+    	manageSimpleDbDomain(entityInformation.getDomain());
         final List<Page<T>> pages = new ArrayList<Page<T>>();
 
         new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
@@ -302,6 +313,7 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
 	public <T, ID> void update(final ID id, final Class<T> entityClass, 
 			final Map<String, Object> propertyMap) {
 
+    	manageSimpleDbDomain(getDomainName(entityClass));
 		new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
 			
 			@Override
