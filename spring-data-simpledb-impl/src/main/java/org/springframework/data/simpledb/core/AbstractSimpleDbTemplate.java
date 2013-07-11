@@ -336,7 +336,7 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
 		}
 		
 		// add select * from `domainName`
-		String query = String.format("SELECT * FROM `%s` WHERE %s", 
+		String query = String.format("select * from `%s` where %s", 
 				getDomainName(entityClass), whereClause);
 		
 		return new SdbItemQuery<T>(entityClass, query, this);
