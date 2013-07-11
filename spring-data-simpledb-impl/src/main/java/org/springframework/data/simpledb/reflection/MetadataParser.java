@@ -1,6 +1,7 @@
 package org.springframework.data.simpledb.reflection;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -103,11 +104,14 @@ public final class MetadataParser {
 	}
 
 	private static boolean isSerializableFieldForObject(Class<?> clazz, Field field) {
-		boolean isSerializable = (ReflectionUtils.isPersistentField(field) || 
+		
+		boolean isSerializable = !hasUnsupportedAnnotations(field);
+		isSerializable = isSerializable && !isTransientField(field);
+		isSerializable = isSerializable && !isIdForDomainClass(field, clazz);
+		isSerializable = isSerializable && !(Modifier.isStatic(field.getModifiers()) ||
+				Modifier.isFinal(field.getModifiers()));
+		isSerializable = isSerializable && (ReflectionUtils.isPersistentField(field) || 
 					ReflectionUtils.hasDeclaredGetterAndSetter(field, clazz));
-		isSerializable &= !hasUnsupportedAnnotations(field);
-		isSerializable &= !isTransientField(field);
-		isSerializable &= !isIdForDomainClass(field, clazz);
 		
 		return isSerializable;
 	}
