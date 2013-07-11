@@ -54,7 +54,6 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
         Assert.notNull(entity.getDomain(), "Domain name should not be null");
 
         logOperation("Create or update", entity);
-        entity.generateIdIfNotSet();
 
         for (final Field field : ReflectionUtils.getFirstLevelOfReferenceAttributes(domainItem.getClass())) {
             final Object referenceEntity = ReflectionUtils.callGetter(domainItem, field.getName());
@@ -65,7 +64,10 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
             }
         }
 
-        delete(entity.getDomain(), entity.getItemName());
+        if (entity.getItemName() != null) {
+        	delete(entity.getDomain(), entity.getItemName());
+        }
+        entity.generateIdIfNotSet();
 
         Map<String, List<String>> rawAttributes = entity.toMultiValueAttributes();
         List<PutAttributesRequest> putAttributesRequests = SimpleDbRequestBuilder.createPutAttributesRequests(
@@ -201,7 +203,7 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
     public <T> Page<T> executePagedQueryImpl(Class<T> entityClass, String query, Pageable pageable,
                                              boolean consistentRead, SimpleDbEntityInformation<T, ?> entityInformation) {
         Assert.notNull(pageable);
-        Assert.isTrue(pageable.getPageNumber() > 0);
+        Assert.isTrue(pageable.getPageNumber() >= 0);
         Assert.isTrue(pageable.getPageSize() > 0);
 
         final String escapedQuery = getEscapedQuery(query, entityInformation);
@@ -209,7 +211,7 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
         List<T> resultsList;
         String queryWithPageSizeLimit = new QueryBuilder(escapedQuery).with(pageable).toString();
 
-        if (pageable.getPageNumber() != 1) {
+        if (pageable.getPageNumber() > 0) {
             String pageOffsetToken = getPageOffsetToken(pageable, entityInformation, escapedQuery, consistentRead);
 
             if (pageOffsetToken != null && !pageOffsetToken.isEmpty()) {
@@ -371,8 +373,8 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 
     private <T> String getPageOffsetToken(final Pageable pageable, SimpleDbEntityInformation<T, ?> entityInformation,
                                           String query, boolean consistentRead) {
-        int previousPageNumber = pageable.getPageNumber() - 1;
-        int endOfPreviousPageLimit = previousPageNumber * pageable.getPageSize();
+
+    	int endOfPreviousPageLimit = pageable.getPageNumber() * pageable.getPageSize();
 
         final String escapedQuery = getEscapedQuery(query, entityInformation);
         final String countQuery = new QueryBuilder(escapedQuery, true).withLimit(endOfPreviousPageLimit).toString();

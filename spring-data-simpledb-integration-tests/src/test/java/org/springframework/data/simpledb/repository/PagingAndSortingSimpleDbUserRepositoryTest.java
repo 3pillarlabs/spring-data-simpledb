@@ -64,7 +64,7 @@ public class PagingAndSortingSimpleDbUserRepositoryTest {
 	public void findAll_with_pageable_should_return_paged_result() {
         //created in setup a list of 5 SimpleDbUser - first Item_0
 
-		final int pageNumber = 2;
+		final int pageNumber = 1;
 		final int pageSize = 2;
 		PageRequest pageable = new PageRequest(pageNumber, pageSize);
 		final Page<SimpleDbUser> page = repository.findAll(pageable);
@@ -84,7 +84,7 @@ public class PagingAndSortingSimpleDbUserRepositoryTest {
 	public void findAll_should_return_page_with_last_element_only() {
         //created in setup a list of 5 SimpleDbUser - first Item_0
 
-		final int pageNumber = 3;
+		final int pageNumber = 2;
 		final int pageSize = 2;
 		PageRequest pageable = new PageRequest(pageNumber, pageSize);
 		final Page<SimpleDbUser> page = repository.findAll(pageable);

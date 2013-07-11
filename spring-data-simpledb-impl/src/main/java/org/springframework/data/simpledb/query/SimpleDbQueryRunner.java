@@ -28,7 +28,7 @@ public class SimpleDbQueryRunner {
 		this(simpledbOperations, domainClass, query);
 
 		Assert.notNull(pageable);
-		Assert.isTrue(pageable.getPageNumber() > 0);
+		Assert.isTrue(pageable.getPageNumber() >= 0);
 		Assert.isTrue(pageable.getPageSize() > 0);
 
 		this.pageable = pageable;

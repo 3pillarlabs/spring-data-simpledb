@@ -70,7 +70,7 @@ public class PagedAnnotatedQueryRepositoryTest {
 	public void custom_queries_should_return_List_results_for_PageRequests() {
         // created users with primitive fields 0f, 1.0f, 2.0f, 3.0f, 4.0f, 5f
 
-		final int pageNumber = 2;
+		final int pageNumber = 1;
 		final int pageSize = 2;
 		final List<SimpleDbUser> results = repository.findUserListWithPrimitiveFieldHigherThan(1f, new PageRequest(
                 pageNumber, pageSize));
@@ -100,7 +100,7 @@ public class PagedAnnotatedQueryRepositoryTest {
 
 	@Test(expected = TokenMgrError.class)
 	public void paged_request_for_invalid_query_should_throw_exception() {
-		final int pageNumber = 1;
+		final int pageNumber = 0;
 		final int pageSize = 1;
 		repository.invalidQuery(new PageRequest(pageNumber, pageSize));
 	}
@@ -110,7 +110,7 @@ public class PagedAnnotatedQueryRepositoryTest {
         // created users with primitive fields 0f, 1.0f, 2.0f, 3.0f, 4.0f, 5f
 
 
-        final int pageNumber = 2;
+        final int pageNumber = 1;
 		final int pageSize = 2;
 		final List<SimpleDbUser> results = repository.pagedPartialQuery(1.0f, new PageRequest(pageNumber, pageSize));
 
