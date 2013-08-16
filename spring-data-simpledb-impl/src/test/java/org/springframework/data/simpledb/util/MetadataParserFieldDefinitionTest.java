@@ -1,22 +1,19 @@
 package org.springframework.data.simpledb.util;
 
-import org.junit.Test;
-import org.springframework.data.simpledb.reflection.MetadataParser;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.springframework.data.simpledb.reflection.MetadataParser;
 
 public class MetadataParserFieldDefinitionTest {
 
 	@Test
 	public void getSupportedFields_should_return_list_of_primitives_wrappers() throws Exception {
 		List<Field> returnedPrimitiveWrappers = MetadataParser.getSupportedFields(SamplePrimitivesWrapper.class);
-
-		assertFalse(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("id")));
 
 		assertTrue(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("integerField")));
 		assertTrue(returnedPrimitiveWrappers.contains(SamplePrimitivesWrapper.class.getDeclaredField("byteField")));

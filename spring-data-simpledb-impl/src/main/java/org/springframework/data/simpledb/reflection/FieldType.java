@@ -46,7 +46,7 @@ public enum FieldType {
 		boolean isOfType(Field field) {
 			final boolean isCoreType = SupportedCoreTypes.CORE_TYPES.isOfType(field.getType());
 
-			return isCoreType && !isOfType(field, ID, ATTRIBUTES);
+			return isCoreType;
 		}
 	},
 

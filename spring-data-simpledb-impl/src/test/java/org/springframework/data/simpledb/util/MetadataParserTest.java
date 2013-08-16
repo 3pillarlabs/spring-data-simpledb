@@ -1,11 +1,6 @@
 package org.springframework.data.simpledb.util;
 
-import org.junit.Test;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.simpledb.annotation.Attributes;
-import org.springframework.data.simpledb.annotation.DomainPrefix;
-import org.springframework.data.simpledb.reflection.MetadataParser;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -13,7 +8,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.simpledb.annotation.Attributes;
+import org.springframework.data.simpledb.annotation.DomainPrefix;
+import org.springframework.data.simpledb.reflection.MetadataParser;
 
 public class MetadataParserTest {
 
@@ -23,10 +23,10 @@ public class MetadataParserTest {
 	static class SampleAnnotatedId {
 
 		@Id
-		private String itemName = SAMPLE_ITEM;
+		private final String itemName = SAMPLE_ITEM;
 
 		@Attributes
-		private Map<String, String> atts = new LinkedHashMap<String, String>();
+		private final Map<String, String> atts = new LinkedHashMap<String, String>();
 	}
 
 	@Test
@@ -46,10 +46,10 @@ public class MetadataParserTest {
 	static class SampleDeclaredId {
 
 		@SuppressWarnings("unused")
-		private String id = SAMPLE_ITEM;
+		private final String id = SAMPLE_ITEM;
 
 		@Attributes
-		private Map<String, String> atts = new LinkedHashMap<String, String>();
+		private final Map<String, String> atts = new LinkedHashMap<String, String>();
 	}
 
 	@Test
@@ -70,7 +70,6 @@ public class MetadataParserTest {
 		assertTrue(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("booleanPrimitive")));
 
 		assertFalse(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("shouldBeTransient")));
-		assertFalse(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("idField")));
 		assertFalse(returnedPrimitives.contains(SampleDeclaredPrimitives.class
 				.getDeclaredField("someUsefullAttributes")));
 	}

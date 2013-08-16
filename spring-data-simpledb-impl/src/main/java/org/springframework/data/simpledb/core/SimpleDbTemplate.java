@@ -322,7 +322,7 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
     		} else if (FieldTypeIdentifier.isOfType(propertyField, FieldType.NESTED_ENTITY)) {
 			
     			SimpleDbEntityInformation<T, Serializable> entityMetadata = (SimpleDbEntityInformation<T, Serializable>) SimpleDbEntityInformationSupport.getMetadata(propertyValue.getClass(), domainName);
-				EntityWrapper<T, Serializable> entity = new EntityWrapper<T, Serializable>(entityMetadata, (T) propertyValue);
+				EntityWrapper<T, Serializable> entity = new EntityWrapper<T, Serializable>(entityMetadata, (T) propertyValue, true);
 				Map<String, String> nestedAttributes = entity.serialize();
 				// add to serializedValues after prefixing propertyPath
 				for (Map.Entry<String, String> e : nestedAttributes.entrySet()) {

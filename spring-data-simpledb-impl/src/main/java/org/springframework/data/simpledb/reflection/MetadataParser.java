@@ -107,7 +107,6 @@ public final class MetadataParser {
 		
 		boolean isSerializable = !hasUnsupportedAnnotations(field);
 		isSerializable = isSerializable && !isTransientField(field);
-		isSerializable = isSerializable && !isIdForDomainClass(field, clazz);
 		isSerializable = isSerializable && !(Modifier.isStatic(field.getModifiers()) ||
 				Modifier.isFinal(field.getModifiers()));
 		isSerializable = isSerializable && (ReflectionUtils.isPersistentField(field) || 
@@ -122,10 +121,6 @@ public final class MetadataParser {
 
 	private static boolean isTransientField(Field field) {
 		return field.isAnnotationPresent(Transient.class);
-	}
-	
-	private static boolean isIdForDomainClass(Field field, Class<?> clazz) {
-		return field.equals(MetadataParser.getIdField(clazz));
 	}
 
 	public static List<Field> getNestedDomainFields(Object object) {

@@ -29,29 +29,38 @@ public class EntityWrapper<T, ID extends Serializable> {
 	private T item;
 
 	public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation, T item) {
+		this(entityInformation, item, false);
+	}
+
+	public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation, T item, boolean isNested) {
 		this.entityInformation = entityInformation;
 		this.item = item;
 
-		createFieldWrappers(false);
+		createFieldWrappers(false, isNested);
 	}
 
 	public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation) {
+		this(entityInformation, false);
+	}
+
+	public EntityWrapper(SimpleDbEntityInformation<T, ?> entityInformation, boolean isNested) {
 		this.entityInformation = entityInformation;
 		try {
 			this.item = entityInformation.getJavaType().newInstance();
-
-			createFieldWrappers(true);
+			createFieldWrappers(true, isNested);
 		} catch(InstantiationException e) {
 			throw new MappingException("Could not instantiate object", e);
 		} catch(IllegalAccessException e) {
 			throw new MappingException("Could not instantiate object", e);
 		}
 	}
+	
+	private void createFieldWrappers(final boolean isNew, final boolean isNested) {
 
-	private void createFieldWrappers(final boolean isNew) {
-		for(final Field field : MetadataParser.getSupportedFields(entityInformation.getJavaType())) {
-			if(!FieldTypeIdentifier.isOfType(field, FieldType.ID, FieldType.ATTRIBUTES)) {
-				wrappedFields.put(field.getName(), FieldWrapperFactory.createFieldWrapper(field, this, isNew));
+		List<Field> supportedFields = MetadataParser.getSupportedFields(entityInformation.getJavaType());
+		for(final Field field : supportedFields) {
+			if (! (!isNested && FieldTypeIdentifier.isOfType(field, FieldType.ID)) ) {
+				wrappedFields.put(field.getName(), FieldWrapperFactory.createFieldWrapper(field, this, isNew));	
 			}
 		}
 	}
