@@ -90,10 +90,10 @@ public interface SimpleDbOperations {
 	 * // simpleDbOperations = ...; (injected)
 	 * Map<String, Object> map = new HashMap<String, Object>();
 	 * map.put("b.name", "droid");
-	 * simpleDbOperations.update(A.class, "qxua", map); 
+	 * simpleDbOperations.update("qxua", A.class, map); 
 	 * </pre> 
 	 * <p>
-	 * For an candidate attribute, if it is a nested entity or a Map, the key
+	 * For a candidate attribute, if it is a nested entity or a Map, the key
 	 * is used as <i>prefix</i>. The nested entity must not be a {@code Reference}
 	 * entity, the behavior can not be guaranteed in this case.
 	 * <p>
@@ -104,7 +104,7 @@ public interface SimpleDbOperations {
 	 * @param id
 	 * @param propertyMap
 	 */
-	<T, ID> void update(ID id, Class<T> entityClass, Map<String, Object> propertyMap);
+	<T, ID> void update(ID id, Class<T> entityClass, Map<String, ? extends Object> propertyMap);
 
 	/**
 	 * Creates an object suitable for use with any of the query based methods

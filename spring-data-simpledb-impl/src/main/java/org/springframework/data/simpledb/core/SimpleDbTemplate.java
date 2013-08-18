@@ -298,14 +298,14 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <T, ID> void updateImpl(ID id, Class<T> entityClass, 
-			Map<String, Object> propertyMap) {
+			Map<String, ? extends Object> propertyMap) {
 		// From the propertyMap, retrieve the Field which will be updated,
     	// from the Field, serialize the corresponding Object value as per
     	// FieldWrapper#serialize semantics, plug into the scheme to convert
     	// to item and send a put request.
 		String domainName = getDomainName(entityClass);
     	Map<String, String> serializedValues = new LinkedHashMap<String, String>();
-		for (Map.Entry<String, Object> entry : propertyMap.entrySet()) {
+		for (Map.Entry<String, ?> entry : propertyMap.entrySet()) {
     		String propertyPath = entry.getKey();
     		Object propertyValue = entry.getValue();
     		if (propertyValue == null) {

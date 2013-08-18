@@ -66,7 +66,7 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
     public abstract <T> List<T> findImpl(SimpleDbEntityInformation<T, ?> entityInformation, String query,
                                          String nextToken, boolean consistentRead);
 
-    protected abstract <T, ID> void updateImpl(ID id, Class<T> entityClass, Map<String, Object> propertyMap);
+    protected abstract <T, ID> void updateImpl(ID id, Class<T> entityClass, Map<String, ? extends Object> propertyMap);
     
     @Override
     public final AmazonSimpleDB getDB() {
@@ -311,7 +311,7 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
 
     @Override
 	public <T, ID> void update(final ID id, final Class<T> entityClass, 
-			final Map<String, Object> propertyMap) {
+			final Map<String, ? extends Object> propertyMap) {
 
     	manageSimpleDbDomain(getDomainName(entityClass));
 		new AbstractServiceUnavailableOperationRetrier(serviceUnavailableMaxRetries) {
