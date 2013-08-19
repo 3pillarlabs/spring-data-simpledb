@@ -357,8 +357,14 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
     }
 
     private <T> void manageSimpleDbDomain(final String domainName) {
+    	DomainManager manager = DomainManager.getInstance();
         if (simpleDb.getDomainManagementPolicy().equals(DomainManagementPolicy.UPDATE)) {
-        	DomainManager.getInstance().manageDomain(domainName, simpleDb.getDomainManagementPolicy(), simpleDbClient);
+			manager.manageDomain(domainName, simpleDb.getDomainManagementPolicy(), simpleDbClient);
+        
+        } else if (simpleDb.getDomainManagementPolicy().equals(DomainManagementPolicy.DROP_CREATE)) {
+        	if (false == manager.exists(domainName, simpleDbClient)) {
+        		manager.createDomain(domainName, simpleDbClient);
+        	}
         }
     }
 
@@ -382,8 +388,7 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
 			List<String> domainNames = result.getDomainNames();
 			for (String name : domainNames) {
 				if (domainPrefix == null || name.startsWith(domainPrefix)) {
-					DomainManager.getInstance().manageDomain(name, 
-							simpleDb.getDomainManagementPolicy(), simpleDbClient);					
+					DomainManager.getInstance().dropDomain(name, simpleDbClient);
 				}
 			}
 		}

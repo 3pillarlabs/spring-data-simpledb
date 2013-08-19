@@ -82,7 +82,7 @@ public final class DomainManager {
 		}
 	}
 
-	private void createDomain(final String domainName, final AmazonSimpleDB sdb) {
+	public void createDomain(final String domainName, final AmazonSimpleDB sdb) {
 		try {
 			LOGGER.debug("Creating domain: {}", domainName);
 			CreateDomainRequest request = new CreateDomainRequest(domainName);
