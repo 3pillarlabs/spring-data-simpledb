@@ -316,11 +316,7 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
     		if (FieldTypeIdentifier.isOfType(propertyField, FieldType.PRIMITIVE, FieldType.CORE_TYPE)) {
     			serializedPropertyValue = SimpleDBAttributeConverter.encode(propertyValue);
     		
-    		} else if (FieldTypeIdentifier.isOfType(propertyField, FieldType.COLLECTION, FieldType.ARRAY, FieldType.MAP)) {
-    			serializedPropertyValue = JsonMarshaller.getInstance().marshall(propertyValue);
-    		
     		} else if (FieldTypeIdentifier.isOfType(propertyField, FieldType.NESTED_ENTITY)) {
-			
     			SimpleDbEntityInformation<T, Serializable> entityMetadata = (SimpleDbEntityInformation<T, Serializable>) SimpleDbEntityInformationSupport.getMetadata(propertyValue.getClass(), domainName);
 				EntityWrapper<T, Serializable> entity = new EntityWrapper<T, Serializable>(entityMetadata, (T) propertyValue, true);
 				Map<String, String> nestedAttributes = entity.serialize();
@@ -329,7 +325,11 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 					String key = String.format("%s.%s", propertyPath, e.getKey());
 					serializedValues.put(key, e.getValue());
 				}
+    		
+    		} else {
+    			serializedPropertyValue = JsonMarshaller.getInstance().marshall(propertyValue);
     		}
+
     		if (serializedPropertyValue != null) {
     			serializedValues.put(propertyPath, serializedPropertyValue);
     		}
