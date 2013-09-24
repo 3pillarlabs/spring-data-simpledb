@@ -6,10 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.simpledb.core.domain.DomainManagementPolicy;
 import org.springframework.data.simpledb.core.domain.DomainManager;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.query.QueryUtils;
@@ -20,23 +18,24 @@ import org.springframework.data.simpledb.repository.support.entityinformation.Si
 import org.springframework.util.Assert;
 
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
-import com.amazonaws.services.simpledb.model.ListDomainsResult;
 import com.amazonaws.services.simpledb.model.SelectResult;
 
 /**
  * Performs Domain Management based on Domain Management Policy on each operation
  */
-public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, InitializingBean {
+public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations {
 
     private final int serviceUnavailableMaxRetries;
     private final SimpleDb simpleDb;
     private final AmazonSimpleDB simpleDbClient;
+    private final DomainManager domainManager;
 
     public AbstractSimpleDbTemplate(SimpleDb simpleDb) {
         Assert.notNull(simpleDb);
         this.simpleDb = simpleDb;
         this.simpleDbClient = simpleDb.getSimpleDbClient();
         this.serviceUnavailableMaxRetries = simpleDb.getUnavailableServiceRetries();
+        this.domainManager = new DomainManager();
     }
 
     public abstract <T> Page<T> executePagedQueryImpl(Class<T> entityClass, String query, Pageable pageable,
@@ -357,15 +356,7 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
     }
 
     private <T> void manageSimpleDbDomain(final String domainName) {
-    	DomainManager manager = DomainManager.getInstance();
-        if (simpleDb.getDomainManagementPolicy().equals(DomainManagementPolicy.UPDATE)) {
-			manager.manageDomain(domainName, simpleDb.getDomainManagementPolicy(), simpleDbClient);
-        
-        } else if (simpleDb.getDomainManagementPolicy().equals(DomainManagementPolicy.DROP_CREATE)) {
-        	if (false == manager.exists(domainName, simpleDbClient)) {
-        		manager.createDomain(domainName, simpleDbClient);
-        	}
-        }
+    	domainManager.manageDomain(domainName, simpleDb.getDomainManagementPolicy(), simpleDbClient);
     }
 
     private <T> void manageSimpleDbDomains(final SimpleDbEntityInformation<T, ?> entityInformation) {
@@ -379,20 +370,6 @@ public abstract class AbstractSimpleDbTemplate implements SimpleDbOperations, In
 
         manageSimpleDbDomain(entityInformation.getDomain());
     }
-
-	@Override
-	public void afterPropertiesSet() {
-		if (simpleDb.getDomainManagementPolicy().equals(DomainManagementPolicy.DROP_CREATE)) {
-			String domainPrefix = simpleDb.getDomainPrefix();
-			ListDomainsResult result = simpleDbClient.listDomains();
-			List<String> domainNames = result.getDomainNames();
-			for (String name : domainNames) {
-				if (domainPrefix == null || name.startsWith(domainPrefix)) {
-					DomainManager.getInstance().dropDomain(name, simpleDbClient);
-				}
-			}
-		}
-	}
     
     
 }

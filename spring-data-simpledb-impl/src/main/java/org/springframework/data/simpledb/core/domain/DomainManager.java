@@ -19,34 +19,22 @@ import com.amazonaws.services.simpledb.model.ListDomainsResult;
 public final class DomainManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DomainManager.class);
-
-	private static DomainManager instance;
 	
 	private final Set<String> managedDomains = new HashSet<String>();
-
-	private DomainManager() {
-	}
-
-	public static synchronized DomainManager getInstance() {
-		if(instance == null) {
-			instance = new DomainManager();
-		}
-
-		return instance;
-	}
 
 	/**
 	 * Creates a domain, based on the Domain Policy; The default is UPDATE(if it does not exist create it)
 	 *
 	 * @return true if the domain was successfuly managed, false if the domain has been managed before
 	 */
-	public boolean manageDomain(final String domainName, final DomainManagementPolicy policy, final AmazonSimpleDB sdb) {
+	public synchronized boolean manageDomain(final String domainName, final DomainManagementPolicy policy, final AmazonSimpleDB sdb) {
 		Assert.notNull(sdb);
 		
 		if(! managedDomains.contains(domainName)) {
 			try {
 				if(policy == DomainManagementPolicy.UPDATE || policy == null) {
 					createDomain(domainName, sdb);
+					
 				} else if(policy == DomainManagementPolicy.DROP_CREATE) {
 					dropDomain(domainName, sdb);
 					createDomain(domainName, sdb);
@@ -71,7 +59,7 @@ public final class DomainManager {
 	 * 
 	 * @param domainName
 	 */
-	public void dropDomain(final String domainName, final AmazonSimpleDB sdb) {
+	protected void dropDomain(final String domainName, final AmazonSimpleDB sdb) {
 		try {
 			LOGGER.debug("Dropping domain: {}", domainName);
 			DeleteDomainRequest request = new DeleteDomainRequest(domainName);
@@ -82,7 +70,7 @@ public final class DomainManager {
 		}
 	}
 
-	public void createDomain(final String domainName, final AmazonSimpleDB sdb) {
+	protected void createDomain(final String domainName, final AmazonSimpleDB sdb) {
 		try {
 			LOGGER.debug("Creating domain: {}", domainName);
 			CreateDomainRequest request = new CreateDomainRequest(domainName);
@@ -93,7 +81,7 @@ public final class DomainManager {
 		}
 	}
 
-	public boolean exists(final String domainName, final AmazonSimpleDB sdb) {
+	protected boolean exists(final String domainName, final AmazonSimpleDB sdb) {
 		try {
 			ListDomainsResult listDomainsResult = sdb.listDomains(new ListDomainsRequest());
 			List<String> domainNames = listDomainsResult.getDomainNames();
