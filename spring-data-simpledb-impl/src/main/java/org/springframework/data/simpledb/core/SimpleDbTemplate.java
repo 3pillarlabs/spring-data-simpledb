@@ -153,10 +153,24 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 
     @Override
     public <T> long countImpl(String query, boolean consistentRead, SimpleDbEntityInformation<T, ?> entityInformation) {
-        LOGGER.debug("Count items for query " + query);
-        validateSelectQuery(query);
+    	final String countQuery = new QueryBuilder(query, true).toString();
+    	return invokeCountImpl(consistentRead, entityInformation, countQuery);
+    }
 
-        final String escapedQuery = getEscapedQuery(query, entityInformation);
+    @Override
+    public <T> long countImpl(boolean consistentRead, SimpleDbEntityInformation<T, ?> entityInformation) {
+    	final String countQuery = new QueryBuilder(entityInformation, true).toString();
+    	return invokeCountImpl(consistentRead, entityInformation, countQuery);
+    }
+
+	private <T> long invokeCountImpl(boolean consistentRead,
+			SimpleDbEntityInformation<T, ?> entityInformation,
+			final String countQuery) {
+		
+		LOGGER.debug("Count items for query " + countQuery);
+        validateSelectQuery(countQuery);
+
+        final String escapedQuery = getEscapedQuery(countQuery, entityInformation);
 
         final SelectResult selectResult = invokeFindImpl(consistentRead, escapedQuery);
         for (Item item : selectResult.getItems()) {
@@ -170,27 +184,7 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
         }
 
         return 0;
-    }
-
-    @Override
-    public <T> long countImpl(boolean consistentRead, SimpleDbEntityInformation<T, ?> entityInformation) {
-        final String countQuery = new QueryBuilder(entityInformation, true).toString();
-        LOGGER.debug("Count items for query " + countQuery);
-        validateSelectQuery(countQuery);
-
-        final SelectResult selectResult = invokeFindImpl(consistentRead, countQuery);
-        for (Item item : selectResult.getItems()) {
-            if (item.getName().equals("Domain")) {
-                for (Attribute attribute : item.getAttributes()) {
-                    if (attribute.getName().equals("Count")) {
-                        return Long.parseLong(attribute.getValue());
-                    }
-                }
-            }
-        }
-
-        return 0;
-    }
+	}
 
     @Override
     public <T> List<T> findAllQueryImpl(Class<T> entityClass, SimpleDbEntityInformation<T, ?> entityInformation) {
