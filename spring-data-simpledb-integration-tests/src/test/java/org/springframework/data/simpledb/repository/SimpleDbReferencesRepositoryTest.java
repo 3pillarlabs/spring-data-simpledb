@@ -48,6 +48,12 @@ public class SimpleDbReferencesRepositoryTest {
 
 		ListDomainsResult listDomainsResult = sdb.listDomains(new ListDomainsRequest());
 		List<String> domainNames = listDomainsResult.getDomainNames();
+		String nextToken = listDomainsResult.getNextToken(); 
+		while (nextToken != null && !nextToken.isEmpty()) {
+			listDomainsResult = sdb.listDomains(new ListDomainsRequest().withNextToken(nextToken));
+			domainNames.addAll(listDomainsResult.getDomainNames());
+			nextToken = listDomainsResult.getNextToken();
+		}
 
 		assertThat(domainNames.contains(domainPrefix + ".simpleDbReferences"), is(true));
 		assertThat(domainNames.contains(domainPrefix + ".firstNestedEntity"), is(true));

@@ -85,6 +85,12 @@ public final class DomainManager {
 		try {
 			ListDomainsResult listDomainsResult = sdb.listDomains(new ListDomainsRequest());
 			List<String> domainNames = listDomainsResult.getDomainNames();
+			String nextToken = listDomainsResult.getNextToken(); 
+			while (nextToken != null && !nextToken.isEmpty()) {
+				listDomainsResult = sdb.listDomains(new ListDomainsRequest().withNextToken(nextToken));
+				domainNames.addAll(listDomainsResult.getDomainNames());
+				nextToken = listDomainsResult.getNextToken();
+			}
 			return domainNames.contains(domainName);
 		} catch(AmazonClientException amazonException) {
 			throw SimpleDbExceptionTranslator.getTranslatorInstance().translateAmazonClientException(amazonException);
