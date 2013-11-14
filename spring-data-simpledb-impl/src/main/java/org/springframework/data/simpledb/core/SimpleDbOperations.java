@@ -10,6 +10,11 @@ import org.springframework.data.simpledb.query.SdbItemQuery;
 
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 
+/**
+ * Interface for direct usage of SimpleDb and internal use by Spring Data
+ * repository components.
+ *
+ */
 public interface SimpleDbOperations {
 
 	/**
@@ -21,46 +26,188 @@ public interface SimpleDbOperations {
 	 */
 	String getDomainName(Class<?> entityClass);
 
+	/**
+	 * @return Amazon SimpleDb client instance
+	 */
 	AmazonSimpleDB getDB();
 
+	/**
+	 * @return SimpleDb configuration bean
+	 */
 	SimpleDb getSimpleDb();
 
+	/**
+	 * Creates or updates an entity. The decision to create or update depends
+	 * on the enitity Id, if null, the entity is created, updated otherwise.
+	 * <p>
+	 * For updates this is an expensive process, since the implementation may
+	 * delete attributes and then update the attributes since there is no track
+	 * of state changes in the entity. For more efficient way to update, see
+	 * {@link #update(Object, Class, Map)}.
+	 * 
+	 * @param entity
+	 * @return T
+	 */
 	<T> T createOrUpdate(T entity);
 
+	/**
+	 * Deletes an item based on domainName and itemName (id). 
+	 * 
+	 * @param domainName
+	 * @param itemName
+	 */
 	void delete(String domainName, String itemName);
 	
+	/**
+	 * Deletes an entity from SimpleDb.
+	 * 
+	 * @param entity
+	 */
 	<T> void delete(T entity);
 	
+	/**
+	 * Deletes an item from SimpleDb, where the item is identified by the entity
+	 * class and id.
+	 * 
+	 * @param entityClass
+	 * @param id
+	 */
 	<T, ID> void delete(Class<T> entityClass, ID id);
 	
+	/**
+	 * Delete more than one entity with single method.
+	 * 
+	 * @param entities
+	 */
 	<T> void delete(Iterable<? extends T> entities);
 	
+	/**
+	 * Delete more than one item, where each item is identified by the entity class
+	 * and id.
+	 * 
+	 * @param entityClass
+	 * @param id
+	 */
 	<T, ID> void delete(Class<T> entityClass, Iterable<? extends ID> id);
 	
+	/**
+	 * Deletes all entities.
+	 * <p>
+	 * <b>Warning: This will delete all items in the entity domain!</b>
+	 * 
+	 * @param entityClass
+	 */
 	<T> void deleteAll(Class<T> entityClass);
 	
+	/**
+	 * Find an entity by id.
+	 * 
+	 * @param id
+	 * @param entityClass
+	 * @return T
+	 */
 	<T, ID extends Serializable> T read(ID id, Class<T> entityClass);
 
+	/**
+	 * Find an entity by id.
+	 * 
+	 * @param id
+	 * @param entityClass
+	 * @param consistentRead
+	 * @return T
+	 */
 	<T, ID extends Serializable> T read(ID id, Class<T> entityClass, boolean consistentRead);
 
+	/**
+	 * @param entityClass
+	 * @return count of items in the domain for entityClass
+	 */
 	<T> long count(Class<T> entityClass);
 
+	/**
+	 * @param entityClass
+	 * @param consistentRead
+	 * @return count of items in the domain for entityClass
+	 */
 	<T> long count(Class<T> entityClass, boolean consistentRead);
 
+	/**
+	 * @param query 
+	 *               this needs to be a full query with select, from and where clause
+	 * @param entityClass
+	 * @return count of matching items in the domain for entityClass
+	 */
 	<T> long count(String query, Class<T> entityClass);
 
+	/**
+	 * @param query
+	 *              this needs to be a full query with select, from and where clause
+	 * @param entityClass
+	 * @param consistentRead
+	 * @return count of matching items in the domain for entityClass
+	 */
 	<T> long count(String query, Class<T> entityClass, boolean consistentRead);
 
+	/**
+	 * Finds all entities in a domain subject to single fetch rules. In other
+	 * words, more items may exist, this method does not handle pagination.
+	 * 
+	 * @param entityClass
+	 * @return List of T
+	 */
 	<T> List<T> findAll(Class<T> entityClass);
 
+	/**
+	 * Overloaded form of {@link #findAll(Class)} with option to reverse the
+	 * default consistentRead setting.
+	 *  
+	 * @param entityClass
+	 * @param consistentRead
+	 * @return List of T
+	 */
 	<T> List<T> findAll(Class<T> entityClass, boolean consistentRead);
 
+	/**
+	 * Finds all entities matching the query, does not handle pagination.
+	 * 
+	 * @param entityClass
+	 * @param query needs to be a full query with select, from and where clauses.
+	 * @return List of T
+	 */
 	<T> List<T> find(Class<T> entityClass, String query);
 
+	/**
+	 * Overloaded form of {@link #find(Class, String)} with option to reverse the
+	 * default consistentRead setting.
+	 * 
+	 * @param entityClass
+	 * @param query
+	 * @param consistentRead
+	 * @return List of T
+	 */
 	<T> List<T> find(Class<T> entityClass, String query, boolean consistentRead);
 
+	/**
+	 * Paginated finder method.
+	 * 
+	 * @param entityClass
+	 * @param query
+	 * @param pageable
+	 * @return Page of T
+	 * @see Page
+	 */
 	<T> Page<T> executePagedQuery(Class<T> entityClass, String query, Pageable pageable);
 
+	/**
+	 * Overloaded form of {@link #executePagedQuery(Class, String, Pageable)}
+	 * with option to reverse the default consistentRead setting.
+	 * 
+	 * @param entityClass
+	 * @param query
+	 * @param pageable
+	 * @param consistentRead
+	 * @return Page of T
+	 */
 	<T> Page<T> executePagedQuery(Class<T> entityClass, String query, Pageable pageable, boolean consistentRead);
 
 	/**
