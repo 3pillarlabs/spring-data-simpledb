@@ -11,9 +11,9 @@ The Spring Data SimpleDB module aims to provide a familiar and consistent Spring
 Clone the Spring Data SimpleDB module into and define it as a dependency in your project's Maven file:
 
     <dependency>
-        <groupId>org.springframework.data.simpledb</groupId>
+        <groupId>com.3pillarglobal.labs/groupId>
         <artifactId>spring-data-simpledb</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </dependency>
 
 First, set up the SimpleDb configuration.

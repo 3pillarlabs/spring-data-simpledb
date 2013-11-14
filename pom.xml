@@ -1,135 +1,167 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.threepillar.labs</groupId>
-    <artifactId>spring-data-simpledb-sdk</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>Spring Data SimpleDB SDK</name>
-    <url>http://maven.apache.org</url>
-    <build>
-         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>${java.compiler.version}</source>
-                    <target>${java.compiler.version}</target>
-                </configuration>
-            </plugin>
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.13</version>
-                <configuration>
-                    <runOrder>alphabetical</runOrder>
-                </configuration>
+	<groupId>com.3pillarglobal.labs</groupId>
+	<artifactId>spring-data-simpledb-sdk</artifactId>
+	<version>1.0</version>
+	<packaging>pom</packaging>
+	<name>Spring Data SimpleDB SDK</name>
 
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.surefire</groupId>
-                        <artifactId>surefire-junit47</artifactId>
-                        <version>2.13</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+	<url>https://github.com/3pillarlabs/spring-data-simpledb</url>
 
+	<licenses>
+		<license>
+			<name>MIT license (also X11)</name>
+			<url>http://www.spdx.org/licenses/MIT</url>
+		</license>
+	</licenses>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.10</version>
-                <executions>
-                    <execution>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <configLocation>etc/CheckstyleSonar.xml</configLocation>
-                    <maxAllowedViolations>1</maxAllowedViolations>
-                    <violationSeverity>info</violationSeverity>
-                    <consoleOutput>true</consoleOutput>
-                    <failsOnError>true</failsOnError>
-                </configuration>
-				</plugin>
-							 
-			    <!-- FindBugs -->
-			    <plugin>
-       				 <groupId>org.codehaus.mojo</groupId>
-       				 <artifactId>findbugs-maven-plugin</artifactId>
-       				 <!-- Uses FindBugs version 2.0.1 -->
-       				 <version>2.5.2</version>
-       				 <executions>
-						<execution>
-					    <goals>
-							<goal>check</goal>
-						 </goals>
-						</execution>
-					</executions>
-					<configuration>
-						    <includeFilterFile>${basedir}/../etc/FindbugsSonar.xml</includeFilterFile>
-						    <excludeFilterFile>${basedir}/../etc/FindbugsSonarExclude.xml</excludeFilterFile>
-						    <effort>Max</effort>
-        					<!-- High/Low -->
-        					<threshold>Low</threshold>
-        					<includeTests>false</includeTests>          					  					
-                    </configuration>       				 
-     			 </plugin>
-     			 
-			     <!--PMD-->
-		        <plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-pmd-plugin</artifactId>
-					<!-- Uses PMD version 4.3 -->
-					<version>2.7.1</version>
-					<executions>
-        				  <execution>
-        				      <phase>process-sources</phase>
-           				       <goals>
-             				        <goal>check</goal>              				                   				       
-           				       </goals>           				      
-        				 </execution>
-          			</executions>		
-          			<configuration>
-         				 <targetJdk>${java.compiler.version}</targetJdk>
-         				 <rulesets>
-						     <ruleset>${basedir}/../etc/PMDSonar.xml</ruleset>							           
-                         </rulesets>
-                         <failurePriority>3</failurePriority>
-                         <verbose>true</verbose>
-                         <includeTests>false</includeTests>
-                         <excludes>
-                             <exclude>**\org\springframework\data\simpledb\parser\*.*</exclude>
-                         </excludes>
-          			</configuration> 				
-				</plugin>   		  
-        </plugins>
-    </build>
-    
-	<distributionManagement>
-		<snapshotRepository>
+	<scm>
+		<connection>git@github.com:3pillarlabs/spring-data-simpledb.git</connection>
+		<url>https://github.com/3pillarlabs/spring-data-simpledb</url>
+	</scm>
+
+	<developers>
+		<developer>
 			<id>3pillarlabs</id>
-			<name>3pillarlabs-snapshots</name>
-			<url>http://labs.3pillarglobal.com:11001/artifactory/libs-snapshot-local</url>
-		</snapshotRepository>
-	</distributionManagement>
- 
-    <modules>
-        <module>spring-data-simpledb-impl</module>
-        <module>spring-data-simpledb-parser</module>    
-        <module>spring-data-simpledb-integration-tests</module>    
-    </modules>
+			<name>3Pillar Global Labs</name>
+			<email>labs@3pillarglobal.com</email>
+			<url>http://labs.3pillarglobal.com/</url>
+			<organization>3Pillar Global</organization>
+			<organizationUrl>http://www.3pillarglobal.com/</organizationUrl>
+		</developer>
+	</developers>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.compiler.version>1.6</java.compiler.version>
-    </properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>${java.compiler.version}</source>
+					<target>${java.compiler.version}</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.13</version>
+				<configuration>
+					<runOrder>alphabetical</runOrder>
+				</configuration>
+
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-junit47</artifactId>
+						<version>2.13</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+				<inherited>false</inherited>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.10</version>
+				<executions>
+					<execution>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<configLocation>etc/CheckstyleSonar.xml</configLocation>
+					<maxAllowedViolations>1</maxAllowedViolations>
+					<violationSeverity>info</violationSeverity>
+					<consoleOutput>true</consoleOutput>
+					<failsOnError>true</failsOnError>
+				</configuration>
+			</plugin>
+
+			<!-- FindBugs -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<!-- Uses FindBugs version 2.0.1 -->
+				<version>2.5.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<includeFilterFile>${basedir}/../etc/FindbugsSonar.xml</includeFilterFile>
+					<excludeFilterFile>${basedir}/../etc/FindbugsSonarExclude.xml</excludeFilterFile>
+					<effort>Max</effort>
+					<!-- High/Low -->
+					<threshold>Low</threshold>
+					<includeTests>false</includeTests>
+				</configuration>
+			</plugin>
+
+			<!--PMD -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<!-- Uses PMD version 4.3 -->
+				<version>2.7.1</version>
+				<executions>
+					<execution>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<targetJdk>${java.compiler.version}</targetJdk>
+					<rulesets>
+						<ruleset>${basedir}/../etc/PMDSonar.xml</ruleset>
+					</rulesets>
+					<failurePriority>3</failurePriority>
+					<verbose>true</verbose>
+					<includeTests>false</includeTests>
+					<excludes>
+						<exclude>**\org\springframework\data\simpledb\parser\*.*</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<modules>
+		<module>spring-data-simpledb-impl</module>
+		<module>spring-data-simpledb-parser</module>
+		<module>spring-data-simpledb-integration-tests</module>
+	</modules>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.compiler.version>1.6</java.compiler.version>
+	</properties>
 
 
 </project>
