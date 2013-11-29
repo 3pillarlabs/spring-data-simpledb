@@ -13,7 +13,8 @@
 	<version>1.0</version>
 	<packaging>pom</packaging>
 	<name>Spring Data SimpleDB SDK</name>
-
+	<description>SDK bundle for Spring Data SimpleDB</description>
+	
 	<url>https://github.com/3pillarlabs/spring-data-simpledb</url>
 
 	<licenses>
