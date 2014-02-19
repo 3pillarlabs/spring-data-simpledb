@@ -4,13 +4,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 public class JsonMarshallerTest {
 
@@ -18,7 +18,7 @@ public class JsonMarshallerTest {
 
 	@Before
 	public void setUp() {
-		marshaller = JsonMarshaller.getInstance();
+		marshaller = JsonMarshaller.createNew();
 	}
 
 	@Test
@@ -95,6 +95,24 @@ public class JsonMarshallerTest {
 		assertEquals("Test Value", ret);
 
 	}
+
+    @Test
+    public void should_serialize_deserialize() throws Exception {
+        List<String> strings = new ArrayList<String>(asList("one", "two", "three"));
+
+        String result = marshaller.marshall(strings);
+        List<String> unmarshalled = marshaller.unmarshall(result, ArrayList.class);
+
+        assertThat(result, is("[\"java.util.ArrayList\",[\"one\",\"two\",\"three\"]]"));
+        assertThat(unmarshalled, is(strings));
+
+    }
+
+    @Test
+    public void should_deserialize_without_serialization() throws Exception {
+        ArrayList<String> result = marshaller.unmarshall("[\"java.util.ArrayList\",[\"one\",\"two\",\"three\"]]", ArrayList.class);
+        assertThat(result, is(new ArrayList<String>(asList("one", "two", "three"))));
+    }
 
 	private User createSampleUser() {
 		User newUser = new User();
