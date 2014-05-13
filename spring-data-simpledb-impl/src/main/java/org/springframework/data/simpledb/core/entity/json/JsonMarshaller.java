@@ -25,8 +25,8 @@ public final class JsonMarshaller {
 	private JsonMarshaller() {
 		JsonFactory factory = new JsonFactory();
 		jsonMapper = new ObjectMapper(factory);
-		jsonMapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.NON_FINAL, "@class");
-		JsonUnknownPropertyHandler jsonUnknownPropertyHandler = new JsonUnknownPropertyHandler();
+        jsonMapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.NON_FINAL, "@class");
+        JsonUnknownPropertyHandler jsonUnknownPropertyHandler = new JsonUnknownPropertyHandler();
 		jsonMapper.getDeserializationConfig().addHandler(jsonUnknownPropertyHandler);
 		jsonMapper.registerModule(new MrBeanModule());
 	}
@@ -34,6 +34,10 @@ public final class JsonMarshaller {
 	public static JsonMarshaller getInstance() {
 		return JsonMarshallerHolder.instance;
 	}
+
+    static JsonMarshaller createNew(){
+        return new JsonMarshaller();
+    }
 
 	public <T> T unmarshall(String jsonString, Class<?> objectType) {
 		Assert.notNull(jsonString);

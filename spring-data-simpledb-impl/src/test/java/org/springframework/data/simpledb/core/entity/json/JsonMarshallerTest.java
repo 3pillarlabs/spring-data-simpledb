@@ -20,7 +20,7 @@ public class JsonMarshallerTest {
 
 	@Before
 	public void setUp() {
-		marshaller = JsonMarshaller.getInstance();
+		marshaller = JsonMarshaller.createNew();
 	}
 
 	@Test
@@ -98,30 +98,24 @@ public class JsonMarshallerTest {
 
 	}
 
-	@Test
-	public void should_serialize_deserialize() throws Exception {
-		List<String> strings = new ArrayList<String>(Arrays.asList("one",
-				"two", "three"));
+    @Test
+    public void should_serialize_deserialize() throws Exception {
+        List<String> strings = new ArrayList<String>(Arrays.asList("one", "two", "three"));
 
-		String result = marshaller.marshall(strings);
-		List<String> unmarshalled = marshaller.unmarshall(result,
-				ArrayList.class);
+        String result = marshaller.marshall(strings);
+        List<String> unmarshalled = marshaller.unmarshall(result, ArrayList.class);
 
-		assertThat(result,
-				is("[\"java.util.ArrayList\",[\"one\",\"two\",\"three\"]]"));
-		assertThat(unmarshalled, is(strings));
+        assertThat(result, is("[\"java.util.ArrayList\",[\"one\",\"two\",\"three\"]]"));
+        assertThat(unmarshalled, is(strings));
 
-	}
+    }
 
-	@Test
-	public void should_deserialize_without_serialization() throws Exception {
-		ArrayList<String> result = marshaller.unmarshall(
-				"[\"java.util.ArrayList\",[\"one\",\"two\",\"three\"]]",
-				ArrayList.class);
-		ArrayList<String> expected = new ArrayList<String>(Arrays.asList("one", "two", "three"));
-		assertThat(result, is(expected));
-	}
-	 
+    @Test
+    public void should_deserialize_without_serialization() throws Exception {
+        ArrayList<String> result = marshaller.unmarshall("[\"java.util.ArrayList\",[\"one\",\"two\",\"three\"]]", ArrayList.class);
+        assertThat(result, is(new ArrayList<String>(Arrays.asList("one", "two", "three"))));
+    }
+
 	private User createSampleUser() {
 		User newUser = new User();
 		newUser.setName(new User.Name());
