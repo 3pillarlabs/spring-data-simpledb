@@ -10,7 +10,7 @@
 
 	<groupId>com.3pillarglobal.labs</groupId>
 	<artifactId>spring-data-simpledb-sdk</artifactId>
-	<version>1.0</version>
+	<version>1.0.1</version>
 	<packaging>pom</packaging>
 	<name>Spring Data SimpleDB SDK</name>
 	<description>SDK bundle for Spring Data SimpleDB</description>
@@ -73,10 +73,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
 				<version>2.4</version>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-				<inherited>false</inherited>
 			</plugin>
 
 			<plugin>

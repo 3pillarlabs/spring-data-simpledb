@@ -13,7 +13,7 @@ Clone the Spring Data SimpleDB module into and define it as a dependency in your
     <dependency>
         <groupId>com.3pillarglobal.labs/groupId>
         <artifactId>spring-data-simpledb</artifactId>
-        <version>1.0</version>
+        <version>1.0.1</version>
     </dependency>
 
 First, set up the SimpleDb configuration.
