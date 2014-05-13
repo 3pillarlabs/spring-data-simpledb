@@ -20,7 +20,7 @@ public class JsonMarshallerTest {
 
 	@Before
 	public void setUp() {
-		marshaller = JsonMarshaller.createNew();
+		marshaller = JsonMarshaller.getInstance();
 	}
 
 	@Test
@@ -112,7 +112,8 @@ public class JsonMarshallerTest {
 
     @Test
     public void should_deserialize_without_serialization() throws Exception {
-        ArrayList<String> result = marshaller.unmarshall("[\"java.util.ArrayList\",[\"one\",\"two\",\"three\"]]", ArrayList.class);
+    	JsonMarshaller newMarshaller = JsonMarshaller.createNew();
+        ArrayList<String> result = newMarshaller.unmarshall("[\"java.util.ArrayList\",[\"one\",\"two\",\"three\"]]", ArrayList.class);
         assertThat(result, is(new ArrayList<String>(Arrays.asList("one", "two", "three"))));
     }
 
