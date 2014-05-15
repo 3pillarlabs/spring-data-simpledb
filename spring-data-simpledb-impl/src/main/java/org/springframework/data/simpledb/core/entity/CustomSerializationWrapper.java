@@ -2,8 +2,12 @@ package org.springframework.data.simpledb.core.entity;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.lang.SerializationException;
+import org.apache.commons.lang.reflect.ConstructorUtils;
+import org.codehaus.jackson.map.JsonDeserializer;
+import org.codehaus.jackson.map.util.ClassUtil;
 import org.springframework.util.Assert;
 
 public class CustomSerializationWrapper <T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T,ID> {
@@ -20,10 +24,9 @@ public class CustomSerializationWrapper <T, ID extends Serializable> extends Abs
 		Assert.notNull(serializer, "No serializer passed");
 		
 		try {
-			this.serializer=serializer.newInstance();
-		} catch (InstantiationException e) {
-			throw new SerializationException(e);
-		} catch (IllegalAccessException e) {
+			this.serializer = ClassUtil.createInstance(serializer, true);
+
+		} catch (Exception e) {
 			throw new SerializationException(e);
 		}
 	}
