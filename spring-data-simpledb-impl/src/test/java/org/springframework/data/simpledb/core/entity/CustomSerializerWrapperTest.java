@@ -36,7 +36,7 @@ public class CustomSerializerWrapperTest {
 		
 		EntityWrapper<CustomSerializedError, String> sdbEntity = new EntityWrapper<CustomSerializedError, String>(
 				EntityInformationSupport.readEntityInformation(CustomSerializedError.class), cs);
-		final Map<String, String> attributes = sdbEntity.serialize();
+		sdbEntity.serialize();
 	}
 	
 	class CustomSerializedError{

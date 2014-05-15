@@ -2,11 +2,8 @@ package org.springframework.data.simpledb.core.entity;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.lang.SerializationException;
-import org.apache.commons.lang.reflect.ConstructorUtils;
-import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.util.ClassUtil;
 import org.springframework.util.Assert;
 
