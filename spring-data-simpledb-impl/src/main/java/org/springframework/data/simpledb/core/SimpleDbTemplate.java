@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.SerializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.simpledb.attributeutil.SimpleDBAttributeConverter;
 import org.springframework.data.simpledb.attributeutil.SimpleDbAttributeValueSplitter;
+import org.springframework.data.simpledb.core.entity.CustomSerialize;
+import org.springframework.data.simpledb.core.entity.CustomSerializer;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.core.entity.json.JsonMarshaller;
 import org.springframework.data.simpledb.exception.InvalidSimpleDBQueryException;
@@ -307,7 +310,20 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
     		}
     		String serializedPropertyValue = null;
     		Field propertyField = ReflectionUtils.getPropertyField(entityClass, propertyPath);
-    		if (FieldTypeIdentifier.isOfType(propertyField, FieldType.PRIMITIVE, FieldType.CORE_TYPE)) {
+    		if(FieldTypeIdentifier.isOfType(propertyField, FieldType.CUSTOM_SERIALIZED)){
+    			CustomSerializer serializer;
+				
+					try {
+						serializer = propertyField.getAnnotation(CustomSerialize.class).serializer().newInstance();
+					} catch (InstantiationException e) {
+						throw new SerializationException(e);
+					} catch (IllegalAccessException e) {
+						throw new SerializationException(e);
+					}
+					
+    			serializedPropertyValue = serializer.serialize(propertyValue);
+    		}
+    		else if (FieldTypeIdentifier.isOfType(propertyField, FieldType.PRIMITIVE, FieldType.CORE_TYPE)) {
     			serializedPropertyValue = SimpleDBAttributeConverter.encode(propertyValue);
     		
     		} else if (FieldTypeIdentifier.isOfType(propertyField, FieldType.NESTED_ENTITY)) {

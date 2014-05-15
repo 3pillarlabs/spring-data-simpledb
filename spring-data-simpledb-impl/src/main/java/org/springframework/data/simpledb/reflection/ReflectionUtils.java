@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Persistent;
 import org.springframework.data.annotation.Reference;
 import org.springframework.data.mapping.model.MappingException;
+import org.springframework.data.simpledb.annotation.Attributes;
+import org.springframework.data.simpledb.core.entity.CustomSerialize;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -254,6 +256,14 @@ public final class ReflectionUtils {
 
 	public static boolean isReference(Field field) {
 		return field.getAnnotation(Reference.class) != null;
+	}
+	
+	public static boolean isCustom(Field field){ 
+		return field.getAnnotation(CustomSerialize.class) != null;
+	}
+	
+	public static boolean isAttributes(Field field){
+		return field.getAnnotation(Attributes.class) != null;
 	}
 	
 	public static boolean isPersistentField(Field field) {
