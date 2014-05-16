@@ -1,5 +1,6 @@
 package org.springframework.data.simpledb.core;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.attributeutil.SimpleDBAttributeConverter;
 import org.springframework.data.simpledb.attributeutil.SimpleDbAttributeValueSplitter;
 import org.springframework.data.simpledb.core.entity.CustomSerialize;
@@ -311,17 +313,17 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
     		String serializedPropertyValue = null;
     		Field propertyField = ReflectionUtils.getPropertyField(entityClass, propertyPath);
     		if(FieldTypeIdentifier.isOfType(propertyField, FieldType.CUSTOM_SERIALIZED)){
-    			CustomSerializer serializer;
 				
 					try {
-						serializer = propertyField.getAnnotation(CustomSerialize.class).serializer().newInstance();
+						CustomSerializer serializer = propertyField.getAnnotation(CustomSerialize.class).serializer().newInstance();
+		    			serializedPropertyValue = serializer.serialize(propertyValue);
 					} catch (InstantiationException e) {
 						throw new SerializationException(e);
 					} catch (IllegalAccessException e) {
 						throw new SerializationException(e);
+					} catch (IOException e) {
+						throw new MappingException("Could not serialize field "+propertyPath, e);
 					}
-					
-    			serializedPropertyValue = serializer.serialize(propertyValue);
     		}
     		else if (FieldTypeIdentifier.isOfType(propertyField, FieldType.PRIMITIVE, FieldType.CORE_TYPE)) {
     			serializedPropertyValue = SimpleDBAttributeConverter.encode(propertyValue);

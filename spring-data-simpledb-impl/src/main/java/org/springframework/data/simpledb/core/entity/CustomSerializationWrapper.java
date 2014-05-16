@@ -1,10 +1,12 @@
 package org.springframework.data.simpledb.core.entity;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
 import org.apache.commons.lang.SerializationException;
 import org.codehaus.jackson.map.util.ClassUtil;
+import org.springframework.data.mapping.model.MappingException;
 import org.springframework.util.Assert;
 
 public class CustomSerializationWrapper <T, ID extends Serializable> extends AbstractSimpleFieldWrapper<T,ID> {
@@ -32,7 +34,11 @@ public class CustomSerializationWrapper <T, ID extends Serializable> extends Abs
 	@Override
 	public String serializeValue() {
 		if(getFieldValue() != null) {
-			return serializer.serialize((T) getFieldValue());
+			try {
+				return serializer.serialize((T) getFieldValue());
+			} catch (IOException e) {
+				throw new MappingException("Could not marshall field "+getFieldName(), e);
+			}
         }
 		else{
 			return null;
@@ -44,7 +50,11 @@ public class CustomSerializationWrapper <T, ID extends Serializable> extends Abs
 		Object ret = null;
 	
 	    if(value != null) {
-			ret = serializer.deserialize(value);
+			try {
+				ret = serializer.deserialize(value);
+			} catch (IOException e) {
+				throw new MappingException("Could not unmarshall object : " + value, e);
+			}
 	    }
 	
 	    return ret;
