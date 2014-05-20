@@ -176,7 +176,7 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 		LOGGER.debug("Count items for query " + countQuery);
         validateSelectQuery(countQuery);
         final String escapedQuery = getEscapedQuery(countQuery, entityInformation);
-        
+        List<Item> selectResultList=new ArrayList<Item>();
 		String nextToken = null;
         Long totalCount=Long.valueOf(0);
         do{
