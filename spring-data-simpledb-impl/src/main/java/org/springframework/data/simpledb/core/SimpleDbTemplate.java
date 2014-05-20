@@ -132,12 +132,18 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 		}
 	}
 
+
 	@Override
     public SelectResult invokeFindImpl(boolean consistentRead, String escapedQuery) {
-    	LOGGER.debug("Query: {}", escapedQuery);
-        return getDB().select(new SelectRequest(escapedQuery, consistentRead));
+        return invokeFindImpl(consistentRead, escapedQuery, null);
     }
-
+    private SelectResult invokeFindImpl(boolean consistentRead, String escapedQuery,String nextToken) {
+    	LOGGER.debug("Query: {}", escapedQuery);
+    	SelectRequest request=new SelectRequest(escapedQuery, consistentRead);
+    	if(nextToken!=null)
+    		request.setNextToken(nextToken);
+        return getDB().select(request);
+    }
     @Override
     public <T, ID extends Serializable> T readImpl(ID id, Class<T> entityClass, boolean consistentRead,
                                                    SimpleDbEntityInformation<T, ?> entityInformation) {
@@ -169,21 +175,29 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 		
 		LOGGER.debug("Count items for query " + countQuery);
         validateSelectQuery(countQuery);
-
         final String escapedQuery = getEscapedQuery(countQuery, entityInformation);
+        
+		String nextToken = null;
+        Long totalCount=Long.valueOf(0);
+        do{
+            final SelectResult selectResult = invokeFindImpl(consistentRead, escapedQuery,nextToken);
+            selectResultList.addAll(selectResult.getItems());
+            nextToken = selectResult.getNextToken();
 
-        final SelectResult selectResult = invokeFindImpl(consistentRead, escapedQuery);
-        for (Item item : selectResult.getItems()) {
+
+        }while(nextToken != null);
+
+        for (Item item : selectResultList) {
             if (item.getName().equals("Domain")) {
                 for (Attribute attribute : item.getAttributes()) {
                     if (attribute.getName().equals("Count")) {
-                        return Long.parseLong(attribute.getValue());
+                    	totalCount+=Long.parseLong(attribute.getValue());
                     }
                 }
             }
         }
 
-        return 0;
+        return totalCount;
 	}
 
     @Override
