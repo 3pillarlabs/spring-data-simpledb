@@ -27,6 +27,8 @@ public final class FieldWrapperFactory {
 			return createNestedEntityFieldWrapper(field, parent, isNewParent);
 		} else if(FieldTypeIdentifier.isOfType(field, FieldType.REFERENCE_ENTITY)) {
 			return createReferenceEntityFieldWrapper(field, parent, isNewParent);
+		} else if (FieldTypeIdentifier.isOfType(field, FieldType.ATTRIBUTES)) {
+			return createAttributeFieldWrapper(field, parent, isNewParent);
 		} else if(FieldTypeIdentifier.isOfType(field, FieldType.MAP)) {
 			return createMapFieldWrapper(field, parent, isNewParent);
 		} else if(FieldTypeIdentifier.isOfType(field, FieldType.CUSTOM_SERIALIZED)){
@@ -44,6 +46,11 @@ public final class FieldWrapperFactory {
 		return new CustomSerializationWrapper<T, ID>(field, parent, isNewParent, (Class<? extends CustomSerializer<T>>) serializeAnnotation.serializer());
 	}
 
+	private static <T, ID extends Serializable> AbstractFieldWrapper<T, ID> createAttributeFieldWrapper(
+			final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
+		return new AttributeFieldWrapper<T, ID>(field, parent, isNewParent);
+	}
+	
 	private static <T, ID extends Serializable> AbstractFieldWrapper<T, ID> createSimpleFieldWrapper(
 			final Field field, final EntityWrapper<T, ID> parent, final boolean isNewParent) {
 		return new SimpleFieldWrapper<T, ID>(field, parent, isNewParent);

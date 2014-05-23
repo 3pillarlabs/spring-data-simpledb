@@ -73,7 +73,7 @@ public enum FieldType {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-			return !CUSTOM_SERIALIZED.isOfType(field) && Map.class.isAssignableFrom(field.getType());
+			return !isOfType(field, CUSTOM_SERIALIZED, ATTRIBUTES) && Map.class.isAssignableFrom(field.getType());
 		}
 	},
 

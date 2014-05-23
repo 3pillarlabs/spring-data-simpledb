@@ -251,7 +251,7 @@ public interface SimpleDbOperations {
 	 * @param id
 	 * @param propertyMap
 	 */
-	<T, ID> void update(ID id, Class<T> entityClass, Map<String, ? extends Object> propertyMap);
+	<T, ID> void update(ID id, Class<T> entityClass, Map<String, Object> propertyMap);
 
 	/**
 	 * Creates an object suitable for use with any of the query based methods

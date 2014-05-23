@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.SerializationException;
 import org.slf4j.Logger;
@@ -297,7 +298,7 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <T, ID> void updateImpl(ID id, Class<T> entityClass, 
-			Map<String, ? extends Object> propertyMap) {
+			Map<String, Object> propertyMap) {
 		// From the propertyMap, retrieve the Field which will be updated,
     	// from the Field, serialize the corresponding Object value as per
     	// FieldWrapper#serialize semantics, plug into the scheme to convert
@@ -325,9 +326,12 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 						throw new MappingException("Could not serialize field "+propertyPath, e);
 					}
     		}
+    		else if(FieldTypeIdentifier.isOfType(propertyField, FieldType.ATTRIBUTES)){
+    			Map<String, String> valueAsMap = (Map<String,String>)propertyValue;
+    			propertyMap.putAll(valueAsMap);
+    		}
     		else if (FieldTypeIdentifier.isOfType(propertyField, FieldType.PRIMITIVE, FieldType.CORE_TYPE)) {
     			serializedPropertyValue = SimpleDBAttributeConverter.encode(propertyValue);
-    		
     		} else if (FieldTypeIdentifier.isOfType(propertyField, FieldType.NESTED_ENTITY)) {
     			SimpleDbEntityInformation<T, Serializable> entityMetadata = (SimpleDbEntityInformation<T, Serializable>) SimpleDbEntityInformationSupport.getMetadata(propertyValue.getClass(), domainName);
 				EntityWrapper<T, Serializable> entity = new EntityWrapper<T, Serializable>(entityMetadata, (T) propertyValue, true);
