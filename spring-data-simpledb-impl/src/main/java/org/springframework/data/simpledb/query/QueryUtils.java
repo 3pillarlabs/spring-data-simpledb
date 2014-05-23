@@ -83,7 +83,7 @@ public final class QueryUtils {
 			final Class<?> paramType = param.getType();
 
 			if (!(param.isSpecialParameter() || SupportedCoreTypes
-					.isSupported(paramType) || paramType.isEnum())) {
+					.isSupported(paramType))) {
 				throw (new IllegalArgumentException("Type " + paramType
 						+ " not supported as an annotated query parameter!"));
 			}
