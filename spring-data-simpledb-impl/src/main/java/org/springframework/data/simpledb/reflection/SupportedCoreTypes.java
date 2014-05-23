@@ -55,6 +55,7 @@ public enum SupportedCoreTypes {
 		SUPPORTED_CORE_TYPES.add(Character.class);
 		SUPPORTED_CORE_TYPES.add(String.class);
 		SUPPORTED_CORE_TYPES.add(Date.class);
+		SUPPORTED_CORE_TYPES.add(Enum.class);
 	}
 
 	private static final Set<Class<?>> SUPPORTED_ARRAYS = new HashSet<Class<?>>();
