@@ -16,7 +16,7 @@ public class SimpleDBJavaConfiguration extends AbstractSimpleDBConfiguration {
 		Properties keys = new Properties();
 		try {
 			keys.load(this.getClass().getResourceAsStream(
-					"/aws-keys.properties.sample"));
+					"/aws-keys.properties"));
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
