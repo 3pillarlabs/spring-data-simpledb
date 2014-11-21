@@ -38,7 +38,7 @@ public class SimpleDbExceptionTranslatorTest {
 		assertThat(dataAccessException, is(instanceOf(EmptyResultDataAccessException.class)));
 
 		assertThat(dataAccessException, is(notNullValue()));
-		assertThat(dataAccessException.getLocalizedMessage(), is("Attribute does not exist"));
+		assertThat(dataAccessException.getLocalizedMessage(), is("Attribute does not exist (Service: null; Status Code: 0; Error Code: null; Request ID: null)"));
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class SimpleDbExceptionTranslatorTest {
 		assertThat(dataAccessException, is(instanceOf(InvalidDataAccessResourceUsageException.class)));
 
 		assertThat(invalidParameterValueException, is(notNullValue()));
-		assertThat(invalidParameterValueException.getLocalizedMessage(), is("Invalid Parameter"));
+		assertThat(invalidParameterValueException.getLocalizedMessage(), is("Invalid Parameter (Service: null; Status Code: 0; Error Code: null; Request ID: null)"));
 
 	}
 
@@ -75,7 +75,7 @@ public class SimpleDbExceptionTranslatorTest {
 		assertThat(dataAccessException, is(instanceOf(EmptyResultDataAccessException.class)));
 
 		assertThat(dataAccessException, is(notNullValue()));
-		assertThat(dataAccessException.getLocalizedMessage(), is("No such domain"));
+		assertThat(dataAccessException.getLocalizedMessage(), is("No such domain (Service: null; Status Code: 0; Error Code: null; Request ID: null)"));
 
 	}
 

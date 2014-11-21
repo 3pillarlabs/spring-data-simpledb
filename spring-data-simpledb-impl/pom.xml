@@ -64,11 +64,16 @@
 		<!--AMAZON -->
 		<dependency>
 			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk</artifactId>
-			<version>1.1.5</version>
+			<artifactId>aws-java-sdk-simpledb</artifactId>
+			<version>1.9.6</version>
 		</dependency>
 
-
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-cloudwatch</artifactId>
+			<version>1.9.4</version>
+		</dependency>
+		
 		<!-- TEST -->
 		<dependency>
 			<groupId>junit</groupId>
