@@ -582,3 +582,9 @@ The current timeout defaults to a fixed 400ms between each retry. This limitatio
 
 
 DEV_NOTES: Please use [Dillinger](http://dillinger.io/) when editing this file
+
+# About this project
+
+![3Pillar Global] (http://www.3pillarglobal.com/wp-content/themes/base/library/images/logo_3pg.png)
+
+**Spring Data SimpleDB** is developed and maintained by [3Pillar Global](http://www.3pillarglobal.com/).
