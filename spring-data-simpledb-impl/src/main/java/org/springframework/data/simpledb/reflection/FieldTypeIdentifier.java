@@ -9,6 +9,7 @@ public class FieldTypeIdentifier {
 	}
 
 	public static boolean isOfType(final Field field, FieldType... fieldTypes) {
+		checkValidity(field);
 		for(final FieldType fieldType : fieldTypes) {
 			if(fieldType.isOfType(field)) {
 				return true;
@@ -19,9 +20,12 @@ public class FieldTypeIdentifier {
 	}
 
 	public static FieldType getFieldType(final Field field) {
+		checkValidity(field);
 		if(FieldType.ID.isOfType(field)) {
 			return FieldType.ID;
-		} else if(FieldType.ATTRIBUTES.isOfType(field)) {
+		} else if(FieldType.CUSTOM_SERIALIZED.isOfType(field)){
+			return FieldType.CUSTOM_SERIALIZED;
+		}else if(FieldType.ATTRIBUTES.isOfType(field)) {
 			return FieldType.ATTRIBUTES;
 		} else if(FieldType.PRIMITIVE.isOfType(field)) {
 			return FieldType.PRIMITIVE;
@@ -37,9 +41,22 @@ public class FieldTypeIdentifier {
 			return FieldType.NESTED_ENTITY;
 		} else if(FieldType.REFERENCE_ENTITY.isOfType(field)) {
 			return FieldType.REFERENCE_ENTITY;
-		}
+		} 
 
 		return FieldType.OBJECT;
 	}
+	
+	private static void checkValidity(final Field field) {
+		if(ReflectionUtils.isCustom(field) && ReflectionUtils.isReference(field)){
+			throw new IllegalStateException("Field "+field.getName()+" is both Custom and Reference, can be one");
+		}
+		if(ReflectionUtils.isCustom(field) && ReflectionUtils.isAttributes(field)){
+			throw new IllegalStateException("Field "+field.getName()+" is both Custom and Attributes, can be one");
+		}
+		if(FieldType.ID.isOfType(field) && ReflectionUtils.isCustom(field)){
+			throw new IllegalStateException("Field "+field.getName()+" is ID and cannot be custom serialized");
+		}
+	}
+
 
 }

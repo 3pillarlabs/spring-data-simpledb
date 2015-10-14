@@ -1,5 +1,6 @@
 package org.springframework.data.simpledb.core;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -7,14 +8,19 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.apache.commons.lang.SerializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.simpledb.attributeutil.SimpleDBAttributeConverter;
 import org.springframework.data.simpledb.attributeutil.SimpleDbAttributeValueSplitter;
+import org.springframework.data.simpledb.core.entity.CustomSerialize;
+import org.springframework.data.simpledb.core.entity.CustomSerializer;
 import org.springframework.data.simpledb.core.entity.EntityWrapper;
 import org.springframework.data.simpledb.core.entity.json.JsonMarshaller;
 import org.springframework.data.simpledb.exception.InvalidSimpleDBQueryException;
@@ -292,7 +298,7 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <T, ID> void updateImpl(ID id, Class<T> entityClass, 
-			Map<String, ? extends Object> propertyMap) {
+			Map<String, Object> propertyMap) {
 		// From the propertyMap, retrieve the Field which will be updated,
     	// from the Field, serialize the corresponding Object value as per
     	// FieldWrapper#serialize semantics, plug into the scheme to convert
@@ -307,9 +313,25 @@ public class SimpleDbTemplate extends AbstractSimpleDbTemplate {
     		}
     		String serializedPropertyValue = null;
     		Field propertyField = ReflectionUtils.getPropertyField(entityClass, propertyPath);
-    		if (FieldTypeIdentifier.isOfType(propertyField, FieldType.PRIMITIVE, FieldType.CORE_TYPE)) {
+    		if(FieldTypeIdentifier.isOfType(propertyField, FieldType.CUSTOM_SERIALIZED)){
+				
+					try {
+						CustomSerializer serializer = propertyField.getAnnotation(CustomSerialize.class).serializer().newInstance();
+		    			serializedPropertyValue = serializer.serialize(propertyValue);
+					} catch (InstantiationException e) {
+						throw new SerializationException(e);
+					} catch (IllegalAccessException e) {
+						throw new SerializationException(e);
+					} catch (IOException e) {
+						throw new MappingException("Could not serialize field "+propertyPath, e);
+					}
+    		}
+    		else if(FieldTypeIdentifier.isOfType(propertyField, FieldType.ATTRIBUTES)){
+    			Map<String, String> valueAsMap = (Map<String,String>)propertyValue;
+    			propertyMap.putAll(valueAsMap);
+    		}
+    		else if (FieldTypeIdentifier.isOfType(propertyField, FieldType.PRIMITIVE, FieldType.CORE_TYPE)) {
     			serializedPropertyValue = SimpleDBAttributeConverter.encode(propertyValue);
-    		
     		} else if (FieldTypeIdentifier.isOfType(propertyField, FieldType.NESTED_ENTITY)) {
     			SimpleDbEntityInformation<T, Serializable> entityMetadata = (SimpleDbEntityInformation<T, Serializable>) SimpleDbEntityInformationSupport.getMetadata(propertyValue.getClass(), domainName);
 				EntityWrapper<T, Serializable> entity = new EntityWrapper<T, Serializable>(entityMetadata, (T) propertyValue, true);

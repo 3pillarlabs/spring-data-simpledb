@@ -115,8 +115,9 @@ public final class MetadataParser {
 		return isSerializable;
 	}
 
+	@SuppressWarnings("PMD")
 	private static boolean hasUnsupportedAnnotations(Field field) {
-		return (field.getAnnotation(Attributes.class) != null);
+		return false;//(field.getAnnotation(Attributes.class) != null);
 	}
 
 	private static boolean isTransientField(Field field) {

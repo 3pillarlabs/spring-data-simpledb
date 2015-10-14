@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.simpledb.annotation.Attributes;
 import org.springframework.util.Assert;
 
 public enum FieldType {
@@ -27,7 +26,7 @@ public enum FieldType {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-			return field.getAnnotation(Attributes.class) != null;
+			return ReflectionUtils.isAttributes(field);
 		}
 	},
 
@@ -36,7 +35,7 @@ public enum FieldType {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-			return SupportedCoreTypes.PRIMITIVE_TYPES.isOfType(field.getType());
+			return !CUSTOM_SERIALIZED.isOfType(field) && SupportedCoreTypes.PRIMITIVE_TYPES.isOfType(field.getType());
 		}
 	},
 
@@ -46,7 +45,7 @@ public enum FieldType {
 		boolean isOfType(Field field) {
 			final boolean isCoreType = SupportedCoreTypes.CORE_TYPES.isOfType(field.getType());
 
-			return isCoreType;
+			return !CUSTOM_SERIALIZED.isOfType(field) && isCoreType;
 		}
 	},
 
@@ -55,7 +54,7 @@ public enum FieldType {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-			return Collection.class.isAssignableFrom(field.getType());
+			return !CUSTOM_SERIALIZED.isOfType(field) && Collection.class.isAssignableFrom(field.getType());
 		}
 	},
 
@@ -65,7 +64,7 @@ public enum FieldType {
 		boolean isOfType(Field field) {
 			final boolean isArrayType = SupportedCoreTypes.ARRAYS.isOfType(field.getType());
 
-			return isArrayType;
+			return !CUSTOM_SERIALIZED.isOfType(field) && isArrayType;
 		}
 	},
 
@@ -74,7 +73,7 @@ public enum FieldType {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-			return Map.class.isAssignableFrom(field.getType());
+			return !isOfType(field, CUSTOM_SERIALIZED, ATTRIBUTES) && Map.class.isAssignableFrom(field.getType());
 		}
 	},
 
@@ -83,7 +82,7 @@ public enum FieldType {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-			return field.getType().equals(Object.class);
+			return !CUSTOM_SERIALIZED.isOfType(field) && field.getType().equals(Object.class);
 		}
 	},
 
@@ -94,7 +93,7 @@ public enum FieldType {
 			Assert.notNull(field);
 			return !(field.getType().equals(Class.class) || field.getType().isEnum() || 
 					isOfType(field, ID, ATTRIBUTES, PRIMITIVE, CORE_TYPE, 
-							COLLECTION, ARRAY, MAP, OBJECT, REFERENCE_ENTITY));
+							COLLECTION, ARRAY, MAP, OBJECT, REFERENCE_ENTITY, CUSTOM_SERIALIZED));
 		}
 	},
 
@@ -103,8 +102,16 @@ public enum FieldType {
 		@Override
 		boolean isOfType(Field field) {
 			Assert.notNull(field);
-
 			return ReflectionUtils.isReference(field);
+		}
+	},
+	
+	CUSTOM_SERIALIZED {
+		
+		@Override
+		boolean isOfType(Field field){
+			Assert.notNull(field);
+			return ReflectionUtils.isCustom(field);
 		}
 	};
 

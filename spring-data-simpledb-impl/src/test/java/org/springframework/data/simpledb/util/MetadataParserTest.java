@@ -70,8 +70,7 @@ public class MetadataParserTest {
 		assertTrue(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("booleanPrimitive")));
 
 		assertFalse(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("shouldBeTransient")));
-		assertFalse(returnedPrimitives.contains(SampleDeclaredPrimitives.class
-				.getDeclaredField("someUsefullAttributes")));
+		assertTrue(returnedPrimitives.contains(SampleDeclaredPrimitives.class.getDeclaredField("someUsefullAttributes")));
 	}
 
 	@Test

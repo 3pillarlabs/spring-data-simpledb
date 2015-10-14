@@ -1,8 +1,5 @@
 package org.springframework.data.simpledb.attributeutil;
 
-import org.springframework.data.simpledb.reflection.SupportedCoreTypes;
-import org.springframework.util.Assert;
-
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -10,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import org.springframework.data.simpledb.reflection.SupportedCoreTypes;
+import org.springframework.util.Assert;
 
 public final class SimpleDBAttributeConverter {
 
@@ -52,7 +52,8 @@ public final class SimpleDBAttributeConverter {
 		return attributeValues;
 	}
 
-	public static Object decodeToFieldOfType(String value, Class<?> retType) throws ParseException {
+	@SuppressWarnings("unchecked")
+	public static <T> Object decodeToFieldOfType(String value, Class<T> retType) throws ParseException {
 		Object val = null;
 
 		if(Number.class.isAssignableFrom(retType) || (retType.isPrimitive() && retType != boolean.class)) {
@@ -65,6 +66,8 @@ public final class SimpleDBAttributeConverter {
 			val = Boolean.parseBoolean(value);
 		} else if(String.class.isAssignableFrom(retType)) {
 			val = value;
+		} else if(Enum.class.isAssignableFrom(retType)){
+			val = Enum.valueOf((Class<? extends Enum>)retType, value);
 		}
 
 		return val;

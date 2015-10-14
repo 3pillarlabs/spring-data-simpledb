@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>com.3pillarglobal.labs</groupId>
 		<artifactId>spring-data-simpledb-sdk</artifactId>
-		<version>1.0.1</version>
+		<version>1.1.0</version>
 	</parent>
 
 	<name>Spring Data SimpleDB Implementation</name>
@@ -120,12 +120,12 @@
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.9</version>
+			<version>1.9.13</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mrbean</artifactId>
-			<version>1.9.9</version>
+			<version>1.9.13</version>
 		</dependency>
 
 		<!--UTILITIES -->
