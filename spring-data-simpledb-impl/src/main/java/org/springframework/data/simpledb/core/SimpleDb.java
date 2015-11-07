@@ -1,5 +1,7 @@
 package org.springframework.data.simpledb.core;
 
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.simpledb.core.domain.DomainManagementPolicy;
 
@@ -18,6 +20,8 @@ public class SimpleDb implements InitializingBean {
 
 	private String accessID;
 	private String secretKey;
+
+    private Regions region = Regions.US_EAST_1;
 
 	private DomainManagementPolicy domainManagementPolicy = DomainManagementPolicy.UPDATE;
 	private boolean consistentRead = false;
@@ -60,7 +64,20 @@ public class SimpleDb implements InitializingBean {
 		this.secretKey = secretKey;
 	}
 
-	/**
+    public Regions getRegion() {
+        return region;
+    }
+
+    /**
+     * Sets the AWS region to use. If not set US_EAST_1 is used by default.
+     *
+     * @param region
+     */
+    public void setRegion(Regions region) {
+        this.region = region;
+    }
+
+    /**
 	 * Set the domain management policy. This can be one of:
 	 * <ul>
 	 * <li><b>DROP_CREATE</b>: The domain will be dropped if it exists and created again
@@ -145,6 +162,7 @@ public class SimpleDb implements InitializingBean {
 		};
 
 		this.simpleDbClient = new AmazonSimpleDBClient(awsCredentials);
+        this.simpleDbClient.setRegion(Region.getRegion(region));
 
 		simpleDbDomain = new SimpleDbDomain(domainPrefix);
 	}
